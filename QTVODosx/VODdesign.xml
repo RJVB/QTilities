@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<vod.design>
+	<frequency fps=12.5 />
+	<scale factor=1 />
+	<UTC zone=1 DST=True />
+	<channels
+		forward=2
+		pilot=3
+		left=1
+		right=4 />
+</vod.design>

@@ -1,0 +1,518 @@
+// !$*UTF8*$!
+{
+	08FB7793FE84155DC02AAC07 /* Project object */ = {
+		activeBuildConfigurationName = Release;
+		activeExecutable = D6295FFD121BE77D00F66BA8 /* qtest2r */;
+		activeTarget = D6295FFB121BE77D00F66BA8 /* qtest2r */;
+		addToTargets = (
+			D6295FFB121BE77D00F66BA8 /* qtest2r */,
+		);
+		breakpoints = (
+			D619288611FF866500BDAAAA /* testMemIO.cpp:285 */,
+			D619289011FF872B00BDAAAA /* QTMovieSink.c:309 */,
+			D61F21631229805400BAEECB /* QTMovieSink.c:590 */,
+			D66768381231C60E0086CF4F /* QTMovieSink.c:859 */,
+			D68EC5661240D16C000C0362 /* szone_error */,
+			D68EC5681240D187000C0362 /* qtest2r.cpp:543 */,
+			D6E2421C1240FE2B0037C3DF /* qtest2r.cpp:522 */,
+			D6E242351240FE8D0037C3DF /* qtest2r.cpp:470 */,
+		);
+		codeSenseManager = D6D4D35811FC900400983B3D /* Code sense */;
+		executables = (
+			D6295FFD121BE77D00F66BA8 /* qtest2r */,
+		);
+		perUserDictionary = {
+			"PBXConfiguration.PBXBreakpointsDataSource.v1:1CA1AED706398EBD00589147" = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXBreakpointsDataSource_BreakpointID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					20,
+					210,
+					20,
+					110,
+					109,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXBreakpointsDataSource_ActionID,
+					PBXBreakpointsDataSource_TypeID,
+					PBXBreakpointsDataSource_BreakpointID,
+					PBXBreakpointsDataSource_UseID,
+					PBXBreakpointsDataSource_LocationID,
+					PBXBreakpointsDataSource_ConditionID,
+					PBXBreakpointsDataSource_ContinueID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXErrorsWarningsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXErrorsWarningsDataSource_LocationID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					300,
+					131.0215,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXErrorsWarningsDataSource_TypeID,
+					PBXErrorsWarningsDataSource_MessageID,
+					PBXErrorsWarningsDataSource_LocationID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXExecutablesDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXExecutablesDataSource_NameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					22,
+					300,
+					129,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXExecutablesDataSource_ActiveFlagID,
+					PBXExecutablesDataSource_NameID,
+					PBXExecutablesDataSource_CommentsID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					246,
+					20,
+					43,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFindDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFindDataSource_LocationID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					200,
+					255,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFindDataSource_MessageID,
+					PBXFindDataSource_LocationID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXSymbolsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXSymbolsDataSource_SymbolNameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					16,
+					200,
+					50,
+					181,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXSymbolsDataSource_SymbolTypeIconID,
+					PBXSymbolsDataSource_SymbolNameID,
+					PBXSymbolsDataSource_SymbolTypeID,
+					PBXSymbolsDataSource_ReferenceNameID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.XCSCMDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					20,
+					222,
+					20,
+					43,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_SCM_ColumnID,
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					200,
+					66,
+					20,
+					43,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 333292525;
+			PBXWorkspaceStateSaveDate = 333292525;
+		};
+		sourceControlManager = D6D4D35711FC900400983B3D /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	D602C30711FE52C800D568BD /* QTMovieFile.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1100, 2450}}";
+			sepNavSelRange = "{542, 0}";
+			sepNavVisRect = "{{0, 0}, {693, 712}}";
+			sepNavWindowFrame = "{{25, 217}, {738, 785}}";
+		};
+	};
+	D602C30811FE52C800D568BD /* QTMovieFile.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {693, 910}}";
+			sepNavSelRange = "{608, 323}";
+			sepNavVisRect = "{{0, 0}, {693, 712}}";
+			sepNavWindowFrame = "{{58, 243}, {738, 785}}";
+		};
+	};
+	D607F756122E9C2300B63D4C /* testgl.c */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {836, 14224}}";
+			sepNavSelRange = "{17057, 0}";
+			sepNavVisRect = "{{0, 9731}, {708, 773}}";
+			sepNavWindowFrame = "{{205, 32}, {753, 846}}";
+		};
+	};
+	D619272711FF64E500BDAAAA /* QTMovieSink.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {693, 2198}}";
+			sepNavSelRange = "{5133, 0}";
+			sepNavVisRect = "{{0, 1486}, {693, 712}}";
+			sepNavWindowFrame = "{{2, 37}, {738, 785}}";
+		};
+	};
+	D619275011FF65E200BDAAAA /* QTMovieSink.c */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {950, 19264}}";
+			sepNavSelRange = "{1444, 0}";
+			sepNavVisRect = "{{0, 496}, {710, 759}}";
+			sepNavWindowFrame = "{{899, 85}, {755, 832}}";
+		};
+	};
+	D619278B11FF690800BDAAAA /* copyright.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {896, 1232}}";
+			sepNavSelRange = "{458, 0}";
+			sepNavVisRect = "{{0, 313}, {693, 712}}";
+			sepNavWindowFrame = "{{84, 175}, {738, 785}}";
+		};
+	};
+	D61927C311FF703C00BDAAAA /* Logging.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {693, 712}}";
+			sepNavSelRange = "{375, 0}";
+			sepNavVisRect = "{{0, 0}, {693, 712}}";
+			sepNavWindowFrame = "{{153, 112}, {738, 785}}";
+		};
+	};
+	D61927CF11FF70A300BDAAAA /* Logger.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {693, 712}}";
+			sepNavSelRange = "{80, 30}";
+			sepNavVisRect = "{{0, 0}, {693, 712}}";
+			sepNavWindowFrame = "{{199, 70}, {738, 785}}";
+		};
+	};
+	D619288611FF866500BDAAAA /* testMemIO.cpp:285 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D6D4D35D11FC904B00983B3D /* testMemIO.cpp */;
+		functionName = "testAcquireMemIO()";
+		hitCount = 1;
+		ignoreCount = 0;
+		lineNumber = 285;
+		modificationTime = 306249805.522288;
+		originalNumberOfMultipleMatches = 0;
+		state = 1;
+	};
+	D619289011FF872B00BDAAAA /* QTMovieSink.c:309 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D619275011FF65E200BDAAAA /* QTMovieSink.c */;
+		functionName = "_open_QTMovieSink_()";
+		hitCount = 1;
+		ignoreCount = 0;
+		lineNumber = 309;
+		location = QTMovieSink;
+		modificationTime = 306249805.522236;
+		originalNumberOfMultipleMatches = 0;
+		state = 1;
+	};
+	D61F21631229805400BAEECB /* QTMovieSink.c:590 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D619275011FF65E200BDAAAA /* QTMovieSink.c */;
+		functionName = "QTMovieSink_AddFrame()";
+		hitCount = 1;
+		ignoreCount = 0;
+		lineNumber = 590;
+		location = QTMovieSink;
+		modificationTime = 306249300.926231;
+		originalNumberOfMultipleMatches = 0;
+		state = 2;
+	};
+	D6295FFB121BE77D00F66BA8 /* qtest2r */ = {
+		activeExec = 0;
+		executables = (
+			D6295FFD121BE77D00F66BA8 /* qtest2r */,
+		);
+	};
+	D6295FFD121BE77D00F66BA8 /* qtest2r */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+			{
+				active = YES;
+				name = MallocBadFreeAbort;
+				value = 1;
+			},
+			{
+				active = NO;
+				name = MallocScribble;
+				value = 1;
+			},
+			{
+				active = NO;
+				name = MallocPreScribble;
+				value = 1;
+			},
+			{
+				active = YES;
+				name = MallocGuardEdges;
+				value = 1;
+			},
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = qtest2r;
+		savedGlobals = {
+		};
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+		variableFormatDictionary = {
+			"RGBpixelFormat-OSType-main" = 5;
+			dataRefType = 5;
+			"dataRefType-OSType-QTMovieSink_AddFrame" = 5;
+			"dataRefType-OSType-_open_QTMovieSinkICM_" = 5;
+			"dataRefType-OSType-_open_QTMovieSink_" = 5;
+			"dataRefType-OSType-close_QTMovieSink" = 5;
+			"dataRefType-OSType-close_QTMovieSinkICM" = 5;
+			"data_ref_type-OSType-CalcCompressionPerformance" = 5;
+			"pfmt-OSType-CalcCompressionPerformance" = 5;
+			pixelFormat = 5;
+			"pixelFormat-OSType-QTMovieSink_AddFrame" = 5;
+			"pixelFormat-OSType-_open_QTMovieSinkICM_" = 5;
+			"pixelFormat-OSType-_open_QTMovieSink_" = 5;
+			"pixelFormat-OSType-close_QTMovieSink" = 5;
+			"pixelFormat-OSType-close_QTMovieSinkICM" = 5;
+		};
+	};
+	D6296008121BE7FE00F66BA8 /* qtest2r.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1050, 14028}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{4938, 3070}";
+			sepNavVisRect = "{{0, 7000}, {708, 759}}";
+			sepNavWindowFrame = "{{523, 170}, {753, 832}}";
+		};
+	};
+	D63A60011230F198001E4ACF /* OSXbackgrounding.c */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1694, 1932}}";
+			sepNavSelRange = "{1803, 21}";
+			sepNavVisRect = "{{0, 0}, {708, 773}}";
+			sepNavWindowFrame = "{{38, 6}, {753, 846}}";
+		};
+	};
+	D651693D1203678F00389541 /* QTMovieSink */ = {
+		activeExec = 0;
+	};
+	D65191AE12199F490077C8D3 /* QTMovieSink.framework */ = {
+		activeExec = 0;
+	};
+	D65191B012199F490077C8D3 /* QTMovieSink-Info.plist */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {708, 773}}";
+			sepNavSelRange = "{545, 0}";
+			sepNavVisRect = "{{0, 0}, {708, 773}}";
+			sepNavWindowFrame = "{{130, 46}, {753, 846}}";
+		};
+	};
+	D66768381231C60E0086CF4F /* QTMovieSink.c:859 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D619275011FF65E200BDAAAA /* QTMovieSink.c */;
+		functionName = "_open_QTMovieSinkICM_()";
+		hitCount = 1;
+		ignoreCount = 0;
+		lineNumber = 859;
+		location = QTMovieSink;
+		modificationTime = 306249805.522258;
+		originalNumberOfMultipleMatches = 0;
+		state = 1;
+	};
+	D6704EBF121AFDB6004B5459 /* winixdefs.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {708, 773}}";
+			sepNavSelRange = "{545, 0}";
+			sepNavVisRect = "{{0, 0}, {708, 773}}";
+			sepNavWindowFrame = "{{130, 46}, {753, 846}}";
+		};
+	};
+	D68EC5661240D16C000C0362 /* szone_error */ = {
+		isa = PBXSymbolicBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 1;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		hitCount = 1;
+		ignoreCount = 0;
+		location = "";
+		modificationTime = 306249805.522189;
+		originalNumberOfMultipleMatches = 0;
+		state = 1;
+		symbolName = szone_error;
+	};
+	D68EC5681240D187000C0362 /* qtest2r.cpp:543 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D6296008121BE7FE00F66BA8 /* qtest2r.cpp */;
+		functionName = "main()";
+		hitCount = 1;
+		ignoreCount = 0;
+		lineNumber = 543;
+		location = qtest2r.ob;
+		modificationTime = 306249312.533042;
+		originalNumberOfMultipleMatches = 0;
+		state = 1;
+	};
+	D6D4D35711FC900400983B3D /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryNamesForRoots = {
+				"" = "";
+			};
+		};
+		scmType = "";
+	};
+	D6D4D35811FC900400983B3D /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	D6D4D35D11FC904B00983B3D /* testMemIO.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 30;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = testMemIO.cpp;
+		path = /Volumes/Debian/Users/bertin/work/src/MacOSX/QTMovieFile/TestAPI/testMemIO.cpp;
+		sourceTree = "<absolute>";
+	};
+	D6E2421C1240FE2B0037C3DF /* qtest2r.cpp:522 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D6296008121BE7FE00F66BA8 /* qtest2r.cpp */;
+		functionName = "main()";
+		hitCount = 1;
+		ignoreCount = 0;
+		lineNumber = 522;
+		location = qtest2r.ob;
+		modificationTime = 306249748.020243;
+		originalNumberOfMultipleMatches = 0;
+		state = 1;
+	};
+	D6E242351240FE8D0037C3DF /* qtest2r.cpp:470 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D6296008121BE7FE00F66BA8 /* qtest2r.cpp */;
+		functionName = "main()";
+		hitCount = 1;
+		ignoreCount = 0;
+		lineNumber = 470;
+		location = qtest2r.ob;
+		modificationTime = 306249490.638931;
+		originalNumberOfMultipleMatches = 0;
+		state = 1;
+	};
+}

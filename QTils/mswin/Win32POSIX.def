@@ -1,0 +1,32 @@
+DEFINITION MODULE WIN32POSIX;
+
+<*/LIBNEEDED:MSVCRT.LIB*>
+
+TYPE
+%IF SGI %OR GPLINUX %THEN
+	Int8 = Types.Int8;
+	UInt8 = Types.Card8;
+	Int16 = Types.Int16;
+	UInt16 = Types.Card16;
+	Int32 = Types.Int32;
+	UInt32 = Types.Card32;
+	Int64 = Types.LONGINT;
+	float = SHORTREAL;
+	double = LONGREAL;
+%END
+
+%IF StonyBrook %THEN
+	Int8 = INTEGER8;
+	UInt8 = CARDINAL8;
+	Int16 = INTEGER16; (*[-32768..32767]*)
+	UInt16 = CARDINAL16;
+	Int32 = INTEGER32;
+	UInt32 = CARDINAL32;
+	Int64 = INTEGER64;
+	float = REAL;
+	double = LONGREAL;
+%END
+
+PROCEDURE sprintf['__snprintf'](VAR dst : ARRAY OF CHAR; format : NOHIGH ARRAY OF CHAR) : Int32 [CDECL,RightToLeft, LEAVES, VARIABLE];
+
+END WIN32POSIX.

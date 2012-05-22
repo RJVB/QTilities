@@ -1,0 +1,16 @@
+LIBRARY QTMovieSink
+DESCRIPTION  'QTMovieSink: saves successive images into a QuickTime movie'
+
+EXPORTS
+;=============================================================================================
+;
+	open_QTMovieSink
+	close_QTMovieSink
+	QTMovieSink_AddFrame
+; constants:
+	cVideoCodec
+	cJPEGCodec
+	cMJPEGACodec
+	cAnimationCodec
+	cRawCodec
+	cCinepakCodec

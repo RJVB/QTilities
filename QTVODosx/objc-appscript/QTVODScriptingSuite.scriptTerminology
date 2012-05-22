@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Classes</key>
+	<dict>
+		<key>QTMovieView</key>
+		<dict>
+			<key>Description</key>
+			<string>The Cocoa QTMovieView class</string>
+			<key>Name</key>
+			<string>qtMovieView</string>
+			<key>PluralName</key>
+			<string>qtMovieViews</string>
+		</dict>
+		<key>QTVODWindow</key>
+		<dict>
+			<key>Attributes</key>
+			<dict>
+				<key>TCframeRate</key>
+				<dict>
+					<key>Description</key>
+					<string>The movie's frame rate based on TimeCode info</string>
+					<key>Name</key>
+					<string>TCframeRate</string>
+				</dict>
+				<key>absCurrentTime</key>
+				<dict>
+					<key>Description</key>
+					<string>The current time in absolute seconds, i.e. 3600 is 1h am. Obtained from the TimeCode track</string>
+					<key>Name</key>
+					<string>absCurrentTime</string>
+				</dict>
+				<key>chapterNames</key>
+				<dict>
+					<key>Description</key>
+					<string>the movie's chapter names list</string>
+					<key>Name</key>
+					<string>chapterNames</string>
+				</dict>
+				<key>chapterTimes</key>
+				<dict>
+					<key>Description</key>
+					<string>the movie's chapter times list</string>
+					<key>Name</key>
+					<string>chapterTimes</string>
+				</dict>
+				<key>chapters</key>
+				<dict>
+					<key>Description</key>
+					<string>the movie's chapter list</string>
+					<key>Name</key>
+					<string>chapters</string>
+				</dict>
+				<key>currentTime</key>
+				<dict>
+					<key>Description</key>
+					<string>The current time in seconds from the movie start</string>
+					<key>Name</key>
+					<string>currentTime</string>
+				</dict>
+				<key>displayName</key>
+				<dict>
+					<key>Description</key>
+					<string>Its name.</string>
+					<key>Name</key>
+					<string>name</string>
+				</dict>
+				<key>duration</key>
+				<dict>
+					<key>Description</key>
+					<string>The movie's duration</string>
+					<key>Name</key>
+					<string>duration</string>
+				</dict>
+				<key>fileURL</key>
+				<dict>
+					<key>Description</key>
+					<string>Its file on disk</string>
+					<key>Name</key>
+					<string>file</string>
+				</dict>
+				<key>frameRate</key>
+				<dict>
+					<key>Description</key>
+					<string>The movie's frame rate</string>
+					<key>Name</key>
+					<string>frameRate</string>
+				</dict>
+				<key>lastInterval</key>
+				<dict>
+					<key>Description</key>
+					<string>the last measured time interval between 2 frames</string>
+					<key>Name</key>
+					<string>lastInterval</string>
+				</dict>
+				<key>startTime</key>
+				<dict>
+					<key>Description</key>
+					<string>The movie's starting time</string>
+					<key>Name</key>
+					<string>startTime</string>
+				</dict>
+				<key>thePath</key>
+				<dict>
+					<key>Description</key>
+					<string>Its location on disk, if it has one.</string>
+					<key>Name</key>
+					<string>path</string>
+				</dict>
+				<key>uniqueID</key>
+				<dict>
+					<key>Description</key>
+					<string>Its unique ID</string>
+					<key>Name</key>
+					<string>id</string>
+				</dict>
+			</dict>
+			<key>Description</key>
+			<string>A QTVOD document.</string>
+			<key>Name</key>
+			<string>document</string>
+			<key>PluralName</key>
+			<string>documents</string>
+		</dict>
+	</dict>
+	<key>Commands</key>
+	<dict>
+		<key>AddChapter</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>QTMovieChapterDuration</key>
+				<dict>
+					<key>Description</key>
+					<string>new chapter's duration</string>
+					<key>Name</key>
+					<string>duration</string>
+				</dict>
+				<key>QTMovieChapterName</key>
+				<dict>
+					<key>Description</key>
+					<string>new chapter title</string>
+					<key>Name</key>
+					<string>name</string>
+				</dict>
+				<key>QTMovieChapterStartTime</key>
+				<dict>
+					<key>Description</key>
+					<string>new chapter's starting time in seconds</string>
+					<key>Name</key>
+					<string>startTime</string>
+				</dict>
+			</dict>
+			<key>Description</key>
+			<string>add a new movie chapter</string>
+			<key>Name</key>
+			<string>addChapter</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Description</key>
+				<string></string>
+			</dict>
+		</dict>
+		<key>Close</key>
+		<dict>
+			<key>Description</key>
+			<string>close the document</string>
+			<key>Name</key>
+			<string>close</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Description</key>
+				<string></string>
+			</dict>
+		</dict>
+		<key>MarkTimeInterval</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>IntervalTimeDisplay</key>
+				<dict>
+					<key>Description</key>
+					<string>whether they host (QTVOD) should display the measured interval duration in a popup window</string>
+					<key>Name</key>
+					<string>display</string>
+				</dict>
+				<key>IntervalTimeReset</key>
+				<dict>
+					<key>Description</key>
+					<string>start a new interval - otherwise the previous 2nd reference frame becomes the 1st</string>
+					<key>Name</key>
+					<string>reset</string>
+				</dict>
+			</dict>
+			<key>Description</key>
+			<string>marks a new reference frame for time interval measurement</string>
+			<key>Name</key>
+			<string>markTimeInterval</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Description</key>
+				<string></string>
+			</dict>
+		</dict>
+		<key>Play</key>
+		<dict>
+			<key>Description</key>
+			<string>start playing</string>
+			<key>Name</key>
+			<string>play</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Description</key>
+				<string></string>
+			</dict>
+		</dict>
+		<key>ReadDesign</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>FileName</key>
+				<dict>
+					<key>Description</key>
+					<string>the name of the file to parse</string>
+					<key>Name</key>
+					<string>name</string>
+				</dict>
+			</dict>
+			<key>Description</key>
+			<string>reads a design from an XML design file</string>
+			<key>Name</key>
+			<string>readDesign</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Description</key>
+				<string></string>
+			</dict>
+		</dict>
+		<key>ResetVideo</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>CompleteReset</key>
+				<dict>
+					<key>Description</key>
+					<string>whether to trash the main movie cache file during a reset</string>
+					<key>Name</key>
+					<string>complete</string>
+				</dict>
+			</dict>
+			<key>Description</key>
+			<string>reloads the video, possible after trashing the main cache file (complete=True). This command is not very reliable and to be avoided: prefer instead to get the document's currentTime, close it and reopen the file and finally set the currentTime to the saved value.</string>
+			<key>Name</key>
+			<string>resetVideo</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Description</key>
+				<string></string>
+			</dict>
+		</dict>
+		<key>StepBackward</key>
+		<dict>
+			<key>Description</key>
+			<string>step 1 frame backward</string>
+			<key>Name</key>
+			<string>stepBackward</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Description</key>
+				<string></string>
+			</dict>
+		</dict>
+		<key>StepForward</key>
+		<dict>
+			<key>Description</key>
+			<string>step 1 frame forward</string>
+			<key>Name</key>
+			<string>stepForward</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Description</key>
+				<string></string>
+			</dict>
+		</dict>
+		<key>Stop</key>
+		<dict>
+			<key>Description</key>
+			<string>stop playing</string>
+			<key>Name</key>
+			<string>stop</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Description</key>
+				<string></string>
+			</dict>
+		</dict>
+	</dict>
+	<key>Description</key>
+	<string>Class and properties for QTVOD.app</string>
+	<key>Name</key>
+	<string>QTVOD Scripting Suite</string>
+</dict>
+</plist>

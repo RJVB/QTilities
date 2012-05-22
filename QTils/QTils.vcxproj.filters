@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="mswin\AskFileName.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CritSectEx\CritSectEx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lists.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QTils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\QTMovieSink.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\QTMovieSink_mod2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QTMovieWin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mswin\QTMovieWinWM.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\QTpfuSaveImage.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QTxml.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\timing.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mswin\vsscanf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="copyright.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CritSectEx\CritSectEx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gmsvc\google\sparsehash\densehashtable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="google\sparsehash\libc_allocator_with_realloc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lists.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Logging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QTilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mswin\QTilsIconXOR128x128.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mswin\QTilsIconXOR48x48.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\QTMovieSink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\QTMovieSinkQTStuff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QTMovieWin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\QTpfuSaveImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gmsvc\google\sparsehash\sparseconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\timing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mswin\vsscanf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="winixdefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gmsvc\google\dense_hash_map">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="QTils.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="README-Performer.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="QTilsversion.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Mod2\QTVODm2.res">
+      <Filter>Resource Files</Filter>
+    </Resource>
+  </ItemGroup>
+</Project>

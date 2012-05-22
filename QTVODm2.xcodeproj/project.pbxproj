@@ -1,0 +1,269 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		D6A47B2112BD49760059F0F4 /* Archive */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D6A47B3212BD49950059F0F4 /* Build configuration list for PBXAggregateTarget "Archive" */;
+			buildPhases = (
+				D6A47B2012BD49760059F0F4 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Archive;
+			productName = Archive;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXFileReference section */
+		D621DA7612DF05A500345634 /* TstQTilsM2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; lineEnding = 2; name = TstQTilsM2.mod; path = QTils/Mod2/mod/TstQTilsM2.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D63A355E12DC8C5D00BA8CC3 /* Chaussette2.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = Chaussette2.def; sourceTree = "<group>"; tabWidth = 2; };
+		D63A355F12DC8C5D00BA8CC3 /* Chaussette2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = Chaussette2.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D63A357412DC8EF600BA8CC3 /* TypeConv.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; name = TypeConv.mod; path = ../../MSWin/Archisim/mod/TypeConv.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D63A357512DC8EF600BA8CC3 /* TypeConv.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; name = TypeConv.def; path = ../../MSWin/Archisim/def/TypeConv.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D64B0F2513324976007C5BA7 /* POSIXm2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = POSIXm2.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D64B0F2613324996007C5BA7 /* POSIXm2.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = POSIXm2.def; sourceTree = "<group>"; tabWidth = 2; };
+		D65129FA12DDFACA00C0D5F8 /* TstSockS.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; lineEnding = 2; name = TstSockS.mod; path = ../../MSWin/Archisim/mod/TstSockS.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D65129FB12DDFACA00C0D5F8 /* TstSockC.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; lineEnding = 2; name = TstSockC.mod; path = ../../MSWin/Archisim/mod/TstSockC.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D65129FE12DDFC3700C0D5F8 /* TstQTVDSrv.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = TstQTVDSrv.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D68DAD9112DB66070035CCA9 /* QTVODcomm.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = QTVODcomm.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D68DAD9212DB66070035CCA9 /* QTVODcomm.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = QTVODcomm.def; sourceTree = "<group>"; tabWidth = 2; };
+		D699F80A12BA189800E0C3D0 /* QTVODlib.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = QTVODlib.def; sourceTree = "<group>"; tabWidth = 2; };
+		D699F80B12BA189800E0C3D0 /* QTilsM2.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = QTilsM2.def; sourceTree = "<group>"; tabWidth = 2; };
+		D699F80E12BA189800E0C3D0 /* QTVODm2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = QTVODm2.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D699F80F12BA189800E0C3D0 /* QTilsM2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = QTilsM2.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6CC997812D4B629006BBEF7 /* QTVODlib.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; includeInIndex = 1; indentWidth = 2; lineEnding = 2; path = QTVODlib.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6D777A212EA4CD300BEF548 /* LibQT.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = LibQT.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6EB235912E04C6300986EA5 /* Chaussette.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; lineEnding = 2; name = Chaussette.mod; path = ../../MSWin/Archisim/mod/Chaussette.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D6EB235A12E04C6300986EA5 /* Chaussette.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; lineEnding = 2; name = Chaussette.def; path = ../../MSWin/Archisim/def/Chaussette.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D6FC74F613E1CC9E0042C46F /* make_archive.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = make_archive.sh; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* QTVODm2 */ = {
+			isa = PBXGroup;
+			children = (
+				D6FC74F613E1CC9E0042C46F /* make_archive.sh */,
+				D65129F812DDFA9C00C0D5F8 /* refs */,
+				D699F80912BA189800E0C3D0 /* def */,
+				D699F80C12BA189800E0C3D0 /* mod */,
+			);
+			name = QTVODm2;
+			sourceTree = "<group>";
+		};
+		D65129F812DDFA9C00C0D5F8 /* refs */ = {
+			isa = PBXGroup;
+			children = (
+				D6EB235912E04C6300986EA5 /* Chaussette.mod */,
+				D6EB235A12E04C6300986EA5 /* Chaussette.def */,
+				D621DA7612DF05A500345634 /* TstQTilsM2.mod */,
+				D65129FA12DDFACA00C0D5F8 /* TstSockS.mod */,
+				D65129FB12DDFACA00C0D5F8 /* TstSockC.mod */,
+			);
+			name = refs;
+			sourceTree = "<group>";
+		};
+		D699F80912BA189800E0C3D0 /* def */ = {
+			isa = PBXGroup;
+			children = (
+				D63A357512DC8EF600BA8CC3 /* TypeConv.def */,
+				D63A355E12DC8C5D00BA8CC3 /* Chaussette2.def */,
+				D64B0F2613324996007C5BA7 /* POSIXm2.def */,
+				D699F80B12BA189800E0C3D0 /* QTilsM2.def */,
+				D699F80A12BA189800E0C3D0 /* QTVODlib.def */,
+				D68DAD9212DB66070035CCA9 /* QTVODcomm.def */,
+			);
+			fileEncoding = 12;
+			lineEnding = 2;
+			name = def;
+			path = QTils/Mod2/def;
+			sourceTree = "<group>";
+		};
+		D699F80C12BA189800E0C3D0 /* mod */ = {
+			isa = PBXGroup;
+			children = (
+				D63A357412DC8EF600BA8CC3 /* TypeConv.mod */,
+				D63A355F12DC8C5D00BA8CC3 /* Chaussette2.mod */,
+				D64B0F2513324976007C5BA7 /* POSIXm2.mod */,
+				D699F80F12BA189800E0C3D0 /* QTilsM2.mod */,
+				D68DAD9112DB66070035CCA9 /* QTVODcomm.mod */,
+				D6CC997812D4B629006BBEF7 /* QTVODlib.mod */,
+				D699F80E12BA189800E0C3D0 /* QTVODm2.mod */,
+				D65129FE12DDFC3700C0D5F8 /* TstQTVDSrv.mod */,
+				D6D777A212EA4CD300BEF548 /* LibQT.mod */,
+			);
+			fileEncoding = 12;
+			includeInIndex = 1;
+			lineEnding = 2;
+			name = mod;
+			path = QTils/Mod2/mod;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		D28A88AD04BDD90700651E21 /* QTVODm2 */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 1DEB918F08733D9F0010E9CD /* Build configuration list for PBXLegacyTarget "QTVODm2" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			dependencies = (
+			);
+			name = QTVODm2;
+			passBuildSettingsInEnvironment = 1;
+			productName = QTVODm2;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "QTVODm2" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* QTVODm2 */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D28A88AD04BDD90700651E21 /* QTVODm2 */,
+				D6A47B2112BD49760059F0F4 /* Archive */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D6A47B2012BD49760059F0F4 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd ${PROJECT_DIR}\npwd\nexec ./make_archive.sh";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB919008733D9F0010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = QTVODm2;
+			};
+			name = Debug;
+		};
+		1DEB919108733D9F0010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = QTVODm2;
+			};
+			name = Release;
+		};
+		1DEB919408733D9F0010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		1DEB919508733D9F0010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		D6A47B2212BD49770059F0F4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = Archive;
+			};
+			name = Debug;
+		};
+		D6A47B2312BD49770059F0F4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Archive;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB918F08733D9F0010E9CD /* Build configuration list for PBXLegacyTarget "QTVODm2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB919008733D9F0010E9CD /* Debug */,
+				1DEB919108733D9F0010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "QTVODm2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB919408733D9F0010E9CD /* Debug */,
+				1DEB919508733D9F0010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D6A47B3212BD49950059F0F4 /* Build configuration list for PBXAggregateTarget "Archive" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6A47B2212BD49770059F0F4 /* Debug */,
+				D6A47B2312BD49770059F0F4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

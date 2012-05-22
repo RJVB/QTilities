@@ -1,0 +1,1191 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		D66005FF1420C10A001A262C /* Archive */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D660060A1420C16A001A262C /* Build configuration list for PBXAggregateTarget "Archive" */;
+			buildPhases = (
+				D66006051420C131001A262C /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Archive;
+			productName = Archive;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		8D15AC310486D014006FF6A4 /* QTVODWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4ACFDCFA73011CA2CEA /* QTVODWindow.m */; settings = {ATTRIBUTES = (); }; };
+		8D15AC320486D014006FF6A4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4B0FDCFA73011CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
+		8D15AC340486D014006FF6A4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A7FEA54F5311CA2CBB /* Cocoa.framework */; };
+		C21B0730084378590012A8C7 /* BatchTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = C21B072F084378590012A8C7 /* BatchTableView.m */; };
+		C21B0877084386680012A8C7 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21B0876084386680012A8C7 /* QuickTime.framework */; };
+		C2EA010A08422F6500BBB7B3 /* MAMovieExport.m in Sources */ = {isa = PBXBuildFile; fileRef = C2EA010908422F6500BBB7B3 /* MAMovieExport.m */; };
+		C2F091F10840C88200249D8A /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2F091F00840C88200249D8A /* QTKit.framework */; };
+		C2F093860840E3B400249D8A /* FullscreenFocusedWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = C2F093850840E3B400249D8A /* FullscreenFocusedWindow.m */; };
+		C2F094250840EC8500249D8A /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2F094240840EC8500249D8A /* Carbon.framework */; };
+		C2F0955B08412E0200249D8A /* QTVODosx.icns in Resources */ = {isa = PBXBuildFile; fileRef = C2F0955A08412E0200249D8A /* QTVODosx.icns */; };
+		C2FFEF26084332E000AAB5DB /* BatchExportController.m in Sources */ = {isa = PBXBuildFile; fileRef = C2FFEF25084332E000AAB5DB /* BatchExportController.m */; };
+		C2FFEF2F084337FF00AAB5DB /* ExportManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C2FFEF2E084337FF00AAB5DB /* ExportManager.m */; };
+		C2FFF0670843483700AAB5DB /* NSString+QTMAAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = C2FFF0660843483700AAB5DB /* NSString+QTMAAdditions.m */; };
+		D60072310BF8A80400E68092 /* NSATextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D60072300BF8A80400E68092 /* NSATextField.m */; };
+		D604AEF21427802C002B997A /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A37F4C4FDCFA73011CA2CEA /* AppKit.framework */; };
+		D604AFC4142782BB002B997A /* QTVOD.sdef in Resources */ = {isa = PBXBuildFile; fileRef = D604AFC3142782BB002B997A /* QTVOD.sdef */; };
+		D62A62971436170F00BFA81C /* VDPreferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B961428FBDB007C36EE /* VDPreferences.xib */; };
+		D63359061428D548007C36EE /* QTVODController.m in Sources */ = {isa = PBXBuildFile; fileRef = D63359051428D548007C36EE /* QTVODController.m */; };
+		D6335BA31428FBDB007C36EE /* BatchExport.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B7B1428FBDB007C36EE /* BatchExport.nib */; };
+		D6335BA41428FBDB007C36EE /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = D6335B7D1428FBDB007C36EE /* Credits.rtf */; };
+		D6335BA51428FBDB007C36EE /* ExportManager.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B7F1428FBDB007C36EE /* ExportManager.nib */; };
+		D6335BA61428FBDB007C36EE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D6335B811428FBDB007C36EE /* InfoPlist.strings */; };
+		D6335BA71428FBDB007C36EE /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B831428FBDB007C36EE /* MainMenu.nib */; };
+		D6335BA81428FBDB007C36EE /* VDPreferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B851428FBDB007C36EE /* VDPreferences.xib */; };
+		D6335BA91428FBDB007C36EE /* BatchExport.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B881428FBDB007C36EE /* BatchExport.nib */; };
+		D6335BAA1428FBDB007C36EE /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = D6335B8A1428FBDB007C36EE /* Credits.rtf */; };
+		D6335BAB1428FBDB007C36EE /* ExportManager.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B8C1428FBDB007C36EE /* ExportManager.nib */; };
+		D6335BAC1428FBDB007C36EE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D6335B8E1428FBDB007C36EE /* InfoPlist.strings */; };
+		D6335BAD1428FBDB007C36EE /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B901428FBDB007C36EE /* MainMenu.nib */; };
+		D6335BAF1428FBDB007C36EE /* QTVODWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B941428FBDB007C36EE /* QTVODWindow.nib */; };
+		D6335BB11428FBDB007C36EE /* BatchExport.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B991428FBDB007C36EE /* BatchExport.nib */; };
+		D6335BB21428FBDB007C36EE /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = D6335B9B1428FBDB007C36EE /* Credits.rtf */; };
+		D6335BB31428FBDB007C36EE /* ExportManager.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B9D1428FBDB007C36EE /* ExportManager.nib */; };
+		D6335BB41428FBDB007C36EE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D6335B9F1428FBDB007C36EE /* InfoPlist.strings */; };
+		D6335BB51428FBDB007C36EE /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6335BA11428FBDB007C36EE /* MainMenu.nib */; };
+		D651F5C914168965007169F9 /* QTVOD.m in Sources */ = {isa = PBXBuildFile; fileRef = D651F5C814168965007169F9 /* QTVOD.m */; };
+		D664B42D1421485D00DBE6CD /* Help in Resources */ = {isa = PBXBuildFile; fileRef = D664B4281421485D00DBE6CD /* Help */; };
+		D676F0230BC419C8008693F8 /* QTAMovieView.m in Sources */ = {isa = PBXBuildFile; fileRef = D676F0220BC419C8008693F8 /* QTAMovieView.m */; };
+		D67ACEE714161FCC00E99EA2 /* QTils-emb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67ACEDE14161FA600E99EA2 /* QTils-emb.framework */; };
+		D67ACEE814161FE000E99EA2 /* QTils-emb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67ACEDE14161FA600E99EA2 /* QTils-emb.framework */; };
+		D68FAFAF1422033B003CB551 /* VDPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = D68FAFAD1422033B003CB551 /* VDPreferences.m */; };
+		D6D69A6414278E9400FFB77C /* QTVOD.scriptSuite in Resources */ = {isa = PBXBuildFile; fileRef = D6D69A6314278E9400FFB77C /* QTVOD.scriptSuite */; };
+		D6E9CE041549EF2300F5F828 /* test.m in Sources */ = {isa = PBXBuildFile; fileRef = D6E9CE031549EF2300F5F828 /* test.m */; };
+		D6E9CE151549F1B500F5F828 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6E9CE141549F1B500F5F828 /* QTKit.framework */; };
+		D6E9CE531549F5A000F5F828 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6E9CE521549F5A000F5F828 /* QuickTime.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		C281EA6E095C4BF300374AB5 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.gcc.4_0;
+			fileType = sourcecode.c;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+/* End PBXBuildRule section */
+
+/* Begin PBXContainerItemProxy section */
+		D67ACDB6141610A500E99EA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D65F639412C3C7A4009A3D72;
+			remoteInfo = QTils.framework;
+		};
+		D67ACDB8141610A500E99EA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D65191AF12199F490077C8D3;
+			remoteInfo = QTMovieSink.framework;
+		};
+		D67ACDBA141610A500E99EA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D651693E1203678F00389541;
+			remoteInfo = QTMovieSink;
+		};
+		D67ACDBC141610A500E99EA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D634F05713172E3E00D2BAFD;
+			remoteInfo = QTMovieWindowTest;
+		};
+		D67ACDBE141610A500E99EA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D6912C13132E54C300CD5E78;
+			remoteInfo = QTMovieWindowTest.app;
+		};
+		D67ACDC0141610A500E99EA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D6295FFC121BE77D00F66BA8;
+			remoteInfo = qtest2r;
+		};
+		D67ACEDD14161FA600E99EA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D67ACE641416129D00E99EA2;
+			remoteInfo = "QTils-emb.framework";
+		};
+		D67ACEE514161FB500E99EA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D67ACE401416129D00E99EA2;
+			remoteInfo = "QTils-emb.framework";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D67ACDF8141611C200E99EA2 /* Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D67ACEE814161FE000E99EA2 /* QTils-emb.framework in Frameworks */,
+			);
+			name = Frameworks;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1058C7A7FEA54F5311CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		2A37F4ACFDCFA73011CA2CEA /* QTVODWindow.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = QTVODWindow.m; sourceTree = "<group>"; };
+		2A37F4AEFDCFA73011CA2CEA /* QTVODWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTVODWindow.h; sourceTree = "<group>"; };
+		2A37F4B0FDCFA73011CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2A37F4C4FDCFA73011CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		2A37F4C5FDCFA73011CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		32DBCF750370BD2300C91783 /* QTVOD.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTVOD.pch; sourceTree = "<group>"; };
+		8D15AC360486D014006FF6A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8D15AC370486D014006FF6A4 /* QTVOD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QTVOD.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C21B072E084378590012A8C7 /* BatchTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BatchTableView.h; sourceTree = "<group>"; };
+		C21B072F084378590012A8C7 /* BatchTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BatchTableView.m; sourceTree = "<group>"; };
+		C21B0876084386680012A8C7 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
+		C2EA010808422F6500BBB7B3 /* MAMovieExport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MAMovieExport.h; sourceTree = "<group>"; };
+		C2EA010908422F6500BBB7B3 /* MAMovieExport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MAMovieExport.m; sourceTree = "<group>"; };
+		C2F091F00840C88200249D8A /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
+		C2F093840840E3B400249D8A /* FullscreenFocusedWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FullscreenFocusedWindow.h; sourceTree = "<group>"; };
+		C2F093850840E3B400249D8A /* FullscreenFocusedWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FullscreenFocusedWindow.m; sourceTree = "<group>"; };
+		C2F094240840EC8500249D8A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		C2F0955A08412E0200249D8A /* QTVODosx.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = QTVODosx.icns; sourceTree = "<group>"; };
+		C2FFEF24084332E000AAB5DB /* BatchExportController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BatchExportController.h; sourceTree = "<group>"; };
+		C2FFEF25084332E000AAB5DB /* BatchExportController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BatchExportController.m; sourceTree = "<group>"; };
+		C2FFEF2D084337FF00AAB5DB /* ExportManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportManager.h; sourceTree = "<group>"; };
+		C2FFEF2E084337FF00AAB5DB /* ExportManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExportManager.m; sourceTree = "<group>"; };
+		C2FFF0650843483700AAB5DB /* NSString+QTMAAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+QTMAAdditions.h"; sourceTree = "<group>"; };
+		C2FFF0660843483700AAB5DB /* NSString+QTMAAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+QTMAAdditions.m"; sourceTree = "<group>"; };
+		D600722F0BF8A80400E68092 /* NSATextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSATextField.h; sourceTree = "<group>"; };
+		D60072300BF8A80400E68092 /* NSATextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSATextField.m; sourceTree = "<group>"; };
+		D604AFC3142782BB002B997A /* QTVOD.sdef */ = {isa = PBXFileReference; explicitFileType = text.xml; fileEncoding = 4; path = QTVOD.sdef; sourceTree = "<group>"; };
+		D6112D2E143265EB0076AA98 /* QTVOD-OSA-test.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "QTVOD-OSA-test.py"; sourceTree = "<group>"; };
+		D6112D2F143265EB0076AA98 /* ASTest.scpt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.scpt; path = ASTest.scpt; sourceTree = "<group>"; };
+		D62A609C1435B96600BFA81C /* QTVODScriptingSuite.scriptTerminology */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.scriptTerminology; name = QTVODScriptingSuite.scriptTerminology; path = "objc-appscript/QTVODScriptingSuite.scriptTerminology"; sourceTree = "<group>"; };
+		D62A609D1435B96600BFA81C /* QTVODScriptingSuite.scriptSuite */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.scriptSuite; name = QTVODScriptingSuite.scriptSuite; path = "objc-appscript/QTVODScriptingSuite.scriptSuite"; sourceTree = "<group>"; };
+		D62A609E1435B96600BFA81C /* QTVOD TerminologyScripting.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; name = "QTVOD TerminologyScripting.r"; path = "objc-appscript/QTVOD TerminologyScripting.r"; sourceTree = "<group>"; };
+		D62A609F1435B96600BFA81C /* QTVOD Terminology.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "QTVOD Terminology.m"; path = "objc-appscript/QTVOD Terminology.m"; sourceTree = "<group>"; };
+		D62A60A01435B96600BFA81C /* QTVOD Terminology.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "QTVOD Terminology.h"; path = "objc-appscript/QTVOD Terminology.h"; sourceTree = "<group>"; };
+		D63359041428D548007C36EE /* QTVODController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTVODController.h; sourceTree = "<group>"; };
+		D63359051428D548007C36EE /* QTVODController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTVODController.m; sourceTree = "<group>"; };
+		D6335B7C1428FBDB007C36EE /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = BatchExport.nib; sourceTree = "<group>"; };
+		D6335B7E1428FBDB007C36EE /* French */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = French; path = Credits.rtf; sourceTree = "<group>"; };
+		D6335B801428FBDB007C36EE /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = ExportManager.nib; sourceTree = "<group>"; };
+		D6335B821428FBDB007C36EE /* French */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = French; path = InfoPlist.strings; sourceTree = "<group>"; };
+		D6335B841428FBDB007C36EE /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = MainMenu.nib; sourceTree = "<group>"; };
+		D6335B861428FBDB007C36EE /* French */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = French; path = VDPreferences.xib; sourceTree = "<group>"; };
+		D6335B891428FBDB007C36EE /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = BatchExport.nib; sourceTree = "<group>"; };
+		D6335B8B1428FBDB007C36EE /* English */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = English; path = Credits.rtf; sourceTree = "<group>"; };
+		D6335B8D1428FBDB007C36EE /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ExportManager.nib; sourceTree = "<group>"; };
+		D6335B8F1428FBDB007C36EE /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = InfoPlist.strings; sourceTree = "<group>"; };
+		D6335B911428FBDB007C36EE /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = MainMenu.nib; sourceTree = "<group>"; };
+		D6335B951428FBDB007C36EE /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = QTVODWindow.nib; sourceTree = "<group>"; };
+		D6335B971428FBDB007C36EE /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = VDPreferences.xib; sourceTree = "<group>"; };
+		D6335B9A1428FBDB007C36EE /* en_GB */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en_GB; path = BatchExport.nib; sourceTree = "<group>"; };
+		D6335B9C1428FBDB007C36EE /* en_GB */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en_GB; path = Credits.rtf; sourceTree = "<group>"; };
+		D6335B9E1428FBDB007C36EE /* en_GB */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en_GB; path = ExportManager.nib; sourceTree = "<group>"; };
+		D6335BA01428FBDB007C36EE /* en_GB */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en_GB; path = InfoPlist.strings; sourceTree = "<group>"; };
+		D6335BA21428FBDB007C36EE /* en_GB */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en_GB; path = MainMenu.nib; sourceTree = "<group>"; };
+		D651F5C714168965007169F9 /* QTVOD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTVOD.h; sourceTree = "<group>"; };
+		D651F5C814168965007169F9 /* QTVOD.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = QTVOD.m; sourceTree = "<group>"; };
+		D66006091420C16A001A262C /* make_archive.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = make_archive.sh; path = ../make_archive.sh; sourceTree = SOURCE_ROOT; };
+		D6604224141F566C0011DBC6 /* QTilsM2.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.mod; lineEnding = 2; name = QTilsM2.mod; path = ../QTils/Mod2/mod/QTilsM2.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D6604225141F566C0011DBC6 /* POSIXm2.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.mod; lineEnding = 2; name = POSIXm2.mod; path = ../QTils/Mod2/mod/POSIXm2.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D6604226141F566C0011DBC6 /* QTVODm2.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.mod; lineEnding = 2; name = QTVODm2.mod; path = ../QTils/Mod2/mod/QTVODm2.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D6604227141F566C0011DBC6 /* QTVODcomm.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.mod; lineEnding = 2; name = QTVODcomm.mod; path = ../QTils/Mod2/mod/QTVODcomm.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D6604228141F566C0011DBC6 /* QTilsM2.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; lineEnding = 2; name = QTilsM2.def; path = ../QTils/Mod2/def/QTilsM2.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D6604229141F566C0011DBC6 /* POSIXm2.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; lineEnding = 2; name = POSIXm2.def; path = ../QTils/Mod2/def/POSIXm2.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D660422A141F566C0011DBC6 /* QTVODcomm.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; lineEnding = 2; name = QTVODcomm.def; path = ../QTils/Mod2/def/QTVODcomm.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D660422B141F566C0011DBC6 /* QTVODlib.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; lineEnding = 2; name = QTVODlib.def; path = ../QTils/Mod2/def/QTVODlib.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D660422C141F567C0011DBC6 /* QTVODlib.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.mod; lineEnding = 2; name = QTVODlib.mod; path = ../QTils/Mod2/mod/QTVODlib.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D664B4281421485D00DBE6CD /* Help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Help; sourceTree = "<group>"; };
+		D676F0210BC419C8008693F8 /* QTAMovieView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTAMovieView.h; sourceTree = "<group>"; };
+		D676F0220BC419C8008693F8 /* QTAMovieView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTAMovieView.m; sourceTree = "<group>"; };
+		D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "QTMovieSink-106.xcodeproj"; path = "../QTMovieSink-106.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		D68F873D142B3F8B00840E75 /* QTVODController-OSA-xgraph.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "QTVODController-OSA-xgraph.py"; sourceTree = "<group>"; };
+		D68FAFAD1422033B003CB551 /* VDPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VDPreferences.m; sourceTree = "<group>"; };
+		D68FAFAE1422033B003CB551 /* VDPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VDPreferences.h; sourceTree = "<group>"; };
+		D6C82ACF142A3DC40081E4B2 /* QTAEMConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTAEMConstants.h; sourceTree = "<group>"; };
+		D6C82AD0142A3DC40081E4B2 /* QTApplicationGlue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTApplicationGlue.h; sourceTree = "<group>"; };
+		D6C82AD1142A3DC40081E4B2 /* QTApplicationGlue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTApplicationGlue.m; sourceTree = "<group>"; };
+		D6C82AD2142A3DC40081E4B2 /* QTCommandGlue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTCommandGlue.h; sourceTree = "<group>"; };
+		D6C82AD3142A3DC40081E4B2 /* QTCommandGlue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTCommandGlue.m; sourceTree = "<group>"; };
+		D6C82AD4142A3DC40081E4B2 /* QTConstantGlue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTConstantGlue.h; sourceTree = "<group>"; };
+		D6C82AD5142A3DC40081E4B2 /* QTConstantGlue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTConstantGlue.m; sourceTree = "<group>"; };
+		D6C82AD6142A3DC40081E4B2 /* QTGlue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTGlue.h; sourceTree = "<group>"; };
+		D6C82AD7142A3DC40081E4B2 /* QTReferenceGlue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTReferenceGlue.h; sourceTree = "<group>"; };
+		D6C82AD8142A3DC40081E4B2 /* QTReferenceGlue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTReferenceGlue.m; sourceTree = "<group>"; };
+		D6C82AD9142A3DC40081E4B2 /* QTReferenceRendererGlue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTReferenceRendererGlue.h; sourceTree = "<group>"; };
+		D6C82ADA142A3DC40081E4B2 /* QTReferenceRendererGlue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTReferenceRendererGlue.m; sourceTree = "<group>"; };
+		D6D69A6314278E9400FFB77C /* QTVOD.scriptSuite */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = QTVOD.scriptSuite; sourceTree = "<group>"; };
+		D6E9CDFC1549EEB000F5F828 /* test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test; sourceTree = BUILT_PRODUCTS_DIR; };
+		D6E9CE031549EF2300F5F828 /* test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = test.m; sourceTree = "<group>"; };
+		D6E9CE141549F1B500F5F828 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
+		D6E9CE521549F5A000F5F828 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D15AC330486D014006FF6A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D67ACEE714161FCC00E99EA2 /* QTils-emb.framework in Frameworks */,
+				8D15AC340486D014006FF6A4 /* Cocoa.framework in Frameworks */,
+				C2F091F10840C88200249D8A /* QTKit.framework in Frameworks */,
+				C2F094250840EC8500249D8A /* Carbon.framework in Frameworks */,
+				C21B0877084386680012A8C7 /* QuickTime.framework in Frameworks */,
+				D604AEF21427802C002B997A /* AppKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6E9CDFA1549EEB000F5F828 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D6E9CE151549F1B500F5F828 /* QTKit.framework in Frameworks */,
+				D6E9CE531549F5A000F5F828 /* QuickTime.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1058C7A6FEA54F5311CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C21B0876084386680012A8C7 /* QuickTime.framework */,
+				C2F094240840EC8500249D8A /* Carbon.framework */,
+				C2F091F00840C88200249D8A /* QTKit.framework */,
+				1058C7A7FEA54F5311CA2CBB /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7A8FEA54F5311CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2A37F4C4FDCFA73011CA2CEA /* AppKit.framework */,
+				2A37F4C5FDCFA73011CA2CEA /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FB0FE9D524F11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D15AC370486D014006FF6A4 /* QTVOD.app */,
+				D6E9CDFC1549EEB000F5F828 /* test */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2A37F4AAFDCFA73011CA2CEA /* QTVODosx */ = {
+			isa = PBXGroup;
+			children = (
+				D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */,
+				D6604223141F56260011DBC6 /* QTVODm2 */,
+				D62A609B1435B93E00BFA81C /* AppleScript (external) */,
+				D651F56314167C2E007169F9 /* Headers */,
+				2A37F4ABFDCFA73011CA2CEA /* Source */,
+				2A37F4AFFDCFA73011CA2CEA /* Other Sources */,
+				2A37F4B8FDCFA73011CA2CEA /* Resources */,
+				D66006091420C16A001A262C /* make_archive.sh */,
+				2A37F4C3FDCFA73011CA2CEA /* Frameworks */,
+				19C28FB0FE9D524F11CA2CBB /* Products */,
+				D6E9CE141549F1B500F5F828 /* QTKit.framework */,
+				D6E9CE521549F5A000F5F828 /* QuickTime.framework */,
+			);
+			name = QTVODosx;
+			sourceTree = "<group>";
+		};
+		2A37F4ABFDCFA73011CA2CEA /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				D676F0220BC419C8008693F8 /* QTAMovieView.m */,
+				C2FFEF25084332E000AAB5DB /* BatchExportController.m */,
+				C2F093850840E3B400249D8A /* FullscreenFocusedWindow.m */,
+				C2FFEF2E084337FF00AAB5DB /* ExportManager.m */,
+				C2EA010908422F6500BBB7B3 /* MAMovieExport.m */,
+				2A37F4ACFDCFA73011CA2CEA /* QTVODWindow.m */,
+				C2FFF0660843483700AAB5DB /* NSString+QTMAAdditions.m */,
+				C21B072F084378590012A8C7 /* BatchTableView.m */,
+				D60072300BF8A80400E68092 /* NSATextField.m */,
+				2A37F4B0FDCFA73011CA2CEA /* main.m */,
+				D651F5C814168965007169F9 /* QTVOD.m */,
+				D63359051428D548007C36EE /* QTVODController.m */,
+				D68FAFAD1422033B003CB551 /* VDPreferences.m */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		2A37F4AFFDCFA73011CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				D6112D2E143265EB0076AA98 /* QTVOD-OSA-test.py */,
+				D6112D2F143265EB0076AA98 /* ASTest.scpt */,
+				D68F873D142B3F8B00840E75 /* QTVODController-OSA-xgraph.py */,
+				32DBCF750370BD2300C91783 /* QTVOD.pch */,
+				D6E9CE031549EF2300F5F828 /* test.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		2A37F4B8FDCFA73011CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D6335B7A1428FBDB007C36EE /* French.lproj */,
+				D6335B871428FBDB007C36EE /* English.lproj */,
+				D6335B981428FBDB007C36EE /* en_GB.lproj */,
+				D664B4281421485D00DBE6CD /* Help */,
+				C2F0955A08412E0200249D8A /* QTVODosx.icns */,
+				8D15AC360486D014006FF6A4 /* Info.plist */,
+				D604AFC3142782BB002B997A /* QTVOD.sdef */,
+				D6D69A6314278E9400FFB77C /* QTVOD.scriptSuite */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		2A37F4C3FDCFA73011CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A6FEA54F5311CA2CBB /* Linked Frameworks */,
+				1058C7A8FEA54F5311CA2CBB /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D62A609B1435B93E00BFA81C /* AppleScript (external) */ = {
+			isa = PBXGroup;
+			children = (
+				D62A609C1435B96600BFA81C /* QTVODScriptingSuite.scriptTerminology */,
+				D62A609D1435B96600BFA81C /* QTVODScriptingSuite.scriptSuite */,
+				D62A609E1435B96600BFA81C /* QTVOD TerminologyScripting.r */,
+				D62A609F1435B96600BFA81C /* QTVOD Terminology.m */,
+				D62A60A01435B96600BFA81C /* QTVOD Terminology.h */,
+				D6C82ACE142A3DC40081E4B2 /* QTGlue */,
+			);
+			name = "AppleScript (external)";
+			sourceTree = "<group>";
+		};
+		D6335B7A1428FBDB007C36EE /* French.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				D6335B7B1428FBDB007C36EE /* BatchExport.nib */,
+				D6335B7D1428FBDB007C36EE /* Credits.rtf */,
+				D6335B7F1428FBDB007C36EE /* ExportManager.nib */,
+				D6335B811428FBDB007C36EE /* InfoPlist.strings */,
+				D6335B831428FBDB007C36EE /* MainMenu.nib */,
+				D6335B851428FBDB007C36EE /* VDPreferences.xib */,
+			);
+			path = French.lproj;
+			sourceTree = "<group>";
+		};
+		D6335B871428FBDB007C36EE /* English.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				D6335B881428FBDB007C36EE /* BatchExport.nib */,
+				D6335B8A1428FBDB007C36EE /* Credits.rtf */,
+				D6335B8C1428FBDB007C36EE /* ExportManager.nib */,
+				D6335B8E1428FBDB007C36EE /* InfoPlist.strings */,
+				D6335B901428FBDB007C36EE /* MainMenu.nib */,
+				D6335B941428FBDB007C36EE /* QTVODWindow.nib */,
+				D6335B961428FBDB007C36EE /* VDPreferences.xib */,
+			);
+			path = English.lproj;
+			sourceTree = "<group>";
+		};
+		D6335B981428FBDB007C36EE /* en_GB.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				D6335B991428FBDB007C36EE /* BatchExport.nib */,
+				D6335B9B1428FBDB007C36EE /* Credits.rtf */,
+				D6335B9D1428FBDB007C36EE /* ExportManager.nib */,
+				D6335B9F1428FBDB007C36EE /* InfoPlist.strings */,
+				D6335BA11428FBDB007C36EE /* MainMenu.nib */,
+			);
+			path = en_GB.lproj;
+			sourceTree = "<group>";
+		};
+		D651F56314167C2E007169F9 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				D676F0210BC419C8008693F8 /* QTAMovieView.h */,
+				C2FFEF24084332E000AAB5DB /* BatchExportController.h */,
+				C2F093840840E3B400249D8A /* FullscreenFocusedWindow.h */,
+				C2FFEF2D084337FF00AAB5DB /* ExportManager.h */,
+				C2EA010808422F6500BBB7B3 /* MAMovieExport.h */,
+				2A37F4AEFDCFA73011CA2CEA /* QTVODWindow.h */,
+				C2FFF0650843483700AAB5DB /* NSString+QTMAAdditions.h */,
+				C21B072E084378590012A8C7 /* BatchTableView.h */,
+				D600722F0BF8A80400E68092 /* NSATextField.h */,
+				D651F5C714168965007169F9 /* QTVOD.h */,
+				D63359041428D548007C36EE /* QTVODController.h */,
+				D68FAFAE1422033B003CB551 /* VDPreferences.h */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		D6604223141F56260011DBC6 /* QTVODm2 */ = {
+			isa = PBXGroup;
+			children = (
+				D6604229141F566C0011DBC6 /* POSIXm2.def */,
+				D6604228141F566C0011DBC6 /* QTilsM2.def */,
+				D660422B141F566C0011DBC6 /* QTVODlib.def */,
+				D660422A141F566C0011DBC6 /* QTVODcomm.def */,
+				D6604225141F566C0011DBC6 /* POSIXm2.mod */,
+				D6604224141F566C0011DBC6 /* QTilsM2.mod */,
+				D660422C141F567C0011DBC6 /* QTVODlib.mod */,
+				D6604227141F566C0011DBC6 /* QTVODcomm.mod */,
+				D6604226141F566C0011DBC6 /* QTVODm2.mod */,
+			);
+			name = QTVODm2;
+			sourceTree = "<group>";
+		};
+		D67ACDA1141610A500E99EA2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D67ACDB7141610A500E99EA2 /* QTils.framework */,
+				D67ACEDE14161FA600E99EA2 /* QTils-emb.framework */,
+				D67ACDB9141610A500E99EA2 /* QTMovieSink.framework */,
+				D67ACDBB141610A500E99EA2 /* libQTMovieSink.dylib */,
+				D67ACDBD141610A500E99EA2 /* QTMovieWindowTest */,
+				D67ACDBF141610A500E99EA2 /* QTMovieWindowTest.app */,
+				D67ACDC1141610A500E99EA2 /* qtest2r */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D6C82ACE142A3DC40081E4B2 /* QTGlue */ = {
+			isa = PBXGroup;
+			children = (
+				D6C82ACF142A3DC40081E4B2 /* QTAEMConstants.h */,
+				D6C82AD0142A3DC40081E4B2 /* QTApplicationGlue.h */,
+				D6C82AD1142A3DC40081E4B2 /* QTApplicationGlue.m */,
+				D6C82AD2142A3DC40081E4B2 /* QTCommandGlue.h */,
+				D6C82AD3142A3DC40081E4B2 /* QTCommandGlue.m */,
+				D6C82AD4142A3DC40081E4B2 /* QTConstantGlue.h */,
+				D6C82AD5142A3DC40081E4B2 /* QTConstantGlue.m */,
+				D6C82AD6142A3DC40081E4B2 /* QTGlue.h */,
+				D6C82AD7142A3DC40081E4B2 /* QTReferenceGlue.h */,
+				D6C82AD8142A3DC40081E4B2 /* QTReferenceGlue.m */,
+				D6C82AD9142A3DC40081E4B2 /* QTReferenceRendererGlue.h */,
+				D6C82ADA142A3DC40081E4B2 /* QTReferenceRendererGlue.m */,
+			);
+			name = QTGlue;
+			path = "objc-appscript/glues/QTGlue";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8D15AC270486D014006FF6A4 /* QTVODosx */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C28032FF088E2F2900BF3877 /* Build configuration list for PBXNativeTarget "QTVODosx" */;
+			buildPhases = (
+				8D15AC2B0486D014006FF6A4 /* Resources */,
+				8D15AC300486D014006FF6A4 /* Sources */,
+				8D15AC330486D014006FF6A4 /* Frameworks */,
+				D67ACDF8141611C200E99EA2 /* Frameworks */,
+			);
+			buildRules = (
+				C281EA6E095C4BF300374AB5 /* PBXBuildRule */,
+			);
+			dependencies = (
+				D67ACEE614161FB500E99EA2 /* PBXTargetDependency */,
+			);
+			name = QTVODosx;
+			productInstallPath = "$(HOME)/Applications";
+			productName = QTVODosx;
+			productReference = 8D15AC370486D014006FF6A4 /* QTVOD.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D6E9CDFB1549EEB000F5F828 /* test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D6E9CE021549EED300F5F828 /* Build configuration list for PBXNativeTarget "test" */;
+			buildPhases = (
+				D6E9CDF91549EEB000F5F828 /* Sources */,
+				D6E9CDFA1549EEB000F5F828 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = test;
+			productName = test;
+			productReference = D6E9CDFC1549EEB000F5F828 /* test */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2A37F4A9FDCFA73011CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+			};
+			buildConfigurationList = C2803303088E2F2900BF3877 /* Build configuration list for PBXProject "QTVODosx" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+				en_GB,
+				fr_FR,
+			);
+			mainGroup = 2A37F4AAFDCFA73011CA2CEA /* QTVODosx */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = D67ACDA1141610A500E99EA2 /* Products */;
+					ProjectRef = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				8D15AC270486D014006FF6A4 /* QTVODosx */,
+				D6E9CDFB1549EEB000F5F828 /* test */,
+				D66005FF1420C10A001A262C /* Archive */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		D67ACDB7141610A500E99EA2 /* QTils.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = QTils.framework;
+			remoteRef = D67ACDB6141610A500E99EA2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D67ACDB9141610A500E99EA2 /* QTMovieSink.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = QTMovieSink.framework;
+			remoteRef = D67ACDB8141610A500E99EA2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D67ACDBB141610A500E99EA2 /* libQTMovieSink.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libQTMovieSink.dylib;
+			remoteRef = D67ACDBA141610A500E99EA2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D67ACDBD141610A500E99EA2 /* QTMovieWindowTest */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = QTMovieWindowTest;
+			remoteRef = D67ACDBC141610A500E99EA2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D67ACDBF141610A500E99EA2 /* QTMovieWindowTest.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = QTMovieWindowTest.app;
+			remoteRef = D67ACDBE141610A500E99EA2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D67ACDC1141610A500E99EA2 /* qtest2r */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = qtest2r;
+			remoteRef = D67ACDC0141610A500E99EA2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D67ACEDE14161FA600E99EA2 /* QTils-emb.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = "QTils-emb.framework";
+			remoteRef = D67ACEDD14161FA600E99EA2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D15AC2B0486D014006FF6A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2F0955B08412E0200249D8A /* QTVODosx.icns in Resources */,
+				D664B42D1421485D00DBE6CD /* Help in Resources */,
+				D604AFC4142782BB002B997A /* QTVOD.sdef in Resources */,
+				D6D69A6414278E9400FFB77C /* QTVOD.scriptSuite in Resources */,
+				D6335BA31428FBDB007C36EE /* BatchExport.nib in Resources */,
+				D6335BA41428FBDB007C36EE /* Credits.rtf in Resources */,
+				D6335BA51428FBDB007C36EE /* ExportManager.nib in Resources */,
+				D6335BA61428FBDB007C36EE /* InfoPlist.strings in Resources */,
+				D6335BA71428FBDB007C36EE /* MainMenu.nib in Resources */,
+				D6335BA81428FBDB007C36EE /* VDPreferences.xib in Resources */,
+				D6335BA91428FBDB007C36EE /* BatchExport.nib in Resources */,
+				D6335BAA1428FBDB007C36EE /* Credits.rtf in Resources */,
+				D6335BAB1428FBDB007C36EE /* ExportManager.nib in Resources */,
+				D6335BAC1428FBDB007C36EE /* InfoPlist.strings in Resources */,
+				D6335BAD1428FBDB007C36EE /* MainMenu.nib in Resources */,
+				D6335BAF1428FBDB007C36EE /* QTVODWindow.nib in Resources */,
+				D6335BB11428FBDB007C36EE /* BatchExport.nib in Resources */,
+				D6335BB21428FBDB007C36EE /* Credits.rtf in Resources */,
+				D6335BB31428FBDB007C36EE /* ExportManager.nib in Resources */,
+				D6335BB41428FBDB007C36EE /* InfoPlist.strings in Resources */,
+				D6335BB51428FBDB007C36EE /* MainMenu.nib in Resources */,
+				D62A62971436170F00BFA81C /* VDPreferences.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D66006051420C131001A262C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd ${PROJECT_DIR}/..\npwd\nexec ./make_archive.sh";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D15AC300486D014006FF6A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D15AC310486D014006FF6A4 /* QTVODWindow.m in Sources */,
+				8D15AC320486D014006FF6A4 /* main.m in Sources */,
+				C2F093860840E3B400249D8A /* FullscreenFocusedWindow.m in Sources */,
+				C2EA010A08422F6500BBB7B3 /* MAMovieExport.m in Sources */,
+				C2FFEF26084332E000AAB5DB /* BatchExportController.m in Sources */,
+				C2FFEF2F084337FF00AAB5DB /* ExportManager.m in Sources */,
+				C2FFF0670843483700AAB5DB /* NSString+QTMAAdditions.m in Sources */,
+				C21B0730084378590012A8C7 /* BatchTableView.m in Sources */,
+				D676F0230BC419C8008693F8 /* QTAMovieView.m in Sources */,
+				D60072310BF8A80400E68092 /* NSATextField.m in Sources */,
+				D651F5C914168965007169F9 /* QTVOD.m in Sources */,
+				D68FAFAF1422033B003CB551 /* VDPreferences.m in Sources */,
+				D63359061428D548007C36EE /* QTVODController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6E9CDF91549EEB000F5F828 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D6E9CE041549EF2300F5F828 /* test.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D67ACEE614161FB500E99EA2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "QTils-emb.framework";
+			targetProxy = D67ACEE514161FB500E99EA2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		D6335B7B1428FBDB007C36EE /* BatchExport.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B7C1428FBDB007C36EE /* French */,
+			);
+			name = BatchExport.nib;
+			sourceTree = "<group>";
+		};
+		D6335B7D1428FBDB007C36EE /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B7E1428FBDB007C36EE /* French */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		D6335B7F1428FBDB007C36EE /* ExportManager.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B801428FBDB007C36EE /* French */,
+			);
+			name = ExportManager.nib;
+			sourceTree = "<group>";
+		};
+		D6335B811428FBDB007C36EE /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B821428FBDB007C36EE /* French */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		D6335B831428FBDB007C36EE /* MainMenu.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B841428FBDB007C36EE /* French */,
+			);
+			name = MainMenu.nib;
+			sourceTree = "<group>";
+		};
+		D6335B851428FBDB007C36EE /* VDPreferences.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B861428FBDB007C36EE /* French */,
+			);
+			name = VDPreferences.xib;
+			sourceTree = "<group>";
+		};
+		D6335B881428FBDB007C36EE /* BatchExport.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B891428FBDB007C36EE /* English */,
+			);
+			name = BatchExport.nib;
+			sourceTree = "<group>";
+		};
+		D6335B8A1428FBDB007C36EE /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B8B1428FBDB007C36EE /* English */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		D6335B8C1428FBDB007C36EE /* ExportManager.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B8D1428FBDB007C36EE /* English */,
+			);
+			name = ExportManager.nib;
+			sourceTree = "<group>";
+		};
+		D6335B8E1428FBDB007C36EE /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B8F1428FBDB007C36EE /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		D6335B901428FBDB007C36EE /* MainMenu.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B911428FBDB007C36EE /* English */,
+			);
+			name = MainMenu.nib;
+			sourceTree = "<group>";
+		};
+		D6335B941428FBDB007C36EE /* QTVODWindow.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B951428FBDB007C36EE /* English */,
+			);
+			name = QTVODWindow.nib;
+			sourceTree = "<group>";
+		};
+		D6335B961428FBDB007C36EE /* VDPreferences.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B971428FBDB007C36EE /* English */,
+			);
+			name = VDPreferences.xib;
+			sourceTree = "<group>";
+		};
+		D6335B991428FBDB007C36EE /* BatchExport.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B9A1428FBDB007C36EE /* en_GB */,
+			);
+			name = BatchExport.nib;
+			sourceTree = "<group>";
+		};
+		D6335B9B1428FBDB007C36EE /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B9C1428FBDB007C36EE /* en_GB */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		D6335B9D1428FBDB007C36EE /* ExportManager.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335B9E1428FBDB007C36EE /* en_GB */,
+			);
+			name = ExportManager.nib;
+			sourceTree = "<group>";
+		};
+		D6335B9F1428FBDB007C36EE /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335BA01428FBDB007C36EE /* en_GB */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		D6335BA11428FBDB007C36EE /* MainMenu.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D6335BA21428FBDB007C36EE /* en_GB */,
+			);
+			name = MainMenu.nib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C2803300088E2F2900BF3877 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = QTVOD.pch;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				PREBINDING = NO;
+				PRODUCT_NAME = QTVOD;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		C2803301088E2F2900BF3877 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_ENABLE_PASCAL_STRINGS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = QTVOD.pch;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ..;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LLVM_LTO = NO;
+				OTHER_CFLAGS = "-ftracer";
+				OTHER_LDFLAGS = "-bind_at_load";
+				PREBINDING = NO;
+				PRODUCT_NAME = QTVOD;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		C2803302088E2F2900BF3877 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = QTVOD.pch;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				PRODUCT_NAME = QTVOD;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Default;
+		};
+		C2803304088E2F2900BF3877 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_STRICT_ALIASING = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				IBC_STRIP_NIBS = NO;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Debug;
+		};
+		C2803305088E2F2900BF3877 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_ALTIVEC_EXTENSIONS = NO;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_ENABLE_PASCAL_STRINGS = NO;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_FAST_OBJC_DISPATCH = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = "";
+				GCC_STRICT_ALIASING = YES;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				IBC_STRIP_NIBS = NO;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_CFLAGS = (
+					"-ftracer",
+					"-march=core2",
+				);
+				OTHER_LDFLAGS = "-bind_at_load";
+				SDKROOT = macosx10.6;
+				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_STYLE = debugging;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Deployment;
+		};
+		C2803306088E2F2900BF3877 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Default;
+		};
+		D66006001420C10A001A262C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = Archive;
+			};
+			name = Debug;
+		};
+		D66006011420C10A001A262C /* Development Shadow */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = Archive;
+			};
+			name = "Development Shadow";
+		};
+		D66006021420C10A001A262C /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Archive;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		D66006031420C10A001A262C /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = Archive;
+			};
+			name = Default;
+		};
+		D6E9CDFE1549EEB000F5F828 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = test;
+			};
+			name = Debug;
+		};
+		D6E9CDFF1549EEB000F5F828 /* Development Shadow */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = test;
+			};
+			name = "Development Shadow";
+		};
+		D6E9CE001549EEB000F5F828 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = test;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		D6E9CE011549EEB000F5F828 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = test;
+			};
+			name = Default;
+		};
+		D6F7019C1124745D00A91D05 /* Development Shadow */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = QTVOD.pch;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				PREBINDING = NO;
+				PRODUCT_NAME = QTVOD;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = "Development Shadow";
+		};
+		D6F7019D1124745D00A91D05 /* Development Shadow */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DEBUG,
+					SHADOW,
+				);
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = "Development Shadow";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C28032FF088E2F2900BF3877 /* Build configuration list for PBXNativeTarget "QTVODosx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C2803300088E2F2900BF3877 /* Debug */,
+				D6F7019C1124745D00A91D05 /* Development Shadow */,
+				C2803301088E2F2900BF3877 /* Deployment */,
+				C2803302088E2F2900BF3877 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		C2803303088E2F2900BF3877 /* Build configuration list for PBXProject "QTVODosx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C2803304088E2F2900BF3877 /* Debug */,
+				D6F7019D1124745D00A91D05 /* Development Shadow */,
+				C2803305088E2F2900BF3877 /* Deployment */,
+				C2803306088E2F2900BF3877 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		D660060A1420C16A001A262C /* Build configuration list for PBXAggregateTarget "Archive" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D66006001420C10A001A262C /* Debug */,
+				D66006011420C10A001A262C /* Development Shadow */,
+				D66006021420C10A001A262C /* Deployment */,
+				D66006031420C10A001A262C /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		D6E9CE021549EED300F5F828 /* Build configuration list for PBXNativeTarget "test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6E9CDFE1549EEB000F5F828 /* Debug */,
+				D6E9CDFF1549EEB000F5F828 /* Development Shadow */,
+				D6E9CE001549EEB000F5F828 /* Deployment */,
+				D6E9CE011549EEB000F5F828 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2A37F4A9FDCFA73011CA2CEA /* Project object */;
+}

@@ -1,0 +1,8 @@
+//
+// Prefix header for all source files of the 'QTAmateur -> QTVOD' target in the 'QTVODosx' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+	#import <QTKit/QTKit.h>
+#endif

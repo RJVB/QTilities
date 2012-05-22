@@ -1,0 +1,1263 @@
+// !$*UTF8*$!
+{
+	2A37F4A9FDCFA73011CA2CEA /* Project object */ = {
+		activeBuildConfigurationName = Deployment;
+		activeExecutable = D676EF350BC3BE4A008693F8 /* QTVODosx */;
+		activeTarget = 8D15AC270486D014006FF6A4 /* QTVODosx */;
+		addToTargets = (
+			D6E9CDFB1549EEB000F5F828 /* test */,
+		);
+		breakpoints = (
+			D60072010BF8A33900E68092 /* QTVODWindow.m:2495 */,
+			D67AD37814164BCF00E99EA2 /* main.m:113 */,
+			D67AD5C614165F5800E99EA2 /* QTMovieWindowH_MCActionHandler */,
+			D6604641141FC0FB0011DBC6 /* QTVOD.m:178 */,
+			D660058B1420BAA0001A262C /* QTVODWindow.m:717 */,
+			D6E9C2B41420FD8300227E8B /* CGErrorBreakpoint */,
+			D68FB30914224952003CB551 /* PCLogController.mm:221 */,
+			D6013EFC142892FB0070325B /* __NSAutoreleaseFreedObject */,
+			D63358D01428D30D007C36EE /* -[NSDocumentController openDocumentWithContentsOfURL:display:error:] */,
+			D63358D21428D33E007C36EE /* -[NSDocumentController noteNewRecentDocument:] */,
+			D63359071428D5A4007C36EE /* QTVODController.m:42 */,
+			D63359091428D5A7007C36EE /* QTVODController.m:27 */,
+			D63359241428D745007C36EE /* QTVODController.m:16 */,
+			D633598A1428DD23007C36EE /* QTVODController.m:34 */,
+			D6C82A85142A3A4F0081E4B2 /* QTVODWindow.m:253 */,
+			D699F516142C98CF00589F3B /* QTVOD.m:401 */,
+			D699F518142C98D100589F3B /* QTVOD.m:404 */,
+			D6BC4F9A14334D7B00CF5376 /* QTVOD.m:1082 */,
+			D6BC4F9C14334D7D00CF5376 /* QTVOD.m:1098 */,
+			D66ECC931434846800D94298 /* QTVOD.m:317 */,
+			D66ECCC71434876500D94298 /* QTVOD.m:334 */,
+			D62A61091435BC4B00BFA81C /* BatchExportController.m:94 */,
+			D616615D14812AE300634507 /* QTVODWindow.m:1551 */,
+			D61EEFD514853CF300D479D9 /* QTVODWindow.m:2580 */,
+			D6226F33149DEF5500CA271D /* PCLogController.mm:178 */,
+			D6226F40149E05D400CA271D /* PCLogController.mm:314 */,
+			D6226F75149EA7E600CA271D /* PCLogController.mm:162 */,
+			D6D41E0E149F3C4A000A47D7 /* PCLogController.mm:168 */,
+			D669BC62154BEE23006D8F26 /* test.m:92 */,
+		);
+		codeSenseManager = D676EF480BC3BE6A008693F8 /* Code sense */;
+		executables = (
+			D676EF350BC3BE4A008693F8 /* QTVODosx */,
+			D6E9CDFD1549EEB000F5F828 /* test */,
+		);
+		expressions = (
+		);
+		perUserDictionary = {
+			"PBXConfiguration.PBXBreakpointsDataSource.v1:1CA1AED706398EBD00589147" = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXBreakpointsDataSource_BreakpointID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					20,
+					210,
+					20,
+					110,
+					109,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXBreakpointsDataSource_ActionID,
+					PBXBreakpointsDataSource_TypeID,
+					PBXBreakpointsDataSource_BreakpointID,
+					PBXBreakpointsDataSource_UseID,
+					PBXBreakpointsDataSource_LocationID,
+					PBXBreakpointsDataSource_ConditionID,
+					PBXBreakpointsDataSource_ContinueID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXErrorsWarningsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXErrorsWarningsDataSource_LocationID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					300,
+					84.02148,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXErrorsWarningsDataSource_TypeID,
+					PBXErrorsWarningsDataSource_MessageID,
+					PBXErrorsWarningsDataSource_LocationID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXExecutablesDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXExecutablesDataSource_NameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					22,
+					300,
+					72,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXExecutablesDataSource_ActiveFlagID,
+					PBXExecutablesDataSource_NameID,
+					PBXExecutablesDataSource_CommentsID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					189,
+					20,
+					43,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFindDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFindDataSource_LocationID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					200,
+					217,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFindDataSource_MessageID,
+					PBXFindDataSource_LocationID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					149,
+					60,
+					20,
+					43,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 359390824;
+			PBXWorkspaceStateSaveDate = 359390824;
+		};
+		perUserProjectItems = {
+			D6E120E3156BDB3900CEC33F /* PBXTextBookmark */ = D6E120E3156BDB3900CEC33F /* PBXTextBookmark */;
+			D6E121A8156BDEA900CEC33F /* PBXTextBookmark */ = D6E121A8156BDEA900CEC33F /* PBXTextBookmark */;
+		};
+		sourceControlManager = D676EF470BC3BE6A008693F8 /* Source Control */;
+		userBuildSettings = {
+			OBJROOT = /Volumes/Debian/Users/bertin/work/src/MacOSX/QTilities/build;
+			SYMROOT = /Volumes/Debian/Users/bertin/work/src/MacOSX/QTilities/build;
+		};
+	};
+	2A37F4ACFDCFA73011CA2CEA /* QTVODWindow.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {852, 36764}}";
+			sepNavSelRange = "{70722, 11}";
+			sepNavVisRange = "{60931, 1450}";
+			sepNavVisRect = "{{0, 19307}, {809, 739}}";
+			sepNavWindowFrame = "{{635, 41}, {854, 778}}";
+		};
+	};
+	2A37F4AEFDCFA73011CA2CEA /* QTVODWindow.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {900, 2926}}";
+			sepNavSelRange = "{5009, 0}";
+			sepNavVisRange = "{0, 1082}";
+			sepNavVisRect = "{{0, 0}, {809, 739}}";
+			sepNavWindowFrame = "{{-985, 250}, {854, 800}}";
+		};
+	};
+	2A37F4B0FDCFA73011CA2CEA /* main.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1188, 1834}}";
+			sepNavSelRange = "{3149, 0}";
+			sepNavVisRange = "{2659, 547}";
+			sepNavVisRect = "{{0, 0}, {809, 860}}";
+			sepNavWindowFrame = "{{24, 0}, {854, 878}}";
+		};
+	};
+	32DBCF750370BD2300C91783 /* QTVOD.pch */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 284}}";
+			sepNavSelRange = "{92, 0}";
+			sepNavVisRange = "{0, 182}";
+			sepNavWindowFrame = "{{15, 0}, {755, 778}}";
+		};
+	};
+	8D15AC270486D014006FF6A4 /* QTVODosx */ = {
+		activeExec = 0;
+		executables = (
+			D676EF350BC3BE4A008693F8 /* QTVODosx */,
+		);
+	};
+	8D15AC360486D014006FF6A4 /* Info.plist */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {943, 3066}}";
+			sepNavSelRange = "{5606, 0}";
+			sepNavVisRect = "{{0, 2280}, {943, 786}}";
+			sepNavWindowFrame = "{{213, 0}, {988, 878}}";
+		};
+	};
+	C21B072E084378590012A8C7 /* BatchTableView.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 308}}";
+			sepNavSelRange = "{46, 0}";
+			sepNavVisRange = "{0, 341}";
+			sepNavVisRect = "{{0, 0}, {809, 860}}";
+			sepNavWindowFrame = "{{245, 10}, {854, 953}}";
+		};
+	};
+	C21B072F084378590012A8C7 /* BatchTableView.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 786}}";
+			sepNavSelRange = "{402, 18}";
+			sepNavVisRange = "{0, 562}";
+			sepNavWindowFrame = "{{15, 0}, {845, 878}}";
+		};
+	};
+	C2EA010808422F6500BBB7B3 /* MAMovieExport.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {834, 574}}";
+			sepNavSelRange = "{45, 0}";
+			sepNavVisRange = "{0, 687}";
+			sepNavVisRect = "{{0, 159}, {775, 284}}";
+			sepNavWindowFrame = "{{114, 0}, {854, 878}}";
+		};
+	};
+	C2EA010908422F6500BBB7B3 /* MAMovieExport.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1038, 2170}}";
+			sepNavSelRange = "{3571, 7}";
+			sepNavVisRange = "{2946, 723}";
+			sepNavVisRect = "{{0, 2105}, {775, 284}}";
+			sepNavWindowFrame = "{{11, 124}, {816, 878}}";
+		};
+	};
+	C2F093840840E3B400249D8A /* FullscreenFocusedWindow.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 284}}";
+			sepNavSelRange = "{55, 0}";
+			sepNavVisRange = "{0, 244}";
+			sepNavVisRect = "{{0, 0}, {809, 860}}";
+			sepNavWindowFrame = "{{130, 0}, {854, 878}}";
+		};
+	};
+	C2F093850840E3B400249D8A /* FullscreenFocusedWindow.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {822, 854}}";
+			sepNavSelRange = "{979, 0}";
+			sepNavVisRange = "{59, 1152}";
+			sepNavVisRect = "{{0, 0}, {809, 860}}";
+			sepNavWindowFrame = "{{207, 0}, {854, 878}}";
+		};
+	};
+	C2F0955A08412E0200249D8A /* QTVODosx.icns */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1752, 30072}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 671}";
+			sepNavWindowFrame = "{{15, 72}, {754, 925}}";
+		};
+	};
+	C2FFEF24084332E000AAB5DB /* BatchExportController.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {795, 786}}";
+			sepNavSelRange = "{323, 9}";
+			sepNavVisRange = "{0, 917}";
+			sepNavVisRect = "{{0, 0}, {809, 860}}";
+			sepNavWindowFrame = "{{742, 0}, {854, 878}}";
+		};
+	};
+	C2FFEF25084332E000AAB5DB /* BatchExportController.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {930, 4060}}";
+			sepNavSelRange = "{458, 12}";
+			sepNavVisRange = "{193, 424}";
+			sepNavWindowFrame = "{{75, 0}, {845, 878}}";
+		};
+	};
+	C2FFEF2D084337FF00AAB5DB /* ExportManager.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {795, 686}}";
+			sepNavSelRange = "{45, 0}";
+			sepNavVisRange = "{0, 1240}";
+			sepNavVisRect = "{{0, 119}, {448, 359}}";
+			sepNavWindowFrame = "{{176, 0}, {854, 778}}";
+		};
+	};
+	C2FFEF2E084337FF00AAB5DB /* ExportManager.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1092, 2506}}";
+			sepNavSelRange = "{4510, 11}";
+			sepNavVisRange = "{3131, 2133}";
+			sepNavVisRect = "{{0, 0}, {809, 860}}";
+			sepNavWindowFrame = "{{61, 0}, {854, 878}}";
+		};
+	};
+	C2FFF0650843483700AAB5DB /* NSString+QTMAAdditions.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 284}}";
+			sepNavSelRange = "{237, 22}";
+			sepNavVisRange = "{0, 282}";
+			sepNavVisRect = "{{0, 0}, {809, 860}}";
+			sepNavWindowFrame = "{{38, 75}, {854, 953}}";
+		};
+	};
+	C2FFF0660843483700AAB5DB /* NSString+QTMAAdditions.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 392}}";
+			sepNavSelRange = "{631, 0}";
+			sepNavVisRange = "{156, 513}";
+			sepNavVisRect = "{{0, 0}, {809, 860}}";
+			sepNavWindowFrame = "{{61, 178}, {854, 953}}";
+		};
+	};
+	D60072010BF8A33900E68092 /* QTVODWindow.m:2495 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 2A37F4ACFDCFA73011CA2CEA /* QTVODWindow.m */;
+		functionName = "QTActionCallBack()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 2495;
+		location = MyDocument.ob;
+		modificationTime = 357298142.341494;
+		originalNumberOfMultipleMatches = 0;
+		state = 2;
+	};
+	D600722F0BF8A80400E68092 /* NSATextField.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 308}}";
+			sepNavSelRange = "{44, 0}";
+			sepNavVisRange = "{0, 311}";
+			sepNavVisRect = "{{0, 0}, {611, 429}}";
+			sepNavWindowFrame = "{{54, 472}, {656, 522}}";
+		};
+	};
+	D60072300BF8A80400E68092 /* NSATextField.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 350}}";
+			sepNavSelRange = "{26, 9}";
+			sepNavVisRange = "{0, 340}";
+			sepNavVisRect = "{{0, 0}, {840, 594}}";
+			sepNavWindowFrame = "{{220, 50}, {885, 687}}";
+		};
+	};
+	D6013EFC142892FB0070325B /* __NSAutoreleaseFreedObject */ = {
+		isa = PBXSymbolicBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 1;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		hitCount = 0;
+		ignoreCount = 0;
+		location = CoreFoundation;
+		modificationTime = 357298142.342491;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+		symbolName = __NSAutoreleaseFreedObject;
+	};
+	D604AFC3142782BB002B997A /* QTVOD.sdef */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {2028, 2016}}";
+			sepNavSelRange = "{5176, 8}";
+			sepNavVisRange = "{4261, 3010}";
+			sepNavWindowFrame = "{{633, 0}, {845, 878}}";
+		};
+	};
+	D6112D2E143265EB0076AA98 /* QTVOD-OSA-test.py */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 881}}";
+			sepNavSelRange = "{522, 961}";
+			sepNavVisRange = "{0, 1483}";
+			sepNavWindowFrame = "{{184, 49}, {845, 973}}";
+		};
+	};
+	D616615D14812AE300634507 /* QTVODWindow.m:1551 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 2A37F4ACFDCFA73011CA2CEA /* QTVODWindow.m */;
+		functionName = "-handleReadDesignScriptCommand:";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 1551;
+		location = QTVOD;
+		modificationTime = 357298142.34202;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D61EEFD514853CF300D479D9 /* QTVODWindow.m:2580 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 2A37F4ACFDCFA73011CA2CEA /* QTVODWindow.m */;
+		functionName = "initialiser()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 2580;
+		location = QTVOD;
+		modificationTime = 357298142.3420329;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D6226F33149DEF5500CA271D /* PCLogController.mm:178 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D68FB30A14224952003CB551 /* PCLogController.mm */;
+		functionName = "-PCLogBGController";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 178;
+		location = LogControllerGCFW;
+		modificationTime = 357298142.342044;
+		originalNumberOfMultipleMatches = 1;
+		state = 0;
+	};
+	D6226F40149E05D400CA271D /* PCLogController.mm:314 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D68FB30A14224952003CB551 /* PCLogController.mm */;
+		functionName = "-dealloc";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 314;
+		location = LogControllerGCFW;
+		modificationTime = 357298142.342054;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D6226F75149EA7E600CA271D /* PCLogController.mm:162 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D68FB30A14224952003CB551 /* PCLogController.mm */;
+		functionName = "-PCLogBGController";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 162;
+		location = LogControllerGCFW;
+		modificationTime = 357298142.342063;
+		originalNumberOfMultipleMatches = 1;
+		state = 0;
+	};
+	D62A609D1435B96600BFA81C /* QTVODScriptingSuite.scriptSuite */ = {
+		uiCtxt = {
+			sepNavWindowFrame = "{{15, 145}, {750, 878}}";
+		};
+	};
+	D62A609F1435B96600BFA81C /* QTVOD Terminology.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 7112}}";
+			sepNavSelRange = "{583, 13}";
+			sepNavVisRange = "{347, 580}";
+			sepNavWindowFrame = "{{15, 0}, {845, 878}}";
+		};
+	};
+	D62A61091435BC4B00BFA81C /* BatchExportController.m:94 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = C2FFEF25084332E000AAB5DB /* BatchExportController.m */;
+		functionName = "-doExport:";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 94;
+		location = QTVOD;
+		modificationTime = 357298142.342006;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D63358D01428D30D007C36EE /* -[NSDocumentController openDocumentWithContentsOfURL:display:error:] */ = {
+		isa = PBXSymbolicBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 1;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		hitCount = 0;
+		ignoreCount = 0;
+		location = AppKit;
+		modificationTime = 357298142.342501;
+		originalNumberOfMultipleMatches = 0;
+		state = 2;
+		symbolName = "-[NSDocumentController openDocumentWithContentsOfURL:display:error:]";
+	};
+	D63358D21428D33E007C36EE /* -[NSDocumentController noteNewRecentDocument:] */ = {
+		isa = PBXSymbolicBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 1;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		hitCount = 0;
+		ignoreCount = 0;
+		location = AppKit;
+		modificationTime = 357298142.3425111;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+		symbolName = "-[NSDocumentController noteNewRecentDocument:]";
+	};
+	D63359041428D548007C36EE /* QTVODController.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 763}}";
+			sepNavSelRange = "{400, 0}";
+			sepNavVisRange = "{0, 500}";
+			sepNavWindowFrame = "{{572, 0}, {845, 878}}";
+		};
+	};
+	D63359051428D548007C36EE /* QTVODController.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 658}}";
+			sepNavSelRange = "{667, 0}";
+			sepNavVisRange = "{354, 430}";
+			sepNavWindowFrame = "{{15, 0}, {845, 878}}";
+		};
+	};
+	D63359071428D5A4007C36EE /* QTVODController.m:42 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D63359051428D548007C36EE /* QTVODController.m */;
+		functionName = "-openDocumentWithURLContents:error:addToRecent:";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 42;
+		location = QTVOD;
+		modificationTime = 357298142.341673;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D63359091428D5A7007C36EE /* QTVODController.m:27 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D63359051428D548007C36EE /* QTVODController.m */;
+		functionName = "-noteNewRecentDocument:";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 27;
+		location = QTVOD;
+		modificationTime = 357298142.341684;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D63359241428D745007C36EE /* QTVODController.m:16 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D63359051428D548007C36EE /* QTVODController.m */;
+		functionName = "-init";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 16;
+		location = QTVOD;
+		modificationTime = 357298142.3416978;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D633598A1428DD23007C36EE /* QTVODController.m:34 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D63359051428D548007C36EE /* QTVODController.m */;
+		functionName = "-noteNewRecentDocumentURL:";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 34;
+		location = QTVOD;
+		modificationTime = 357298142.34171;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D651F5C714168965007169F9 /* QTVOD.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 1498}}";
+			sepNavSelRange = "{160, 48}";
+			sepNavVisRange = "{0, 1430}";
+			sepNavWindowFrame = "{{221, 0}, {845, 778}}";
+		};
+	};
+	D651F5C814168965007169F9 /* QTVOD.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {858, 30016}}";
+			sepNavSelRange = "{36310, 0}";
+			sepNavVisRange = "{35872, 1717}";
+			sepNavWindowFrame = "{{588, 250}, {845, 778}}";
+		};
+	};
+	D660058B1420BAA0001A262C /* QTVODWindow.m:717 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 2A37F4ACFDCFA73011CA2CEA /* QTVODWindow.m */;
+		functionName = "-setHalvedSizeAll:";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 717;
+		location = QTVOD;
+		modificationTime = 357298142.3416451;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D66005FF1420C10A001A262C /* Archive */ = {
+		activeExec = 0;
+	};
+	D66006091420C16A001A262C /* make_archive.sh */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 1526}}";
+			sepNavSelRange = "{1761, 0}";
+			sepNavVisRange = "{1018, 1472}";
+			sepNavWindowFrame = "{{14, 0}, {845, 878}}";
+		};
+	};
+	D6604224141F566C0011DBC6 /* QTilsM2.mod */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {996, 10570}}";
+			sepNavSelRange = "{15167, 0}";
+			sepNavVisRange = "{14580, 3140}";
+			sepNavWindowFrame = "{{665, 0}, {845, 878}}";
+		};
+	};
+	D6604226141F566C0011DBC6 /* QTVODm2.mod */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 10332}}";
+			sepNavSelRange = "{14170, 4}";
+			sepNavVisRange = "{13835, 991}";
+			sepNavWindowFrame = "{{34, 0}, {845, 878}}";
+		};
+	};
+	D6604227141F566C0011DBC6 /* QTVODcomm.mod */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 11396}}";
+			sepNavSelRange = "{972, 0}";
+			sepNavVisRange = "{0, 1440}";
+			sepNavWindowFrame = "{{156, 0}, {845, 878}}";
+		};
+	};
+	D6604228141F566C0011DBC6 /* QTilsM2.def */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1044, 11214}}";
+			sepNavSelRange = "{33399, 30}";
+			sepNavVisRange = "{32058, 2005}";
+			sepNavWindowFrame = "{{-852, 250}, {845, 800}}";
+		};
+	};
+	D660422A141F566C0011DBC6 /* QTVODcomm.def */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 2324}}";
+			sepNavSelRange = "{5746, 0}";
+			sepNavVisRange = "{3342, 2635}";
+			sepNavWindowFrame = "{{15, 0}, {845, 878}}";
+		};
+	};
+	D660422B141F566C0011DBC6 /* QTVODlib.def */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 854}}";
+			sepNavSelRange = "{1827, 0}";
+			sepNavVisRange = "{79, 1765}";
+			sepNavWindowFrame = "{{15, 0}, {845, 878}}";
+		};
+	};
+	D660422C141F567C0011DBC6 /* QTVODlib.mod */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 23184}}";
+			sepNavSelRange = "{53726, 0}";
+			sepNavVisRange = "{52545, 1329}";
+			sepNavWindowFrame = "{{189, 0}, {845, 878}}";
+		};
+	};
+	D6604641141FC0FB0011DBC6 /* QTVOD.m:178 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D651F5C814168965007169F9 /* QTVOD.m */;
+		functionName = "ReadXMLElementAttributes()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 178;
+		location = QTVOD;
+		modificationTime = 357298142.341558;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D669BC62154BEE23006D8F26 /* test.m:92 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D6E9CE031549EF2300F5F828 /* test.m */;
+		functionName = "testOpen()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 92;
+		location = test;
+		modificationTime = 357298142.8425161;
+		originalNumberOfMultipleMatches = 1;
+		state = 1;
+	};
+	D66ECC931434846800D94298 /* QTVOD.m:317 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D651F5C814168965007169F9 /* QTVOD.m */;
+		functionName = "moviePlay()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 317;
+		location = QTVOD;
+		modificationTime = 357298142.3419191;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D66ECCC71434876500D94298 /* QTVOD.m:334 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D651F5C814168965007169F9 /* QTVOD.m */;
+		functionName = "movieStart()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 334;
+		location = QTVOD;
+		modificationTime = 357298142.3419639;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D676EF350BC3BE4A008693F8 /* QTVODosx */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+			{
+				active = YES;
+				name = MallocBadFreeAbort;
+				value = 1;
+			},
+			{
+				active = YES;
+				name = MallocErrorAbort;
+				value = 1;
+			},
+			{
+				active = YES;
+				name = MallocGuardEdges;
+				value = 1;
+			},
+			{
+				active = YES;
+				name = MallocPreScribble;
+				value = 1;
+			},
+			{
+				active = YES;
+				name = MallocScribble;
+				value = 1;
+			},
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = QTVODosx;
+		savedGlobals = {
+		};
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+		variableFormatDictionary = {
+			dataRefType = 5;
+			"dataRefType-OSType--[MyDocument setMovie:]" = 5;
+			"dataRefType-OSType--[QTVODWindow setMovie:]" = 5;
+			"dataRefType-OSType--[QTVODWindow windowWillClose:]" = 5;
+			"dataRefType-OSType-InitQTMovieWindowHFromMovie" = 5;
+			"dataRefType-OSType-NativeWindow_from_QTMovieWindowH" = 5;
+			"dataRefType-OSType-ParseXMLFile" = 5;
+			"dataRefType-OSType-QTActionCallBack" = 5;
+			"dataRefType-OSType-QTImage2MovImport_DataRef" = 5;
+			"dataRefType-OSType-QTMovieWindowGetGeometry" = 5;
+			"dataRefType-OSType-QTMovieWindowSetGeometry" = 5;
+			"dataRefType-OSType-QTMovieWindow_MCActionHandler" = 5;
+			"dataRefType-OSType-movieClose" = 5;
+			"dataRefType-OSType-movieKeyUp" = 5;
+			"dataRefType-OSType-moviePlay" = 5;
+			"dataRefType-OSType-register_MCAction" = 5;
+			"dataRefType-OSType-register_QTMovieWindowH" = 5;
+			"dtype-OSType-QTImage2MovImport_DataRef" = 5;
+			"ftype-OSType-BuildMovie" = 5;
+			"ftype-OSType-QTImage2MovImport_DataRef" = 5;
+			"ldataRefType-OSType-OpenMovieFromURL" = 5;
+			"odataRefType-OSType-BuildMovie" = 5;
+			"params-void *-QTActionCallBack" = 5;
+		};
+	};
+	D676EF470BC3BE6A008693F8 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryNamesForRoots = {
+				"" = "";
+			};
+		};
+		scmType = "";
+	};
+	D676EF480BC3BE6A008693F8 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	D676F0210BC419C8008693F8 /* QTAMovieView.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 308}}";
+			sepNavSelRange = "{298, 0}";
+			sepNavVisRange = "{0, 358}";
+			sepNavVisRect = "{{0, 0}, {809, 860}}";
+			sepNavWindowFrame = "{{422, 0}, {854, 778}}";
+		};
+	};
+	D676F0220BC419C8008693F8 /* QTAMovieView.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {795, 686}}";
+			sepNavSelRange = "{267, 0}";
+			sepNavVisRange = "{0, 492}";
+			sepNavVisRect = "{{0, 0}, {809, 860}}";
+			sepNavWindowFrame = "{{24, 8}, {854, 778}}";
+		};
+	};
+	D67AD37814164BCF00E99EA2 /* main.m:113 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 2A37F4B0FDCFA73011CA2CEA /* main.m */;
+		functionName = "main()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 113;
+		modificationTime = 357298142.341544;
+		originalNumberOfMultipleMatches = 0;
+		state = 2;
+	};
+	D67AD5C614165F5800E99EA2 /* QTMovieWindowH_MCActionHandler */ = {
+		isa = PBXSymbolicBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 1;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		hitCount = 0;
+		ignoreCount = 0;
+		location = "";
+		modificationTime = 357298142.3424611;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+		symbolName = QTMovieWindowH_MCActionHandler;
+	};
+	D68F873D142B3F8B00840E75 /* QTVODController-OSA-xgraph.py */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 786}}";
+			sepNavSelRange = "{141, 0}";
+			sepNavVisRange = "{0, 1772}";
+			sepNavWindowFrame = "{{73, 0}, {845, 878}}";
+		};
+	};
+	D68FAFAD1422033B003CB551 /* VDPreferences.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 6062}}";
+			sepNavSelRange = "{3846, 7}";
+			sepNavVisRange = "{3029, 2304}";
+			sepNavWindowFrame = "{{647, 0}, {845, 878}}";
+		};
+	};
+	D68FAFAE1422033B003CB551 /* VDPreferences.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 966}}";
+			sepNavSelRange = "{1718, 0}";
+			sepNavVisRange = "{1232, 523}";
+			sepNavWindowFrame = "{{-1153, 250}, {845, 800}}";
+		};
+	};
+	D68FB30914224952003CB551 /* PCLogController.mm:221 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D68FB30A14224952003CB551 /* PCLogController.mm */;
+		functionName = "-initActive:";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 221;
+		location = LogControllerGCFW;
+		modificationTime = 357298142.34166;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D68FB30A14224952003CB551 /* PCLogController.mm */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.objcpp;
+		name = PCLogController.mm;
+		path = "/Volumes/Debian/Users/bertin/work/src/MacOSX/GNUStep-PC-LogController/PCLogController.mm";
+		sourceTree = "<absolute>";
+	};
+	D699F516142C98CF00589F3B /* QTVOD.m:401 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D651F5C814168965007169F9 /* QTVOD.m */;
+		functionName = "movieClose()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 401;
+		location = QTVOD;
+		modificationTime = 357298142.341731;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D699F518142C98D100589F3B /* QTVOD.m:404 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D651F5C814168965007169F9 /* QTVOD.m */;
+		functionName = "movieClose()";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 404;
+		location = QTVOD;
+		modificationTime = 357298142.341783;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D6BC4F9A14334D7B00CF5376 /* QTVOD.m:1082 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D651F5C814168965007169F9 /* QTVOD.m */;
+		functionName = "-CreateChannelView:withDescription:channel:channelName:scale:display:ofType:error:eMsg:";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 1082;
+		location = QTVOD;
+		modificationTime = 357298142.341833;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D6BC4F9C14334D7D00CF5376 /* QTVOD.m:1098 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D651F5C814168965007169F9 /* QTVOD.m */;
+		functionName = "-CreateChannelView:withDescription:channel:channelName:scale:display:ofType:error:eMsg:";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 1098;
+		location = QTVOD;
+		modificationTime = 357298142.3418771;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D6C82A85142A3A4F0081E4B2 /* QTVODWindow.m:253 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 2A37F4ACFDCFA73011CA2CEA /* QTVODWindow.m */;
+		functionName = "-dealloc";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 253;
+		location = QTVOD;
+		modificationTime = 357298142.3417211;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+	};
+	D6C82ACF142A3DC40081E4B2 /* QTAEMConstants.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 5180}}";
+			sepNavSelRange = "{2283, 4}";
+			sepNavVisRange = "{2036, 624}";
+			sepNavWindowFrame = "{{15, 0}, {845, 878}}";
+		};
+	};
+	D6C82AD1142A3DC40081E4B2 /* QTApplicationGlue.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 1400}}";
+			sepNavSelRange = "{1221, 37}";
+			sepNavVisRange = "{0, 1634}";
+			sepNavWindowFrame = "{{15, 0}, {845, 878}}";
+		};
+	};
+	D6C82AD3142A3DC40081E4B2 /* QTCommandGlue.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 4858}}";
+			sepNavSelRange = "{4902, 12}";
+			sepNavVisRange = "{4394, 883}";
+			sepNavWindowFrame = "{{15, 0}, {845, 878}}";
+		};
+	};
+	D6C82AD5142A3DC40081E4B2 /* QTConstantGlue.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {761, 19572}}";
+			sepNavSelRange = "{3327, 4}";
+			sepNavVisRange = "{2817, 1012}";
+			sepNavWindowFrame = "{{15, 0}, {845, 878}}";
+		};
+	};
+	D6C82AD6142A3DC40081E4B2 /* QTGlue.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 786}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 338}";
+			sepNavWindowFrame = "{{15, 0}, {845, 878}}";
+		};
+	};
+	D6C82AD8142A3DC40081E4B2 /* QTReferenceGlue.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 11998}}";
+			sepNavSelRange = "{13534, 0}";
+			sepNavVisRange = "{13056, 2128}";
+			sepNavWindowFrame = "{{15, 0}, {845, 878}}";
+		};
+	};
+	D6C82ADA142A3DC40081E4B2 /* QTReferenceRendererGlue.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 910}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{178, 1831}";
+			sepNavWindowFrame = "{{15, 0}, {845, 878}}";
+		};
+	};
+	D6D41E0E149F3C4A000A47D7 /* PCLogController.mm:168 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = D68FB30A14224952003CB551 /* PCLogController.mm */;
+		functionName = "-PCLogBGController";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 168;
+		location = LogControllerGCFW;
+		modificationTime = 357298142.342072;
+		originalNumberOfMultipleMatches = 1;
+		state = 0;
+	};
+	D6D69A6314278E9400FFB77C /* QTVOD.scriptSuite */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {786, 786}}";
+			sepNavSelRange = "{574, 0}";
+			sepNavVisRange = "{0, 671}";
+			sepNavWindowFrame = "{{349, 0}, {845, 878}}";
+		};
+	};
+	D6E120E3156BDB3900CEC33F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = D651F5C814168965007169F9 /* QTVOD.m */;
+		name = "QTVOD.m: 1133";
+		rLen = 0;
+		rLoc = 36310;
+		rType = 0;
+		vrLen = 1616;
+		vrLoc = 35973;
+	};
+	D6E121A8156BDEA900CEC33F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = D651F5C814168965007169F9 /* QTVOD.m */;
+		name = "QTVOD.m: 1133";
+		rLen = 0;
+		rLoc = 36310;
+		rType = 0;
+		vrLen = 1717;
+		vrLoc = 35872;
+	};
+	D6E9C2B41420FD8300227E8B /* CGErrorBreakpoint */ = {
+		isa = PBXSymbolicBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 1;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		hitCount = 0;
+		ignoreCount = 0;
+		location = CoreGraphics;
+		modificationTime = 357298142.3424791;
+		originalNumberOfMultipleMatches = 1;
+		state = 2;
+		symbolName = CGErrorBreakpoint;
+	};
+	D6E9CDFB1549EEB000F5F828 /* test */ = {
+		activeExec = 0;
+		executables = (
+			D6E9CDFD1549EEB000F5F828 /* test */,
+		);
+	};
+	D6E9CDFD1549EEB000F5F828 /* test */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 1;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = test;
+		savedGlobals = {
+		};
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+		variableFormatDictionary = {
+			"odataRefType-OSType-testOpen" = 5;
+		};
+	};
+	D6E9CE031549EF2300F5F828 /* test.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {780, 2198}}";
+			sepNavSelRange = "{3263, 85}";
+			sepNavVisRange = "{2859, 1523}";
+			sepNavWindowFrame = "{{784, 250}, {750, 778}}";
+		};
+	};
+}

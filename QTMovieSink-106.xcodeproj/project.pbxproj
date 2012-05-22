@@ -1,0 +1,1596 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		D678B5DD129BDB6100CBFDFD /* Archive+DocSet */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D678B5E2129BDB9A00CBFDFD /* Build configuration list for PBXAggregateTarget "Archive+DocSet" */;
+			buildPhases = (
+				D678B5DC129BDB6100CBFDFD /* archive */,
+			);
+			dependencies = (
+				D6887058131FCB1700A696E6 /* PBXTargetDependency */,
+			);
+			name = "Archive+DocSet";
+			productName = Archive;
+		};
+		D6887054131FCAF000A696E6 /* DocSet */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D6887062131FCB3200A696E6 /* Build configuration list for PBXAggregateTarget "DocSet" */;
+			buildPhases = (
+				D6887053131FCAF000A696E6 /* doxygen */,
+			);
+			dependencies = (
+			);
+			name = DocSet;
+			productName = DocSet;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		D61EEE4E14841C0400D479D9 /* CritSectEx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D61EEE4C14841C0400D479D9 /* CritSectEx.cpp */; };
+		D61EEE4F14841C0400D479D9 /* CritSectEx.h in Headers */ = {isa = PBXBuildFile; fileRef = D61EEE4D14841C0400D479D9 /* CritSectEx.h */; };
+		D61EEE5014841C0400D479D9 /* CritSectEx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D61EEE4C14841C0400D479D9 /* CritSectEx.cpp */; };
+		D61EEE5114841C0400D479D9 /* CritSectEx.h in Headers */ = {isa = PBXBuildFile; fileRef = D61EEE4D14841C0400D479D9 /* CritSectEx.h */; };
+		D6296009121BE7FE00F66BA8 /* qtest2r.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6296008121BE7FE00F66BA8 /* qtest2r.cpp */; };
+		D629600C121BE82D00F66BA8 /* timing.c in Sources */ = {isa = PBXBuildFile; fileRef = D629600A121BE82D00F66BA8 /* timing.c */; };
+		D634F02C13171B2700D2BAFD /* timing.c in Sources */ = {isa = PBXBuildFile; fileRef = D629600A121BE82D00F66BA8 /* timing.c */; };
+		D634F05E13172E6A00D2BAFD /* QTMovieWindowTest.c in Sources */ = {isa = PBXBuildFile; fileRef = D64CFEC4129ED62900AD4351 /* QTMovieWindowTest.c */; };
+		D634F06B13172F5200D2BAFD /* QTils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639412C3C7A4009A3D72 /* QTils.framework */; };
+		D634F2531317DD7300D2BAFD /* copyright.h in Headers */ = {isa = PBXBuildFile; fileRef = D619278B11FF690800BDAAAA /* copyright.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D634F2E51317F9B200D2BAFD /* NSQTMovieWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = D634F12C1317D37700D2BAFD /* NSQTMovieWindow.nib */; };
+		D63EFD10131CF4D2005B6423 /* QTMovieSink.c in Sources */ = {isa = PBXBuildFile; fileRef = D619275011FF65E200BDAAAA /* QTMovieSink.c */; };
+		D63EFD11131CF4DD005B6423 /* QTMovieSink.h in Headers */ = {isa = PBXBuildFile; fileRef = D619272711FF64E500BDAAAA /* QTMovieSink.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D63EFD76131CF5BE005B6423 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63EFD75131CF5BE005B6423 /* QuartzCore.framework */; };
+		D63EFE10131CF6C7005B6423 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F63A112C3C815009A3D72 /* QuickTime.framework */; };
+		D63EFE34131CF6D6005B6423 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63EFD75131CF5BE005B6423 /* QuartzCore.framework */; };
+		D63EFE3A131CF6F1005B6423 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63EFE39131CF6F1005B6423 /* Carbon.framework */; };
+		D63EFE4D131CF731005B6423 /* QTils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639412C3C7A4009A3D72 /* QTils.framework */; };
+		D63EFEB4131CFF1C005B6423 /* timing.h in Headers */ = {isa = PBXBuildFile; fileRef = D629600B121BE82D00F66BA8 /* timing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D65F639A12C3C7F5009A3D72 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
+		D65F639E12C3C80C009A3D72 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639D12C3C80C009A3D72 /* QTKit.framework */; };
+		D65F63A212C3C815009A3D72 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F63A112C3C815009A3D72 /* QuickTime.framework */; };
+		D65F63B312C3C837009A3D72 /* NSQTMovieWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = D65F63B112C3C837009A3D72 /* NSQTMovieWindow.m */; };
+		D65F63C712C3CA8D009A3D72 /* QTils.c in Sources */ = {isa = PBXBuildFile; fileRef = D6D39C4A129C586B00DFACCC /* QTils.c */; };
+		D65F63C912C3CA8D009A3D72 /* QTilities.h in Headers */ = {isa = PBXBuildFile; fileRef = D68788F7129A87ED009ACD66 /* QTilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D65F63CB12C3CA8D009A3D72 /* Lists.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6878986129ACB17009ACD66 /* Lists.cpp */; };
+		D65F644412C3D025009A3D72 /* QTMovieWin.c in Sources */ = {isa = PBXBuildFile; fileRef = D68788F8129A87ED009ACD66 /* QTMovieWin.c */; };
+		D65F646712C40076009A3D72 /* QTMovieWinWM.m in Sources */ = {isa = PBXBuildFile; fileRef = D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */; };
+		D67ACE441416129D00E99EA2 /* copyright.h in Headers */ = {isa = PBXBuildFile; fileRef = D619278B11FF690800BDAAAA /* copyright.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D67ACE451416129D00E99EA2 /* QTilities.h in Headers */ = {isa = PBXBuildFile; fileRef = D68788F7129A87ED009ACD66 /* QTilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D67ACE461416129D00E99EA2 /* QTMovieSink.h in Headers */ = {isa = PBXBuildFile; fileRef = D619272711FF64E500BDAAAA /* QTMovieSink.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D67ACE471416129D00E99EA2 /* timing.h in Headers */ = {isa = PBXBuildFile; fileRef = D629600B121BE82D00F66BA8 /* timing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D67ACE481416129D00E99EA2 /* QTMovieSinkQTStuff.h in Headers */ = {isa = PBXBuildFile; fileRef = D6F413CF132693810068EF66 /* QTMovieSinkQTStuff.h */; };
+		D67ACE491416129D00E99EA2 /* MacErrorTable.h in Headers */ = {isa = PBXBuildFile; fileRef = D6CE60501347AF45002E166B /* MacErrorTable.h */; };
+		D67ACE4B1416129D00E99EA2 /* NSQTMovieWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = D634F12C1317D37700D2BAFD /* NSQTMovieWindow.nib */; };
+		D67ACE4C1416129D00E99EA2 /* empty.mov in Resources */ = {isa = PBXBuildFile; fileRef = D6DD1BF6131A97B70063BBFE /* empty.mov */; };
+		D67ACE4D1416129D00E99EA2 /* PkgInfo in Resources */ = {isa = PBXBuildFile; fileRef = D69C2E04133EB3AC001C8D4C /* PkgInfo */; };
+		D67ACE4F1416129D00E99EA2 /* NSQTMovieWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = D65F63B112C3C837009A3D72 /* NSQTMovieWindow.m */; };
+		D67ACE501416129D00E99EA2 /* QTils.c in Sources */ = {isa = PBXBuildFile; fileRef = D6D39C4A129C586B00DFACCC /* QTils.c */; };
+		D67ACE511416129D00E99EA2 /* Lists.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6878986129ACB17009ACD66 /* Lists.cpp */; };
+		D67ACE521416129D00E99EA2 /* QTMovieWin.c in Sources */ = {isa = PBXBuildFile; fileRef = D68788F8129A87ED009ACD66 /* QTMovieWin.c */; };
+		D67ACE531416129D00E99EA2 /* QTMovieWinWM.m in Sources */ = {isa = PBXBuildFile; fileRef = D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */; };
+		D67ACE541416129D00E99EA2 /* AskFileName.m in Sources */ = {isa = PBXBuildFile; fileRef = D6EC1D5812EF058300B53DBC /* AskFileName.m */; };
+		D67ACE551416129D00E99EA2 /* QTxml.c in Sources */ = {isa = PBXBuildFile; fileRef = D6E64D2612F743FA00DF4419 /* QTxml.c */; };
+		D67ACE561416129D00E99EA2 /* timing.c in Sources */ = {isa = PBXBuildFile; fileRef = D629600A121BE82D00F66BA8 /* timing.c */; };
+		D67ACE571416129D00E99EA2 /* QTMovieSink.c in Sources */ = {isa = PBXBuildFile; fileRef = D619275011FF65E200BDAAAA /* QTMovieSink.c */; };
+		D67ACE581416129D00E99EA2 /* QTMovieSink_mod2.c in Sources */ = {isa = PBXBuildFile; fileRef = D6FFD4CF1325545B005CF3D5 /* QTMovieSink_mod2.c */; };
+		D67ACE5A1416129D00E99EA2 /* LogControllerGCFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */; };
+		D67ACE5B1416129D00E99EA2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
+		D67ACE5C1416129D00E99EA2 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639D12C3C80C009A3D72 /* QTKit.framework */; };
+		D67ACE5D1416129D00E99EA2 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F63A112C3C815009A3D72 /* QuickTime.framework */; };
+		D67ACE5E1416129D00E99EA2 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63EFD75131CF5BE005B6423 /* QuartzCore.framework */; };
+		D67ACE601416129D00E99EA2 /* LogControllerGCFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */; };
+		D67ACF42141620E600E99EA2 /* QTils-emb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67ACE641416129D00E99EA2 /* QTils-emb.framework */; };
+		D67AD1861416274900E99EA2 /* QTils-emb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67ACE641416129D00E99EA2 /* QTils-emb.framework */; };
+		D6912C1E132E55BE00CD5E78 /* QTMovieWindowTest.c in Sources */ = {isa = PBXBuildFile; fileRef = D64CFEC4129ED62900AD4351 /* QTMovieWindowTest.c */; };
+		D696D5A01414C21A00E2F416 /* LogControllerGCFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */; };
+		D696D6621414C76E00E2F416 /* LogControllerGCFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */; };
+		D69C2E0A133EB4AB001C8D4C /* PkgInfo in Resources */ = {isa = PBXBuildFile; fileRef = D69C2E04133EB3AC001C8D4C /* PkgInfo */; };
+		D6CE60511347AF45002E166B /* MacErrorTable.h in Headers */ = {isa = PBXBuildFile; fileRef = D6CE60501347AF45002E166B /* MacErrorTable.h */; };
+		D6DD1BF7131A97B70063BBFE /* empty.mov in Resources */ = {isa = PBXBuildFile; fileRef = D6DD1BF6131A97B70063BBFE /* empty.mov */; };
+		D6E64D2712F743FA00DF4419 /* QTxml.c in Sources */ = {isa = PBXBuildFile; fileRef = D6E64D2612F743FA00DF4419 /* QTxml.c */; };
+		D6EC1D5B12EF05E200B53DBC /* AskFileName.m in Sources */ = {isa = PBXBuildFile; fileRef = D6EC1D5812EF058300B53DBC /* AskFileName.m */; };
+		D6F413D1132693810068EF66 /* QTMovieSinkQTStuff.h in Headers */ = {isa = PBXBuildFile; fileRef = D6F413CF132693810068EF66 /* QTMovieSinkQTStuff.h */; };
+		D6FEC1E9141A09570005D2B9 /* QTVODosx.icns in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */; };
+		D6FEC1EA141A09570005D2B9 /* QTVODosx.icns in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */; };
+		D6FEC1ED141A09A70005D2B9 /* QTVODosx.icns in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */; };
+		D6FEC219141A0C750005D2B9 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC218141A0C750005D2B9 /* MainMenu.nib */; };
+		D6FEC21A141A0C750005D2B9 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC218141A0C750005D2B9 /* MainMenu.nib */; };
+		D6FEC265141A0FEB0005D2B9 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC218141A0C750005D2B9 /* MainMenu.nib */; };
+		D6FEC298141A1B0B0005D2B9 /* NSQTMovieView.h in Headers */ = {isa = PBXBuildFile; fileRef = D6FEC296141A1B0B0005D2B9 /* NSQTMovieView.h */; };
+		D6FEC299141A1B0B0005D2B9 /* NSQTMovieView.m in Sources */ = {isa = PBXBuildFile; fileRef = D6FEC297141A1B0B0005D2B9 /* NSQTMovieView.m */; };
+		D6FEC29A141A1B0B0005D2B9 /* NSQTMovieView.h in Headers */ = {isa = PBXBuildFile; fileRef = D6FEC296141A1B0B0005D2B9 /* NSQTMovieView.h */; };
+		D6FEC29B141A1B0B0005D2B9 /* NSQTMovieView.m in Sources */ = {isa = PBXBuildFile; fileRef = D6FEC297141A1B0B0005D2B9 /* NSQTMovieView.m */; };
+		D6FEC29F141A1C230005D2B9 /* NSQTWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = D6FEC29D141A1C230005D2B9 /* NSQTWindow.h */; };
+		D6FEC2A0141A1C230005D2B9 /* NSQTWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = D6FEC29E141A1C230005D2B9 /* NSQTWindow.m */; };
+		D6FEC2A1141A1C230005D2B9 /* NSQTWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = D6FEC29D141A1C230005D2B9 /* NSQTWindow.h */; };
+		D6FEC2A2141A1C230005D2B9 /* NSQTWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = D6FEC29E141A1C230005D2B9 /* NSQTWindow.m */; };
+		D6FFD4D11325545B005CF3D5 /* QTMovieSink_mod2.c in Sources */ = {isa = PBXBuildFile; fileRef = D6FFD4CF1325545B005CF3D5 /* QTMovieSink_mod2.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D6169C5C134CF7D7004A2A56 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = LogController;
+		};
+		D6169C5E134CF7D7004A2A56 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D67A1CDB134B9F3600073807;
+			remoteInfo = LogController_loader;
+		};
+		D6169C60134CF7D7004A2A56 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D6D6C048134C5F1C00E43CC5;
+			remoteInfo = pipeLogger;
+		};
+		D6169D1D134D021D004A2A56 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D6169D1A134D021D004A2A56;
+			remoteInfo = "LogController_loader copy";
+		};
+		D618399C131FE916004D1997 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D65F639312C3C7A4009A3D72;
+			remoteInfo = QTils.framework;
+		};
+		D63EFE7A131CF849005B6423 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D65F639312C3C7A4009A3D72;
+			remoteInfo = QTils.framework;
+		};
+		D67ACE421416129D00E99EA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D696D5681414C06700E2F416;
+			remoteInfo = LogControllerGC_framework;
+		};
+		D67AD138141624B100E99EA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D67AD130141624B100E99EA2;
+			remoteInfo = "pipeLogger-emb";
+		};
+		D67AD17C1416274200E99EA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D67ACE401416129D00E99EA2;
+			remoteInfo = "QTils-emb.framework";
+		};
+		D6887057131FCB1700A696E6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D6887054131FCAF000A696E6;
+			remoteInfo = DocSet;
+		};
+		D696D57B1414C08500E2F416 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D696D5761414C06700E2F416;
+			remoteInfo = LogControllerGC_framework;
+		};
+		D696D5D61414C3A700E2F416 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D696D5681414C06700E2F416;
+			remoteInfo = LogControllerGC_framework;
+		};
+		D6D41FA4149FBEFA000A47D7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D6D41E6B149F535F000A47D7;
+			remoteInfo = cseTest;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D6169C6D134CF872004A2A56 /* Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Versions/Frameworks;
+			dstSubfolderSpec = 1;
+			files = (
+				D696D6621414C76E00E2F416 /* LogControllerGCFW.framework in Frameworks */,
+			);
+			name = Frameworks;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D67ACE5F1416129D00E99EA2 /* Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Versions/Frameworks;
+			dstSubfolderSpec = 1;
+			files = (
+				D67ACE601416129D00E99EA2 /* LogControllerGCFW.framework in Frameworks */,
+			);
+			name = Frameworks;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D67ACF51141620F200E99EA2 /* Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D67ACF42141620E600E99EA2 /* QTils-emb.framework in Frameworks */,
+			);
+			name = Frameworks;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		D602C30711FE52C800D568BD /* QTMovieFile.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; name = QTMovieFile.cpp; path = inspiration/QTMovieFile.cpp; sourceTree = "<group>"; };
+		D602C30811FE52C800D568BD /* QTMovieFile.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; lineEnding = 2; name = QTMovieFile.h; path = inspiration/QTMovieFile.h; sourceTree = "<group>"; };
+		D607F756122E9C2300B63D4C /* testgl.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = testgl.c; path = inspiration/testgl.c; sourceTree = "<group>"; };
+		D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LogController.xcodeproj; path = "../GNUStep-PC-LogController/LogController.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		D619272711FF64E500BDAAAA /* QTMovieSink.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = QTMovieSink.h; sourceTree = "<group>"; };
+		D619275011FF65E200BDAAAA /* QTMovieSink.c */ = {isa = PBXFileReference; fileEncoding = 4; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = QTMovieSink.c; sourceTree = "<group>"; };
+		D619278B11FF690800BDAAAA /* copyright.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = copyright.h; sourceTree = "<group>"; };
+		D61927C311FF703C00BDAAAA /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Logging.h; path = QTils/Logging.h; sourceTree = "<group>"; };
+		D61927CE11FF70A300BDAAAA /* Logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Logger.cpp; path = ../Logger.cpp; sourceTree = "<group>"; };
+		D61927CF11FF70A300BDAAAA /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Logger.h; path = ../Logger.h; sourceTree = "<group>"; };
+		D61927E311FF737300BDAAAA /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		D61927E411FF737300BDAAAA /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
+		D61EEE4C14841C0400D479D9 /* CritSectEx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CritSectEx.cpp; sourceTree = "<group>"; };
+		D61EEE4D14841C0400D479D9 /* CritSectEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CritSectEx.h; sourceTree = "<group>"; };
+		D6295FFC121BE77D00F66BA8 /* qtest2r */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = qtest2r; sourceTree = BUILT_PRODUCTS_DIR; };
+		D6296008121BE7FE00F66BA8 /* qtest2r.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; name = qtest2r.cpp; path = inspiration/qtest2r.cpp; sourceTree = "<group>"; };
+		D629600A121BE82D00F66BA8 /* timing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = timing.c; sourceTree = "<group>"; };
+		D629600B121BE82D00F66BA8 /* timing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 2; path = timing.h; sourceTree = "<group>"; };
+		D6296141121BEC0200F66BA8 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
+		D634F05713172E3E00D2BAFD /* QTMovieWindowTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = QTMovieWindowTest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D634F12C1317D37700D2BAFD /* NSQTMovieWindow.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = NSQTMovieWindow.nib; sourceTree = "<group>"; };
+		D63A60011230F198001E4ACF /* OSXbackgrounding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = OSXbackgrounding.c; sourceTree = "<group>"; };
+		D63EFD26131CF5A2005B6423 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		D63EFD75131CF5BE005B6423 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		D63EFE39131CF6F1005B6423 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		D63EFECA131D1F32005B6423 /* QTpfuSaveImage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = QTpfuSaveImage.c; sourceTree = SOURCE_ROOT; };
+		D63EFECB131D1F32005B6423 /* QTpfuSaveImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTpfuSaveImage.h; sourceTree = SOURCE_ROOT; };
+		D63EFF5D131D4A34005B6423 /* doxygen.config */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = text; lineEnding = 2; path = doxygen.config; sourceTree = "<group>"; };
+		D641371C13055B3C0013B201 /* vsscanf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vsscanf.cpp; sourceTree = "<group>"; };
+		D647D27F12AAB335007C5D3D /* TstQTilsM2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = TstQTilsM2.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D64CFEC4129ED62900AD4351 /* QTMovieWindowTest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; name = QTMovieWindowTest.c; path = QTils/QTMovieWindowTest.c; sourceTree = "<group>"; };
+		D65191B012199F490077C8D3 /* QTMovieSink-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QTMovieSink-Info.plist"; sourceTree = "<group>"; };
+		D6574F4E131E7AC600A2DDE4 /* runDoxygen.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = runDoxygen.sh; sourceTree = "<group>"; };
+		D65F639412C3C7A4009A3D72 /* QTils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = QTils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D65F639512C3C7A4009A3D72 /* QTils-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "QTils-Info.plist"; path = "../../QTils-Info.plist"; sourceTree = "<group>"; };
+		D65F639912C3C7F5009A3D72 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		D65F639D12C3C80C009A3D72 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
+		D65F63A112C3C815009A3D72 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		D65F63B012C3C837009A3D72 /* NSQTMovieWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSQTMovieWindow.h; sourceTree = "<group>"; };
+		D65F63B112C3C837009A3D72 /* NSQTMovieWindow.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = NSQTMovieWindow.m; sourceTree = "<group>"; };
+		D65F63E412C3CC3F009A3D72 /* dense_hash_map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dense_hash_map; sourceTree = "<group>"; };
+		D65F63E512C3CC3F009A3D72 /* dense_hash_set */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dense_hash_set; sourceTree = "<group>"; };
+		D65F63E612C3CC3F009A3D72 /* sparse_hash_map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sparse_hash_map; sourceTree = "<group>"; };
+		D65F63E712C3CC3F009A3D72 /* sparse_hash_set */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sparse_hash_set; sourceTree = "<group>"; };
+		D65F63E912C3CC3F009A3D72 /* densehashtable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = densehashtable.h; sourceTree = "<group>"; };
+		D65F63EA12C3CC3F009A3D72 /* libc_allocator_with_realloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libc_allocator_with_realloc.h; sourceTree = "<group>"; };
+		D65F63EB12C3CC3F009A3D72 /* sparseconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sparseconfig.h; sourceTree = "<group>"; };
+		D65F63EC12C3CC3F009A3D72 /* sparsehashtable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sparsehashtable.h; sourceTree = "<group>"; };
+		D65F63ED12C3CC3F009A3D72 /* sparsetable */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sparsetable; sourceTree = "<group>"; };
+		D65F63EE12C3CC3F009A3D72 /* type_traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = type_traits.h; sourceTree = "<group>"; };
+		D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = QTMovieWinWM.m; sourceTree = "<group>"; };
+		D663BD331328DF96007DFF5C /* QTVOD2-installer.nsi */ = {isa = PBXFileReference; explicitFileType = text.script; fileEncoding = 12; path = "QTVOD2-installer.nsi"; sourceTree = SOURCE_ROOT; };
+		D663BD351328FFA5007DFF5C /* QTVOD2-dev-installer.nsi */ = {isa = PBXFileReference; explicitFileType = text.script; fileEncoding = 12; path = "QTVOD2-dev-installer.nsi"; sourceTree = SOURCE_ROOT; };
+		D665F1F3132BCCD300E0B732 /* QTilities-v1.2.pages */ = {isa = PBXFileReference; lastKnownFileType = file; path = "QTilities-v1.2.pages"; sourceTree = "<group>"; };
+		D6704EBF121AFDB6004B5459 /* winixdefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = winixdefs.h; path = ../../winixdefs.h; sourceTree = "<group>"; };
+		D67ACE641416129D00E99EA2 /* QTils-emb.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "QTils-emb.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D67ACE651416129D00E99EA2 /* QTils-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "QTils-Info copy.plist"; path = "../../QTils-Info copy.plist"; sourceTree = "<group>"; };
+		D68788F7129A87ED009ACD66 /* QTilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 2; name = QTilities.h; path = QTils/QTilities.h; sourceTree = "<group>"; };
+		D68788F8129A87ED009ACD66 /* QTMovieWin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; name = QTMovieWin.c; path = QTils/QTMovieWin.c; sourceTree = "<group>"; };
+		D6878985129ACB17009ACD66 /* Lists.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Lists.h; path = QTils/Lists.h; sourceTree = "<group>"; };
+		D6878986129ACB17009ACD66 /* Lists.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Lists.cpp; path = QTils/Lists.cpp; sourceTree = "<group>"; };
+		D6878988129ACBB7009ACD66 /* dense_hash_map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = dense_hash_map; path = google/dense_hash_map; sourceTree = "<group>"; };
+		D6878989129ACBB8009ACD66 /* dense_hash_set */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = dense_hash_set; path = google/dense_hash_set; sourceTree = "<group>"; };
+		D687898A129ACBB8009ACD66 /* sparse_hash_map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = sparse_hash_map; path = google/sparse_hash_map; sourceTree = "<group>"; };
+		D687898B129ACBB8009ACD66 /* sparse_hash_set */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = sparse_hash_set; path = google/sparse_hash_set; sourceTree = "<group>"; };
+		D687898D129ACBB8009ACD66 /* densehashtable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = densehashtable.h; sourceTree = "<group>"; };
+		D687898E129ACBB8009ACD66 /* libc_allocator_with_realloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libc_allocator_with_realloc.h; sourceTree = "<group>"; };
+		D687898F129ACBB8009ACD66 /* sparseconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sparseconfig.h; sourceTree = "<group>"; };
+		D6878990129ACBB8009ACD66 /* sparsehashtable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sparsehashtable.h; sourceTree = "<group>"; };
+		D6878991129ACBB8009ACD66 /* sparsetable */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = sparsetable; path = google/sparsetable; sourceTree = "<group>"; };
+		D6878992129ACBB8009ACD66 /* type_traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = type_traits.h; path = google/type_traits.h; sourceTree = "<group>"; };
+		D6887070131FCD7500A696E6 /* runDoxygen.bat */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 12; lineEnding = 2; path = runDoxygen.bat; sourceTree = SOURCE_ROOT; };
+		D6912BA3132E3F1700CD5E78 /* QTText.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = QTText.c; path = ../qttext/QTText.c; sourceTree = SOURCE_ROOT; };
+		D6912BA4132E3F1700CD5E78 /* QTUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QTUtilities.h; path = "../qttext/Common Files/QTUtilities.h"; sourceTree = SOURCE_ROOT; };
+		D6912BA5132E3F1700CD5E78 /* QTUtilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = QTUtilities.c; path = "../qttext/Common Files/QTUtilities.c"; sourceTree = SOURCE_ROOT; };
+		D6912BA6132E3F1700CD5E78 /* MacPrefix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MacPrefix.h; path = "../qttext/Common Files/MacPrefix.h"; sourceTree = SOURCE_ROOT; };
+		D6912BA7132E3F1700CD5E78 /* MacFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MacFramework.h; path = "../qttext/Common Files/MacFramework.h"; sourceTree = SOURCE_ROOT; };
+		D6912BA8132E3F1700CD5E78 /* MacFramework.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacFramework.c; path = "../qttext/Common Files/MacFramework.c"; sourceTree = SOURCE_ROOT; };
+		D6912BA9132E3F1700CD5E78 /* QTText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QTText.h; path = ../qttext/QTText.h; sourceTree = SOURCE_ROOT; };
+		D6912C13132E54C300CD5E78 /* QTMovieWindowTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QTMovieWindowTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D6912C15132E54C300CD5E78 /* QTMovieWindowTest.app-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QTMovieWindowTest.app-Info.plist"; sourceTree = "<group>"; };
+		D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LogControllerGCFW.framework; path = "/Volumes/Debian/Users/bertin/work/src/MacOSX/GNUStep-PC-LogController/build/Release/LogControllerGCFW.framework"; sourceTree = "<absolute>"; };
+		D69C2E04133EB3AC001C8D4C /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PkgInfo; sourceTree = SOURCE_ROOT; };
+		D6B6E59D130E769200279904 /* POSIXm2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = POSIXm2.c; path = QTils/POSIXm2.c; sourceTree = SOURCE_ROOT; };
+		D6B6E5A1130E774400279904 /* POSIXm2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = POSIXm2.h; path = QTils/POSIXm2.h; sourceTree = SOURCE_ROOT; };
+		D6B6E605130E8F5700279904 /* dllPOSIXm2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dllPOSIXm2.cpp; path = QTils/dllPOSIXm2.cpp; sourceTree = SOURCE_ROOT; };
+		D6B6E63B130E9DB300279904 /* POSIXm2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = POSIXm2.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6B6E63C130E9DB300279904 /* POSIXm2.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = POSIXm2.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6B9CC5F12A5086E00B99C73 /* QTMovieWinWM.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = QTMovieWinWM.c; sourceTree = "<group>"; };
+		D6B9CC6412A509B800B99C73 /* QTMovieWin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QTMovieWin.h; path = QTils/QTMovieWin.h; sourceTree = "<group>"; };
+		D6BD7C5A13212FF80039E967 /* testMemIO.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = testMemIO.cpp; path = ../FreeImage/TestAPI/testMemIO.cpp; sourceTree = SOURCE_ROOT; };
+		D6CE60501347AF45002E166B /* MacErrorTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MacErrorTable.h; path = QTils/MacErrorTable.h; sourceTree = SOURCE_ROOT; };
+		D6D39C17129C4E8C00DFACCC /* winutils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = winutils.cpp; path = ../../winutils/winutils.cpp; sourceTree = "<group>"; };
+		D6D39C18129C4E8C00DFACCC /* winutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = winutils.h; path = ../../winutils/winutils.h; sourceTree = "<group>"; };
+		D6D39C49129C586B00DFACCC /* dllmain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dllmain.cpp; path = ../dllmain.cpp; sourceTree = "<group>"; };
+		D6D39C4A129C586B00DFACCC /* QTils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = QTils.c; path = QTils/QTils.c; sourceTree = "<group>"; };
+		D6DD1BF6131A97B70063BBFE /* empty.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = empty.mov; sourceTree = "<group>"; };
+		D6E64D2612F743FA00DF4419 /* QTxml.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = QTxml.c; path = QTils/QTxml.c; sourceTree = "<group>"; };
+		D6EC1D3312EF03E400B53DBC /* AskFileName.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AskFileName.c; sourceTree = "<group>"; };
+		D6EC1D5812EF058300B53DBC /* AskFileName.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = AskFileName.m; sourceTree = "<group>"; };
+		D6F413CF132693810068EF66 /* QTMovieSinkQTStuff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTMovieSinkQTStuff.h; sourceTree = "<group>"; };
+		D6F7D4B412A951C000492D31 /* QTilsM2.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; lineEnding = 2; path = QTilsM2.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6F7D4B512A951CD00492D31 /* QTilsM2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; lineEnding = 2; path = QTilsM2.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FC2AAD131E588B00583ACC /* make_archive.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = make_archive.sh; sourceTree = "<group>"; };
+		D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = QTVODosx.icns; path = QTVODosx/QTVODosx.icns; sourceTree = SOURCE_ROOT; };
+		D6FEC218141A0C750005D2B9 /* MainMenu.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = MainMenu.nib; sourceTree = "<group>"; };
+		D6FEC296141A1B0B0005D2B9 /* NSQTMovieView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSQTMovieView.h; sourceTree = "<group>"; };
+		D6FEC297141A1B0B0005D2B9 /* NSQTMovieView.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = NSQTMovieView.m; sourceTree = "<group>"; };
+		D6FEC29D141A1C230005D2B9 /* NSQTWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSQTWindow.h; sourceTree = "<group>"; };
+		D6FEC29E141A1C230005D2B9 /* NSQTWindow.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = NSQTWindow.m; sourceTree = "<group>"; };
+		D6FFD4CF1325545B005CF3D5 /* QTMovieSink_mod2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = QTMovieSink_mod2.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D6295FFA121BE77D00F66BA8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D63EFE34131CF6D6005B6423 /* QuartzCore.framework in Frameworks */,
+				D63EFE10131CF6C7005B6423 /* QuickTime.framework in Frameworks */,
+				D63EFE3A131CF6F1005B6423 /* Carbon.framework in Frameworks */,
+				D63EFE4D131CF731005B6423 /* QTils.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D634F05513172E3E00D2BAFD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D634F06B13172F5200D2BAFD /* QTils.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D65F639212C3C7A4009A3D72 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D696D5A01414C21A00E2F416 /* LogControllerGCFW.framework in Frameworks */,
+				D65F639A12C3C7F5009A3D72 /* Cocoa.framework in Frameworks */,
+				D65F639E12C3C80C009A3D72 /* QTKit.framework in Frameworks */,
+				D65F63A212C3C815009A3D72 /* QuickTime.framework in Frameworks */,
+				D63EFD76131CF5BE005B6423 /* QuartzCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D67ACE591416129D00E99EA2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D67ACE5A1416129D00E99EA2 /* LogControllerGCFW.framework in Frameworks */,
+				D67ACE5B1416129D00E99EA2 /* Cocoa.framework in Frameworks */,
+				D67ACE5C1416129D00E99EA2 /* QTKit.framework in Frameworks */,
+				D67ACE5D1416129D00E99EA2 /* QuickTime.framework in Frameworks */,
+				D67ACE5E1416129D00E99EA2 /* QuartzCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6912C11132E54C300CD5E78 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D67AD1861416274900E99EA2 /* QTils-emb.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* FreeImage-testAPI */ = {
+			isa = PBXGroup;
+			children = (
+				D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */,
+				D6912BA2132E3EDB00CD5E78 /* Inspiration */,
+				D665F1F3132BCCD300E0B732 /* QTilities-v1.2.pages */,
+				D6FC2AAD131E588B00583ACC /* make_archive.sh */,
+				D6B9CE0812A529BD00B99C73 /* Testing */,
+				D602C30611FE52A000D568BD /* QTMovieFile */,
+				D68788F1129A8781009ACD66 /* QTils */,
+				D6B9CE0512A529A000B99C73 /* timing */,
+				D6B9CCD312A5296D00B99C73 /* Frameworks */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+				D65191B012199F490077C8D3 /* QTMovieSink-Info.plist */,
+				D6912C15132E54C300CD5E78 /* QTMovieWindowTest.app-Info.plist */,
+				D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */,
+			);
+			name = "FreeImage-testAPI";
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D6295FFC121BE77D00F66BA8 /* qtest2r */,
+				D65F639412C3C7A4009A3D72 /* QTils.framework */,
+				D634F05713172E3E00D2BAFD /* QTMovieWindowTest */,
+				D6912C13132E54C300CD5E78 /* QTMovieWindowTest.app */,
+				D67ACE641416129D00E99EA2 /* QTils-emb.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D602C30611FE52A000D568BD /* QTMovieFile */ = {
+			isa = PBXGroup;
+			children = (
+				D619278B11FF690800BDAAAA /* copyright.h */,
+				D619272711FF64E500BDAAAA /* QTMovieSink.h */,
+				D6F413CF132693810068EF66 /* QTMovieSinkQTStuff.h */,
+				D619275011FF65E200BDAAAA /* QTMovieSink.c */,
+				D6FFD4CF1325545B005CF3D5 /* QTMovieSink_mod2.c */,
+				D63A60011230F198001E4ACF /* OSXbackgrounding.c */,
+				D602C30811FE52C800D568BD /* QTMovieFile.h */,
+				D602C30711FE52C800D568BD /* QTMovieFile.cpp */,
+			);
+			name = QTMovieFile;
+			sourceTree = "<group>";
+		};
+		D6169C54134CF7D7004A2A56 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D6169C5D134CF7D7004A2A56 /* LogController.framework */,
+				D6169C5F134CF7D7004A2A56 /* LogControllerL.framework */,
+				D6169D1E134D021D004A2A56 /* LogControllerFW.framework */,
+				D6169C61134CF7D7004A2A56 /* pipeLogger */,
+				D696D57C1414C08500E2F416 /* LogControllerGCFW.framework */,
+				D67AD139141624B100E99EA2 /* pipeLogger-emb.app */,
+				D6D41FA5149FBEFA000A47D7 /* cseTest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D61C363912A55CB2000B426F /* Mod2 */ = {
+			isa = PBXGroup;
+			children = (
+				D61C364512A55CB2000B426F /* def */,
+				D61C364912A55CB2000B426F /* mod */,
+			);
+			name = Mod2;
+			path = QTils/Mod2;
+			sourceTree = SOURCE_ROOT;
+		};
+		D61C364512A55CB2000B426F /* def */ = {
+			isa = PBXGroup;
+			children = (
+				D6F7D4B412A951C000492D31 /* QTilsM2.def */,
+				D6B6E63C130E9DB300279904 /* POSIXm2.def */,
+			);
+			path = def;
+			sourceTree = "<group>";
+		};
+		D61C364912A55CB2000B426F /* mod */ = {
+			isa = PBXGroup;
+			children = (
+				D6F7D4B512A951CD00492D31 /* QTilsM2.mod */,
+				D6B6E63B130E9DB300279904 /* POSIXm2.mod */,
+				D647D27F12AAB335007C5D3D /* TstQTilsM2.mod */,
+			);
+			path = mod;
+			sourceTree = "<group>";
+		};
+		D61EEE4B14841C0400D479D9 /* CritSectEx */ = {
+			isa = PBXGroup;
+			children = (
+				D61EEE4C14841C0400D479D9 /* CritSectEx.cpp */,
+				D61EEE4D14841C0400D479D9 /* CritSectEx.h */,
+			);
+			name = CritSectEx;
+			path = QTils/CritSectEx;
+			sourceTree = "<group>";
+		};
+		D65F63AF12C3C837009A3D72 /* macosx */ = {
+			isa = PBXGroup;
+			children = (
+				D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */,
+				D65F639512C3C7A4009A3D72 /* QTils-Info.plist */,
+				D6DD1BF6131A97B70063BBFE /* empty.mov */,
+				D6EC1D5812EF058300B53DBC /* AskFileName.m */,
+				D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */,
+				D65F63E212C3CC3F009A3D72 /* gcygwin */,
+				D6FEC29D141A1C230005D2B9 /* NSQTWindow.h */,
+				D6FEC29E141A1C230005D2B9 /* NSQTWindow.m */,
+				D6FEC296141A1B0B0005D2B9 /* NSQTMovieView.h */,
+				D6FEC297141A1B0B0005D2B9 /* NSQTMovieView.m */,
+				D65F63B012C3C837009A3D72 /* NSQTMovieWindow.h */,
+				D65F63B112C3C837009A3D72 /* NSQTMovieWindow.m */,
+				D634F12C1317D37700D2BAFD /* NSQTMovieWindow.nib */,
+				D6FEC218141A0C750005D2B9 /* MainMenu.nib */,
+				D69C2E04133EB3AC001C8D4C /* PkgInfo */,
+				D67ACE651416129D00E99EA2 /* QTils-Info copy.plist */,
+			);
+			name = macosx;
+			path = QTils/macosx;
+			sourceTree = "<group>";
+		};
+		D65F63E212C3CC3F009A3D72 /* gcygwin */ = {
+			isa = PBXGroup;
+			children = (
+				D65F63E312C3CC3F009A3D72 /* google */,
+			);
+			name = gcygwin;
+			path = QTils/gcygwin;
+			sourceTree = SOURCE_ROOT;
+		};
+		D65F63E312C3CC3F009A3D72 /* google */ = {
+			isa = PBXGroup;
+			children = (
+				D65F63E412C3CC3F009A3D72 /* dense_hash_map */,
+				D65F63E512C3CC3F009A3D72 /* dense_hash_set */,
+				D65F63E612C3CC3F009A3D72 /* sparse_hash_map */,
+				D65F63E712C3CC3F009A3D72 /* sparse_hash_set */,
+				D65F63E812C3CC3F009A3D72 /* sparsehash */,
+				D65F63ED12C3CC3F009A3D72 /* sparsetable */,
+				D65F63EE12C3CC3F009A3D72 /* type_traits.h */,
+			);
+			path = google;
+			sourceTree = "<group>";
+		};
+		D65F63E812C3CC3F009A3D72 /* sparsehash */ = {
+			isa = PBXGroup;
+			children = (
+				D65F63E912C3CC3F009A3D72 /* densehashtable.h */,
+				D65F63EA12C3CC3F009A3D72 /* libc_allocator_with_realloc.h */,
+				D65F63EB12C3CC3F009A3D72 /* sparseconfig.h */,
+				D65F63EC12C3CC3F009A3D72 /* sparsehashtable.h */,
+			);
+			path = sparsehash;
+			sourceTree = "<group>";
+		};
+		D68788F1129A8781009ACD66 /* QTils */ = {
+			isa = PBXGroup;
+			children = (
+				D61EEE4B14841C0400D479D9 /* CritSectEx */,
+				D63EFF5D131D4A34005B6423 /* doxygen.config */,
+				D6E64D2612F743FA00DF4419 /* QTxml.c */,
+				D65F63AF12C3C837009A3D72 /* macosx */,
+				D6B9CC6412A509B800B99C73 /* QTMovieWin.h */,
+				D6B9CC5E12A5086E00B99C73 /* mswin */,
+				D6D39C4A129C586B00DFACCC /* QTils.c */,
+				D61927C311FF703C00BDAAAA /* Logging.h */,
+				D68788F7129A87ED009ACD66 /* QTilities.h */,
+				D68788F8129A87ED009ACD66 /* QTMovieWin.c */,
+				D6878985129ACB17009ACD66 /* Lists.h */,
+				D6878986129ACB17009ACD66 /* Lists.cpp */,
+				D64CFEC4129ED62900AD4351 /* QTMovieWindowTest.c */,
+				D6574F4E131E7AC600A2DDE4 /* runDoxygen.sh */,
+			);
+			fileEncoding = 4;
+			lineEnding = 2;
+			name = QTils;
+			sourceTree = "<group>";
+		};
+		D6878987129ACBB7009ACD66 /* gmsvc */ = {
+			isa = PBXGroup;
+			children = (
+				D6878988129ACBB7009ACD66 /* dense_hash_map */,
+				D6878989129ACBB8009ACD66 /* dense_hash_set */,
+				D687898A129ACBB8009ACD66 /* sparse_hash_map */,
+				D687898B129ACBB8009ACD66 /* sparse_hash_set */,
+				D687898C129ACBB8009ACD66 /* sparsehash */,
+				D6878991129ACBB8009ACD66 /* sparsetable */,
+				D6878992129ACBB8009ACD66 /* type_traits.h */,
+			);
+			name = gmsvc;
+			path = ../gmsvc;
+			sourceTree = "<group>";
+		};
+		D687898C129ACBB8009ACD66 /* sparsehash */ = {
+			isa = PBXGroup;
+			children = (
+				D687898D129ACBB8009ACD66 /* densehashtable.h */,
+				D687898E129ACBB8009ACD66 /* libc_allocator_with_realloc.h */,
+				D687898F129ACBB8009ACD66 /* sparseconfig.h */,
+				D6878990129ACBB8009ACD66 /* sparsehashtable.h */,
+			);
+			name = sparsehash;
+			path = google/sparsehash;
+			sourceTree = "<group>";
+		};
+		D6912BA2132E3EDB00CD5E78 /* Inspiration */ = {
+			isa = PBXGroup;
+			children = (
+				D6912BA3132E3F1700CD5E78 /* QTText.c */,
+				D6912BA4132E3F1700CD5E78 /* QTUtilities.h */,
+				D6912BA5132E3F1700CD5E78 /* QTUtilities.c */,
+				D6912BA6132E3F1700CD5E78 /* MacPrefix.h */,
+				D6912BA7132E3F1700CD5E78 /* MacFramework.h */,
+				D6912BA8132E3F1700CD5E78 /* MacFramework.c */,
+				D6912BA9132E3F1700CD5E78 /* QTText.h */,
+			);
+			name = Inspiration;
+			sourceTree = "<group>";
+		};
+		D6B6E59C130E767600279904 /* POSIXm2 */ = {
+			isa = PBXGroup;
+			children = (
+				D6B6E605130E8F5700279904 /* dllPOSIXm2.cpp */,
+				D6B6E5A1130E774400279904 /* POSIXm2.h */,
+				D6B6E59D130E769200279904 /* POSIXm2.c */,
+			);
+			name = POSIXm2;
+			sourceTree = "<group>";
+		};
+		D6B9CC5E12A5086E00B99C73 /* mswin */ = {
+			isa = PBXGroup;
+			children = (
+				D6CE60501347AF45002E166B /* MacErrorTable.h */,
+				D663BD351328FFA5007DFF5C /* QTVOD2-dev-installer.nsi */,
+				D663BD331328DF96007DFF5C /* QTVOD2-installer.nsi */,
+				D6887070131FCD7500A696E6 /* runDoxygen.bat */,
+				D63EFECA131D1F32005B6423 /* QTpfuSaveImage.c */,
+				D63EFECB131D1F32005B6423 /* QTpfuSaveImage.h */,
+				D6B6E59C130E767600279904 /* POSIXm2 */,
+				D61C363912A55CB2000B426F /* Mod2 */,
+				D6878987129ACBB7009ACD66 /* gmsvc */,
+				D6704EBF121AFDB6004B5459 /* winixdefs.h */,
+				D6D39C17129C4E8C00DFACCC /* winutils.cpp */,
+				D6D39C18129C4E8C00DFACCC /* winutils.h */,
+				D61927CE11FF70A300BDAAAA /* Logger.cpp */,
+				D61927CF11FF70A300BDAAAA /* Logger.h */,
+				D6D39C49129C586B00DFACCC /* dllmain.cpp */,
+				D641371C13055B3C0013B201 /* vsscanf.cpp */,
+				D6EC1D3312EF03E400B53DBC /* AskFileName.c */,
+				D6B9CC5F12A5086E00B99C73 /* QTMovieWinWM.c */,
+			);
+			name = mswin;
+			path = QTils/mswin;
+			sourceTree = "<group>";
+		};
+		D6B9CCD312A5296D00B99C73 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D65F639912C3C7F5009A3D72 /* Cocoa.framework */,
+				D65F639D12C3C80C009A3D72 /* QTKit.framework */,
+				D65F63A112C3C815009A3D72 /* QuickTime.framework */,
+				D63EFD26131CF5A2005B6423 /* Quartz.framework */,
+				D63EFD75131CF5BE005B6423 /* QuartzCore.framework */,
+				D63EFE39131CF6F1005B6423 /* Carbon.framework */,
+				D6296141121BEC0200F66BA8 /* Quartz.framework */,
+				D61927E311FF737300BDAAAA /* Carbon.framework */,
+				D61927E411FF737300BDAAAA /* QuickTime.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D6B9CE0512A529A000B99C73 /* timing */ = {
+			isa = PBXGroup;
+			children = (
+				D629600A121BE82D00F66BA8 /* timing.c */,
+				D629600B121BE82D00F66BA8 /* timing.h */,
+			);
+			name = timing;
+			sourceTree = "<group>";
+		};
+		D6B9CE0812A529BD00B99C73 /* Testing */ = {
+			isa = PBXGroup;
+			children = (
+				D6BD7C5A13212FF80039E967 /* testMemIO.cpp */,
+				D6296008121BE7FE00F66BA8 /* qtest2r.cpp */,
+				D607F756122E9C2300B63D4C /* testgl.c */,
+			);
+			name = Testing;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D65F638F12C3C7A4009A3D72 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D634F2531317DD7300D2BAFD /* copyright.h in Headers */,
+				D65F63C912C3CA8D009A3D72 /* QTilities.h in Headers */,
+				D63EFD11131CF4DD005B6423 /* QTMovieSink.h in Headers */,
+				D63EFEB4131CFF1C005B6423 /* timing.h in Headers */,
+				D6F413D1132693810068EF66 /* QTMovieSinkQTStuff.h in Headers */,
+				D6CE60511347AF45002E166B /* MacErrorTable.h in Headers */,
+				D6FEC298141A1B0B0005D2B9 /* NSQTMovieView.h in Headers */,
+				D6FEC2A1141A1C230005D2B9 /* NSQTWindow.h in Headers */,
+				D61EEE5114841C0400D479D9 /* CritSectEx.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D67ACE431416129D00E99EA2 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D67ACE441416129D00E99EA2 /* copyright.h in Headers */,
+				D67ACE451416129D00E99EA2 /* QTilities.h in Headers */,
+				D67ACE461416129D00E99EA2 /* QTMovieSink.h in Headers */,
+				D67ACE471416129D00E99EA2 /* timing.h in Headers */,
+				D67ACE481416129D00E99EA2 /* QTMovieSinkQTStuff.h in Headers */,
+				D67ACE491416129D00E99EA2 /* MacErrorTable.h in Headers */,
+				D6FEC29A141A1B0B0005D2B9 /* NSQTMovieView.h in Headers */,
+				D6FEC29F141A1C230005D2B9 /* NSQTWindow.h in Headers */,
+				D61EEE4F14841C0400D479D9 /* CritSectEx.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		D6295FFB121BE77D00F66BA8 /* qtest2r */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D6296003121BE7D000F66BA8 /* Build configuration list for PBXNativeTarget "qtest2r" */;
+			buildPhases = (
+				D6295FF9121BE77D00F66BA8 /* Sources */,
+				D6295FFA121BE77D00F66BA8 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D63EFE7B131CF849005B6423 /* PBXTargetDependency */,
+			);
+			name = qtest2r;
+			productName = qtest2r;
+			productReference = D6295FFC121BE77D00F66BA8 /* qtest2r */;
+			productType = "com.apple.product-type.tool";
+		};
+		D634F05613172E3E00D2BAFD /* QTMovieWindowTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D634F05D13172E6900D2BAFD /* Build configuration list for PBXNativeTarget "QTMovieWindowTest" */;
+			buildPhases = (
+				D634F05413172E3E00D2BAFD /* Sources */,
+				D634F05513172E3E00D2BAFD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D618399D131FE916004D1997 /* PBXTargetDependency */,
+			);
+			name = QTMovieWindowTest;
+			productName = QTMovieWindowTest;
+			productReference = D634F05713172E3E00D2BAFD /* QTMovieWindowTest */;
+			productType = "com.apple.product-type.tool";
+		};
+		D65F639312C3C7A4009A3D72 /* QTils.framework */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D65F639812C3C7A5009A3D72 /* Build configuration list for PBXNativeTarget "QTils.framework" */;
+			buildPhases = (
+				D65F638F12C3C7A4009A3D72 /* Headers */,
+				D65F639012C3C7A4009A3D72 /* Resources */,
+				D65F639112C3C7A4009A3D72 /* Sources */,
+				D65F639212C3C7A4009A3D72 /* Frameworks */,
+				D6169C6D134CF872004A2A56 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			comments = "other linker flags: -framework Foundation -framework AppKit";
+			dependencies = (
+				D696D5D71414C3A700E2F416 /* PBXTargetDependency */,
+			);
+			name = QTils.framework;
+			productName = QTils;
+			productReference = D65F639412C3C7A4009A3D72 /* QTils.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		D67ACE401416129D00E99EA2 /* QTils-emb.framework */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D67ACE611416129D00E99EA2 /* Build configuration list for PBXNativeTarget "QTils-emb.framework" */;
+			buildPhases = (
+				D67ACE431416129D00E99EA2 /* Headers */,
+				D67ACE4A1416129D00E99EA2 /* Resources */,
+				D67ACE4E1416129D00E99EA2 /* Sources */,
+				D67ACE591416129D00E99EA2 /* Frameworks */,
+				D67ACE5F1416129D00E99EA2 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			comments = "other linker flags: -framework Foundation -framework AppKit";
+			dependencies = (
+				D67ACE411416129D00E99EA2 /* PBXTargetDependency */,
+			);
+			name = "QTils-emb.framework";
+			productName = QTils;
+			productReference = D67ACE641416129D00E99EA2 /* QTils-emb.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		D6912C12132E54C300CD5E78 /* QTMovieWindowTest.app */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D6912C18132E54C400CD5E78 /* Build configuration list for PBXNativeTarget "QTMovieWindowTest.app" */;
+			buildPhases = (
+				D6912C0F132E54C300CD5E78 /* Resources */,
+				D6912C10132E54C300CD5E78 /* Sources */,
+				D6912C11132E54C300CD5E78 /* Frameworks */,
+				D67ACF51141620F200E99EA2 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D67AD17D1416274200E99EA2 /* PBXTargetDependency */,
+			);
+			name = QTMovieWindowTest.app;
+			productName = QTMovieWindowTest.app;
+			productReference = D6912C13132E54C300CD5E78 /* QTMovieWindowTest.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+			};
+			buildConfigurationList = 1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "QTMovieSink-106" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* FreeImage-testAPI */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = D6169C54134CF7D7004A2A56 /* Products */;
+					ProjectRef = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				D65F639312C3C7A4009A3D72 /* QTils.framework */,
+				D67ACE401416129D00E99EA2 /* QTils-emb.framework */,
+				D634F05613172E3E00D2BAFD /* QTMovieWindowTest */,
+				D6912C12132E54C300CD5E78 /* QTMovieWindowTest.app */,
+				D6295FFB121BE77D00F66BA8 /* qtest2r */,
+				D6887054131FCAF000A696E6 /* DocSet */,
+				D678B5DD129BDB6100CBFDFD /* Archive+DocSet */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		D6169C5D134CF7D7004A2A56 /* LogController.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = LogController.framework;
+			remoteRef = D6169C5C134CF7D7004A2A56 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D6169C5F134CF7D7004A2A56 /* LogControllerL.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = LogControllerL.framework;
+			remoteRef = D6169C5E134CF7D7004A2A56 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D6169C61134CF7D7004A2A56 /* pipeLogger */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = pipeLogger;
+			remoteRef = D6169C60134CF7D7004A2A56 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D6169D1E134D021D004A2A56 /* LogControllerFW.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = LogControllerFW.framework;
+			remoteRef = D6169D1D134D021D004A2A56 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D67AD139141624B100E99EA2 /* pipeLogger-emb.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "pipeLogger-emb.app";
+			remoteRef = D67AD138141624B100E99EA2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D696D57C1414C08500E2F416 /* LogControllerGCFW.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = LogControllerGCFW.framework;
+			remoteRef = D696D57B1414C08500E2F416 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D6D41FA5149FBEFA000A47D7 /* cseTest */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = cseTest;
+			remoteRef = D6D41FA4149FBEFA000A47D7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D65F639012C3C7A4009A3D72 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D634F2E51317F9B200D2BAFD /* NSQTMovieWindow.nib in Resources */,
+				D6DD1BF7131A97B70063BBFE /* empty.mov in Resources */,
+				D69C2E0A133EB4AB001C8D4C /* PkgInfo in Resources */,
+				D6FEC1E9141A09570005D2B9 /* QTVODosx.icns in Resources */,
+				D6FEC219141A0C750005D2B9 /* MainMenu.nib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D67ACE4A1416129D00E99EA2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D67ACE4B1416129D00E99EA2 /* NSQTMovieWindow.nib in Resources */,
+				D67ACE4C1416129D00E99EA2 /* empty.mov in Resources */,
+				D67ACE4D1416129D00E99EA2 /* PkgInfo in Resources */,
+				D6FEC1EA141A09570005D2B9 /* QTVODosx.icns in Resources */,
+				D6FEC21A141A0C750005D2B9 /* MainMenu.nib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6912C0F132E54C300CD5E78 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D6FEC1ED141A09A70005D2B9 /* QTVODosx.icns in Resources */,
+				D6FEC265141A0FEB0005D2B9 /* MainMenu.nib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D678B5DC129BDB6100CBFDFD /* archive */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = archive;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd ${PROJECT_DIR}\npwd\nexec ./make_archive.sh";
+			showEnvVarsInLog = 0;
+		};
+		D6887053131FCAF000A696E6 /* doxygen */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = doxygen;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = ". ./runDoxygen.sh\nexit 0\n\n#  Build the doxygen documentation for the project and load the docset into Xcode.\n\n#  Use the following to adjust the value of the $DOXYGEN_PATH User-Defined Setting:\n#    Binary install location: /Applications/Productivity/Doxygen.app/Contents/Resources/doxygen\n#    Source build install location: /usr/local/bin/doxygen\n\n#  If the config file doesn't exist, run 'doxygen -g $SOURCE_ROOT/doxygen.config' to \n#   a get default file.\n\nif [ \"${DOXYGEN_PATH}\" = \"\" ] ;then\n\tDOXYGEN_PATH=\"/usr/local/bin/doxygen\"\nfi\n\nif ! [ -f $SOURCE_ROOT/doxygen.config ] \nthen \n  echo doxygen config file does not exist\n  $DOXYGEN_PATH -g $SOURCE_ROOT/doxygen.config\nfi\n\n#  Append the proper input/output directories and docset info to the config file.\n#  This works even though values are assigned higher up in the file. Easier than sed.\n\ncp $SOURCE_ROOT/doxygen.config $TEMP_DIR/doxygen.config\n\necho \"INPUT = $SOURCE_ROOT\" >> $TEMP_DIR/doxygen.config\n\nOUTPUT_DIRECTORY=\"$SOURCE_ROOT/${PROJECT_NAME}.docset\"\necho \"OUTPUT_DIRECTORY = $OUTPUT_DIRECTORY\" >> $TEMP_DIR/doxygen.config\n# set in doxygen.config\n# echo \"DOCSET_BUNDLE_ID       = fr.INRETS.QTils\" >> $TEMP_DIR/doxygen.config\n\necho \"GENERATE_DOCSET        = YES\" >> $TEMP_DIR/doxygen.config\n\n#  Run doxygen on the updated config file.\n#  Note: doxygen creates a Makefile that does most of the heavy lifting.\n\n$DOXYGEN_PATH $TEMP_DIR/doxygen.config\n\n#  make will invoke docsetutil. Take a look at the Makefile to see how this is done.\n\nmake -C $OUTPUT_DIRECTORY/html install\n\n#  Construct a temporary applescript file to tell Xcode to load a docset.\n\nrm -f $TEMP_DIR/loadDocSet.scpt\n\necho \"tell application \\\"Xcode\\\"\" >> $TEMP_DIR/loadDocSet.scpt\necho \"load documentation set with path \\\"/Users/$USER/Library/Developer/Shared/Documentation/DocSets/\\\"\" \n     >> $TEMP_DIR/loadDocSet.scpt\necho \"end tell\" >> $TEMP_DIR/loadDocSet.scpt\n\n#  Run the load-docset applescript command.\n\nosascript $TEMP_DIR/loadDocSet.scpt\n\nexit 0";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D6295FF9121BE77D00F66BA8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D6296009121BE7FE00F66BA8 /* qtest2r.cpp in Sources */,
+				D629600C121BE82D00F66BA8 /* timing.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D634F05413172E3E00D2BAFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D634F05E13172E6A00D2BAFD /* QTMovieWindowTest.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D65F639112C3C7A4009A3D72 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D65F63B312C3C837009A3D72 /* NSQTMovieWindow.m in Sources */,
+				D65F63C712C3CA8D009A3D72 /* QTils.c in Sources */,
+				D65F63CB12C3CA8D009A3D72 /* Lists.cpp in Sources */,
+				D65F644412C3D025009A3D72 /* QTMovieWin.c in Sources */,
+				D65F646712C40076009A3D72 /* QTMovieWinWM.m in Sources */,
+				D6EC1D5B12EF05E200B53DBC /* AskFileName.m in Sources */,
+				D6E64D2712F743FA00DF4419 /* QTxml.c in Sources */,
+				D634F02C13171B2700D2BAFD /* timing.c in Sources */,
+				D63EFD10131CF4D2005B6423 /* QTMovieSink.c in Sources */,
+				D6FFD4D11325545B005CF3D5 /* QTMovieSink_mod2.c in Sources */,
+				D6FEC299141A1B0B0005D2B9 /* NSQTMovieView.m in Sources */,
+				D6FEC2A2141A1C230005D2B9 /* NSQTWindow.m in Sources */,
+				D61EEE5014841C0400D479D9 /* CritSectEx.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D67ACE4E1416129D00E99EA2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D67ACE4F1416129D00E99EA2 /* NSQTMovieWindow.m in Sources */,
+				D67ACE501416129D00E99EA2 /* QTils.c in Sources */,
+				D67ACE511416129D00E99EA2 /* Lists.cpp in Sources */,
+				D67ACE521416129D00E99EA2 /* QTMovieWin.c in Sources */,
+				D67ACE531416129D00E99EA2 /* QTMovieWinWM.m in Sources */,
+				D67ACE541416129D00E99EA2 /* AskFileName.m in Sources */,
+				D67ACE551416129D00E99EA2 /* QTxml.c in Sources */,
+				D67ACE561416129D00E99EA2 /* timing.c in Sources */,
+				D67ACE571416129D00E99EA2 /* QTMovieSink.c in Sources */,
+				D67ACE581416129D00E99EA2 /* QTMovieSink_mod2.c in Sources */,
+				D6FEC29B141A1B0B0005D2B9 /* NSQTMovieView.m in Sources */,
+				D6FEC2A0141A1C230005D2B9 /* NSQTWindow.m in Sources */,
+				D61EEE4E14841C0400D479D9 /* CritSectEx.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6912C10132E54C300CD5E78 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D6912C1E132E55BE00CD5E78 /* QTMovieWindowTest.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D618399D131FE916004D1997 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D65F639312C3C7A4009A3D72 /* QTils.framework */;
+			targetProxy = D618399C131FE916004D1997 /* PBXContainerItemProxy */;
+		};
+		D63EFE7B131CF849005B6423 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D65F639312C3C7A4009A3D72 /* QTils.framework */;
+			targetProxy = D63EFE7A131CF849005B6423 /* PBXContainerItemProxy */;
+		};
+		D67ACE411416129D00E99EA2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LogControllerGC_framework;
+			targetProxy = D67ACE421416129D00E99EA2 /* PBXContainerItemProxy */;
+		};
+		D67AD17D1416274200E99EA2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D67ACE401416129D00E99EA2 /* QTils-emb.framework */;
+			targetProxy = D67AD17C1416274200E99EA2 /* PBXContainerItemProxy */;
+		};
+		D6887058131FCB1700A696E6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D6887054131FCAF000A696E6 /* DocSet */;
+			targetProxy = D6887057131FCB1700A696E6 /* PBXContainerItemProxy */;
+		};
+		D696D5D71414C3A700E2F416 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LogControllerGC_framework;
+			targetProxy = D696D5D61414C3A700E2F416 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB923608733DC60010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = NO;
+				GCC_ALTIVEC_EXTENSIONS = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_STRICT_ALIASING = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"${PROJECT_DIR}/../GNUStep-PC-LogController",
+					QTils/gcygwin,
+				);
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CFLAGS = (
+					"-falign-loops=32",
+					"-falign-functions=32",
+					"-falign-jumps=32",
+				);
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+				STRIP_INSTALLED_PRODUCT = NO;
+				USER_HEADER_SEARCH_PATHS = "";
+			};
+			name = Debug;
+		};
+		1DEB923708733DC60010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = NO;
+				GCC_ALTIVEC_EXTENSIONS = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_STRICT_ALIASING = YES;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"${PROJECT_DIR}/../GNUStep-PC-LogController",
+					QTils/gcygwin,
+				);
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CFLAGS = (
+					"-ftracer",
+					"-falign-loops=32",
+					"-falign-functions=32",
+					"-falign-jumps=32",
+				);
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+				STRIP_INSTALLED_PRODUCT = NO;
+				USER_HEADER_SEARCH_PATHS = "";
+			};
+			name = Release;
+		};
+		D6296004121BE7D000F66BA8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = "$(HOME)/bin";
+				LIBRARY_SEARCH_PATHS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = qtest2r;
+				USER_HEADER_SEARCH_PATHS = "";
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		D6296005121BE7D000F66BA8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = "";
+				INSTALL_PATH = "$(HOME)/bin";
+				LIBRARY_SEARCH_PATHS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = qtest2r;
+				USER_HEADER_SEARCH_PATHS = "";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		D634F05913172E3F00D2BAFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				HEADER_SEARCH_PATHS = "";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
+				PRODUCT_NAME = QTMovieWindowTest;
+			};
+			name = Debug;
+		};
+		D634F05A13172E3F00D2BAFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = "";
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				HEADER_SEARCH_PATHS = "";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
+				PRODUCT_NAME = QTMovieWindowTest;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		D65F639612C3C7A5009A3D72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DOXYGEN_PATH = /Applications/Productivity/Doxygen.app/Contents/Resources/doxygen;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../GNUStep-PC-LogController/build/Release\"",
+				);
+				FRAMEWORK_VERSION = A;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_ENABLE_SYMBOL_SEPARATION = NO;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_STRICT_ALIASING = YES;
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = (
+					"${PROJECT_DIR}/../GNUStep-PC-LogController",
+					QTils/gcygwin,
+				);
+				INFOPLIST_FILE = "QTils-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Frameworks";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = QTils;
+			};
+			name = Debug;
+		};
+		D65F639712C3C7A5009A3D72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DOXYGEN_PATH = /Applications/Productivity/Doxygen.app/Contents/Resources/doxygen;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../GNUStep-PC-LogController/build/Release\"",
+				);
+				FRAMEWORK_VERSION = A;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_ENABLE_SYMBOL_SEPARATION = NO;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_STRICT_ALIASING = YES;
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = (
+					"${PROJECT_DIR}/../GNUStep-PC-LogController",
+					QTils/gcygwin,
+				);
+				INFOPLIST_FILE = "QTils-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Frameworks";
+				LLVM_LTO = YES;
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = QTils;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		D678B5DE129BDB6100CBFDFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = Archive;
+			};
+			name = Debug;
+		};
+		D678B5DF129BDB6100CBFDFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Archive;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		D67ACE621416129D00E99EA2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DOXYGEN_PATH = /Applications/Productivity/Doxygen.app/Contents/Resources/doxygen;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../GNUStep-PC-LogController/build/Release\"",
+				);
+				FRAMEWORK_VERSION = A;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_ENABLE_SYMBOL_SEPARATION = NO;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					EMBEDDED_FRAMEWORK,
+					DEBUG,
+				);
+				GCC_STRICT_ALIASING = YES;
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = (
+					"${PROJECT_DIR}/../GNUStep-PC-LogController",
+					QTils/gcygwin,
+				);
+				INFOPLIST_FILE = "QTils-emb-Info.plist";
+				INSTALL_PATH = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = "QTils-emb";
+				SDKROOT = macosx10.5;
+			};
+			name = Debug;
+		};
+		D67ACE631416129D00E99EA2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DOXYGEN_PATH = /Applications/Productivity/Doxygen.app/Contents/Resources/doxygen;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../GNUStep-PC-LogController/build/Release\"",
+				);
+				FRAMEWORK_VERSION = A;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_ENABLE_SYMBOL_SEPARATION = NO;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = EMBEDDED_FRAMEWORK;
+				GCC_STRICT_ALIASING = YES;
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = (
+					"${PROJECT_DIR}/../GNUStep-PC-LogController",
+					QTils/gcygwin,
+				);
+				INFOPLIST_FILE = "QTils-emb-Info.plist";
+				INSTALL_PATH = "@loader_path/../Frameworks";
+				LLVM_LTO = NO;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = "QTils-emb";
+				SDKROOT = macosx10.5;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		D6887055131FCAF000A696E6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = DocSet;
+			};
+			name = Debug;
+		};
+		D6887056131FCAF000A696E6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = DocSet;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		D6912C16132E54C400CD5E78 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_GC = required;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "QTMovieWindowTest.app-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = QTMovieWindowTest;
+			};
+			name = Debug;
+		};
+		D6912C17132E54C400CD5E78 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_GC = required;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = EMBEDDED_FRAMEWORK;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "QTMovieWindowTest.app-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = QTMovieWindowTest;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "QTMovieSink-106" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB923608733DC60010E9CD /* Debug */,
+				1DEB923708733DC60010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D6296003121BE7D000F66BA8 /* Build configuration list for PBXNativeTarget "qtest2r" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6296004121BE7D000F66BA8 /* Debug */,
+				D6296005121BE7D000F66BA8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D634F05D13172E6900D2BAFD /* Build configuration list for PBXNativeTarget "QTMovieWindowTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D634F05913172E3F00D2BAFD /* Debug */,
+				D634F05A13172E3F00D2BAFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D65F639812C3C7A5009A3D72 /* Build configuration list for PBXNativeTarget "QTils.framework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D65F639612C3C7A5009A3D72 /* Debug */,
+				D65F639712C3C7A5009A3D72 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D678B5E2129BDB9A00CBFDFD /* Build configuration list for PBXAggregateTarget "Archive+DocSet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D678B5DE129BDB6100CBFDFD /* Debug */,
+				D678B5DF129BDB6100CBFDFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D67ACE611416129D00E99EA2 /* Build configuration list for PBXNativeTarget "QTils-emb.framework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D67ACE621416129D00E99EA2 /* Debug */,
+				D67ACE631416129D00E99EA2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D6887062131FCB3200A696E6 /* Build configuration list for PBXAggregateTarget "DocSet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6887055131FCAF000A696E6 /* Debug */,
+				D6887056131FCAF000A696E6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D6912C18132E54C400CD5E78 /* Build configuration list for PBXNativeTarget "QTMovieWindowTest.app" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6912C16132E54C400CD5E78 /* Debug */,
+				D6912C17132E54C400CD5E78 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

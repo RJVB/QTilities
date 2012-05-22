@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="QTils-VS2010">
+</Property><Property Name="Solution File" Value="P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\QTils-VS2010.sln">
+</Property><Property Name="Date" Value="mercredi 30 novembre 2011">
+</Property><Property Name="Time" Value="13:29">
+</Property><Property Name="Log Number" Value="2">
+</Property></Properties><Event ErrorLevel="0" Project="QTils" Source="QTils.vcproj" Description="Converting project file 'P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\QTils.vcproj'.">
+</Event><Event ErrorLevel="1" Project="QTils" Source="QTils.vcproj" Description="VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="QTils" Source="QTils.vcproj" Description="Attribute 'Detect64BitPortabilityProblems' of 'VCCLCompilerTool' is not supported in this version and has been removed during conversion.">
+</Event><Event ErrorLevel="1" Project="QTils" Source="QTils.vcproj" Description="Attribute 'OptimizeForWindows98' of 'VCLinkerTool' is not supported in this version and has been removed during conversion.">
+</Event><Event ErrorLevel="1" Project="QTils" Source="QTils.vcproj" Description="Attribute 'Detect64BitPortabilityProblems' of 'VCCLCompilerTool' is not supported in this version and has been removed during conversion.">
+</Event><Event ErrorLevel="1" Project="QTils" Source="QTils.vcproj" Description="Attribute 'Detect64BitPortabilityProblems' of 'VCCLCompilerTool' is not supported in this version and has been removed during conversion.">
+</Event><Event ErrorLevel="0" Project="QTils" Source="QTils.vcproj" Description="Done converting to new project file 'P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\QTils.vcxproj'.">
+</Event><Event ErrorLevel="3" Project="QTils" Source="QTils.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="QTMovieWindowTest" Source="QTMovieWindowTest.vcproj" Description="Converting project file 'P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\QTMovieWindowTest.vcproj'.">
+</Event><Event ErrorLevel="1" Project="QTMovieWindowTest" Source="QTMovieWindowTest.vcproj" Description="VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="QTMovieWindowTest" Source="QTMovieWindowTest.vcproj" Description="Attribute 'Detect64BitPortabilityProblems' of 'VCCLCompilerTool' is not supported in this version and has been removed during conversion.">
+</Event><Event ErrorLevel="1" Project="QTMovieWindowTest" Source="QTMovieWindowTest.vcproj" Description="Attribute 'Detect64BitPortabilityProblems' of 'VCCLCompilerTool' is not supported in this version and has been removed during conversion.">
+</Event><Event ErrorLevel="0" Project="QTMovieWindowTest" Source="QTMovieWindowTest.vcproj" Description="Done converting to new project file 'P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\QTMovieWindowTest.vcxproj'.">
+</Event><Event ErrorLevel="3" Project="QTMovieWindowTest" Source="QTMovieWindowTest.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="TstQTilsM2" Source="Mod2\TstQTilsM2.vcproj" Description="Converting project file 'P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\Mod2\TstQTilsM2.vcproj'.">
+</Event><Event ErrorLevel="1" Project="TstQTilsM2" Source="Mod2\TstQTilsM2.vcproj" Description="VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="TstQTilsM2" Source="Mod2\TstQTilsM2.vcproj" Description="MSB8012: $(TargetName) ('TstQTilsM2') does not match the Linker's OutputFile property value '' ('') in project configuration 'Debug|Win32'. This may cause your project to build incorrectly. To correct this, please make sure that $(TargetName) property value matches the value specified in %(Link.OutputFile).">
+</Event><Event ErrorLevel="1" Project="TstQTilsM2" Source="Mod2\TstQTilsM2.vcproj" Description="MSB8012: $(TargetExt) ('.exe') does not match the Linker's OutputFile property value '' ('') in project configuration 'Debug|Win32'. This may cause your project to build incorrectly. To correct this, please make sure that $(TargetExt) property value matches the value specified in %(Link.OutputFile).">
+</Event><Event ErrorLevel="1" Project="TstQTilsM2" Source="Mod2\TstQTilsM2.vcproj" Description="MSB8012: $(TargetPath) ('P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\Debug\TstQTilsM2.exe') does not match the Linker's OutputFile property value '' ('P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\') in project configuration 'Debug|Win32'. This may cause your project to build incorrectly. To correct this, please make sure that $(TargetPath) property value matches the value specified in %(Link.OutputFile).">
+</Event><Event ErrorLevel="1" Project="TstQTilsM2" Source="Mod2\TstQTilsM2.vcproj" Description="MSB8012: $(TargetName) ('TstQTilsM2') does not match the Linker's OutputFile property value '' ('') in project configuration 'Develop|Win32'. This may cause your project to build incorrectly. To correct this, please make sure that $(TargetName) property value matches the value specified in %(Link.OutputFile).">
+</Event><Event ErrorLevel="1" Project="TstQTilsM2" Source="Mod2\TstQTilsM2.vcproj" Description="MSB8012: $(TargetExt) ('.exe') does not match the Linker's OutputFile property value '' ('') in project configuration 'Develop|Win32'. This may cause your project to build incorrectly. To correct this, please make sure that $(TargetExt) property value matches the value specified in %(Link.OutputFile).">
+</Event><Event ErrorLevel="1" Project="TstQTilsM2" Source="Mod2\TstQTilsM2.vcproj" Description="MSB8012: $(TargetPath) ('P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\Develop\TstQTilsM2.exe') does not match the Linker's OutputFile property value '' ('P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\') in project configuration 'Develop|Win32'. This may cause your project to build incorrectly. To correct this, please make sure that $(TargetPath) property value matches the value specified in %(Link.OutputFile).">
+</Event><Event ErrorLevel="0" Project="TstQTilsM2" Source="Mod2\TstQTilsM2.vcproj" Description="Done converting to new project file 'P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\Mod2\TstQTilsM2.vcxproj'.">
+</Event><Event ErrorLevel="3" Project="TstQTilsM2" Source="Mod2\TstQTilsM2.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="POSIXm2" Source="POSIXm2.vcproj" Description="Converting project file 'P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\POSIXm2.vcproj'.">
+</Event><Event ErrorLevel="1" Project="POSIXm2" Source="POSIXm2.vcproj" Description="VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="POSIXm2" Source="POSIXm2.vcproj" Description="Attribute 'Detect64BitPortabilityProblems' of 'VCCLCompilerTool' is not supported in this version and has been removed during conversion.">
+</Event><Event ErrorLevel="1" Project="POSIXm2" Source="POSIXm2.vcproj" Description="Attribute 'OptimizeForWindows98' of 'VCLinkerTool' is not supported in this version and has been removed during conversion.">
+</Event><Event ErrorLevel="1" Project="POSIXm2" Source="POSIXm2.vcproj" Description="Attribute 'Detect64BitPortabilityProblems' of 'VCCLCompilerTool' is not supported in this version and has been removed during conversion.">
+</Event><Event ErrorLevel="1" Project="POSIXm2" Source="POSIXm2.vcproj" Description="Attribute 'Detect64BitPortabilityProblems' of 'VCCLCompilerTool' is not supported in this version and has been removed during conversion.">
+</Event><Event ErrorLevel="0" Project="POSIXm2" Source="POSIXm2.vcproj" Description="Done converting to new project file 'P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\POSIXm2.vcxproj'.">
+</Event><Event ErrorLevel="3" Project="POSIXm2" Source="POSIXm2.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="DocSet" Source="DocSet.vcproj" Description="Converting project file 'P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\DocSet.vcproj'.">
+</Event><Event ErrorLevel="1" Project="DocSet" Source="DocSet.vcproj" Description="VCConvertEngine could not convert attribute CompileAsManaged =  under Tool VCNMakeTool.">
+</Event><Event ErrorLevel="1" Project="DocSet" Source="DocSet.vcproj" Description="VCConvertEngine could not convert attribute CompileAsManaged =  under Tool VCNMakeTool.">
+</Event><Event ErrorLevel="1" Project="DocSet" Source="DocSet.vcproj" Description="VCConvertEngine could not convert attribute CompileAsManaged =  under Tool VCNMakeTool.">
+</Event><Event ErrorLevel="0" Project="DocSet" Source="DocSet.vcproj" Description="Done converting to new project file 'P:\msis\rjvb\QuickTimeStuff\QTilities\QTils\DocSet.vcxproj'.">
+</Event><Event ErrorLevel="3" Project="DocSet" Source="DocSet.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="winutils" Source="..\winutils\winutils.vcproj" Description="Converting project file 'P:\msis\rjvb\QuickTimeStuff\QTilities\winutils\winutils.vcproj'.">
+</Event><Event ErrorLevel="1" Project="winutils" Source="..\winutils\winutils.vcproj" Description="VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.">
+</Event><Event ErrorLevel="0" Project="winutils" Source="..\winutils\winutils.vcproj" Description="Done converting to new project file 'P:\msis\rjvb\QuickTimeStuff\QTilities\winutils\winutils.vcxproj'.">
+</Event><Event ErrorLevel="3" Project="winutils" Source="..\winutils\winutils.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="QTils-VS2010.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="QTils-VS2010.sln" Description="Converted">
+</Event></UpgradeLog>

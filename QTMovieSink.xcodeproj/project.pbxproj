@@ -1,0 +1,537 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D6296009121BE7FE00F66BA8 /* qtest2r.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6296008121BE7FE00F66BA8 /* qtest2r.cpp */; };
+		D629600C121BE82D00F66BA8 /* timing.c in Sources */ = {isa = PBXBuildFile; fileRef = D629600A121BE82D00F66BA8 /* timing.c */; };
+		D629600D121BE85900F66BA8 /* QTMovieSink.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65191AF12199F490077C8D3 /* QTMovieSink.framework */; };
+		D629612E121BEB9B00F66BA8 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D61927E311FF737300BDAAAA /* Carbon.framework */; };
+		D629612F121BEB9B00F66BA8 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D61927E411FF737300BDAAAA /* QuickTime.framework */; };
+		D6296142121BEC0200F66BA8 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6296141121BEC0200F66BA8 /* Quartz.framework */; };
+		D65169611203690600389541 /* copyright.h in Headers */ = {isa = PBXBuildFile; fileRef = D619278B11FF690800BDAAAA /* copyright.h */; };
+		D65169621203690600389541 /* QTMovieSink.h in Headers */ = {isa = PBXBuildFile; fileRef = D619272711FF64E500BDAAAA /* QTMovieSink.h */; };
+		D65169631203690600389541 /* QTMovieSink.c in Sources */ = {isa = PBXBuildFile; fileRef = D619275011FF65E200BDAAAA /* QTMovieSink.c */; };
+		D6516A4E1203691B00389541 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D61927E311FF737300BDAAAA /* Carbon.framework */; };
+		D6516A4F1203691B00389541 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D61927E411FF737300BDAAAA /* QuickTime.framework */; };
+		D65191B612199FDF0077C8D3 /* copyright.h in Headers */ = {isa = PBXBuildFile; fileRef = D619278B11FF690800BDAAAA /* copyright.h */; };
+		D65191B712199FDF0077C8D3 /* QTMovieSink.h in Headers */ = {isa = PBXBuildFile; fileRef = D619272711FF64E500BDAAAA /* QTMovieSink.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D65191B812199FEB0077C8D3 /* QTMovieSink.c in Sources */ = {isa = PBXBuildFile; fileRef = D619275011FF65E200BDAAAA /* QTMovieSink.c */; };
+		D65191BC1219A0270077C8D3 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D61927E311FF737300BDAAAA /* Carbon.framework */; };
+		D65192861219A0290077C8D3 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D61927E411FF737300BDAAAA /* QuickTime.framework */; };
+		D6704EC0121AFDB6004B5459 /* winixdefs.h in Headers */ = {isa = PBXBuildFile; fileRef = D6704EBF121AFDB6004B5459 /* winixdefs.h */; };
+		D6704EC1121AFDB7004B5459 /* winixdefs.h in Headers */ = {isa = PBXBuildFile; fileRef = D6704EBF121AFDB6004B5459 /* winixdefs.h */; };
+		D685834C122316B00050494E /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6296141121BEC0200F66BA8 /* Quartz.framework */; };
+		D685836E122316BD0050494E /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6296141121BEC0200F66BA8 /* Quartz.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D6296016121BE86F00F66BA8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D65191AE12199F490077C8D3;
+			remoteInfo = QTMovieSink.framework;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		D602C30711FE52C800D568BD /* QTMovieFile.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; name = QTMovieFile.cpp; path = inspiration/QTMovieFile.cpp; sourceTree = "<group>"; };
+		D602C30811FE52C800D568BD /* QTMovieFile.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; lineEnding = 2; name = QTMovieFile.h; path = inspiration/QTMovieFile.h; sourceTree = "<group>"; };
+		D607F756122E9C2300B63D4C /* testgl.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = testgl.c; path = inspiration/testgl.c; sourceTree = "<group>"; };
+		D619272711FF64E500BDAAAA /* QTMovieSink.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = QTMovieSink.h; sourceTree = "<group>"; };
+		D619275011FF65E200BDAAAA /* QTMovieSink.c */ = {isa = PBXFileReference; fileEncoding = 12; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = QTMovieSink.c; sourceTree = "<group>"; };
+		D619278B11FF690800BDAAAA /* copyright.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = copyright.h; sourceTree = "<group>"; };
+		D61927C311FF703C00BDAAAA /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
+		D61927CE11FF70A300BDAAAA /* Logger.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = Logger.cpp; sourceTree = "<group>"; };
+		D61927CF11FF70A300BDAAAA /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = Logger.h; sourceTree = "<group>"; };
+		D61927E311FF737300BDAAAA /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		D61927E411FF737300BDAAAA /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
+		D6295FFC121BE77D00F66BA8 /* qtest2r */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = qtest2r; sourceTree = BUILT_PRODUCTS_DIR; };
+		D6296008121BE7FE00F66BA8 /* qtest2r.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; name = qtest2r.cpp; path = inspiration/qtest2r.cpp; sourceTree = "<group>"; };
+		D629600A121BE82D00F66BA8 /* timing.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = timing.c; sourceTree = "<group>"; };
+		D629600B121BE82D00F66BA8 /* timing.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; lineEnding = 2; path = timing.h; sourceTree = "<group>"; };
+		D6296141121BEC0200F66BA8 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
+		D63A60011230F198001E4ACF /* OSXbackgrounding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = OSXbackgrounding.c; sourceTree = "<group>"; };
+		D651693E1203678F00389541 /* libQTMovieSink.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libQTMovieSink.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		D65191AF12199F490077C8D3 /* QTMovieSink.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = QTMovieSink.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D65191B012199F490077C8D3 /* QTMovieSink-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QTMovieSink-Info.plist"; sourceTree = "<group>"; };
+		D6704EBF121AFDB6004B5459 /* winixdefs.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = winixdefs.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D6295FFA121BE77D00F66BA8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D629612E121BEB9B00F66BA8 /* Carbon.framework in Frameworks */,
+				D629612F121BEB9B00F66BA8 /* QuickTime.framework in Frameworks */,
+				D629600D121BE85900F66BA8 /* QTMovieSink.framework in Frameworks */,
+				D6296142121BEC0200F66BA8 /* Quartz.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D651693C1203678F00389541 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D685836E122316BD0050494E /* Quartz.framework in Frameworks */,
+				D6516A4E1203691B00389541 /* Carbon.framework in Frameworks */,
+				D6516A4F1203691B00389541 /* QuickTime.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D65191AD12199F490077C8D3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D685834C122316B00050494E /* Quartz.framework in Frameworks */,
+				D65192861219A0290077C8D3 /* QuickTime.framework in Frameworks */,
+				D65191BC1219A0270077C8D3 /* Carbon.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* FreeImage-testAPI */ = {
+			isa = PBXGroup;
+			children = (
+				D6296141121BEC0200F66BA8 /* Quartz.framework */,
+				D629600A121BE82D00F66BA8 /* timing.c */,
+				D629600B121BE82D00F66BA8 /* timing.h */,
+				D6296008121BE7FE00F66BA8 /* qtest2r.cpp */,
+				D607F756122E9C2300B63D4C /* testgl.c */,
+				D61927E311FF737300BDAAAA /* Carbon.framework */,
+				D61927E411FF737300BDAAAA /* QuickTime.framework */,
+				D602C30611FE52A000D568BD /* QTMovieFile */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+				D65191B012199F490077C8D3 /* QTMovieSink-Info.plist */,
+			);
+			name = "FreeImage-testAPI";
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D651693E1203678F00389541 /* libQTMovieSink.dylib */,
+				D65191AF12199F490077C8D3 /* QTMovieSink.framework */,
+				D6295FFC121BE77D00F66BA8 /* qtest2r */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D602C30611FE52A000D568BD /* QTMovieFile */ = {
+			isa = PBXGroup;
+			children = (
+				D6704EBF121AFDB6004B5459 /* winixdefs.h */,
+				D61927CE11FF70A300BDAAAA /* Logger.cpp */,
+				D61927CF11FF70A300BDAAAA /* Logger.h */,
+				D61927C311FF703C00BDAAAA /* Logging.h */,
+				D619278B11FF690800BDAAAA /* copyright.h */,
+				D619272711FF64E500BDAAAA /* QTMovieSink.h */,
+				D602C30711FE52C800D568BD /* QTMovieFile.cpp */,
+				D602C30811FE52C800D568BD /* QTMovieFile.h */,
+				D619275011FF65E200BDAAAA /* QTMovieSink.c */,
+				D63A60011230F198001E4ACF /* OSXbackgrounding.c */,
+			);
+			name = QTMovieFile;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D651693A1203678F00389541 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D65169611203690600389541 /* copyright.h in Headers */,
+				D65169621203690600389541 /* QTMovieSink.h in Headers */,
+				D6704EC1121AFDB7004B5459 /* winixdefs.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D65191AA12199F490077C8D3 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D65191B612199FDF0077C8D3 /* copyright.h in Headers */,
+				D65191B712199FDF0077C8D3 /* QTMovieSink.h in Headers */,
+				D6704EC0121AFDB6004B5459 /* winixdefs.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		D6295FFB121BE77D00F66BA8 /* qtest2r */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D6296003121BE7D000F66BA8 /* Build configuration list for PBXNativeTarget "qtest2r" */;
+			buildPhases = (
+				D6295FF9121BE77D00F66BA8 /* Sources */,
+				D6295FFA121BE77D00F66BA8 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D6296017121BE86F00F66BA8 /* PBXTargetDependency */,
+			);
+			name = qtest2r;
+			productName = qtest2r;
+			productReference = D6295FFC121BE77D00F66BA8 /* qtest2r */;
+			productType = "com.apple.product-type.tool";
+		};
+		D651693D1203678F00389541 /* QTMovieSink */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D651693F120367AE00389541 /* Build configuration list for PBXNativeTarget "QTMovieSink" */;
+			buildPhases = (
+				D651693A1203678F00389541 /* Headers */,
+				D651693B1203678F00389541 /* Sources */,
+				D651693C1203678F00389541 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QTMovieSink;
+			productName = QTMovieSink;
+			productReference = D651693E1203678F00389541 /* libQTMovieSink.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		D65191AE12199F490077C8D3 /* QTMovieSink.framework */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D65191B112199F4B0077C8D3 /* Build configuration list for PBXNativeTarget "QTMovieSink.framework" */;
+			buildPhases = (
+				D65191AA12199F490077C8D3 /* Headers */,
+				D65191AB12199F490077C8D3 /* Resources */,
+				D65191AC12199F490077C8D3 /* Sources */,
+				D65191AD12199F490077C8D3 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QTMovieSink.framework;
+			productName = "QTMovieSink-FW";
+			productReference = D65191AF12199F490077C8D3 /* QTMovieSink.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "QTMovieSink" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* FreeImage-testAPI */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D651693D1203678F00389541 /* QTMovieSink */,
+				D65191AE12199F490077C8D3 /* QTMovieSink.framework */,
+				D6295FFB121BE77D00F66BA8 /* qtest2r */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D65191AB12199F490077C8D3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D6295FF9121BE77D00F66BA8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D6296009121BE7FE00F66BA8 /* qtest2r.cpp in Sources */,
+				D629600C121BE82D00F66BA8 /* timing.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D651693B1203678F00389541 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D65169631203690600389541 /* QTMovieSink.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D65191AC12199F490077C8D3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D65191B812199FEB0077C8D3 /* QTMovieSink.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D6296017121BE86F00F66BA8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D65191AE12199F490077C8D3 /* QTMovieSink.framework */;
+			targetProxy = D6296016121BE86F00F66BA8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB923608733DC60010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = NO;
+				GCC_ALTIVEC_EXTENSIONS = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CFLAGS = (
+					"-falign-loops=32",
+					"-falign-functions=32",
+					"-falign-jumps=32",
+				);
+				PREBINDING = NO;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				STRIP_INSTALLED_PRODUCT = NO;
+				USER_HEADER_SEARCH_PATHS = "";
+			};
+			name = Debug;
+		};
+		1DEB923708733DC60010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = NO;
+				GCC_ALTIVEC_EXTENSIONS = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CFLAGS = (
+					"-ftracer",
+					"-falign-loops=32",
+					"-falign-functions=32",
+					"-falign-jumps=32",
+				);
+				PREBINDING = NO;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				STRIP_INSTALLED_PRODUCT = NO;
+				USER_HEADER_SEARCH_PATHS = "";
+			};
+			name = Release;
+		};
+		D6296004121BE7D000F66BA8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = "$(HOME)/bin";
+				LIBRARY_SEARCH_PATHS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = qtest2r;
+				USER_HEADER_SEARCH_PATHS = "";
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		D6296005121BE7D000F66BA8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				LIBRARY_SEARCH_PATHS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = qtest2r;
+				USER_HEADER_SEARCH_PATHS = "";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		D6516940120367AE00389541 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_NAME = libQTMovieSink;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SKIP_INSTALL = NO;
+				USER_HEADER_SEARCH_PATHS = "";
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		D6516941120367AE00389541 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_NAME = libQTMovieSink;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SKIP_INSTALL = NO;
+				USER_HEADER_SEARCH_PATHS = "";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		D65191B212199F4B0077C8D3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				GENERATE_PKGINFO_FILE = YES;
+				INFOPLIST_FILE = "QTMovieSink-Info.plist";
+				INSTALL_PATH = .;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = QTMovieSink;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "";
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		D65191B312199F4B0077C8D3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				GENERATE_PKGINFO_FILE = YES;
+				INFOPLIST_FILE = "QTMovieSink-Info.plist";
+				INSTALL_PATH = .;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = QTMovieSink;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "QTMovieSink" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB923608733DC60010E9CD /* Debug */,
+				1DEB923708733DC60010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D6296003121BE7D000F66BA8 /* Build configuration list for PBXNativeTarget "qtest2r" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6296004121BE7D000F66BA8 /* Debug */,
+				D6296005121BE7D000F66BA8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D651693F120367AE00389541 /* Build configuration list for PBXNativeTarget "QTMovieSink" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6516940120367AE00389541 /* Debug */,
+				D6516941120367AE00389541 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D65191B112199F4B0077C8D3 /* Build configuration list for PBXNativeTarget "QTMovieSink.framework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D65191B212199F4B0077C8D3 /* Debug */,
+				D65191B312199F4B0077C8D3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

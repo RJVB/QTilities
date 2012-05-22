@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary title="QTVOD Terminology" xmlns:xi="http://www.w3.org/2003/XInclude">
+	<xi:include href="file:///System/Library/ScriptingDefinitions/CocoaStandard.sdef" xpointer="xpointer(/dictionary/suite)"/>
+	<suite name="QTVOD Scripting Suite" code="QVOD" description="Class and properties for QTVOD.app">
+		<record-type name="QTChapter" code="QTCH">
+			<property name="name" code="pnam" description="chapter name" type="text" access="r">
+				<cocoa key="QTMovieChapterName"/>
+			</property>
+			<property name="startTime" code="QCTM" description="the chapter&apos;s start time" type="number" access="r">
+				<cocoa key="QTMovieChapterStartTime"/>
+			</property>
+		</record-type>
+		<class name="document" code="docu" description="A QTVOD document.">
+			<cocoa class="QTVODWindow"/>
+			<property name="name" code="pnam" description="Its name." type="text" access="r">
+				<cocoa key="displayName"/>
+			</property>
+			<property name="file" code="file" description="Its file on disk" type="file" access="r">
+				<cocoa key="fileURL"/>
+			</property>
+			<property name="id" code="ID  " description="Its unique ID" type="text" access="r">
+				<cocoa key="uniqueID"/>
+			</property>
+			<property name="path" code="FTPc" description="Its location on disk, if it has one." type="text" access="r">
+				<cocoa key="thePath"/>
+			</property>
+			<property name="currentTime" code="CURT" description="The current time in seconds from the movie start" type="real" access="rw">
+				<cocoa key="currentTime"/>
+			</property>
+			<property name="absCurrentTime" code="ACRT" description="The current time in absolute seconds, i.e. 3600 is 1h am. Obtained from the TimeCode track" type="real" access="rw">
+				<cocoa key="absCurrentTime"/>
+			</property>
+			<property name="duration" code="DUTN" description="The movie&apos;s duration" type="real" access="r">
+				<cocoa key="duration"/>
+			</property>
+			<property name="startTime" code="STTM" description="The movie&apos;s starting time" type="real" access="r">
+				<cocoa key="startTime"/>
+			</property>
+			<property name="frameRate" code="FMRT" description="The movie&apos;s frame rate" type="real" access="r">
+				<cocoa key="frameRate"/>
+			</property>
+			<property name="TCframeRate" code="TFRT" description="The movie&apos;s frame rate based on TimeCode info" type="real" access="r">
+				<cocoa key="TCframeRate"/>
+			</property>
+			<property name="lastInterval" code="tINT" description="the last measured time interval between 2 frames" type="real" access="r">
+				<cocoa key="lastInterval"/>
+			</property>
+			<property name="chapterNames" code="CHNS" description="the movie&apos;s chapter names list" access="r">
+				<cocoa key="chapterNames"/>
+				<type type="text" list="yes"/>
+			</property>
+			<property name="chapterTimes" code="CHTS" description="the movie&apos;s chapter times list" access="r">
+				<cocoa key="chapterTimes"/>
+				<type type="real" list="yes"/>
+			</property>
+			<property name="chapters" code="CHPS" description="the movie&apos;s chapter list" access="r">
+				<cocoa key="chapters"/>
+				<type type="QTChapter" list="yes"/>
+			</property>
+			<property hidden="yes" name="movieView" code="QTmv" description="The movie&apos;s QTMovieView" type="qtMovieView" access="r" in-properties="no">
+				<cocoa key="getView"/>
+			</property>
+			<responds-to command="close">
+				<cocoa method="handleCloseScriptCommand:"/>
+			</responds-to>
+			<responds-to command="play">
+				<cocoa method="handlePlayScriptCommand:"/>
+			</responds-to>
+			<responds-to command="stop">
+				<cocoa method="handleStopScriptCommand:"/>
+			</responds-to>
+			<responds-to command="stepForward">
+				<cocoa method="handleStepForwardScriptCommand:"/>
+			</responds-to>
+			<responds-to command="stepBackward">
+				<cocoa method="handleStepBackwardScriptCommand:"/>
+			</responds-to>
+			<responds-to command="addChapter">
+				<cocoa method="handleAddChapterScriptCommand:"/>
+			</responds-to>
+			<responds-to command="markTimeInterval">
+				<cocoa method="handleMarkIntervalTimeScriptCommand:"/>
+			</responds-to>
+			<responds-to command="resetVideo">
+				<cocoa method="handleResetScriptCommand:"/>
+			</responds-to>
+			<responds-to command="readDesign">
+				<cocoa method="handleReadDesignScriptCommand"/>
+			</responds-to>
+		</class>
+		<class name="qtMovieView" code="QTMV" description="The Cocoa QTMovieView class">
+			<cocoa class="QTMovieView"/>
+		</class>
+		<command name="close" code="QVODclse" description="close the document">
+			<direct-parameter type="document"/>
+		</command>
+		<command name="play" code="QVODstrt" description="start playing">
+			<direct-parameter type="document"/>
+		</command>
+		<command name="stop" code="QVODstop" description="stop playing">
+			<direct-parameter type="document"/>
+		</command>
+		<command name="stepForward" code="QVODnfrm" description="step 1 frame forward">
+			<direct-parameter type="document"/>
+		</command>
+		<command name="stepBackward" code="QVODpfrm" description="step 1 frame backward">
+			<direct-parameter type="document"/>
+		</command>
+		<command name="addChapter" code="QVODnchp" description="add a new movie chapter">
+			<direct-parameter type="document"/>
+			<parameter name="name" code="pnam" description="new chapter title" type="text">
+				<cocoa key="QTMovieChapterName"/>
+			</parameter>
+			<parameter name="startTime" code="NCST" description="new chapter&apos;s starting time in seconds" type="real">
+				<cocoa key="QTMovieChapterStartTime"/>
+			</parameter>
+			<parameter name="duration" code="NCDU" description="new chapter&apos;s duration" type="real" optional="yes">
+				<cocoa key="QTMovieChapterDuration"/>
+			</parameter>
+		</command>
+		<command name="markTimeInterval" code="QVODtINT" description="marks a new reference frame for time interval measurement">
+			<direct-parameter type="document"/>
+			<parameter name="reset" code="rset" description="start a new interval - otherwise the previous 2nd reference frame becomes the 1st" type="boolean" optional="yes">
+				<cocoa key="IntervalTimeReset"/>
+			</parameter>
+			<parameter name="display" code="dply" description="whether they host (QTVOD) should display the measured interval duration in a popup window" type="boolean" optional="yes">
+				<cocoa key="IntervalTimeDisplay"/>
+			</parameter>
+		</command>
+		<command name="resetVideo" code="QVODrset" description="reloads the video, possible after trashing the main cache file (complete=True). This command is not very reliable and to be avoided: prefer instead to get the document&apos;s currentTime, close it and reopen the file and finally set the currentTime to the saved value.">
+			<direct-parameter type="document"/>
+			<parameter name="complete" code="cmpl" description="whether to trash the main movie cache file during a reset" type="boolean" optional="yes">
+				<cocoa key="CompleteReset"/>
+			</parameter>
+		</command>
+		<command name="readDesign" code="QVODdsgn" description="reads a design from an XML design file">
+			<direct-parameter type="document"/>
+			<parameter name="name" code="pnam" description="the name of the file to parse" type="text">
+				<cocoa key="FileName"/>
+			</parameter>
+		</command>
+	</suite>
+</dictionary>

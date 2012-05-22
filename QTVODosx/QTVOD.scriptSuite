@@ -1,0 +1,29 @@
+// QTVOD.scriptSuite
+// QTVOD VOD visualiser
+//
+
+{
+    "Name" = "QTVOD";
+    "AppleEventCode" = "QVOD";
+
+    "Classes" = {
+        "NSApplication" = {
+            "Superclass" = "NSCoreSuite.NSApplication";
+            "ToManyRelationships" = {
+                "orderedDocuments" = {
+                    "Type" = "QTVODWindow";
+                    "AppleEventCode" = "docu";
+                };
+            };
+            "AppleEventCode" = "capp";
+        };
+        "QTVOD" = {
+            "Superclass" = "NSCoreSuite.NSDocument";
+            "AppleEventCode" = "docu";
+            };
+	};
+    };
+    "Synonyms" = {
+        "tact" = "NSTextSuite.NSTextStorage";
+    };
+}
