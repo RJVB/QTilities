@@ -107,7 +107,8 @@ const unsigned long cVideoCodec = kVideoCodecType,
 	cHD1080i60Codec = kDVCPROHD1080i60CodecType,
 	cMPEG4Codec = kMPEG4VisualCodecType,
 	cH264Codec = kH264CodecType,
-	cCinepakCodec = kCinepakCodecType;
+	cCinepakCodec = kCinepakCodecType,
+	cTIFFCodec = kTIFFCodecType;
 #if defined(__APPLE_CC__) || defined(__MACH__)
 	const unsigned long cApplePixletCodec = kPixletCodecType;
 #endif
@@ -123,6 +124,7 @@ static QTCompressionCodecs _QTCompressionCodec_ = {
 	kH264CodecType,
 	kRawCodecType,
 	kCinepakCodecType,
+	kTIFFCodecType,
 #if defined(__APPLE_CC__) || defined(__MACH__)
 	kPixletCodecType,
 #endif
@@ -1057,11 +1059,47 @@ static QTMovieSinks *_open_QTMovieSinkICM_( QTMovieSinks *qms, const char *theUR
 				);
 #ifdef DEBUG
 				{ ByteCount n;
-					ICMCompressionSessionOptionsGetProperty( options_ref,
+				  OSStatus _err;
+				  ComponentInstance ci;
+				  CompressorComponent cc = bestSpeedCodec;
+				  long m;
+					_err = ICMCompressionSessionOptionsGetProperty( options_ref,
 								kQTPropertyClass_ICMCompressionSessionOptions,
 								kICMCompressionSessionOptionsPropertyID_Quality,
 								sizeof(CodecQ), &quality, &n
 					);
+					if( codec == cTIFFCodec ){
+					  Handle qtCompressionCompressorSettings = NewHandle(0);
+					  Handle retSettings = NewHandle(0);
+//						_err = ICMCompressionSessionOptionsSetProperty( options_ref,
+//									kQTPropertyClass_ICMCompressionSessionOptions,
+//									kICMCompressionSessionOptionsPropertyID_CompressorComponent,
+//									sizeof(CompressorComponent), &cc );
+//						_err = FindCodec( kQTFileTypeTIFF, anyCodec, &cc, NULL );
+						_err = ICMCompressionSessionOptionsGetProperty( options_ref,
+									kQTPropertyClass_ICMCompressionSessionOptions,
+									kICMCompressionSessionOptionsPropertyID_CompressorComponent,
+									sizeof(CompressorComponent), &ci, &n );
+						_err = OpenADefaultComponent( GraphicsExporterComponentType, kQTFileTypeTIFF, &ci);
+						_err = GraphicsExportSetCompressionMethod( ci, kQTTIFFCompression_PackBits );
+						_err = GraphicsExportGetCompressionMethod( ci, &m );
+						_err = ImageCodecGetSettings( ci, qtCompressionCompressorSettings);
+						_err = ICMCompressionSessionOptionsSetProperty( options_ref,
+									kQTPropertyClass_ICMCompressionSessionOptions,
+									kICMCompressionSessionOptionsPropertyID_CompressorSettings,
+									sizeof(qtCompressionCompressorSettings), &qtCompressionCompressorSettings );
+						_err = ICMCompressionSessionOptionsGetProperty( options_ref,
+									kQTPropertyClass_ICMCompressionSessionOptions,
+									kICMCompressionSessionOptionsPropertyID_CompressorSettings,
+									sizeof(retSettings), &retSettings, &n
+						);
+//						_err = ICMCompressionSessionOptionsSetProperty( options_ref,
+//									kQTPropertyClass_ICMCompressionSessionOptions,
+//									kICMCompressionSessionOptionsPropertyID_CompressorComponent,
+//									sizeof(ci), &ci );
+						DisposeHandle(qtCompressionCompressorSettings);
+						DisposeHandle(retSettings);
+					}
 				}
 #endif
 			}

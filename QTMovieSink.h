@@ -248,7 +248,8 @@ QTMSext extern const unsigned long
 	cMPEG4Codec,
 	cH264Codec,
 	cRawCodec,
-	cCinepakCodec;
+	cCinepakCodec,
+	cTIFFCodec;
 #if defined(__APPLE_CC__) || defined(__MACH__)
 	QTMSext extern const unsigned long cApplePixletCodec;
 #endif
@@ -270,6 +271,7 @@ typedef struct QTCompressionCodecs {
 		, H264		//!< an MPEG4 - H.264 encoder
 		, Raw		//!< raw image stream output
 		, Cinepak		//!< the old CinePak codec
+		, TIFF		//!< "Motion TIFF" output
 #if defined(__APPLE_CC__) || defined(__MACH__)
 		, ApplePixlet	//!< Macintosh only: the Pixlet fractal codec.
 #endif

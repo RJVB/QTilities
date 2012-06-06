@@ -224,7 +224,7 @@ static OSStatus EncodedFrameOutputCallback (void *encodedFrameOutputRefCon, ICMC
         std::cerr << "EncodedFrameOutputCallback - AddMediaSampleFromEncodedFrame failed: " << rc << std::endl;
 #endif
 
-#ifdef DEBUG
+#ifdef DEBUG1
     std::cerr << "EncodedFrameOutputCallback - DataPtr:" << (void*)ICMEncodedFrameGetDataPtr(frame) << " encodedFrameOutputRefCon:" << encodedFrameOutputRefCon << std::endl;
 
     ImageDescriptionHandle imageDesc;
@@ -252,7 +252,7 @@ static OSStatus EncodedFrameOutputCallback (void *encodedFrameOutputRefCon, ICMC
 
 static void SourceTrackingCallback (void *sourceTrackingRefCon, ICMSourceTrackingFlags sourceTrackingFlags, void *sourceFrameRefCon, void *reserved)
 {
-#ifdef DEBUG
+#ifdef DEBUG1
     std::cerr << "SourceTrackingCallback - sourceTrackingRefCon: " << sourceTrackingRefCon << " sourceFrameRefCon: " << sourceFrameRefCon << std::endl;
 
     if (sourceTrackingFlags & kICMSourceTracking_LastCall)            std::cerr << "this is the last call for this sourceFrameRefCon." << std::endl;
@@ -420,7 +420,7 @@ CalcCompressionPerformance(OSType pfmt, CompressorComponent c, CodecType type, H
             std::cerr << " QTMovieFile::Initialize(), ICMCompressionSessionEncodeFrame() failed: " << rc << std::endl;
             goto done;
         }
-#ifdef DEBUG
+#ifdef DEBUG1
         std::cerr << " QTMovieFile::Initialize(), ICMCompressionSessionEncodeFrame() succeeded!" << std::endl;
 #endif
     }
@@ -819,6 +819,38 @@ int main()
 	else{
 	    std::cerr << "open_QTMovieSinkICM() failed with error " << err << std::endl;
 	}
+	if( (qms = open_QTMovieSink( NULL, "ApplePhotoTIFF-QTMovieSinkICM.mov", _w, _h, TRUE, QMSframes, QTCompressionCodec()->TIFF, quality, TRUE, FALSE, &err )) ){
+	  int frames;
+	  std::ostrstream s;
+	  QTMSEncodingStats stats;
+	    std::cerr << qms->theURL << " : ";
+	    for( frames = 0 ; frames < qms->frameBuffers ; frames++ ){
+		    for( int i= 0; i < _w*_h; i++ ){
+			    qms->imageFrame[frames][i].value = 0xDEADBABE;
+		    }
+	    }
+	    init_HRTime();
+	    SET_REALTIME();
+	    HRTime_tic();
+	    for( frames = 0; HRTime_toc() < 3; frames++ ){
+		    QTMovieSink_AddFrame( qms, 0.016667 );
+	    }
+	    double elapsed = HRTime_toc();
+	    EXIT_REALTIME();
+	    s << frames << " frames in " << elapsed << " seconds - " << frames/elapsed << " fps" << std::ends;
+	    std::cerr << s.str();
+	    std::cerr << std::endl;
+	    QTMovieSink_AddMovieMetaDataString( qms, akInfo, s.str(), NULL );
+	    if( get_QTMovieSink_EncodingStats( qms, &stats ) ){
+		    std::cerr << "Frames - Total: " << stats.Total << " Dropped: " << stats.Dropped << " Merged: " << stats.Merged
+			<< " timeChanged: " << stats.timeChanged << " bufferCopied: " << stats.bufferCopied << std::endl;
+	    }
+	    close_QTMovieSink( &qms, TRUE, NULL, FALSE );
+	    sleep(2);
+	}
+	else{
+	    std::cerr << "open_QTMovieSinkICM() failed with error " << err << std::endl;
+	}
 #ifdef _QTPFUSAVEIMAGE_H
 	if( init_QTpfuImageSaveData( &isd, "PFUSaveImage-opt.qi2m", _w, _h, TRUE )
 	   && (dst = (unsigned int*) calloc( _w * _h, sizeof(unsigned int)))
@@ -863,8 +895,10 @@ int main()
     {
         CodecNameSpec * p = &list->list[i];
         // 'cpix' resources are used by codecs to list their supported non-RGB pixel formats
-        Handle cpix=NULL; if (noErr == (rc=GetComponentPublicResource (p->codec, FOUR_CHAR_CODE('cpix'), 1, &cpix)) && kJPEGCodecType == p->cType)
-        {
+        Handle cpix=NULL;
+		if( noErr == (rc = GetComponentPublicResource( p->codec, FOUR_CHAR_CODE('cpix'), 1, &cpix ))
+			&& kJPEGCodecType == p->cType
+		){
             int cpixFormatCount = GetHandleSize(cpix) / sizeof(OSType);
             for (int j = 0; j < cpixFormatCount; j++)
             {
