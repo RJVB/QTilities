@@ -1060,9 +1060,14 @@ static QTMovieSinks *_open_QTMovieSinkICM_( QTMovieSinks *qms, const char *theUR
 #ifdef DEBUG
 				{ ByteCount n;
 				  OSStatus _err;
-				  ComponentInstance ci;
+				  ComponentInstance ci = NULL, cj = NULL;
 				  CompressorComponent cc = bestSpeedCodec;
 				  long m;
+				  ICMCompressionSessionOptionsRef options;
+				  QTAtomContainer container;
+				  SCTemporalSettings temporalSettings;
+				  SCSpatialSettings spatialSettings;
+				  long codecFlags, flags = scAllowEncodingWithCompressionSession;
 					_err = ICMCompressionSessionOptionsGetProperty( options_ref,
 								kQTPropertyClass_ICMCompressionSessionOptions,
 								kICMCompressionSessionOptionsPropertyID_Quality,
@@ -1071,34 +1076,26 @@ static QTMovieSinks *_open_QTMovieSinkICM_( QTMovieSinks *qms, const char *theUR
 					if( codec == cTIFFCodec ){
 					  Handle qtCompressionCompressorSettings = NewHandle(0);
 					  Handle retSettings = NewHandle(0);
-//						_err = ICMCompressionSessionOptionsSetProperty( options_ref,
-//									kQTPropertyClass_ICMCompressionSessionOptions,
-//									kICMCompressionSessionOptionsPropertyID_CompressorComponent,
-//									sizeof(CompressorComponent), &cc );
-//						_err = FindCodec( kQTFileTypeTIFF, anyCodec, &cc, NULL );
-						_err = ICMCompressionSessionOptionsGetProperty( options_ref,
-									kQTPropertyClass_ICMCompressionSessionOptions,
-									kICMCompressionSessionOptionsPropertyID_CompressorComponent,
-									sizeof(CompressorComponent), &ci, &n );
 						_err = OpenADefaultComponent( GraphicsExporterComponentType, kQTFileTypeTIFF, &ci);
+						_err = OpenADefaultComponent( StandardCompressionType, StandardCompressionSubType, &cj);
 						_err = GraphicsExportSetCompressionMethod( ci, kQTTIFFCompression_PackBits );
 						_err = GraphicsExportGetCompressionMethod( ci, &m );
 						_err = ImageCodecGetSettings( ci, qtCompressionCompressorSettings);
+						_err = SCSetInfo(cj, scPreferenceFlagsType, &flags);
+						_err = SCRequestSequenceSettings(cj);
+						_err = SCGetSettingsAsAtomContainer(cj, &container);
+						_err = SCCopyCompressionSessionOptions(cj, &options);
+						_err = SCGetInfo(cj, scSpatialSettingsType, &spatialSettings);
+						_err = SCGetInfo(cj, scTemporalSettingsType, &temporalSettings);
+						_err = SCGetInfo(cj, scCodecFlagsType, &codecFlags);
 						_err = ICMCompressionSessionOptionsSetProperty( options_ref,
 									kQTPropertyClass_ICMCompressionSessionOptions,
-									kICMCompressionSessionOptionsPropertyID_CompressorSettings,
-									sizeof(qtCompressionCompressorSettings), &qtCompressionCompressorSettings );
-						_err = ICMCompressionSessionOptionsGetProperty( options_ref,
-									kQTPropertyClass_ICMCompressionSessionOptions,
-									kICMCompressionSessionOptionsPropertyID_CompressorSettings,
-									sizeof(retSettings), &retSettings, &n
-						);
-//						_err = ICMCompressionSessionOptionsSetProperty( options_ref,
-//									kQTPropertyClass_ICMCompressionSessionOptions,
-//									kICMCompressionSessionOptionsPropertyID_CompressorComponent,
-//									sizeof(ci), &ci );
+									kICMCompressionSessionOptionsPropertyID_CompressorComponent,
+									sizeof(&spatialSettings.codec), &spatialSettings.codec );
 						DisposeHandle(qtCompressionCompressorSettings);
 						DisposeHandle(retSettings);
+						CloseComponent(ci);
+						CloseComponent(cj);
 					}
 				}
 #endif

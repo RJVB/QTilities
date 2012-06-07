@@ -720,6 +720,38 @@ int main()
 
 	TestXMLParsing();
 
+	if( (qms = open_QTMovieSink( NULL, "ApplePhotoTIFF-QTMovieSinkICM.mov", _w, _h, TRUE, QMSframes, QTCompressionCodec()->TIFF, quality, TRUE, FALSE, &err )) ){
+	  int frames;
+	  std::ostrstream s;
+	  QTMSEncodingStats stats;
+	    std::cerr << qms->theURL << " : ";
+	    for( frames = 0 ; frames < qms->frameBuffers ; frames++ ){
+		    for( int i= 0; i < _w*_h; i++ ){
+			    qms->imageFrame[frames][i].value = 0xDEADBABE;
+		    }
+	    }
+	    init_HRTime();
+	    SET_REALTIME();
+	    HRTime_tic();
+	    for( frames = 0; HRTime_toc() < 3; frames++ ){
+		    QTMovieSink_AddFrame( qms, 0.016667 );
+	    }
+	    double elapsed = HRTime_toc();
+	    EXIT_REALTIME();
+	    s << frames << " frames in " << elapsed << " seconds - " << frames/elapsed << " fps" << std::ends;
+	    std::cerr << s.str();
+	    std::cerr << std::endl;
+	    QTMovieSink_AddMovieMetaDataString( qms, akInfo, s.str(), NULL );
+	    if( get_QTMovieSink_EncodingStats( qms, &stats ) ){
+		    std::cerr << "Frames - Total: " << stats.Total << " Dropped: " << stats.Dropped << " Merged: " << stats.Merged
+			<< " timeChanged: " << stats.timeChanged << " bufferCopied: " << stats.bufferCopied << std::endl;
+	    }
+	    close_QTMovieSink( &qms, TRUE, NULL, FALSE );
+	    sleep(2);
+	}
+	else{
+	    std::cerr << "open_QTMovieSinkICM() failed with error " << err << std::endl;
+	}
 	if( (qms = open_QTMovieSink( NULL, "ApplePhotoJPEG-QTMovieSink.mov",
 						   _w, _h, TRUE, QMSframes, codec, quality, FALSE, FALSE, &err ))
 	){
@@ -788,38 +820,6 @@ int main()
 	    std::cerr << "open_QTMovieSink() failed with error " << err << std::endl;
 	}
 	if( (qms = open_QTMovieSink( NULL, "ApplePhotoJPEG-QTMovieSinkICM.mov", _w, _h, TRUE, QMSframes, codec, quality, TRUE, FALSE, &err )) ){
-	  int frames;
-	  std::ostrstream s;
-	  QTMSEncodingStats stats;
-	    std::cerr << qms->theURL << " : ";
-	    for( frames = 0 ; frames < qms->frameBuffers ; frames++ ){
-		    for( int i= 0; i < _w*_h; i++ ){
-			    qms->imageFrame[frames][i].value = 0xDEADBABE;
-		    }
-	    }
-	    init_HRTime();
-	    SET_REALTIME();
-	    HRTime_tic();
-	    for( frames = 0; HRTime_toc() < 3; frames++ ){
-		    QTMovieSink_AddFrame( qms, 0.016667 );
-	    }
-	    double elapsed = HRTime_toc();
-	    EXIT_REALTIME();
-	    s << frames << " frames in " << elapsed << " seconds - " << frames/elapsed << " fps" << std::ends;
-	    std::cerr << s.str();
-	    std::cerr << std::endl;
-	    QTMovieSink_AddMovieMetaDataString( qms, akInfo, s.str(), NULL );
-	    if( get_QTMovieSink_EncodingStats( qms, &stats ) ){
-		    std::cerr << "Frames - Total: " << stats.Total << " Dropped: " << stats.Dropped << " Merged: " << stats.Merged
-			<< " timeChanged: " << stats.timeChanged << " bufferCopied: " << stats.bufferCopied << std::endl;
-	    }
-	    close_QTMovieSink( &qms, TRUE, NULL, FALSE );
-	    sleep(2);
-	}
-	else{
-	    std::cerr << "open_QTMovieSinkICM() failed with error " << err << std::endl;
-	}
-	if( (qms = open_QTMovieSink( NULL, "ApplePhotoTIFF-QTMovieSinkICM.mov", _w, _h, TRUE, QMSframes, QTCompressionCodec()->TIFF, quality, TRUE, FALSE, &err )) ){
 	  int frames;
 	  std::ostrstream s;
 	  QTMSEncodingStats stats;
