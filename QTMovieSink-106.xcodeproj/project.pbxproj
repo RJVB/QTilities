@@ -52,6 +52,16 @@
 		D63EFE3A131CF6F1005B6423 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63EFE39131CF6F1005B6423 /* Carbon.framework */; };
 		D63EFE4D131CF731005B6423 /* QTils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639412C3C7A4009A3D72 /* QTils.framework */; };
 		D63EFEB4131CFF1C005B6423 /* timing.h in Headers */ = {isa = PBXBuildFile; fileRef = D629600B121BE82D00F66BA8 /* timing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D64B62D215823AB100FCA20C /* qtest2r.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6296008121BE7FE00F66BA8 /* qtest2r.cpp */; };
+		D64B62D315823AB100FCA20C /* timing.c in Sources */ = {isa = PBXBuildFile; fileRef = D629600A121BE82D00F66BA8 /* timing.c */; };
+		D64B62D615823AF300FCA20C /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F63A112C3C815009A3D72 /* QuickTime.framework */; };
+		D64B62DF15823B7400FCA20C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
+		D64B62E215823B8E00FCA20C /* QTils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639412C3C7A4009A3D72 /* QTils.framework */; };
+		D64B62E915823BBF00FCA20C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63EFD75131CF5BE005B6423 /* QuartzCore.framework */; };
+		D64B630415823E7200FCA20C /* QTAtom-ProgmCreation.h in Headers */ = {isa = PBXBuildFile; fileRef = D64B630215823E7200FCA20C /* QTAtom-ProgmCreation.h */; };
+		D64B630515823E7200FCA20C /* QTAtom-ProgmCreation.c in Sources */ = {isa = PBXBuildFile; fileRef = D64B630315823E7200FCA20C /* QTAtom-ProgmCreation.c */; };
+		D64B630615823E7200FCA20C /* QTAtom-ProgmCreation.h in Headers */ = {isa = PBXBuildFile; fileRef = D64B630215823E7200FCA20C /* QTAtom-ProgmCreation.h */; };
+		D64B630715823E7200FCA20C /* QTAtom-ProgmCreation.c in Sources */ = {isa = PBXBuildFile; fileRef = D64B630315823E7200FCA20C /* QTAtom-ProgmCreation.c */; };
 		D65F639A12C3C7F5009A3D72 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
 		D65F639E12C3C80C009A3D72 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639D12C3C80C009A3D72 /* QTKit.framework */; };
 		D65F63A212C3C815009A3D72 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F63A112C3C815009A3D72 /* QuickTime.framework */; };
@@ -155,6 +165,13 @@
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D65F639312C3C7A4009A3D72;
+			remoteInfo = QTils.framework;
+		};
+		D64B62D415823AD700FCA20C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D65F639312C3C7A4009A3D72 /* QTils.framework */;
 			remoteInfo = QTils.framework;
 		};
 		D67ACE421416129D00E99EA2 /* PBXContainerItemProxy */ = {
@@ -275,6 +292,10 @@
 		D63EFF5D131D4A34005B6423 /* doxygen.config */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = text; lineEnding = 2; path = doxygen.config; sourceTree = "<group>"; };
 		D641371C13055B3C0013B201 /* vsscanf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vsscanf.cpp; sourceTree = "<group>"; };
 		D647D27F12AAB335007C5D3D /* TstQTilsM2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = TstQTilsM2.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D64B62C915823A2400FCA20C /* qtest2r.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = qtest2r.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D64B62CB15823A2400FCA20C /* qtest2r.app-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "qtest2r.app-Info.plist"; sourceTree = "<group>"; };
+		D64B630215823E7200FCA20C /* QTAtom-ProgmCreation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "QTAtom-ProgmCreation.h"; path = "inspiration/QTAtom-ProgmCreation.h"; sourceTree = "<group>"; };
+		D64B630315823E7200FCA20C /* QTAtom-ProgmCreation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "QTAtom-ProgmCreation.c"; path = "inspiration/QTAtom-ProgmCreation.c"; sourceTree = "<group>"; };
 		D64CFEC4129ED62900AD4351 /* QTMovieWindowTest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; name = QTMovieWindowTest.c; path = QTils/QTMovieWindowTest.c; sourceTree = "<group>"; };
 		D65191B012199F490077C8D3 /* QTMovieSink-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QTMovieSink-Info.plist"; sourceTree = "<group>"; };
 		D6574F4E131E7AC600A2DDE4 /* runDoxygen.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = runDoxygen.sh; sourceTree = "<group>"; };
@@ -378,6 +399,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D64B62C715823A2400FCA20C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D64B62D615823AF300FCA20C /* QuickTime.framework in Frameworks */,
+				D64B62DF15823B7400FCA20C /* Cocoa.framework in Frameworks */,
+				D64B62E215823B8E00FCA20C /* QTils.framework in Frameworks */,
+				D64B62E915823BBF00FCA20C /* QuartzCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D65F639212C3C7A4009A3D72 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -429,6 +461,7 @@
 				D65191B012199F490077C8D3 /* QTMovieSink-Info.plist */,
 				D6912C15132E54C300CD5E78 /* QTMovieWindowTest.app-Info.plist */,
 				D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */,
+				D64B62CB15823A2400FCA20C /* qtest2r.app-Info.plist */,
 			);
 			name = "FreeImage-testAPI";
 			sourceTree = "<group>";
@@ -441,6 +474,7 @@
 				D634F05713172E3E00D2BAFD /* QTMovieWindowTest */,
 				D6912C13132E54C300CD5E78 /* QTMovieWindowTest.app */,
 				D67ACE641416129D00E99EA2 /* QTils-emb.framework */,
+				D64B62C915823A2400FCA20C /* qtest2r.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -631,6 +665,8 @@
 				D6912BA7132E3F1700CD5E78 /* MacFramework.h */,
 				D6912BA8132E3F1700CD5E78 /* MacFramework.c */,
 				D6912BA9132E3F1700CD5E78 /* QTText.h */,
+				D64B630215823E7200FCA20C /* QTAtom-ProgmCreation.h */,
+				D64B630315823E7200FCA20C /* QTAtom-ProgmCreation.c */,
 			);
 			name = Inspiration;
 			sourceTree = "<group>";
@@ -722,6 +758,7 @@
 				D6FEC298141A1B0B0005D2B9 /* NSQTMovieView.h in Headers */,
 				D6FEC2A1141A1C230005D2B9 /* NSQTWindow.h in Headers */,
 				D61EEE5114841C0400D479D9 /* CritSectEx.h in Headers */,
+				D64B630615823E7200FCA20C /* QTAtom-ProgmCreation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -738,6 +775,7 @@
 				D6FEC29A141A1B0B0005D2B9 /* NSQTMovieView.h in Headers */,
 				D6FEC29F141A1C230005D2B9 /* NSQTWindow.h in Headers */,
 				D61EEE4F14841C0400D479D9 /* CritSectEx.h in Headers */,
+				D64B630415823E7200FCA20C /* QTAtom-ProgmCreation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -777,6 +815,24 @@
 			productName = QTMovieWindowTest;
 			productReference = D634F05713172E3E00D2BAFD /* QTMovieWindowTest */;
 			productType = "com.apple.product-type.tool";
+		};
+		D64B62C815823A2400FCA20C /* qtest2r.app */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D64B62CE15823A2500FCA20C /* Build configuration list for PBXNativeTarget "qtest2r.app" */;
+			buildPhases = (
+				D64B62C515823A2400FCA20C /* Resources */,
+				D64B62C615823A2400FCA20C /* Sources */,
+				D64B62C715823A2400FCA20C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D64B62D515823AD700FCA20C /* PBXTargetDependency */,
+			);
+			name = qtest2r.app;
+			productName = qtest2r.app;
+			productReference = D64B62C915823A2400FCA20C /* qtest2r.app */;
+			productType = "com.apple.product-type.application";
 		};
 		D65F639312C3C7A4009A3D72 /* QTils.framework */ = {
 			isa = PBXNativeTarget;
@@ -872,6 +928,7 @@
 				D634F05613172E3E00D2BAFD /* QTMovieWindowTest */,
 				D6912C12132E54C300CD5E78 /* QTMovieWindowTest.app */,
 				D6295FFB121BE77D00F66BA8 /* qtest2r */,
+				D64B62C815823A2400FCA20C /* qtest2r.app */,
 				D6887054131FCAF000A696E6 /* DocSet */,
 				D678B5DD129BDB6100CBFDFD /* Archive+DocSet */,
 			);
@@ -931,6 +988,13 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		D64B62C515823A2400FCA20C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D65F639012C3C7A4009A3D72 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1016,6 +1080,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D64B62C615823A2400FCA20C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D64B62D215823AB100FCA20C /* qtest2r.cpp in Sources */,
+				D64B62D315823AB100FCA20C /* timing.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D65F639112C3C7A4009A3D72 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1033,6 +1106,7 @@
 				D6FEC299141A1B0B0005D2B9 /* NSQTMovieView.m in Sources */,
 				D6FEC2A2141A1C230005D2B9 /* NSQTWindow.m in Sources */,
 				D61EEE5014841C0400D479D9 /* CritSectEx.cpp in Sources */,
+				D64B630715823E7200FCA20C /* QTAtom-ProgmCreation.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1053,6 +1127,7 @@
 				D6FEC29B141A1B0B0005D2B9 /* NSQTMovieView.m in Sources */,
 				D6FEC2A0141A1C230005D2B9 /* NSQTWindow.m in Sources */,
 				D61EEE4E14841C0400D479D9 /* CritSectEx.cpp in Sources */,
+				D64B630515823E7200FCA20C /* QTAtom-ProgmCreation.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1076,6 +1151,11 @@
 			isa = PBXTargetDependency;
 			target = D65F639312C3C7A4009A3D72 /* QTils.framework */;
 			targetProxy = D63EFE7A131CF849005B6423 /* PBXContainerItemProxy */;
+		};
+		D64B62D515823AD700FCA20C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D65F639312C3C7A4009A3D72 /* QTils.framework */;
+			targetProxy = D64B62D415823AD700FCA20C /* PBXContainerItemProxy */;
 		};
 		D67ACE411416129D00E99EA2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1181,7 +1261,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = "";
@@ -1200,6 +1280,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = YES;
+				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = "";
@@ -1250,6 +1331,48 @@
 				PREBINDING = NO;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				PRODUCT_NAME = QTMovieWindowTest;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		D64B62CC15823A2500FCA20C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "qtest2r.app-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = qtest2r;
+			};
+			name = Debug;
+		};
+		D64B62CD15823A2500FCA20C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = "";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "qtest2r.app-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = qtest2r;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -1541,6 +1664,15 @@
 			buildConfigurations = (
 				D634F05913172E3F00D2BAFD /* Debug */,
 				D634F05A13172E3F00D2BAFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D64B62CE15823A2500FCA20C /* Build configuration list for PBXNativeTarget "qtest2r.app" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D64B62CC15823A2500FCA20C /* Debug */,
+				D64B62CD15823A2500FCA20C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

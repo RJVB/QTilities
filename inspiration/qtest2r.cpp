@@ -274,9 +274,11 @@ static void ReleaseBytesCallback( void *releaseRefCon, const void *baseAddress )
 
 
 void
-CalcCompressionPerformance(OSType pfmt, CompressorComponent c, CodecType type, Handle name_h)
+CalcCompressionPerformance(OSType pfmt, CompressorComponent c, CodecType type, Handle name_h, Boolean skip)
 {
-    char name_c[32]; p2cstrcpy(name_c,(StringPtr)*name_h);
+//    char *name_c = &(*name_h)[1];
+    std::string name_c = std::string( &(*name_h)[1], 
+    (*name_h)[0] ); 
     std::ostrstream s;
     if( pfmt > 40 ){
 #if TARGET_OS_WIN32
@@ -287,6 +289,10 @@ CalcCompressionPerformance(OSType pfmt, CompressorComponent c, CodecType type, H
     }
     else{
 	    s << name_c << "-RGB" << std::ends;
+    }
+    if( skip && name_c != "Xiph Theora Encoder" ){
+	    fprintf( stderr, "Skipping '%s'\n", s.str() );
+	    return;
     }
 
     OSStatus rc;
@@ -896,30 +902,42 @@ int main()
         CodecNameSpec * p = &list->list[i];
         // 'cpix' resources are used by codecs to list their supported non-RGB pixel formats
         Handle cpix=NULL;
-		if( noErr == (rc = GetComponentPublicResource( p->codec, FOUR_CHAR_CODE('cpix'), 1, &cpix ))
+#if TARGET_OS_WIN32
+	   OSType RGBpixelFormat = k32BGRAPixelFormat/*k32RGBAPixelFormat*/;
+#else
+	   OSType RGBpixelFormat = k32ARGBPixelFormat;
+#endif
+	    if( noErr == (rc = GetComponentPublicResource( p->codec, FOUR_CHAR_CODE('cpix'), 1, &cpix ))
 			&& kJPEGCodecType == p->cType
 		){
             int cpixFormatCount = GetHandleSize(cpix) / sizeof(OSType);
             for (int j = 0; j < cpixFormatCount; j++)
             {
                 OSType* nextFmt = (OSType*)(cpix[0] + (j * sizeof(OSType)));
-                CalcCompressionPerformance(*nextFmt, p->codec, p->cType, p->name);
+                CalcCompressionPerformance(*nextFmt, p->codec, p->cType, p->name, FALSE);
             }
             DisposeHandle(cpix);
 
-#if TARGET_OS_WIN32
-		  OSType RGBpixelFormat = k32BGRAPixelFormat/*k32RGBAPixelFormat*/;
-#else
-		  OSType RGBpixelFormat = k32ARGBPixelFormat;
-#endif
 		  { unsigned long *imageFrame = (unsigned long*) &_imageD[0];
-			  for( int i= 0; i < _w*_h; i++ ){
-				  imageFrame[i] = 0xDEADBABE;
+			  for( int f= 0; f < _w*_h; f++ ){
+				  imageFrame[f] = 0xDEADBABE;
 			  }
 		  }
-		  CalcCompressionPerformance(RGBpixelFormat, p->codec, p->cType, p->name);
-		  i += 1;
+		  CalcCompressionPerformance(RGBpixelFormat, p->codec, p->cType, p->name, FALSE);
+//		  i += 1;
         }
+	   else{
+		   if( GetComponentPublicResource( p->codec, FOUR_CHAR_CODE('cpix'), 1, &cpix ) == noErr ){
+			int cpixFormatCount = GetHandleSize(cpix) / sizeof(OSType);
+			   for( int j = 0; j < cpixFormatCount; j++ ){
+				OSType* nextFmt = (OSType*)(cpix[0] + (j * sizeof(OSType)));
+				   CalcCompressionPerformance(*nextFmt, p->codec, p->cType, p->name, TRUE);
+			   }
+		   }
+		   else{
+			   CalcCompressionPerformance(RGBpixelFormat, p->codec, p->cType, p->name, TRUE);
+		   }
+	   }
     }
     if (noErr != (rc=DisposeCodecNameList(list))) {
         std::cerr << "QTMovieFile::Initialize(), DisposeCodecNameList(0) failed: " << rc << std::endl;

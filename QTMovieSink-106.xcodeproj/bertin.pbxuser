@@ -3,8 +3,8 @@
 	08FB7793FE84155DC02AAC07 /* Project object */ = {
 		activeArchitecturePreference = i386;
 		activeBuildConfigurationName = Debug;
-		activeExecutable = D6295FFD121BE77D00F66BA8 /* qtest2r */;
-		activeTarget = D6295FFB121BE77D00F66BA8 /* qtest2r */;
+		activeExecutable = D64B62CA15823A2400FCA20C /* qtest2r.app */;
+		activeTarget = D64B62C815823A2400FCA20C /* qtest2r.app */;
 		addToTargets = (
 			D67ACE401416129D00E99EA2 /* QTils-emb.framework */,
 			D65F639312C3C7A4009A3D72 /* QTils.framework */,
@@ -25,6 +25,7 @@
 			D6295FFD121BE77D00F66BA8 /* qtest2r */,
 			D634F05813172E3E00D2BAFD /* QTMovieWindowTest */,
 			D6912C14132E54C300CD5E78 /* QTMovieWindowTest.app */,
+			D64B62CA15823A2400FCA20C /* qtest2r.app */,
 		);
 		perUserDictionary = {
 			"PBXConfiguration.PBXBreakpointsDataSource.v1:1CA1AED706398EBD00589147" = {
@@ -173,20 +174,18 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 360748535;
-			PBXWorkspaceStateSaveDate = 360748535;
+			PBXPerProjectTemplateStateSaveDate = 360855979;
+			PBXWorkspaceStateSaveDate = 360855979;
 		};
 		perUserProjectItems = {
-			D679DF7415809DDB00A3B701 /* PBXTextBookmark */ = D679DF7415809DDB00A3B701 /* PBXTextBookmark */;
-			D679DF9215809F8100A3B701 /* PBXTextBookmark */ = D679DF9215809F8100A3B701 /* PBXTextBookmark */;
-			D679DF9315809F8100A3B701 /* PBXTextBookmark */ = D679DF9315809F8100A3B701 /* PBXTextBookmark */;
-			D679DF9515809F8100A3B701 /* PBXTextBookmark */ = D679DF9515809F8100A3B701 /* PBXTextBookmark */;
-			D679DF9615809F8100A3B701 /* PBXTextBookmark */ = D679DF9615809F8100A3B701 /* PBXTextBookmark */;
-			D679DF9715809F8100A3B701 /* PBXTextBookmark */ = D679DF9715809F8100A3B701 /* PBXTextBookmark */;
-			D6C22617157EA1630053FBEC /* PBXTextBookmark */ = D6C22617157EA1630053FBEC /* PBXTextBookmark */;
-			D6C22618157EA1630053FBEC /* PBXTextBookmark */ = D6C22618157EA1630053FBEC /* PBXTextBookmark */;
-			D6C22619157EA1630053FBEC /* PBXTextBookmark */ = D6C22619157EA1630053FBEC /* PBXTextBookmark */;
-			D6C2261A157EA1630053FBEC /* PBXTextBookmark */ = D6C2261A157EA1630053FBEC /* PBXTextBookmark */;
+			D64B630815823EC100FCA20C /* PBXTextBookmark */ = D64B630815823EC100FCA20C /* PBXTextBookmark */;
+			D64B630915823EC100FCA20C /* PBXTextBookmark */ = D64B630915823EC100FCA20C /* PBXTextBookmark */;
+			D64B630A15823EC100FCA20C /* PBXTextBookmark */ = D64B630A15823EC100FCA20C /* PBXTextBookmark */;
+			D64B630B15823EC100FCA20C /* PBXTextBookmark */ = D64B630B15823EC100FCA20C /* PBXTextBookmark */;
+			D6D2AB81158235EB0024B82A /* PBXTextBookmark */ = D6D2AB81158235EB0024B82A /* PBXTextBookmark */;
+			D6D2AB82158235EB0024B82A /* PBXTextBookmark */ = D6D2AB82158235EB0024B82A /* PBXTextBookmark */;
+			D6D2AB83158235EB0024B82A /* PBXTextBookmark */ = D6D2AB83158235EB0024B82A /* PBXTextBookmark */;
+			D6D2AB84158235EB0024B82A /* PBXTextBookmark */ = D6D2AB84158235EB0024B82A /* PBXTextBookmark */;
 		};
 		sourceControlManager = D6D4D35711FC900400983B3D /* Source Control */;
 		userBuildSettings = {
@@ -233,7 +232,7 @@
 		hitCount = 0;
 		ignoreCount = 0;
 		lineNumber = 542;
-		modificationTime = 360750610.178486;
+		modificationTime = 360856537.029516;
 		originalNumberOfMultipleMatches = 1;
 		state = 2;
 	};
@@ -251,7 +250,7 @@
 		ignoreCount = 0;
 		lineNumber = 8;
 		location = QTMovieSink;
-		modificationTime = 360750610.178444;
+		modificationTime = 360856537.029493;
 		originalNumberOfMultipleMatches = 1;
 		state = 2;
 	};
@@ -259,18 +258,18 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {786, 5292}}";
 			sepNavSelRange = "{10206, 37}";
-			sepNavVisRange = "{9451, 1558}";
+			sepNavVisRange = "{9356, 1652}";
 			sepNavVisRect = "{{0, 1486}, {693, 712}}";
-			sepNavWindowFrame = "{{-805, 250}, {755, 778}}";
+			sepNavWindowFrame = "{{-805, 100}, {755, 778}}";
 		};
 	};
 	D619275011FF65E200BDAAAA /* QTMovieSink.c */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {942, 22274}}";
-			sepNavSelRange = "{32543, 0}";
-			sepNavVisRange = "{31596, 2281}";
+			sepNavIntBoundsRect = "{{0, 0}, {942, 22358}}";
+			sepNavSelRange = "{32277, 0}";
+			sepNavVisRange = "{31816, 2595}";
 			sepNavVisRect = "{{0, 496}, {710, 759}}";
-			sepNavWindowFrame = "{{182, 250}, {755, 778}}";
+			sepNavWindowFrame = "{{135, 100}, {755, 778}}";
 		};
 	};
 	D619278B11FF690800BDAAAA /* copyright.h */ = {
@@ -355,18 +354,23 @@
 				value = 1;
 			},
 			{
-				active = NO;
+				active = YES;
 				name = MallocScribble;
 				value = 1;
 			},
 			{
-				active = NO;
+				active = YES;
 				name = MallocPreScribble;
 				value = 1;
 			},
 			{
 				active = YES;
 				name = MallocGuardEdges;
+				value = 1;
+			},
+			{
+				active = YES;
+				name = MallocCorruptionAbort;
 				value = 1;
 			},
 		);
@@ -382,6 +386,7 @@
 		variableFormatDictionary = {
 			"*dataRefType-long unsigned int-OpenMovieFromURL" = 5;
 			"RGBpixelFormat-OSType-main" = 5;
+			"cType-CodecType-main" = 5;
 			"cdataRefType-OSType-AddImagesToMovie" = 5;
 			"codec-long unsigned int-_open_QTMovieSinkICM_" = 5;
 			"codecFlags-long int-_open_QTMovieSinkICM_" = 1;
@@ -420,11 +425,11 @@
 	};
 	D6296008121BE7FE00F66BA8 /* qtest2r.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {984, 13944}}";
-			sepNavSelRange = "{27532, 0}";
-			sepNavVisRange = "{29776, 2060}";
+			sepNavIntBoundsRect = "{{0, 0}, {918, 14210}}";
+			sepNavSelRange = "{32787, 24}";
+			sepNavVisRange = "{31528, 1876}";
 			sepNavVisRect = "{{0, 7000}, {708, 759}}";
-			sepNavWindowFrame = "{{67, 46}, {753, 832}}";
+			sepNavWindowFrame = "{{304, 31}, {753, 832}}";
 		};
 	};
 	D629600A121BE82D00F66BA8 /* timing.c */ = {
@@ -530,18 +535,18 @@
 	};
 	D63EFECA131D1F32005B6423 /* QTpfuSaveImage.c */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {734, 4900}}";
-			sepNavSelRange = "{8519, 0}";
-			sepNavVisRange = "{8033, 1103}";
-			sepNavWindowFrame = "{{61, 161}, {793, 794}}";
+			sepNavIntBoundsRect = "{{0, 0}, {734, 4508}}";
+			sepNavSelRange = "{7382, 6}";
+			sepNavVisRange = "{6877, 1094}";
+			sepNavWindowFrame = "{{61, 84}, {793, 794}}";
 		};
 	};
 	D63EFECB131D1F32005B6423 /* QTpfuSaveImage.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {734, 840}}";
-			sepNavSelRange = "{511, 0}";
-			sepNavVisRange = "{139, 1920}";
-			sepNavWindowFrame = "{{468, 98}, {793, 794}}";
+			sepNavSelRange = "{1063, 6}";
+			sepNavVisRange = "{139, 1867}";
+			sepNavWindowFrame = "{{468, 84}, {793, 794}}";
 		};
 	};
 	D63EFF5D131D4A34005B6423 /* doxygen.config */ = {
@@ -567,6 +572,92 @@
 			sepNavVisRange = "{4096, 2070}";
 			sepNavWindowFrame = "{{552, 61}, {755, 778}}";
 		};
+	};
+	D64B62C815823A2400FCA20C /* qtest2r.app */ = {
+		activeExec = 0;
+		executables = (
+			D64B62CA15823A2400FCA20C /* qtest2r.app */,
+		);
+	};
+	D64B62CA15823A2400FCA20C /* qtest2r.app */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = qtest2r.app;
+		savedGlobals = {
+		};
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+		variableFormatDictionary = {
+		};
+	};
+	D64B630215823E7200FCA20C /* QTAtom-ProgmCreation.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1068, 786}}";
+			sepNavSelRange = "{1143, 0}";
+			sepNavVisRange = "{0, 1143}";
+			sepNavWindowFrame = "{{15, 0}, {750, 878}}";
+		};
+	};
+	D64B630815823EC100FCA20C /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = D619275011FF65E200BDAAAA /* QTMovieSink.c */;
+		name = "QTMovieSink.c: 1071";
+		rLen = 0;
+		rLoc = 32277;
+		rType = 0;
+		vrLen = 2595;
+		vrLoc = 31816;
+	};
+	D64B630915823EC100FCA20C /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = D6296008121BE7FE00F66BA8 /* qtest2r.cpp */;
+		name = "qtest2r.cpp: 890";
+		rLen = 24;
+		rLoc = 32787;
+		rType = 0;
+		vrLen = 1876;
+		vrLoc = 31528;
+	};
+	D64B630A15823EC100FCA20C /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = D619272711FF64E500BDAAAA /* QTMovieSink.h */;
+		name = "QTMovieSink.h: 262";
+		rLen = 37;
+		rLoc = 10206;
+		rType = 0;
+		vrLen = 1652;
+		vrLoc = 9356;
+	};
+	D64B630B15823EC100FCA20C /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */;
+		name = "QTMovieWinWM.m: 147";
+		rLen = 0;
+		rLoc = 3796;
+		rType = 0;
+		vrLen = 1358;
+		vrLoc = 3009;
 	};
 	D64CFEC4129ED62900AD4351 /* QTMovieWindowTest.c */ = {
 		uiCtxt = {
@@ -636,7 +727,7 @@
 			sepNavIntBoundsRect = "{{0, 0}, {858, 13538}}";
 			sepNavSelRange = "{3796, 0}";
 			sepNavVisRange = "{3009, 1358}";
-			sepNavWindowFrame = "{{336, 159}, {755, 778}}";
+			sepNavWindowFrame = "{{249, 64}, {755, 778}}";
 		};
 	};
 	D663BD331328DF96007DFF5C /* QTVOD2-installer.nsi */ = {
@@ -667,75 +758,6 @@
 	D678B5DD129BDB6100CBFDFD /* Archive+DocSet */ = {
 		activeExec = 0;
 	};
-	D679DF7415809DDB00A3B701 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D6C22608157EA0740053FBEC /* QuickTimeComponents.h */;
-		rLen = 1;
-		rLoc = 371;
-		rType = 1;
-	};
-	D679DF9215809F8100A3B701 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D619275011FF65E200BDAAAA /* QTMovieSink.c */;
-		name = "QTMovieSink.c: 1077";
-		rLen = 0;
-		rLoc = 32543;
-		rType = 0;
-		vrLen = 2281;
-		vrLoc = 31596;
-	};
-	D679DF9315809F8100A3B701 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D679DF9415809F8100A3B701 /* QuickTimeComponents.h */;
-		name = "QuickTimeComponents.h: 372";
-		rLen = 27;
-		rLoc = 11011;
-		rType = 0;
-		vrLen = 1762;
-		vrLoc = 10190;
-	};
-	D679DF9415809F8100A3B701 /* QuickTimeComponents.h */ = {
-		isa = PBXFileReference;
-		name = QuickTimeComponents.h;
-		path = /Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks/QuickTime.framework/Versions/A/Headers/QuickTimeComponents.h;
-		sourceTree = "<absolute>";
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {780, 192164}}";
-			sepNavSelRange = "{11011, 27}";
-			sepNavVisRange = "{10190, 1762}";
-			sepNavWindowFrame = "{{107, 61}, {750, 878}}";
-		};
-	};
-	D679DF9515809F8100A3B701 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D6296008121BE7FE00F66BA8 /* qtest2r.cpp */;
-		name = "qtest2r.cpp: 755";
-		rLen = 0;
-		rLoc = 27532;
-		rType = 0;
-		vrLen = 2060;
-		vrLoc = 29776;
-	};
-	D679DF9615809F8100A3B701 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D619272711FF64E500BDAAAA /* QTMovieSink.h */;
-		name = "QTMovieSink.h: 262";
-		rLen = 37;
-		rLoc = 10206;
-		rType = 0;
-		vrLen = 1558;
-		vrLoc = 9451;
-	};
-	D679DF9715809F8100A3B701 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */;
-		name = "QTMovieWinWM.m: 147";
-		rLen = 0;
-		rLoc = 3796;
-		rType = 0;
-		vrLen = 1358;
-		vrLoc = 3009;
-	};
 	D67ACE401416129D00E99EA2 /* QTils-emb.framework */ = {
 		activeExec = 0;
 	};
@@ -752,7 +774,7 @@
 		hitCount = 0;
 		ignoreCount = 0;
 		lineNumber = 240;
-		modificationTime = 360750610.178456;
+		modificationTime = 360856537.029509;
 		originalNumberOfMultipleMatches = 1;
 		state = 2;
 	};
@@ -1020,7 +1042,7 @@
 		hitCount = 0;
 		ignoreCount = 0;
 		location = "";
-		modificationTime = 360750610.178736;
+		modificationTime = 360856537.03047;
 		originalNumberOfMultipleMatches = 1;
 		state = 2;
 		symbolName = setIFrame;
@@ -1038,63 +1060,10 @@
 		hitCount = 1;
 		ignoreCount = 0;
 		lineNumber = 1081;
-		location = "QTils-emb";
-		modificationTime = 360750611.394417;
+		location = QTils;
+		modificationTime = 360856728.795327;
 		originalNumberOfMultipleMatches = 1;
-		state = 0;
-	};
-	D6C22608157EA0740053FBEC /* QuickTimeComponents.h */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.c.h;
-		name = QuickTimeComponents.h;
-		path = /Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks/QuickTime.framework/Versions/A/Headers/QuickTimeComponents.h;
-		sourceTree = "<absolute>";
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {780, 192164}}";
-			sepNavSelRange = "{11011, 27}";
-			sepNavVisRange = "{10190, 1762}";
-			sepNavWindowFrame = "{{107, 61}, {750, 878}}";
-		};
-	};
-	D6C22617157EA1630053FBEC /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D619272711FF64E500BDAAAA /* QTMovieSink.h */;
-		name = "QTMovieSink.h: 262";
-		rLen = 37;
-		rLoc = 10206;
-		rType = 0;
-		vrLen = 1562;
-		vrLoc = 9451;
-	};
-	D6C22618157EA1630053FBEC /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D6296008121BE7FE00F66BA8 /* qtest2r.cpp */;
-		name = "qtest2r.cpp: 277";
-		rLen = 19;
-		rLoc = 9498;
-		rType = 0;
-		vrLen = 2439;
-		vrLoc = 8179;
-	};
-	D6C22619157EA1630053FBEC /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D619275011FF65E200BDAAAA /* QTMovieSink.c */;
-		name = "QTMovieSink.c: 1072";
-		rLen = 0;
-		rLoc = 32499;
-		rType = 0;
-		vrLen = 2523;
-		vrLoc = 31555;
-	};
-	D6C2261A157EA1630053FBEC /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */;
-		name = "QTMovieWinWM.m: 147";
-		rLen = 0;
-		rLoc = 3796;
-		rType = 0;
-		vrLen = 1358;
-		vrLoc = 3009;
+		state = 1;
 	};
 	D6CE60501347AF45002E166B /* MacErrorTable.h */ = {
 		uiCtxt = {
@@ -1103,6 +1072,46 @@
 			sepNavVisRange = "{0, 2666}";
 			sepNavWindowFrame = "{{286, 138}, {793, 794}}";
 		};
+	};
+	D6D2AB81158235EB0024B82A /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = D619275011FF65E200BDAAAA /* QTMovieSink.c */;
+		name = "QTMovieSink.c: 1088";
+		rLen = 25;
+		rLoc = 33251;
+		rType = 0;
+		vrLen = 2603;
+		vrLoc = 31808;
+	};
+	D6D2AB82158235EB0024B82A /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = D6296008121BE7FE00F66BA8 /* qtest2r.cpp */;
+		name = "qtest2r.cpp: 890";
+		rLen = 24;
+		rLoc = 32787;
+		rType = 0;
+		vrLen = 1876;
+		vrLoc = 31528;
+	};
+	D6D2AB83158235EB0024B82A /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = D619272711FF64E500BDAAAA /* QTMovieSink.h */;
+		name = "QTMovieSink.h: 262";
+		rLen = 37;
+		rLoc = 10206;
+		rType = 0;
+		vrLen = 1652;
+		vrLoc = 9356;
+	};
+	D6D2AB84158235EB0024B82A /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */;
+		name = "QTMovieWinWM.m: 147";
+		rLen = 0;
+		rLoc = 3796;
+		rType = 0;
+		vrLen = 1358;
+		vrLoc = 3009;
 	};
 	D6D39C17129C4E8C00DFACCC /* winutils.cpp */ = {
 		uiCtxt = {
@@ -1162,7 +1171,7 @@
 		hitCount = 0;
 		ignoreCount = 0;
 		location = QuickTime;
-		modificationTime = 360750610.178724;
+		modificationTime = 360856537.030458;
 		originalNumberOfMultipleMatches = 1;
 		state = 2;
 		symbolName = GetMovieBox;
@@ -1180,7 +1189,7 @@
 		hitCount = 0;
 		ignoreCount = 0;
 		lineNumber = 271;
-		modificationTime = 360750610.178496;
+		modificationTime = 360856537.029521;
 		originalNumberOfMultipleMatches = 1;
 		state = 2;
 	};
@@ -1197,7 +1206,7 @@
 		hitCount = 0;
 		ignoreCount = 0;
 		lineNumber = 267;
-		modificationTime = 360750610.178503;
+		modificationTime = 360856537.029543;
 		originalNumberOfMultipleMatches = 1;
 		state = 2;
 	};
@@ -1238,7 +1247,7 @@
 		hitCount = 0;
 		ignoreCount = 0;
 		lineNumber = 226;
-		modificationTime = 360750610.178512;
+		modificationTime = 360856537.029554;
 		originalNumberOfMultipleMatches = 1;
 		state = 2;
 	};
