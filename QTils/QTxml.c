@@ -183,7 +183,7 @@ ErrCode XMLParserAddElementAttribute_Mod2( ComponentInstance *xmlParser, unsigne
 }
 
 ErrCode CreateXMLParser( ComponentInstance *xmlParser, XML_Record *xml_design, unsigned int N, int *errors )
-{ ErrCode xmlErr;
+{ ErrCode xmlErr = noErr;
   unsigned int i, lastElement, type;
 
 	*errors = 0;

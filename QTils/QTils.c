@@ -718,17 +718,14 @@ ErrCode MetaDataHandler( Movie theMovie, Track toTrack,
 					Log( qtLogPtr, "Error adding key %s=\"%s\" (%d)\n", OSTStr(inkey), value, err );
 					// failure, in this case we're sure we can release the allocated memory.
 					if( newvalue ){
+						if( *Value == newvalue ){
+							*Value = NULL;
+						}
 						free((void*)newvalue);
 						newvalue = NULL;
 					}
 				}
 				else{
-					// 20110927: leak analysis suggests that we are supposed to release allocated memory
-					// also when the metadata has been updated successfully:
-					if( newvalue ){
-						free((void*)newvalue);
-						newvalue = NULL;
-					}
 					if( lang && *lang ){
 						// item set and we have a language property to add:
 						err = (ErrCode) QTMetaDataSetItemProperty( theMetaData, item,
@@ -741,6 +738,15 @@ ErrCode MetaDataHandler( Movie theMovie, Track toTrack,
 				}
 			}
 bail:
+			// 20110927; 20120608: leak analysis suggests that we are supposed to release allocated memory
+			// also when the metadata has been updated successfully:
+			if( newvalue ){
+				if( *Value == newvalue ){
+					*Value = NULL;
+				}
+				free((void*)newvalue);
+				newvalue = NULL;
+			}
 			QTMetaDataRelease( theMetaData );
 		}
 	}
@@ -1542,36 +1548,38 @@ getURLReference:
 		CFShowStr(URLRef);
 #endif
 		n = CFStringGetLength(URLRef);
-		if( URLRef && (n == strlen(theURL)) ){
-			if( isHTTP ){
-				err = QTNewDataReferenceFromURLCFString( URLRef, 0, dataRef, dataRefType );
-			}
-			else{
-				// upon success, we can call a function that does what we want:
-				err = QTNewDataReferenceFromFullPathCFString( URLRef,
-#ifdef POSIX_PATHNAMES
-							kQTPOSIXPathStyle,
-#else
-							kQTNativeDefaultPathStyle,
-#endif // POSIX_PATHNAMES
-							0, dataRef, dataRefType
-				);
-			}
-#ifdef DEBUG
-			// debug: check if the reverse map yields our original URL!
-			{ Str255 fname;
-			  char path[1024];
-				if( URLFromDataRef( *dataRef, *dataRefType, path, sizeof(path), fname ) != noErr ){
-					fname[0] = 0;
-					path[0] = '\0';
+		if( URLRef ){
+			if( n == strlen(theURL) ){
+				if( isHTTP ){
+					err = QTNewDataReferenceFromURLCFString( URLRef, 0, dataRef, dataRefType );
 				}
-				Log( qtLogPtr, "\"%s\" -> \"%s\" -> dref=%p,%.4s (-> \"%s\",\"%s\") err=%d\n",
-					theURL_anchor, theURL, *dataRef, OSTStr(*dataRefType),
-					path, P2Cstr(fname),
-					err
-				);
-			}
+				else{
+					// upon success, we can call a function that does what we want:
+					err = QTNewDataReferenceFromFullPathCFString( URLRef,
+#ifdef POSIX_PATHNAMES
+								kQTPOSIXPathStyle,
+#else
+								kQTNativeDefaultPathStyle,
+#endif // POSIX_PATHNAMES
+								0, dataRef, dataRefType
+					);
+				}
+#ifdef DEBUG
+				// debug: check if the reverse map yields our original URL!
+				{ Str255 fname;
+				  char path[1024];
+					if( URLFromDataRef( *dataRef, *dataRefType, path, sizeof(path), fname ) != noErr ){
+						fname[0] = 0;
+						path[0] = '\0';
+					}
+					Log( qtLogPtr, "\"%s\" -> \"%s\" -> dref=%p,%.4s (-> \"%s\",\"%s\") err=%d\n",
+						theURL_anchor, theURL, *dataRef, OSTStr(*dataRefType),
+						path, P2Cstr(fname),
+						err
+					);
+				}
 #endif
+			}
 			CFAllocatorDeallocate( kCFAllocatorDefault, (void*) URLRef );
 		}
 		else{
@@ -1645,7 +1653,7 @@ ErrCode CopyMovieTracks( Movie dstMovie, Movie srcMovie )
 { long tracks = GetMovieTrackCount(dstMovie);
   long i, srcTracks = GetMovieTrackCount(srcMovie), n;
   Track srcTrack = (Track) -1, dstTrack = nil;
-  Media srcMedia, dstMedia = nil;
+  Media srcMedia = nil, dstMedia = nil;
   Handle cdataRef;
   OSType cdataRefType;
   ErrCode err = noErr;
@@ -1677,7 +1685,7 @@ ErrCode CopyMovieTracks( Movie dstMovie, Movie srcMovie )
 				}
 			}
 		}
-		if( srcTrack && srcMedia ){
+		if( srcTrack && srcTrack != ((Track)-1) && srcMedia ){
 			{ Fixed w, h;
 				GetTrackDimensions( srcTrack, &w, &h );
 #if 1
@@ -2010,7 +2018,6 @@ ErrCode SaveMovie( Movie theMovie )
 #if TARGET_OS_MAC
 			if( theURL ){
 				CSBackupSetItemExcluded( theURL, excl, exclPath );
-				CFRelease(theURL);
 			}
 #endif
 			if( closeDH ){
@@ -2023,6 +2030,11 @@ ErrCode SaveMovie( Movie theMovie )
 			}
 		}
 		// it's unclear whether one has to DisposeHandle(odataRef) here!
+#if TARGET_OS_MAC
+		if( theURL ){
+			CFRelease(theURL);
+		}
+#endif
 	}
 	return err;
 }
@@ -2109,11 +2121,9 @@ ErrCode FlattenMovieToURL( const char *dstURL, Movie theMovie, Movie *theNewMovi
 #endif
 
 	err2 = DataRefFromURL( &dstURL, &odataRef, &odataRefType );
-#if TARGET_OS_MAC
-	urlRef = CFURLCreateFromFileSystemRepresentation( NULL, (const UInt8*) dstURL, strlen(dstURL), false );
-#endif
 	if( err2 == noErr ){
 #if TARGET_OS_MAC
+		urlRef = CFURLCreateFromFileSystemRepresentation( NULL, (const UInt8*) dstURL, strlen(dstURL), false );
 		if( urlRef ){
 			// exclude the file from being backed up by TimeMachine to work around
 			// a bug on 10.7 (20111124):
@@ -2773,9 +2783,11 @@ ErrCode FindTimeStampInMovieAtTime_Mod2( Movie theMovie, double Time, char *foun
 { char *ftext = NULL;
   ErrCode err;
 	if( (err = FindTimeStampInMovieAtTime( theMovie, Time, &ftext, NULL )) == noErr ){
-		if( foundText && ftext ){
-			strncpy( foundText, ftext, flen );
-			foundText[flen-1] = '\0';
+		if( ftext ){
+			if( foundText ){
+				strncpy( foundText, ftext, flen );
+				foundText[flen-1] = '\0';
+			}
 			free(ftext);
 		}
 	}
@@ -2940,6 +2952,7 @@ static ErrCode initTextTrackWithMedia( QTMovieWindows *wi, Track *textTrack, Med
 	}
 	else{
 		Log( qtLogPtr, "Failure creating textMedia or SampleDescription (%d)\n", GetMoviesError() );
+		txtErr = MemError();
 	}
 	if( newTTrack ){
 		if( !*textMedia ){
@@ -2965,8 +2978,8 @@ ErrCode MovieAddChapter( Movie theMovie, Track refTrack, const char *name,
 { TimeValue chapTime, tvTime, tvDuration, tscale;
   unsigned long strLength;
   ErrCode txtErr;
-  QTMovieWindowH wih;
-  QTMovieWindows *wi;
+  QTMovieWindowH wih = NULL;
+  QTMovieWindows *wi = NULL;
   Track theChapTrack;
   TextDescriptionHandle theChapterDesc = NULL;
   Boolean newTTrack = FALSE, mediaOpen = FALSE;
@@ -2979,6 +2992,11 @@ ErrCode MovieAddChapter( Movie theMovie, Track refTrack, const char *name,
 	if( wih ){
 		wi = *wih;
 	}
+	else{
+		Log( qtLogPtr, "MovieAddChapter(): failure: movie has no associated QTMovieWindowH\n" );
+		return paramErr;
+	}
+
 	// theChapTrack==NULL means there is no chapter track yet, so no theChapterRefTrack either.
 	// a chapter track will be created, but the reference track actually has to be chosen by the user.
 	// we fall back to using the TimeCode track if it exists.

@@ -80,26 +80,19 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
+		D64B64341582AD9200FCA20C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D64B62C915823A2400FCA20C /* qtest2r.app */;
+			remoteInfo = qtest2r.app;
+		};
 		D67ACDB6141610A500E99EA2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D65F639412C3C7A4009A3D72;
 			remoteInfo = QTils.framework;
-		};
-		D67ACDB8141610A500E99EA2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D65191AF12199F490077C8D3;
-			remoteInfo = QTMovieSink.framework;
-		};
-		D67ACDBA141610A500E99EA2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D651693E1203678F00389541;
-			remoteInfo = QTMovieSink;
 		};
 		D67ACDBC141610A500E99EA2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -468,11 +461,10 @@
 			children = (
 				D67ACDB7141610A500E99EA2 /* QTils.framework */,
 				D67ACEDE14161FA600E99EA2 /* QTils-emb.framework */,
-				D67ACDB9141610A500E99EA2 /* QTMovieSink.framework */,
-				D67ACDBB141610A500E99EA2 /* libQTMovieSink.dylib */,
 				D67ACDBD141610A500E99EA2 /* QTMovieWindowTest */,
 				D67ACDBF141610A500E99EA2 /* QTMovieWindowTest.app */,
 				D67ACDC1141610A500E99EA2 /* qtest2r */,
+				D64B64351582AD9200FCA20C /* qtest2r.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -575,25 +567,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		D64B64351582AD9200FCA20C /* qtest2r.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = qtest2r.app;
+			remoteRef = D64B64341582AD9200FCA20C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		D67ACDB7141610A500E99EA2 /* QTils.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = QTils.framework;
 			remoteRef = D67ACDB6141610A500E99EA2 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D67ACDB9141610A500E99EA2 /* QTMovieSink.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = QTMovieSink.framework;
-			remoteRef = D67ACDB8141610A500E99EA2 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D67ACDBB141610A500E99EA2 /* libQTMovieSink.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libQTMovieSink.dylib;
-			remoteRef = D67ACDBA141610A500E99EA2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		D67ACDBD141610A500E99EA2 /* QTMovieWindowTest */ = {

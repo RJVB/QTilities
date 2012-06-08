@@ -58,10 +58,6 @@
 		D64B62DF15823B7400FCA20C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
 		D64B62E215823B8E00FCA20C /* QTils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639412C3C7A4009A3D72 /* QTils.framework */; };
 		D64B62E915823BBF00FCA20C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63EFD75131CF5BE005B6423 /* QuartzCore.framework */; };
-		D64B630415823E7200FCA20C /* QTAtom-ProgmCreation.h in Headers */ = {isa = PBXBuildFile; fileRef = D64B630215823E7200FCA20C /* QTAtom-ProgmCreation.h */; };
-		D64B630515823E7200FCA20C /* QTAtom-ProgmCreation.c in Sources */ = {isa = PBXBuildFile; fileRef = D64B630315823E7200FCA20C /* QTAtom-ProgmCreation.c */; };
-		D64B630615823E7200FCA20C /* QTAtom-ProgmCreation.h in Headers */ = {isa = PBXBuildFile; fileRef = D64B630215823E7200FCA20C /* QTAtom-ProgmCreation.h */; };
-		D64B630715823E7200FCA20C /* QTAtom-ProgmCreation.c in Sources */ = {isa = PBXBuildFile; fileRef = D64B630315823E7200FCA20C /* QTAtom-ProgmCreation.c */; };
 		D65F639A12C3C7F5009A3D72 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
 		D65F639E12C3C80C009A3D72 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639D12C3C80C009A3D72 /* QTKit.framework */; };
 		D65F63A212C3C815009A3D72 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F63A112C3C815009A3D72 /* QuickTime.framework */; };
@@ -171,7 +167,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = D65F639312C3C7A4009A3D72 /* QTils.framework */;
+			remoteGlobalIDString = D65F639312C3C7A4009A3D72;
 			remoteInfo = QTils.framework;
 		};
 		D67ACE421416129D00E99EA2 /* PBXContainerItemProxy */ = {
@@ -294,7 +290,6 @@
 		D647D27F12AAB335007C5D3D /* TstQTilsM2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = TstQTilsM2.mod; sourceTree = "<group>"; tabWidth = 2; };
 		D64B62C915823A2400FCA20C /* qtest2r.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = qtest2r.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D64B62CB15823A2400FCA20C /* qtest2r.app-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "qtest2r.app-Info.plist"; sourceTree = "<group>"; };
-		D64B630215823E7200FCA20C /* QTAtom-ProgmCreation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "QTAtom-ProgmCreation.h"; path = "inspiration/QTAtom-ProgmCreation.h"; sourceTree = "<group>"; };
 		D64B630315823E7200FCA20C /* QTAtom-ProgmCreation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "QTAtom-ProgmCreation.c"; path = "inspiration/QTAtom-ProgmCreation.c"; sourceTree = "<group>"; };
 		D64CFEC4129ED62900AD4351 /* QTMovieWindowTest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; name = QTMovieWindowTest.c; path = QTils/QTMovieWindowTest.c; sourceTree = "<group>"; };
 		D65191B012199F490077C8D3 /* QTMovieSink-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QTMovieSink-Info.plist"; sourceTree = "<group>"; };
@@ -665,7 +660,6 @@
 				D6912BA7132E3F1700CD5E78 /* MacFramework.h */,
 				D6912BA8132E3F1700CD5E78 /* MacFramework.c */,
 				D6912BA9132E3F1700CD5E78 /* QTText.h */,
-				D64B630215823E7200FCA20C /* QTAtom-ProgmCreation.h */,
 				D64B630315823E7200FCA20C /* QTAtom-ProgmCreation.c */,
 			);
 			name = Inspiration;
@@ -758,7 +752,6 @@
 				D6FEC298141A1B0B0005D2B9 /* NSQTMovieView.h in Headers */,
 				D6FEC2A1141A1C230005D2B9 /* NSQTWindow.h in Headers */,
 				D61EEE5114841C0400D479D9 /* CritSectEx.h in Headers */,
-				D64B630615823E7200FCA20C /* QTAtom-ProgmCreation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -775,7 +768,6 @@
 				D6FEC29A141A1B0B0005D2B9 /* NSQTMovieView.h in Headers */,
 				D6FEC29F141A1C230005D2B9 /* NSQTWindow.h in Headers */,
 				D61EEE4F14841C0400D479D9 /* CritSectEx.h in Headers */,
-				D64B630415823E7200FCA20C /* QTAtom-ProgmCreation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1106,7 +1098,6 @@
 				D6FEC299141A1B0B0005D2B9 /* NSQTMovieView.m in Sources */,
 				D6FEC2A2141A1C230005D2B9 /* NSQTWindow.m in Sources */,
 				D61EEE5014841C0400D479D9 /* CritSectEx.cpp in Sources */,
-				D64B630715823E7200FCA20C /* QTAtom-ProgmCreation.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1127,7 +1118,6 @@
 				D6FEC29B141A1B0B0005D2B9 /* NSQTMovieView.m in Sources */,
 				D6FEC2A0141A1C230005D2B9 /* NSQTWindow.m in Sources */,
 				D61EEE4E14841C0400D479D9 /* CritSectEx.cpp in Sources */,
-				D64B630515823E7200FCA20C /* QTAtom-ProgmCreation.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

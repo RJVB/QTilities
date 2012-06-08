@@ -47,7 +47,7 @@ static MAMovieExport *sharedInstance = nil;
 		NSMutableArray *array = [NSMutableArray array];
 
 		ComponentDescription cd;
-		Component c;
+		Component c = nil;
 
 		cd.componentType = MovieExportType;
 		cd.componentSubType = 0;
@@ -74,9 +74,9 @@ static MAMovieExport *sharedInstance = nil;
 				NSString *infoStr = [[NSString alloc] initWithBytes:&infoPStr[1] length:infoPStr[0] encoding:NSMacOSRomanStringEncoding];
 
 				if(!nameStr)
-					nameStr = NSLocalizedString(@"Name couldn't be read", @"");
+					nameStr = [NSLocalizedString(@"Name couldn't be read", @"") retain];
 				if(!infoStr)
-					infoStr = NSLocalizedString(@"Info couldn't be read", @"");
+					infoStr = [NSLocalizedString(@"Info couldn't be read", @"") retain];
 
 				OSType extensionOSType;
 				NSString *extension = nil;
@@ -133,7 +133,7 @@ static MAMovieExport *sharedInstance = nil;
 	ComponentResult err = MovieExportDoUserDialog(exporter, [movie quickTimeMovie], NULL, 0, 0, &canceled);
 	if(err)
 	{
-		NSLog(@"Got error %d when calling MovieExportDoUserDialog");
+		NSLog(@"Got error %d when calling MovieExportDoUserDialog", err);
 		CloseComponent(exporter);
 		return nil;
 	}
@@ -146,7 +146,7 @@ static MAMovieExport *sharedInstance = nil;
 	err = MovieExportGetSettingsAsAtomContainer(exporter, &settings);
 	if(err)
 	{
-		NSLog(@"Got error %d when calling MovieExportGetSettingsAsAtomContainer");
+		NSLog(@"Got error %d when calling MovieExportGetSettingsAsAtomContainer", err);
 		CloseComponent(exporter);
 		return nil;
 	}

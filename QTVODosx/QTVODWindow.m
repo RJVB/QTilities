@@ -1619,6 +1619,10 @@ static unsigned int fullScreenViews= 0;
 				t = 0.0/0.0;
 			}
 		}
+		else{
+			SLOG( @"nothing to determine TCframeRate from" );
+			t = 0.0/0.0;
+		}
 	}
 	return [[[NSNumber alloc] initWithDouble:t] autorelease];
 }
@@ -2232,7 +2236,7 @@ static unsigned int fullScreenViews= 0;
 	while( list ){
 		if( [list->docwin getQTVOD] ){
 			// should no longer happen!
-			[[list->docwin getQTVOD] closeAndRelease];
+			[(QTVOD*)[list->docwin getQTVOD] closeAndRelease];
 			list = DocList;
 		}
 		else{

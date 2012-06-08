@@ -96,7 +96,7 @@ VODDescription xmlVD;
 {
 	self = [[self alloc] init];
 	if( self ){
-	  NSVODDescription *vd = self;
+	  NSVODDescription *vd = (NSVODDescription*) self;
 		vd->vodDescription = descr;
 	}
 	return [self autorelease];
@@ -654,7 +654,7 @@ BOOL addToRecentDocs = YES;
 {
 	self = [[self alloc] init];
 	if( self ){
-	  ChannelViewSpec *cv = self;
+	  ChannelViewSpec *cv = (ChannelViewSpec*) self;
 		cv->src = s;
 		cv->channel = ch;
 		cv->channelName = name;
@@ -891,7 +891,9 @@ BOOL addToRecentDocs = YES;
 			if( i != sysWin ){
 				numQTMW += 1;
 			}
-			(*QTMWH(i))->user_data = (void*) self;
+			if( *QTMWH(i) ){
+				(*QTMWH(i))->user_data = (void*) self;
+			}
 		}
 	}
 }
@@ -1179,7 +1181,7 @@ BOOL addToRecentDocs = YES;
 {
 	self = [[self alloc] init];
 	if( self ){
-	  QTVOD *qv = self;
+	  QTVOD *qv = (QTVOD*) self;
 		// avoid warnings about accessing instance variables by using a local instance of ourselves...
 		qv->sysOwned = sO;
 		qv->assocDataFile = [aDFile retain];

@@ -102,6 +102,7 @@ OSStatus RegisterMyHelpBook(void)
 	if( err == noErr ){
 		err = AHRegisterHelpBookWithURL(myBundleURL);// 3
 	}
+	CFRelease(myBundleURL);
 bail:
 	return err;
 }
