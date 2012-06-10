@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocSet", "DocSet.vcxproj", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winutils", "..\winutils\winutils.vcxproj", "{4C3ACF76-2D3F-4462-832F-651AD7A755DB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qtest2r", "qtest2r.vcxproj", "{59E8A270-A137-4321-8139-BC3CA0351D15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -50,6 +52,12 @@ Global
 		{4C3ACF76-2D3F-4462-832F-651AD7A755DB}.Develop|Win32.Build.0 = Develop|Win32
 		{4C3ACF76-2D3F-4462-832F-651AD7A755DB}.Release|Win32.ActiveCfg = Release|Win32
 		{4C3ACF76-2D3F-4462-832F-651AD7A755DB}.Release|Win32.Build.0 = Release|Win32
+		{59E8A270-A137-4321-8139-BC3CA0351D15}.Debug|Win32.ActiveCfg = Debug|Win32
+		{59E8A270-A137-4321-8139-BC3CA0351D15}.Debug|Win32.Build.0 = Debug|Win32
+		{59E8A270-A137-4321-8139-BC3CA0351D15}.Develop|Win32.ActiveCfg = Develop|Win32
+		{59E8A270-A137-4321-8139-BC3CA0351D15}.Develop|Win32.Build.0 = Develop|Win32
+		{59E8A270-A137-4321-8139-BC3CA0351D15}.Release|Win32.ActiveCfg = Release|Win32
+		{59E8A270-A137-4321-8139-BC3CA0351D15}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

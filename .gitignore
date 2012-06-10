@@ -23,3 +23,4 @@ DestroyWindow
 */Develop
 */Release
 *.kml
+*.dll

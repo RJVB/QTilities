@@ -60,6 +60,8 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">false</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">$(ProjectName)-dev</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)-debug</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -92,8 +94,8 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)$(TargetName)-debug$(TargetExt)
-copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)-debug$(TargetExt)</Command>
+      <Command>copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)$(TargetName)$(TargetExt)
+copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(TargetExt)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -166,17 +168,18 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <AdditionalLibraryDirectories>C:\Program Files\QuickTime SDK\Libraries;C:\Libs\SS_Log_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)$(TargetName)-dev$(TargetExt)
-copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)-dev$(TargetExt)</Command>
+      <Command>copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)$(TargetName)$(TargetExt)
+copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(TargetExt)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

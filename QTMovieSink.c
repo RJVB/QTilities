@@ -1028,7 +1028,7 @@ static QTMovieSinks *_open_QTMovieSinkICM_( QTMovieSinks *qms, const char *theUR
 					for( i = 0 ; i < frameBuffers && err2 == kCVReturnSuccess ; i++ ){
 						err2 = CVPixelBufferLockBaseAddress(qtPriv->ICM.pixel_buffer_ref[i], 0);
 						if( err2 == kCVReturnSuccess ){
-							qms->imageFrame[i] = CVPixelBufferGetBaseAddress(qtPriv->ICM.pixel_buffer_ref[i]);
+							qms->imageFrame[i] = (QTAPixel*) CVPixelBufferGetBaseAddress(qtPriv->ICM.pixel_buffer_ref[i]);
 						}
 						qtPriv->ICM.pixel_buffer_frames[i].qtPriv = qtPriv;
 					}
@@ -1081,17 +1081,14 @@ static QTMovieSinks *_open_QTMovieSinkICM_( QTMovieSinks *qms, const char *theUR
 						_err = GraphicsExportSetCompressionMethod( ci, kQTTIFFCompression_PackBits );
 						_err = GraphicsExportGetCompressionMethod( ci, &m );
 						_err = ImageCodecGetSettings( ci, qtCompressionCompressorSettings);
-						_err = SCSetInfo(ci, scPreferenceFlagsType, &flags);
 						_err = SCSetInfo(cj, scPreferenceFlagsType, &flags);
 							fprintf( stderr, "%s:%d _err=%d\n", __FILE__, __LINE__, (int) _err );
-						_err = SCRequestSequenceSettings(ci);
 						_err = SCRequestSequenceSettings(cj);
 							fprintf( stderr, "%s:%d _err=%d\n", __FILE__, __LINE__, (int) _err );
 						_err = SCGetSettingsAsAtomContainer(cj, &container);
 							fprintf( stderr, "%s:%d _err=%d\n", __FILE__, __LINE__, (int) _err );
 						_err = SCCopyCompressionSessionOptions(cj, &options);
 							fprintf( stderr, "%s:%d _err=%d\n", __FILE__, __LINE__, (int) _err );
-						_err = SCGetInfo(ci, scSpatialSettingsType, &spatialSettings);
 						_err = SCGetInfo(cj, scSpatialSettingsType, &spatialSettings);
 							fprintf( stderr, "%s:%d _err=%d\n", __FILE__, __LINE__, (int) _err );
 						_err = SCGetInfo(cj, scTemporalSettingsType, &temporalSettings);

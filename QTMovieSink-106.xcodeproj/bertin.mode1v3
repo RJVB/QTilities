@@ -233,10 +233,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D64B63EF1582AD6400FCA20C</string>
+						<string>D63D41101583B01400CEAB2D</string>
 						<key>history</key>
 						<array>
-							<string>D64B63D81582AD0100FCA20C</string>
+							<string>D64B63EF1582AD6400FCA20C</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -273,10 +273,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D64B63F01582AD6400FCA20C</string>
+						<string>D63D41111583B01400CEAB2D</string>
 						<key>history</key>
 						<array>
-							<string>D64B63C71582ABC600FCA20C</string>
+							<string>D64B63F01582AD6400FCA20C</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -313,10 +313,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D64B63F11582AD6400FCA20C</string>
+						<string>D63D41121583B01400CEAB2D</string>
 						<key>history</key>
 						<array>
-							<string>D64B630815823EC100FCA20C</string>
+							<string>D64B63F11582AD6400FCA20C</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -353,10 +353,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D64B63F21582AD6400FCA20C</string>
+						<string>D63D41131583B01400CEAB2D</string>
 						<key>history</key>
 						<array>
-							<string>D64B630915823EC100FCA20C</string>
+							<string>D64B63F21582AD6400FCA20C</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -393,10 +393,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D64B63F31582AD6400FCA20C</string>
+						<string>D63D41141583B01400CEAB2D</string>
 						<key>history</key>
 						<array>
-							<string>D64B630A15823EC100FCA20C</string>
+							<string>D64B63F31582AD6400FCA20C</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -433,10 +433,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D64B63F41582AD6400FCA20C</string>
+						<string>D63D41151583B01400CEAB2D</string>
 						<key>history</key>
 						<array>
-							<string>D64B630B15823EC100FCA20C</string>
+							<string>D64B63F41582AD6400FCA20C</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -488,6 +488,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -539,7 +541,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>98</integer>
+									<integer>99</integer>
 									<integer>94</integer>
 								</array>
 							</array>
@@ -644,9 +646,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>D64B63551582629600FCA20C</string>
+				<string>D63D40FE1583AFD200CEAB2D</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>D64B63561582629600FCA20C</string>
+				<string>D63D40FF1583AFD200CEAB2D</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -765,7 +767,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>360885604.837273</real>
+	<real>360951828.90619099</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -782,8 +784,8 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>D64B63ED1582AD3E00FCA20C</string>
-		<string>D64B63EE1582AD3E00FCA20C</string>
+		<string>D63D41081583AFD200CEAB2D</string>
+		<string>D63D41091583AFD200CEAB2D</string>
 		<string>D619AC2C1276E0CE00FF8489</string>
 		<string>D6BF21FA154C63F000732A27</string>
 		<string>D6C2257F157E88CB0053FBEC</string>
@@ -791,9 +793,9 @@
 		<string>D6C22576157E88CB0053FBEC</string>
 		<string>D64B63E41582AD3E00FCA20C</string>
 		<string>D64B63571582629600FCA20C</string>
+		<string>/Volumes/Debian/Users/bertin/work/src/MacOSX/QTilities/QTMovieSink-106.xcodeproj</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>1C78EAAD065D492600B07095</string>
-		<string>/Volumes/Debian/Users/bertin/work/src/MacOSX/QTilities/QTMovieSink-106.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>-1051 259 688 604 -1280 100 1280 800 </string>
@@ -875,7 +877,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>D619AC2C1276E0CE00FF8489</string>
-				<string>D64B63331582613500FCA20C</string>
+				<string>D63D40F71583AFCE00CEAB2D</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -997,13 +999,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
-				<string>D64B63341582613500FCA20C</string>
+				<string>D63D40F81583AFCE00CEAB2D</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>D64B63351582613500FCA20C</string>
-				<string>D64B63361582613500FCA20C</string>
-				<string>D64B63371582613500FCA20C</string>
-				<string>D64B63381582613500FCA20C</string>
-				<string>D64B63391582613500FCA20C</string>
+				<string>D63D40F91583AFCE00CEAB2D</string>
+				<string>D63D40FA1583AFCE00CEAB2D</string>
+				<string>D63D40FB1583AFCE00CEAB2D</string>
+				<string>D63D40FC1583AFCE00CEAB2D</string>
+				<string>D63D40FD1583AFCE00CEAB2D</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
@@ -1161,7 +1163,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C78EAAD065D492600B07095</string>
-				<string>D64B63EB1582AD3E00FCA20C</string>
+				<string>D63D41061583AFD200CEAB2D</string>
 				<string>1C78EAAC065D492600B07095</string>
 			</array>
 			<key>ToolbarConfiguration</key>
