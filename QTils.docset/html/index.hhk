@@ -810,6 +810,11 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_c_s_e_scoped_lock.html#ac307a42d732c9e8afa106f91c4a59d92"><param name="Name" value="scopedlock"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_c_s_e_scoped_lock.html#a87c4d1fe557bed8a579f8fd6ce28701d"><param name="Name" value="timeOut"></OBJECT>
   </UL>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#a04c7827b57ff9ac1278e3bb5b97a1a6c"><param name="Name" value="cTIFFCodec"></OBJECT>
+  <UL>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#a04c7827b57ff9ac1278e3bb5b97a1a6c"><param name="Name" value="QTMovieSink.c"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8h.html#adff8ddc027053a784ecfdaa23043d714"><param name="Name" value="QTMovieSink.h"></OBJECT>
+  </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#a03106c8fbafa1826d7deb602f1131ffb"><param name="Name" value="cubicCentimeters"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#af1d95d027ab4d57a2238a0d6e0107815"><param name="Name" value="cubicFeet"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#aa87cf77fae61cef8bb439d45dbac8948"><param name="Name" value="cubicInches"></OBJECT>
@@ -3110,6 +3115,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_compression_codecs.html#a0e654eb1615cc25d39388d76197f9716"><param name="Name" value="MPEG4"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8h.html#a0ccfa385dae80e52cdcc4703c535e003"><param name="Name" value="QTMovieSink.h"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_compression_codecs.html#a92de1ce26e39bb177b802b48c72c5f2f"><param name="Name" value="Raw"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_compression_codecs.html#a5e6b036f822632d4a30a2df16aa2a5da"><param name="Name" value="TIFF"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_compression_codecs.html#a6c283bc0314424ec5fa2ea9e78c738c0"><param name="Name" value="Video"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_compression_qualities.html"><param name="Name" value="QTCompressionQualities"></OBJECT>
@@ -3815,6 +3821,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#a5f7a3f833ecaa1eb846a4c91250236fb"><param name="Name" value="cMPEG4Codec"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#a0badce89d4fb5f9622b6550d628fda96"><param name="Name" value="cNormalQuality"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#a4202ef9188048e96afd2c2fb0619ac38"><param name="Name" value="cRawCodec"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#a04c7827b57ff9ac1278e3bb5b97a1a6c"><param name="Name" value="cTIFFCodec"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#aa598c344c926f2158147e0b682c5a4ed"><param name="Name" value="cVideoCodec"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#a4d38828177cae4147182b54f6a395ab8"><param name="Name" value="get_QTMovieSink_EncodingStats"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#a575c7f6b9563f43f2fce6043bfc0fa01"><param name="Name" value="IDENTIFY"></OBJECT>
@@ -3860,6 +3867,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8h.html#a5c70854e05953c921919b992769c0832"><param name="Name" value="cMPEG4Codec"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8h.html#a76ab188f815b2cfe16c5f3f4c060b664"><param name="Name" value="cNormalQuality"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8h.html#a549a674343a2bd4ba81d6c458557638e"><param name="Name" value="cRawCodec"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8h.html#adff8ddc027053a784ecfdaa23043d714"><param name="Name" value="cTIFFCodec"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8h.html#ab7f2aad2bea26bc73a2e75528ed1dae9"><param name="Name" value="cVideoCodec"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8h.html#a53ccc1cd07557fb8698bb9bc1ab7fcbd"><param name="Name" value="ErrCode"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8h.html#a674c6e6540dadacc44d191a85f826129"><param name="Name" value="get_QTMovieSink_EncodingStats"></OBJECT>
@@ -5589,6 +5597,7 @@
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_t_h_r_e_a_d.html#a3a268b533ee1ecaf49781c8ff3314ca0"><param name="Name" value="threadId"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#aa41cce50fa4e45baeaeb5f7e2d5b6e73"><param name="Name" value="Thursday"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_compression_codecs.html#a5e6b036f822632d4a30a2df16aa2a5da"><param name="Name" value="TIFF"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#a59714c5413da37a8ead91ce42844237b"><param name="Name" value="TIFFPicture"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_time_interval.html#a801da849d13f458f020d7b18489afc16"><param name="Name" value="timeA"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_time_interval.html#ab9c4b39b1f14ea104f344b682d790e87"><param name="Name" value="timeB"></OBJECT>

@@ -3579,6 +3579,17 @@
   </Token>
   <Token>
     <TokenIdentifier>
+      <Name>TIFF</Name>
+      <APILanguage>cpp</APILanguage>
+      <Type>data</Type>
+      <Scope>QTCompressionCodecs</Scope>
+    </TokenIdentifier>
+    <Path>struct_q_t_compression_codecs.html</Path>
+    <Anchor>a5e6b036f822632d4a30a2df16aa2a5da</Anchor>
+    <Abstract>&amp;lt; &amp;quot;Motion TIFF&amp;quot; output</Abstract>
+  </Token>
+  <Token>
+    <TokenIdentifier>
       <Name>ApplePixlet</Name>
       <APILanguage>cpp</APILanguage>
       <Type>data</Type>

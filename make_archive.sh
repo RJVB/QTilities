@@ -75,6 +75,7 @@ rm -rf  QTilities/*.all_data QTilities/*.{log,tc,mov,VOD,avi,aup,caf,png,rgb,tif
 	find . -iname "*.user" -exec rm '{}' ";" ;\
 	find . -iname "*.dmg" -exec rm '{}' ";" ;\
 )
+find QTilities -name ".git" -type d | xargs rm -rf
 find QTilities -name "build" -type d | xargs rm -rf
 find QTilities -name "Debug" -type d | xargs rm -rf
 find QTilities -name "Develop" -type d | xargs rm -rf
