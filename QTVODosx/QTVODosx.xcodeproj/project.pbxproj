@@ -84,7 +84,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = D64B62C915823A2400FCA20C /* qtest2r.app */;
+			remoteGlobalIDString = D64B62C915823A2400FCA20C;
 			remoteInfo = qtest2r.app;
 		};
 		D67ACDB6141610A500E99EA2 /* PBXContainerItemProxy */ = {

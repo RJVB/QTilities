@@ -233,10 +233,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D6D5FBB61586236100874045</string>
+						<string>D6F339AA158817D300EE650A</string>
 						<key>history</key>
 						<array>
-							<string>D63D41101583B01400CEAB2D</string>
+							<string>D6D5FBB61586236100874045</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -273,10 +273,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D6D5FBB71586236100874045</string>
+						<string>D6F339AB158817D300EE650A</string>
 						<key>history</key>
 						<array>
-							<string>D63D41111583B01400CEAB2D</string>
+							<string>D6D5FBB71586236100874045</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -313,10 +313,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D6D5FBB81586236100874045</string>
+						<string>D6F339AC158817D300EE650A</string>
 						<key>history</key>
 						<array>
-							<string>D63D41121583B01400CEAB2D</string>
+							<string>D6D5FBB81586236100874045</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -353,10 +353,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D6D5FBB91586236100874045</string>
+						<string>D6F339AD158817D300EE650A</string>
 						<key>history</key>
 						<array>
-							<string>D63D41131583B01400CEAB2D</string>
+							<string>D6D5FBB91586236100874045</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -393,10 +393,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D6D5FBBA1586236100874045</string>
+						<string>D6F339AE158817D300EE650A</string>
 						<key>history</key>
 						<array>
-							<string>D63D41141583B01400CEAB2D</string>
+							<string>D6D5FBBA1586236100874045</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -433,10 +433,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D6D5FBBB1586236100874045</string>
+						<string>D6F339AF158817D300EE650A</string>
 						<key>history</key>
 						<array>
-							<string>D63D41151583B01400CEAB2D</string>
+							<string>D6D5FBBB1586236100874045</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -537,18 +537,15 @@
 								<string>D61C364912A55CB2000B426F</string>
 								<string>D6B9CE0512A529A000B99C73</string>
 								<string>1C37FBAC04509CD000000102</string>
-								<string>D6D5FBAF1586236100874045</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
 									<integer>104</integer>
-									<integer>102</integer>
-									<integer>94</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 1655}, {186, 545}}</string>
+							<string>{{0, 0}, {186, 545}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -648,9 +645,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>D6D5FBA31586231F00874045</string>
+				<string>D6F33992158815F700EE650A</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>D6D5FBA41586231F00874045</string>
+				<string>D6F33993158815F700EE650A</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -769,7 +766,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>361112417.54408699</real>
+	<real>361240531.93352801</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -786,8 +783,9 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>D6F339A2158815F700EE650A</string>
+		<string>D6F339A3158815F700EE650A</string>
 		<string>D619AC2C1276E0CE00FF8489</string>
-		<string>1CD10A99069EF8BA00B06720</string>
 		<string>D6BF21FA154C63F000732A27</string>
 		<string>D6C2257F157E88CB0053FBEC</string>
 		<string>D6C225B6157E91010053FBEC</string>
@@ -795,6 +793,8 @@
 		<string>D64B63E41582AD3E00FCA20C</string>
 		<string>/Volumes/Debian/Users/bertin/work/src/MacOSX/QTilities/QTMovieSink-106.xcodeproj</string>
 		<string>D64B63571582629600FCA20C</string>
+		<string>1CD10A99069EF8BA00B06720</string>
+		<string>1C78EAAD065D492600B07095</string>
 	</array>
 	<key>WindowString</key>
 	<string>-1051 259 688 604 -1280 100 1280 800 </string>
@@ -876,7 +876,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>D619AC2C1276E0CE00FF8489</string>
-				<string>D6D5FB9B158622C100874045</string>
+				<string>D6F33991158815F300EE650A</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -998,13 +998,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
-				<string>D6D5FB9C158622C100874045</string>
+				<string>D6F3399A158815F700EE650A</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>D6D5FB9D158622C100874045</string>
-				<string>D6D5FB9E158622C100874045</string>
-				<string>D6D5FB9F158622C100874045</string>
-				<string>D6D5FBA0158622C100874045</string>
-				<string>D6D5FBA1158622C100874045</string>
+				<string>D6F3399B158815F700EE650A</string>
+				<string>D6F3399C158815F700EE650A</string>
+				<string>D6F3399D158815F700EE650A</string>
+				<string>D6F3399E158815F700EE650A</string>
+				<string>D6F3399F158815F700EE650A</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
@@ -1013,7 +1013,7 @@
 			<key>WindowToolGUID</key>
 			<string>1CD10A99069EF8BA00B06720</string>
 			<key>WindowToolIsVisible</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>FirstTimeWindowDisplayed</key>
@@ -1162,7 +1162,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C78EAAD065D492600B07095</string>
-				<string>D63D41061583AFD200CEAB2D</string>
+				<string>D6F339A0158815F700EE650A</string>
 				<string>1C78EAAC065D492600B07095</string>
 			</array>
 			<key>ToolbarConfiguration</key>

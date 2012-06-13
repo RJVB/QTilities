@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
+	<string>fr_FR</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -67,6 +67,37 @@
 			<string>QTVODWindow</string>
 			<key>NSPersistentStoreTypeKey</key>
 			<string>XML</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>jpgs</string>
+				<string>JPGS</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>QTVODosx.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>video/jpgs-image-sequence</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>jpgs image sequence</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>JPGS</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.RJVB.QTImage2Mov.JPGS</string>
+			</array>
+			<key>LSTypeIsPackage</key>
+			<false/>
+			<key>NSDocumentClass</key>
+			<string>QTVODWindow</string>
+			<key>NSPersistentStoreTypeKey</key>
+			<string>Binary</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -274,5 +305,47 @@
 	<string>NSApplication</string>
 	<key>OSAScriptingDefinition</key>
 	<string>QTVOD.sdef</string>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.movie</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>com.brigade-electronics.QTImage2Mov.VOD</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>VOD</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.movie</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>org.RJVB.QTImage2Mov.QI2M</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>qi2m</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.movie</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>org.RJVB.QTImage2Mov.JPGS</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>jpgs</string>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>
