@@ -15,6 +15,7 @@
 
 #ifdef linux
 #	include <fcntl.h>
+#	include <sys/time.h>
 #endif
 
 #include "CritSectEx.h"
@@ -158,12 +159,16 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 			case MSH_THREAD:
 				if( pthread_join( hHandle->d.t.theThread, &hHandle->d.t.returnValue ) ){
 //					fprintf( stderr, "pthread_join error %s\n", strerror(errno) );
+#ifdef __APPLE__
 					setitimer( ITIMER_REAL, &ortt, &rtt );
+#endif
 					return (errno == EINTR)? WAIT_TIMEOUT : WAIT_ABANDONED;
 				}
 				else{
 					hHandle->d.t.pThread = NULL;
+#ifdef __APPLE__
 					setitimer( ITIMER_REAL, &ortt, &rtt );
+#endif
 					return WAIT_OBJECT_0;
 				}
 				break;
@@ -430,7 +435,7 @@ DWORD SuspendThread( HANDLE hThread )
 			}
 #else
 			if( !pthread_mutex_lock( hThread->d.t.threadLock->d.m.mutex ) ){
-				hThread.d.t.lockOwner = current;
+				hThread->d.t.lockOwner = current;
 				if( !pthread_kill( hThread->d.t.theThread, SIGUSR2 ) ){
 					hThread->d.t.suspendCount = 1;
 				}

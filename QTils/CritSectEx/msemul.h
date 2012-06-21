@@ -7,6 +7,35 @@
  *
  */
 
+#ifdef SWIG
+
+%module MSEmul
+%{
+#	if !(defined(WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(SWIGWIN))
+#		include "msemul.h"
+#	endif
+#include "CritSectEx.h"
+%}
+%include <windows.i>
+%include "exception.i"
+%exception {
+	try {
+		$action
+	}
+	catch( const std::exception& e ){
+		SWIG_exception(SWIG_RuntimeError, e.what());
+	}
+}
+#include "CritSectEx.h"
+
+%init %{
+	init_HRTime();
+%}
+
+%feature("autodoc","3");
+
+#endif //SWIG
+
 #ifndef _MSEMUL_H
 
 #include <stdio.h>
@@ -17,6 +46,11 @@
 #include <errno.h>
 #include <signal.h>
 #include <sys/time.h>
+#ifdef linux
+#	include <fcntl.h>
+#	include <sys/syscall.h>
+#endif
+#include <sys/stat.h>
 #include <semaphore.h>
 #include <pthread.h>
 #ifdef __SSE2__
@@ -25,7 +59,9 @@
 
 #include "timing.h"
 
-#define __forceinline	inline
+#ifndef __forceinline
+#	define __forceinline	inline
+#endif
 #ifndef __OBJC__
 #	define	BOOL		bool
 #endif
@@ -72,7 +108,11 @@ typedef void*		PVOID;
 		THREAD_PRIORITY_IDLE=-15, THREAD_PRIORITY_LOWEST=-2, THREAD_PRIORITY_NORMAL=0,
 		THREAD_PRIORITY_TIME_CRITICAL=15 };
 
+#ifdef SWIG
+#	define HANDLE	MSHANDLE*
+#else
 	typedef struct MSHANDLE*	HANDLE;
+#endif
 	/*!
 	 an emulated semaphore HANDLE
 	 */
@@ -106,11 +146,19 @@ typedef void*		PVOID;
 #if defined(__APPLE__) || defined(__MACH__)
 		mach_port_t machThread;
 #else
-		HANDLE threadLock, lockOwner;
+		HANDLE threadLock;
+		HANDLE lockOwner;
 #endif
 		void *returnValue;
 		DWORD threadId, suspendCount;
 	} MSHTHREAD;
+
+	typedef union MSHANDLEDATA {
+		MSHSEMAPHORE s;
+		MSHMUTEX m;
+		MSHEVENT e;
+		MSHTHREAD t;
+	} MSHANDLEDATA;
 
 	/*!
 	 an emulated HANDLE of one of the supported types (see MSHANDLETYPE)
@@ -120,12 +168,8 @@ typedef void*		PVOID;
 	 */
 	typedef struct MSHANDLE {
 		MSHANDLETYPE type;
-		union {
-			MSHSEMAPHORE s;
-			MSHMUTEX m;
-			MSHEVENT e;
-			MSHTHREAD t;
-		} d;
+		// for SWIG: no support for union-in-struct, so we sacrifice some space and use a struct
+		MSHANDLEDATA d;
 #	ifdef __cplusplus
 	 private:
 		DWORD NextThreadID()
@@ -223,6 +267,7 @@ typedef void*		PVOID;
 		  extern int pthread_create_suspendable( HANDLE mshThread, const pthread_attr_t *attr,
 						  void *(*start_routine)(void *), void *arg, bool suspended );
 			d.t.threadLock = new MSHANDLE(NULL, false, NULL);
+			d.t.lockOwner = NULL;
 			if( d.t.threadLock
 			   && !pthread_create_suspendable( this, NULL, lpStartAddress, lpParameter, (dwCreationFlags & CREATE_SUSPENDED) )
 			){
@@ -256,6 +301,11 @@ typedef void*		PVOID;
 			d.t.theThread = fromThread;
 #if defined(__APPLE__) || defined(__MACH__)
 			if( fromThread == pthread_self() && pthread_main_np() ){
+				d.t.threadId = 0;
+			}
+			else
+#elif defined(linux)
+			if( fromThread == pthread_self() && syscall(SYS_gettid) == getpid() ){
 				d.t.threadId = 0;
 			}
 			else

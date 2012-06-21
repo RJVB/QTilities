@@ -7,15 +7,35 @@
 	extended and ported to Mac OS X & linux by RJVB
  */
 
+#ifdef SWIG
+
+%module CritSectEx
+%{
+#	if !(defined(WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(SWIGWIN))
+#		include "msemul.h"
+#	endif
+#	include "CritSectEx.h"
+%}
+%include <windows.i>
+%feature("autodoc","3");
+
+%init %{
+	init_HRTime();
+%}
+
+#endif //SWIG
+
 #ifndef _CRITSECTEX_H
 
 #pragma once
 
-#if !defined(WINVER) || WINVER < 0x0501
-#	define WINVER 0x0501
-#endif
-#if !defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0501
-#	define _WIN32_WINNT 0x0501
+#if defined(WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(SWIGWIN)
+#	if !defined(WINVER) || WINVER < 0x0501
+#		define WINVER 0x0501
+#	endif
+#	if !defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0501
+#		define _WIN32_WINNT 0x0501
+#	endif
 #endif
 
 #include <stdio.h>
@@ -39,7 +59,7 @@
 #	ifdef __cplusplus
 #		include <cstdlib>
 #		include <exception>
-		typedef struct cseAssertFailure{
+		typedef struct cseAssertFailure : public std::exception{
 			const char *msg;
 			cseAssertFailure( const char *s )
 			{
