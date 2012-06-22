@@ -129,7 +129,8 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 				}
 #endif
 				break;
-			case MSH_EVENT:
+			case MSH_EVENT:{
+			  int err;
 				if( hHandle->d.e.isSignalled ){
 					if( !hHandle->d.e.isManual ){
 						_InterlockedSetFalse(hHandle->d.e.isSignalled);
@@ -138,10 +139,10 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 				}
 				if( pthread_mutex_lock( hHandle->d.e.mutex ) == 0 ){
 					hHandle->d.e.waiter = pthread_self();
-					if( pthread_cond_timedwait( hHandle->d.e.cond, hHandle->d.e.mutex, &timeout ) ){
+					if( (err = pthread_cond_timedwait( hHandle->d.e.cond, hHandle->d.e.mutex, &timeout )) ){
 						pthread_mutex_unlock( hHandle->d.e.mutex );
 						hHandle->d.e.waiter = 0;
-						return WAIT_ABANDONED;
+						return (err == ETIMEDOUT)? WAIT_TIMEOUT : WAIT_ABANDONED;
 					}
 					else{
 						pthread_mutex_unlock( hHandle->d.e.mutex );
@@ -156,6 +157,7 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 					return WAIT_ABANDONED;
 				}
 				break;
+			}
 			case MSH_THREAD:
 				if( pthread_join( hHandle->d.t.theThread, &hHandle->d.t.returnValue ) ){
 //					fprintf( stderr, "pthread_join error %s\n", strerror(errno) );
