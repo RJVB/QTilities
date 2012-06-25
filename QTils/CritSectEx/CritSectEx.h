@@ -251,7 +251,7 @@ class CritSectEx {
 	}
 
 	bool PerfLock(DWORD dwThreadID, DWORD dwTimeout);
-	bool PerfLockKernel(DWORD dwThreadID, DWORD dwTimeout);
+	__forceinline bool PerfLockKernel(DWORD dwThreadID, DWORD dwTimeout);
 
 	__forceinline void PerfUnlock()
 	{
@@ -417,9 +417,9 @@ public:
 
 	public:
 		__forceinline Scope()
-			:m_bLocked(false)
+			:m_pCs(NULL)
+			,m_bLocked(false)
 			,m_bUnlockFlag(false)
-			,m_pCs(NULL)
 		{
 		}
 		__forceinline Scope(CritSectEx& cs, DWORD dwTimeout = INFINITE)
@@ -427,9 +427,9 @@ public:
 			InternalLock(cs, dwTimeout);
 		}
 		__forceinline Scope(CritSectEx *cs, DWORD dwTimeout = INFINITE)
-			:m_bLocked(false)
+			:m_pCs(NULL)
+			,m_bLocked(false)
 			,m_bUnlockFlag(false)
-			,m_pCs(NULL)
 		{
 			if( cs ){
 				InternalLock(cs, dwTimeout);
@@ -580,8 +580,8 @@ public:
 
 	public:
 		__forceinline Scope()
-			:m_bLocked(false)
-			,m_pCs(NULL)
+			:m_pCs(NULL)
+			,m_bLocked(false)
 		{
 		}
 		__forceinline Scope(CritSectRec& cs, DWORD dwTimeout = INFINITE)
@@ -589,8 +589,8 @@ public:
 			InternalEnter(cs, dwTimeout);
 		}
 		__forceinline Scope(CritSectRec *cs, DWORD dwTimeout = INFINITE)
-			:m_bLocked(false)
-			,m_pCs(NULL)
+			:m_pCs(NULL)
+			,m_bLocked(false)
 		{
 			if( cs ){
 				InternalEnter(cs, dwTimeout);
@@ -1011,9 +1011,9 @@ public:
 
 	public:
 		__forceinline Scope()
-			:m_bLocked(false)
+			:m_pCs(NULL)
+			,m_bLocked(false)
 			,m_bUnlockFlag(false)
-			,m_pCs(NULL)
 		{
 		}
 		__forceinline Scope(MutexEx& cs, DWORD dwTimeout = INFINITE)
@@ -1021,9 +1021,9 @@ public:
 			InternalLock(cs, dwTimeout);
 		}
 		__forceinline Scope(MutexEx *cs, DWORD dwTimeout = INFINITE)
-			:m_bLocked(false)
+			:m_pCs(NULL)
+			,m_bLocked(false)
 			,m_bUnlockFlag(false)
-			,m_pCs(NULL)
 		{
 			if( cs ){
 				InternalLock(cs, dwTimeout);

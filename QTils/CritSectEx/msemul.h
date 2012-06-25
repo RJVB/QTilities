@@ -87,15 +87,10 @@
 //		typedef unsigned int	DWORD;
 //#	endif
 
-static inline long GetCurrentThreadId()
-{
-	return (long) pthread_self();
-}
-
 typedef void*		PVOID;
 #if !defined(__MINGW32__)
 #	ifndef DWORD
-		typedef uint32_t	DWORD;
+		typedef unsigned long	DWORD;
 #	endif
 
 	/*!
@@ -113,12 +108,41 @@ typedef void*		PVOID;
 #else
 	typedef struct MSHANDLE*	HANDLE;
 #endif
+	typedef struct MSHSEMAPHORECOUNTER {
+		long curCount, maxCount;
+		unsigned int *refHANDLEp;
+#ifdef __cplusplus
+		/*!
+		 new() operator that allocates from anonymous shared memory - necessary to be able
+		 to share semaphore handles among processes
+		 */
+		void *operator new(size_t size)
+		{ extern void *MSEreallocShared( void* ptr, size_t N, size_t oldN );
+			return MSEreallocShared( NULL, size, 0 );
+		}
+		/*!
+		 delete operator that frees anonymous shared memory
+		 */
+		void operator delete(void *p)
+		{ extern void MSEfreeShared(void *ptr);
+			MSEfreeShared(p);
+		}
+		MSHSEMAPHORECOUNTER(long curCnt, long maxCnt, unsigned int *refs )
+		{
+			curCount = curCnt;
+			maxCount = maxCnt;
+			refHANDLEp = refs;
+		}
+#endif
+	} MSHSEMAPHORECOUNTER;
 	/*!
 	 an emulated semaphore HANDLE
 	 */
 	typedef struct MSHSEMAPHORE {
 		char *name;
 		sem_t *sem;
+		MSHSEMAPHORECOUNTER *counter;
+		unsigned int refHANDLEs;
 		pthread_t owner;
 	} MSHSEMAPHORE;
 
@@ -176,21 +200,61 @@ typedef void*		PVOID;
 		{ static DWORD Id = 1;
 			return Id++;
 		}
+		void mmfree(void *p)
+		{ extern void MSEfreeShared(void *ptr);
+			MSEfreeShared(p);
+		}
+		
 	 public:
+#pragma mark new MSHANDLE
 		/*!
-			initialise a semaphore HANDLE
+			new() operator that allocates from anonymous shared memory - necessary to be able
+			to share semaphore handles among processes
 		 */
-		MSHANDLE( void* ign_lpSemaphoreAttributes, long lInitialCount, long ign_lMaximumCount, char *lpName )
-		{
-			if( lpName && (d.s.sem = sem_open( lpName, O_CREAT, S_IRWXU, lInitialCount)) != SEM_FAILED ){
-				d.s.name = lpName;
-				d.s.owner = 0;
-				type = MSH_SEMAPHORE;
-			}
-			else{
-				type = MSH_EMPTY;
+		void *operator new(size_t size)
+		{ extern void *MSEreallocShared( void* ptr, size_t N, size_t oldN );
+			return MSEreallocShared( NULL, size, 0 );
+		}
+		/*!
+			delete operator that frees anonymous shared memory
+		 */
+		void operator delete(void *p)
+		{ extern void MSEfreeShared(void *ptr);
+			MSEfreeShared(p);
+		}
+#pragma mark initialise a new semaphore HANDLE
+		/*!
+			initialise a new semaphore HANDLE
+		 */
+		MSHANDLE( void* ign_lpSemaphoreAttributes, long lInitialCount, long lMaximumCount, char *lpName )
+		{ extern void AddSemaListEntry(HANDLE h);
+			type = MSH_EMPTY;
+			if( lpName ){
+				if( lInitialCount >= 0 && lMaximumCount > 0
+				   && (d.s.sem = sem_open( lpName, O_CREAT, S_IRWXU, lInitialCount)) != SEM_FAILED
+				){
+					d.s.name = lpName;
+					d.s.owner = 0;
+					d.s.refHANDLEs = 0;
+					d.s.counter = new MSHSEMAPHORECOUNTER(lInitialCount, lMaximumCount, &d.s.refHANDLEs);
+					type = MSH_SEMAPHORE;
+					AddSemaListEntry(this);
+				}
 			}
 		}
+		/*!
+			initialise a new semaphore HANDLE that references an existing semaphore HANDLE
+		 */
+		MSHANDLE( sem_t *sema, MSHSEMAPHORECOUNTER *counter, char *lpName )
+		{
+			d.s.name = lpName;
+			d.s.sem = sema;
+			d.s.owner = 0;
+			d.s.counter = counter;
+			*(counter->refHANDLEp) += 1;
+			type = MSH_SEMAPHORE;
+		}
+#pragma mark initialise a mutex HANDLE
 		/*!
 			initialise a mutex HANDLE
 		 */
@@ -211,6 +275,7 @@ typedef void*		PVOID;
 				type = MSH_EMPTY;
 			}
 		}
+#pragma mark initialise an event HANDLE
 		/*!
 			initialise an event HANDLE
 		 */
@@ -242,6 +307,7 @@ typedef void*		PVOID;
 				type = MSH_EMPTY;
 			}
 		}
+#pragma mark initialise a thread HANDLE
 		/*!
 			initialise a thread HANDLE
 		 */
@@ -291,6 +357,7 @@ typedef void*		PVOID;
 				type = MSH_EMPTY;
 			}
 		}
+#pragma mark initialise a HANDLE from an existing pthread identifier
 		/*!
 			Initialise a HANDLE from an existing pthread identifier
 		 */
@@ -315,23 +382,36 @@ typedef void*		PVOID;
 			}
 
 		}
+#pragma mark HANDLE destructor
 		/*!
 			HANDLE destructor
 		 */
 		~MSHANDLE()
 		{ bool ret = false;
 			switch( type ){
-				case MSH_SEMAPHORE:
+				case MSH_SEMAPHORE:{
+				  extern void RemoveSemaListEntry(sem_t*);
 					if( d.s.sem ){
-						sem_post(d.s.sem);
-						ret = (sem_close(d.s.sem) == 0);
-						if( d.s.name ){
-							sem_unlink(d.s.name);
-							free(d.s.name);
+						if( d.s.counter->refHANDLEp != &d.s.refHANDLEs ){
+							// just decrement the counter of the semaphore HANDLE we're referring to:
+							*(d.s.counter->refHANDLEp) -= 1;
 						}
+						else if( d.s.refHANDLEs == 0 ){
+							sem_post(d.s.sem);
+							ret = (sem_close(d.s.sem) == 0);
+							if( d.s.name ){
+								sem_unlink(d.s.name);
+							}
+							RemoveSemaListEntry(d.s.sem);
+						}
+						if( d.s.name ){
+							mmfree(d.s.name);
+						}
+						delete d.s.counter;
 						ret = true;
 					}
 					break;
+				}
 				case MSH_MUTEX:
 					if( d.m.mutex ){
 						ret = (pthread_mutex_destroy(d.m.mutex) == 0);
@@ -361,9 +441,19 @@ typedef void*		PVOID;
 				memset( this, 0, sizeof(MSHANDLE) );
 			}
 		}
-#	endif
+#	endif //cplusplus
 	} MSHANDLE;
 #endif // !__MINGW32__
+
+static inline DWORD GetCurrentProcessId()
+{
+	return (DWORD) getpid();
+}
+
+static inline DWORD GetCurrentThreadId()
+{
+	return (DWORD) pthread_self();
+}
 
 /*!
  Emulates the Microsoft-specific intrinsic of the same name.
@@ -479,20 +569,30 @@ static inline DWORD GetLastError()
 #if !defined(__MINGW32__)
 #	define ZeroMemory(p,s)	memset((p), 0, (s))
 
-#	define WAIT_ABANDONED	0
-#	define WAIT_OBJECT_0	1
-#	define WAIT_TIMEOUT	2
+#	define WAIT_ABANDONED	0x00000080L
+#	define WAIT_OBJECT_0	0x00000000L
+#	define WAIT_TIMEOUT		0x00000102L
+#	define WAIT_FAILED		(DWORD) 0xffffffff
 
 /*!
  Release the given semaphore.
  @n
- @param ign_lReleaseCount	ignored
- @param ign_lpPreviousCount	ignored
+ @param lReleaseCount	increase the semaphore count by this number (must be > 0)
+ @param lpPreviousCount	optional: return the count on entry
  */
-static inline bool ReleaseSemaphore( HANDLE hSemaphore, long ign_lReleaseCount, long *ign_lpPreviousCount )
+static inline bool ReleaseSemaphore( HANDLE hSemaphore, long lReleaseCount, long *lpPreviousCount )
 { bool ok = false;
-	if( hSemaphore && hSemaphore->type == MSH_SEMAPHORE ){
+	if( hSemaphore && hSemaphore->type == MSH_SEMAPHORE && lReleaseCount > 0
+	   && hSemaphore->d.s.counter->curCount + lReleaseCount <= hSemaphore->d.s.counter->maxCount
+	){
+		if( lpPreviousCount ){
+			*lpPreviousCount = hSemaphore->d.s.counter->curCount;
+		}
+		lReleaseCount += hSemaphore->d.s.counter->curCount;
+		do{
 		ok = (sem_post(hSemaphore->d.s.sem) == 0);
+			hSemaphore->d.s.counter->curCount += 1;
+		} while( ok && hSemaphore->d.s.counter->curCount < lReleaseCount );
 		if( ok ){
 			hSemaphore->d.s.owner = 0;
 		}
@@ -548,7 +648,8 @@ static inline bool ResetEvent( HANDLE hEvent )
 extern "C" {
 #	endif
 	extern DWORD WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds);
-	extern HANDLE CreateSemaphore( void* ign_lpSemaphoreAttributes, long lInitialCount, long ign_lMaximumCount, char *lpName );
+	extern HANDLE CreateSemaphore( void* ign_lpSemaphoreAttributes, long lInitialCount, long lMaximumCount, char *lpName );
+	extern HANDLE OpenSemaphore( DWORD ign_dwDesiredAccess, BOOL ign_bInheritHandle, char *lpName );
 	extern HANDLE CreateMutex( void *ign_lpMutexAttributes, BOOL bInitialOwner, char *ign_lpName );
 	extern HANDLE msCreateEvent( void *ign_lpEventAttributes, BOOL bManualReset, BOOL bInitialState, char *ign_lpName );
 #	define CreateEvent(A,R,I,N)	msCreateEvent((A),(R),(I),(N))
