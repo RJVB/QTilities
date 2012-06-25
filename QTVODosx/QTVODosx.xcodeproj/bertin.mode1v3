@@ -307,7 +307,7 @@
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 1036}, {254, 562}}</string>
+							<string>{{0, 0}, {254, 562}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -407,9 +407,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>D672B2661588EE1D001BB4E1</string>
+				<string>D64758571599154B00B87D21</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>D672B2671588EE1D001BB4E1</string>
+				<string>D64758581599154B00B87D21</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -528,7 +528,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>361295389.13030201</real>
+	<real>362354017.731718</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -545,9 +545,12 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>D64758611599154B00B87D21</string>
+		<string>D64758621599154B00B87D21</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>D6A5BD01129D234C005159EF</string>
 		<string>/Volumes/Debian/Users/bertin/work/src/MacOSX/QTilities/QTVODosx/QTVODosx.xcodeproj</string>
+		<string>1C78EAAD065D492600B07095</string>
 	</array>
 	<key>WindowString</key>
 	<string>-717 194 699 621 -1280 100 1280 800 </string>
@@ -629,7 +632,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>D6A5BD01129D234C005159EF</string>
-				<string>D672B2101588E8DD001BB4E1</string>
+				<string>D64758541599154700B87D21</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -751,13 +754,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
-				<string>D672B2111588E8DD001BB4E1</string>
+				<string>D64758591599154B00B87D21</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>D672B2121588E8DD001BB4E1</string>
-				<string>D672B2131588E8DD001BB4E1</string>
-				<string>D672B2141588E8DD001BB4E1</string>
-				<string>D672B2151588E8DD001BB4E1</string>
-				<string>D672B2161588E8DD001BB4E1</string>
+				<string>D647585A1599154B00B87D21</string>
+				<string>D647585B1599154B00B87D21</string>
+				<string>D647585C1599154B00B87D21</string>
+				<string>D647585D1599154B00B87D21</string>
+				<string>D647585E1599154B00B87D21</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
@@ -915,7 +918,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C78EAAD065D492600B07095</string>
-				<string>D64B647F1582B34900FCA20C</string>
+				<string>D647585F1599154B00B87D21</string>
 				<string>1C78EAAC065D492600B07095</string>
 			</array>
 			<key>ToolbarConfiguration</key>

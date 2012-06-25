@@ -1193,6 +1193,7 @@
 				HEADER_SEARCH_PATHS = (
 					"${PROJECT_DIR}/../GNUStep-PC-LogController",
 					QTils/gcygwin,
+					/usr/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = (
@@ -1231,6 +1232,7 @@
 				HEADER_SEARCH_PATHS = (
 					"${PROJECT_DIR}/../GNUStep-PC-LogController",
 					QTils/gcygwin,
+					/usr/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = (

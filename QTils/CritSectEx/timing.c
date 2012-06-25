@@ -1,12 +1,9 @@
 /*!
  *  @file timing.c
  *
- *  (C) RenE J.V. Bertin on 20080926.
+ *  (C) René J.V. Bertin on 20080926.
  *
  */
-
-#include "copyright.h"
-IDENTIFY("Timing routines");
 
 #include <stdio.h>
 
@@ -16,7 +13,10 @@ IDENTIFY("Timing routines");
 #	include <mach/mach_init.h>
 #	include <sys/sysctl.h>
 #endif
-#if ! defined(_WINDOWS) && !defined(WIN32) && !defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(__WATCOMC__)
+#	define _WINDOWS
+#endif
+#if ! defined(_WINDOWS) && !defined(WIN32)
 #	include <time.h>
 #	include <sys/time.h>
 #	include <unistd.h>
@@ -24,10 +24,10 @@ IDENTIFY("Timing routines");
 #include <errno.h>
 
 #define _TIMING_C
+
 #include "timing.h"
 
 #if defined(__MACH__)
-#pragma mark __MACH__
 
 static mach_timebase_info_data_t sTimebaseInfo;
 static double calibrator= 0;
@@ -101,7 +101,7 @@ double HRTime_toc()
 	static __inline__ tsc_time read_tsc()
 	{ tsc_time ret;
 
-		__asm__ __volatile__("rdtsc": "=A" (ret)); 
+		__asm__ __volatile__("rdtsc": "=A" (ret));
 		/* no input, nothing else clobbered */
 		return ret;
 	}
@@ -151,15 +151,20 @@ double HRTime_toc()
 	return gettime() - ticTime;
 }
 
-#elif defined(_WINDOWS) || defined(WIN32) || defined(_MSC_VER)
-#pragma mark MSWin
+#elif defined(_WINDOWS) || defined(WIN32)
 
 #include <windows.h>
 
 static LARGE_INTEGER lpFrequency;
 static double calibrator= 0;
 
-void init_HRTime()
+#ifdef __LCC__
+#	define	__forceinline	/**/
+#elif defined(__MINGW32__)
+#	define	__forceinline	inline
+#endif
+
+__forceinline void init_HRTime()
 {
 	if( !calibrator ){
 		if( !QueryPerformanceFrequency(&lpFrequency) ){
@@ -174,7 +179,7 @@ void init_HRTime()
 
 __forceinline double HRTime_Time()
 { LARGE_INTEGER count;
-	
+
 	QueryPerformanceCounter(&count);
 	return count.QuadPart * calibrator;
 }
@@ -193,7 +198,7 @@ __forceinline double HRTime_toc()
 }
 
 #else
-#pragma mark gettimeofday
+
 
 	  /* Use gettimeofday():	*/
 #define gettime(time)	{ struct timezone tzp; \

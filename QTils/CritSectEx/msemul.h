@@ -81,6 +81,9 @@
 #	ifndef true
 #		define true		((bool)1)
 #	endif
+#else
+#	include <string>
+#	include <sstream>
 #endif // !__cplusplus
 
 //#	ifndef DWORD
@@ -88,6 +91,7 @@
 //#	endif
 
 typedef void*		PVOID;
+typedef void*		LPVOID;
 #if !defined(__MINGW32__)
 #	ifndef DWORD
 		typedef unsigned long	DWORD;
@@ -96,7 +100,7 @@ typedef void*		PVOID;
 	/*!
 	 the types of MS Windows HANDLEs that we can emulate:
 	 */
-	typedef enum { MSH_EMPTY, MSH_SEMAPHORE, MSH_MUTEX, MSH_EVENT, MSH_THREAD } MSHANDLETYPE;
+	typedef enum { MSH_EMPTY, MSH_SEMAPHORE, MSH_MUTEX, MSH_EVENT, MSH_THREAD, MSH_CLOSED } MSHANDLETYPE;
 #	define CREATE_SUSPENDED	0x00000004
 
 	enum { THREAD_PRIORITY_ABOVE_NORMAL=1, THREAD_PRIORITY_BELOW_NORMAL=-1, THREAD_PRIORITY_HIGHEST=2,
@@ -108,6 +112,26 @@ typedef void*		PVOID;
 #else
 	typedef struct MSHANDLE*	HANDLE;
 #endif
+	/*!
+		Microsoft's semaphore SECURITY_ATTRIBUTES
+	 */
+	typedef struct _SECURITY_ATTRIBUTES {
+		DWORD  nLength;			//!< set to sizeof(SECURITY_ATTRIBUTES)
+		LPVOID lpSecurityDescriptor;
+		BOOL   bInheritHandle;
+	} SECURITY_ATTRIBUTES, *PSECURITY_ATTRIBUTES, *LPSECURITY_ATTRIBUTES;
+	/*!
+		OpenSemaphore() must be called with dwDesiredAccess==DELETE|SYNCHRONIZE|SEMAPHORE_MODIFY_STATE
+		in order to return an existing named semaphore object on MS Win. This mask is compatible
+		with semaphores created with CreateSemaphore's lpSemaphoreAttributes==NULL or a SECURITY_ATTRIBUTES
+		structure with lpSecurityDescriptor==NULL .
+	 */
+	enum SEMAPHORE_SECURITY_ATTRMASKS { DELETE=0x00010000L, SYNCHRONIZE=0x00100000L,
+		SEMAPHORE_MODIFY_STATE=0x0002 };
+	/*!
+		A structure to keep track of the semaphore's count and Microsoft's maximumCount feature
+		curCount is required because Mac OS X doesn't have a functional sem_getvalue().
+	 */
 	typedef struct MSHSEMAPHORECOUNTER {
 		long curCount, maxCount;
 		unsigned int *refHANDLEp;
@@ -204,7 +228,30 @@ typedef void*		PVOID;
 		{ extern void MSEfreeShared(void *ptr);
 			MSEfreeShared(p);
 		}
-		
+		void Register()
+		{ extern void AddSemaListEntry(HANDLE h);
+		  void RegisterHANDLE(HANDLE h);
+			switch( type ){
+				case MSH_SEMAPHORE:
+					AddSemaListEntry(this);
+					break;
+				default:
+					break;
+			}
+			RegisterHANDLE(this);
+		}
+		void Unregister()
+		{ extern void RemoveSemaListEntry(sem_t*);
+		  void UnregisterHANDLE(HANDLE h);
+			switch( type ){
+				case MSH_SEMAPHORE:
+					RemoveSemaListEntry(d.s.sem);
+					break;
+				default:
+					break;
+			}
+			UnregisterHANDLE(this);
+		}
 	 public:
 #pragma mark new MSHANDLE
 		/*!
@@ -227,7 +274,7 @@ typedef void*		PVOID;
 			initialise a new semaphore HANDLE
 		 */
 		MSHANDLE( void* ign_lpSemaphoreAttributes, long lInitialCount, long lMaximumCount, char *lpName )
-		{ extern void AddSemaListEntry(HANDLE h);
+		{
 			type = MSH_EMPTY;
 			if( lpName ){
 				if( lInitialCount >= 0 && lMaximumCount > 0
@@ -238,10 +285,11 @@ typedef void*		PVOID;
 					d.s.refHANDLEs = 0;
 					d.s.counter = new MSHSEMAPHORECOUNTER(lInitialCount, lMaximumCount, &d.s.refHANDLEs);
 					type = MSH_SEMAPHORE;
-					AddSemaListEntry(this);
+					Register();
 				}
 			}
 		}
+#pragma mark initialise a duplicate semaphore HANDLE
 		/*!
 			initialise a new semaphore HANDLE that references an existing semaphore HANDLE
 		 */
@@ -253,6 +301,7 @@ typedef void*		PVOID;
 			d.s.counter = counter;
 			*(counter->refHANDLEp) += 1;
 			type = MSH_SEMAPHORE;
+			Register();
 		}
 #pragma mark initialise a mutex HANDLE
 		/*!
@@ -270,6 +319,7 @@ typedef void*		PVOID;
 				else{
 					d.m.owner = 0;
 				}
+				Register();
 			}
 			else{
 				type = MSH_EMPTY;
@@ -302,6 +352,7 @@ typedef void*		PVOID;
 				type = MSH_EVENT;
 				d.e.isManual = bManualReset;
 				d.e.isSignalled = bInitialState;
+				Register();
 			}
 			else{
 				type = MSH_EMPTY;
@@ -352,6 +403,7 @@ typedef void*		PVOID;
 				if( lpThreadId ){
 					*lpThreadId = d.t.threadId;
 				}
+				Register();
 			}
 			else{
 				type = MSH_EMPTY;
@@ -380,7 +432,7 @@ typedef void*		PVOID;
 			{
 				d.t.threadId = NextThreadID();
 			}
-
+			Register();
 		}
 #pragma mark HANDLE destructor
 		/*!
@@ -390,24 +442,32 @@ typedef void*		PVOID;
 		{ bool ret = false;
 			switch( type ){
 				case MSH_SEMAPHORE:{
-				  extern void RemoveSemaListEntry(sem_t*);
 					if( d.s.sem ){
 						if( d.s.counter->refHANDLEp != &d.s.refHANDLEs ){
 							// just decrement the counter of the semaphore HANDLE we're referring to:
 							*(d.s.counter->refHANDLEp) -= 1;
+							if( d.s.counter->curCount == 0 ){
+								sem_post(d.s.sem);
+								d.s.counter->curCount += 1;
+							}
+							ret == (sem_close(d.s.sem) == 0);
 						}
 						else if( d.s.refHANDLEs == 0 ){
-							sem_post(d.s.sem);
+							if( d.s.counter->curCount == 0 ){
+								sem_post(d.s.sem);
+								d.s.counter->curCount += 1;
+							}
 							ret = (sem_close(d.s.sem) == 0);
 							if( d.s.name ){
 								sem_unlink(d.s.name);
 							}
-							RemoveSemaListEntry(d.s.sem);
+							delete d.s.counter;
+							d.s.counter = NULL;
 						}
 						if( d.s.name ){
 							mmfree(d.s.name);
+							d.s.name = NULL;
 						}
-						delete d.s.counter;
 						ret = true;
 					}
 					break;
@@ -429,6 +489,10 @@ typedef void*		PVOID;
 					if( d.t.pThread ){
 						ret = (pthread_join(d.t.theThread, &d.t.returnValue) == 0);
 					}
+					else{
+						// 20120625: thread already exited, we can set ret=TRUE!
+						ret = true;
+					}
 #if !defined(__APPLE__) && !defined(__MACH__)
 					if( d.t.threadLock ){
 						delete d.t.threadLock;
@@ -438,8 +502,38 @@ typedef void*		PVOID;
 					break;
 			}
 			if( ret ){
+				Unregister();
 				memset( this, 0, sizeof(MSHANDLE) );
+				type = MSH_CLOSED;
 			}
+		}
+		std::string asString()
+		{ std::ostringstream ret;
+			switch( type ){
+				case MSH_SEMAPHORE:{
+				  char *name = (d.s.name)? d.s.name : (char*) "<NULL>";
+					if( d.s.counter ){
+						ret << "<MSH_SEMAPHORE \"" << name << "\" curCnt=" << d.s.counter->curCount << " " << d.s.refHANDLEs << " references owner=" << d.s.owner << ">";
+					}
+					else{
+						ret << "<MSH_SEMAPHORE \"" << name << "\" curCnt=??" << " " << d.s.refHANDLEs << " references owner=" << d.s.owner << ">";
+					}
+					break;
+				}
+				case MSH_MUTEX:
+					ret << "<MSH_MUTEX owner=" << d.m.owner << ">";
+					break;
+				case MSH_EVENT:
+					ret << "<MSH_EVENT manual=" << d.e.isManual << " signalled=" << d.e.isSignalled << " waiter=" << d.e.waiter << ">";
+					break;
+				case MSH_THREAD:
+					ret << "<MSH_THREAD thread=" << d.t.theThread << " Id=" << d.t.threadId << ">";
+					break;
+				default:
+					ret << "<Unknown HANDLE>";
+					break;
+			}
+			return ret.str();
 		}
 #	endif //cplusplus
 	} MSHANDLE;
@@ -453,6 +547,17 @@ static inline DWORD GetCurrentProcessId()
 static inline DWORD GetCurrentThreadId()
 {
 	return (DWORD) pthread_self();
+}
+
+static inline DWORD GetThreadId(HANDLE Thread)
+{
+	if( Thread && Thread->type == MSH_THREAD ){
+		return (DWORD) Thread->d.t.pThread;
+	}
+	else{
+		errno = ESRCH;
+		return 0;
+	}
 }
 
 /*!
@@ -566,6 +671,11 @@ static inline DWORD GetLastError()
 	return (DWORD) errno;
 }
 
+static inline void Sleep(DWORD dwMilliseconds)
+{
+	usleep( dwMilliseconds * 1000 );
+}
+
 #if !defined(__MINGW32__)
 #	define ZeroMemory(p,s)	memset((p), 0, (s))
 
@@ -590,9 +700,20 @@ static inline bool ReleaseSemaphore( HANDLE hSemaphore, long lReleaseCount, long
 		}
 		lReleaseCount += hSemaphore->d.s.counter->curCount;
 		do{
-		ok = (sem_post(hSemaphore->d.s.sem) == 0);
-			hSemaphore->d.s.counter->curCount += 1;
+			ok = (sem_post(hSemaphore->d.s.sem) == 0);
+				hSemaphore->d.s.counter->curCount += 1;
 		} while( ok && hSemaphore->d.s.counter->curCount < lReleaseCount );
+#ifdef linux
+		{ int cval;
+			if( sem_getvalue( hSemaphore->d.s.sem, &cval ) != -1 ){
+				if( cval != hSemaphore->d.s.counter->curCount ){
+					fprintf( stderr, "ReleaseSemaphore(\"%s\"): value mismatch, %ld != %d\n",
+						   hSemaphore->d.s.name, hSemaphore->d.s.counter->curCount, cval
+					);
+				}
+			}
+		}
+#endif
 		if( ok ){
 			hSemaphore->d.s.owner = 0;
 		}

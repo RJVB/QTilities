@@ -233,10 +233,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D6F339AA158817D300EE650A</string>
+						<string>D647580C1599153700B87D21</string>
 						<key>history</key>
 						<array>
-							<string>D6D5FBB61586236100874045</string>
+							<string>D6F339AA158817D300EE650A</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -273,10 +273,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D6F339AB158817D300EE650A</string>
+						<string>D647580D1599153700B87D21</string>
 						<key>history</key>
 						<array>
-							<string>D6D5FBB71586236100874045</string>
+							<string>D6F339AB158817D300EE650A</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -313,10 +313,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D6F339AC158817D300EE650A</string>
+						<string>D647580E1599153700B87D21</string>
 						<key>history</key>
 						<array>
-							<string>D6D5FBB81586236100874045</string>
+							<string>D6F339AC158817D300EE650A</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -353,10 +353,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D6F339AD158817D300EE650A</string>
+						<string>D647580F1599153700B87D21</string>
 						<key>history</key>
 						<array>
-							<string>D6D5FBB91586236100874045</string>
+							<string>D6F339AD158817D300EE650A</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -393,10 +393,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D6F339AE158817D300EE650A</string>
+						<string>D64758101599153700B87D21</string>
 						<key>history</key>
 						<array>
-							<string>D6D5FBBA1586236100874045</string>
+							<string>D6F339AE158817D300EE650A</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -433,10 +433,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D6F339AF158817D300EE650A</string>
+						<string>D64758111599153700B87D21</string>
 						<key>history</key>
 						<array>
-							<string>D6D5FBBB1586236100874045</string>
+							<string>D6F339AF158817D300EE650A</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -541,7 +541,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>104</integer>
+									<integer>1</integer>
+									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
@@ -645,9 +646,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>D6F33992158815F700EE650A</string>
+				<string>D647580A1599153700B87D21</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>D6F33993158815F700EE650A</string>
+				<string>D647580B1599153700B87D21</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -766,7 +767,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>361240531.93352801</real>
+	<real>362353975.10057598</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -783,18 +784,18 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>D6F339A2158815F700EE650A</string>
-		<string>D6F339A3158815F700EE650A</string>
+		<string>D64758121599153700B87D21</string>
+		<string>D64758131599153700B87D21</string>
+		<string>1C78EAAD065D492600B07095</string>
 		<string>D619AC2C1276E0CE00FF8489</string>
+		<string>1CD10A99069EF8BA00B06720</string>
 		<string>D6BF21FA154C63F000732A27</string>
 		<string>D6C2257F157E88CB0053FBEC</string>
 		<string>D6C225B6157E91010053FBEC</string>
 		<string>D6C22576157E88CB0053FBEC</string>
 		<string>D64B63E41582AD3E00FCA20C</string>
-		<string>/Volumes/Debian/Users/bertin/work/src/MacOSX/QTilities/QTMovieSink-106.xcodeproj</string>
 		<string>D64B63571582629600FCA20C</string>
-		<string>1CD10A99069EF8BA00B06720</string>
-		<string>1C78EAAD065D492600B07095</string>
+		<string>/Volumes/Debian/Users/bertin/work/src/MacOSX/QTilities/QTMovieSink-106.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>-1051 259 688 604 -1280 100 1280 800 </string>
@@ -876,7 +877,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>D619AC2C1276E0CE00FF8489</string>
-				<string>D6F33991158815F300EE650A</string>
+				<string>D64757C11599149B00B87D21</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -998,13 +999,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
-				<string>D6F3399A158815F700EE650A</string>
+				<string>D64757C21599149B00B87D21</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>D6F3399B158815F700EE650A</string>
-				<string>D6F3399C158815F700EE650A</string>
-				<string>D6F3399D158815F700EE650A</string>
-				<string>D6F3399E158815F700EE650A</string>
-				<string>D6F3399F158815F700EE650A</string>
+				<string>D64757C31599149B00B87D21</string>
+				<string>D64757C41599149B00B87D21</string>
+				<string>D64757C51599149B00B87D21</string>
+				<string>D64757C61599149B00B87D21</string>
+				<string>D64757C71599149B00B87D21</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
@@ -1013,7 +1014,7 @@
 			<key>WindowToolGUID</key>
 			<string>1CD10A99069EF8BA00B06720</string>
 			<key>WindowToolIsVisible</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>FirstTimeWindowDisplayed</key>
@@ -1162,7 +1163,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C78EAAD065D492600B07095</string>
-				<string>D6F339A0158815F700EE650A</string>
+				<string>D64758091599153300B87D21</string>
 				<string>1C78EAAC065D492600B07095</string>
 			</array>
 			<key>ToolbarConfiguration</key>
@@ -1172,7 +1173,7 @@
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>FirstTimeWindowDisplayed</key>
