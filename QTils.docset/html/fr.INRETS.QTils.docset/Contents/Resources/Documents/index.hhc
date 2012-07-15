@@ -7,6 +7,7 @@
 <LI><OBJECT type="text/sitemap"><param name="Name" value="Class List"><param name="Local" value="annotated.html"><param name="ImageNumber" value="1"></OBJECT>
   <UL>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::_object"><param name="Local" value="class_q_tils_1_1__object.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="_SECURITY_ATTRIBUTES"><param name="Local" value="struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="add_reference< T >"><param name="Local" value="structadd__reference.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="add_reference< T & >"><param name="Local" value="structadd__reference_3_01_t_01_6_01_4.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="AnnotationKeyList"><param name="Local" value="struct_annotation_key_list.html"><param name="ImageNumber" value="11"></OBJECT>
@@ -93,9 +94,11 @@
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MediaRefs"><param name="Local" value="struct_media_refs.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::MovieFrameTime"><param name="Local" value="class_q_tils_1_1_movie_frame_time.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHANDLE"><param name="Local" value="struct_m_s_h_a_n_d_l_e.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHANDLEDATA"><param name="Local" value="union_m_s_h_a_n_d_l_e_d_a_t_a.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHEVENT"><param name="Local" value="struct_m_s_h_e_v_e_n_t.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHMUTEX"><param name="Local" value="struct_m_s_h_m_u_t_e_x.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHSEMAPHORE"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHSEMAPHORECOUNTER"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e_c_o_u_n_t_e_r.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHTHREAD"><param name="Local" value="struct_m_s_h_t_h_r_e_a_d.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MyCompressData"><param name="Local" value="struct_my_compress_data.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MyDocList"><param name="Local" value="struct_my_doc_list.html"><param name="ImageNumber" value="11"></OBJECT>
@@ -131,8 +134,8 @@
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTMakeCommand"><param name="Local" value="interface_q_t_make_command.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTMarkTimeIntervalCommand"><param name="Local" value="interface_q_t_mark_time_interval_command.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTMoveCommand"><param name="Local" value="interface_q_t_move_command.html"><param name="ImageNumber" value="11"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Name" value="QTMovieInfo"><param name="Local" value="struct_q_t_movie_info.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::QTMovieInfo"><param name="Local" value="class_q_tils_1_1_q_t_movie_info.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="QTMovieInfo"><param name="Local" value="struct_q_t_movie_info.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTMovieSinkQTStuff"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTMovieSinks"><param name="Local" value="struct_q_t_movie_sinks.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTMovieWindowDelegate"><param name="Local" value="interface_q_t_movie_window_delegate.html"><param name="ImageNumber" value="11"></OBJECT>
@@ -162,8 +165,8 @@
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTVODTerminologyQtMovieView"><param name="Local" value="interface_q_t_v_o_d_terminology_qt_movie_view.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTVODTerminologyWindow"><param name="Local" value="interface_q_t_v_o_d_terminology_window.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTVODWindow"><param name="Local" value="interface_q_t_v_o_d_window.html"><param name="ImageNumber" value="11"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Name" value="libc_allocator_with_realloc< T >::rebind< U >"><param name="Local" value="structlibc__allocator__with__realloc_1_1rebind.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="libc_allocator_with_realloc< void >::rebind< U >"><param name="Local" value="structlibc__allocator__with__realloc_3_01void_01_4_1_1rebind.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="libc_allocator_with_realloc< T >::rebind< U >"><param name="Local" value="structlibc__allocator__with__realloc_1_1rebind.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::Rect"><param name="Local" value="class_q_tils_1_1_rect.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="remove_const< T >"><param name="Local" value="structremove__const.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="remove_const< T const  >"><param name="Local" value="structremove__const_3_01_t_01const_01_01_4.html"><param name="ImageNumber" value="11"></OBJECT>
@@ -177,8 +180,8 @@
   <LI><OBJECT type="text/sitemap"><param name="Name" value="remove_reference< T & >"><param name="Local" value="structremove__reference_3_01_t_01_6_01_4.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="remove_volatile< T >"><param name="Local" value="structremove__volatile.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="remove_volatile< T volatile >"><param name="Local" value="structremove__volatile_3_01_t_01volatile_01_4.html"><param name="ImageNumber" value="11"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::RGBColor"><param name="Local" value="class_q_tils_1_1_r_g_b_color.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="RGBColor"><param name="Local" value="struct_r_g_b_color.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::RGBColor"><param name="Local" value="class_q_tils_1_1_r_g_b_color.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="sh_hashtable_settings< Key, HashFunc, SizeType, HT_MIN_BUCKETS >"><param name="Local" value="classsh__hashtable__settings.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="sparse_hashtable< Value, Key, HashFcn, ExtractKey, SetKey, EqualKey, Alloc >"><param name="Local" value="classsparse__hashtable.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="sparse_hashtable_const_iterator< V, K, HF, ExK, SetK, EqK, A >"><param name="Local" value="structsparse__hashtable__const__iterator.html"><param name="ImageNumber" value="11"></OBJECT>
@@ -194,8 +197,8 @@
   <LI><OBJECT type="text/sitemap"><param name="Name" value="SwigPyObject"><param name="Local" value="struct_swig_py_object.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="SwigPyPacked"><param name="Local" value="struct_swig_py_packed.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="tag2VUYQUAD"><param name="Local" value="structtag2_v_u_y_q_u_a_d.html"><param name="ImageNumber" value="11"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Name" value="TCTrackInfo"><param name="Local" value="struct_t_c_track_info.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::TCTrackInfo"><param name="Local" value="class_q_tils_1_1_t_c_track_info.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="TCTrackInfo"><param name="Local" value="struct_t_c_track_info.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="test23Struct"><param name="Local" value="structtest23_struct.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="TimeInterval"><param name="Local" value="struct_time_interval.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="value_alloc_type"><param name="Local" value="classvalue__alloc__type.html"><param name="ImageNumber" value="11"></OBJECT>
@@ -206,26 +209,26 @@
   <LI><OBJECT type="text/sitemap"><param name="Name" value="XML_Record::content::xml_element_content"><param name="Local" value="struct_x_m_l___record_1_1content_1_1xml__element__content.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XML_ParsedValue"><param name="Local" value="class_q_tils_1_1_x_m_l___parsed_value.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="XML_ParsedValue"><param name="Local" value="union_x_m_l___parsed_value.html"><param name="ImageNumber" value="11"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XML_Record"><param name="Local" value="class_q_tils_1_1_x_m_l___record.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="XML_Record"><param name="Local" value="struct_x_m_l___record.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XML_Record"><param name="Local" value="class_q_tils_1_1_x_m_l___record.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XML_Record_reading"><param name="Local" value="class_q_tils_1_1_x_m_l___record__reading.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="XML_Record_reading"><param name="Local" value="union_x_m_l___record__reading.html"><param name="ImageNumber" value="11"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Name" value="XML_Record_xml"><param name="Local" value="union_x_m_l___record__xml.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XML_Record_xml"><param name="Local" value="class_q_tils_1_1_x_m_l___record__xml.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="XML_Record_xml"><param name="Local" value="union_x_m_l___record__xml.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="XML_Record_xml_attribute"><param name="Local" value="struct_x_m_l___record__xml__attribute.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XML_Record_xml_attribute"><param name="Local" value="class_q_tils_1_1_x_m_l___record__xml__attribute.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XML_Record_xml_element"><param name="Local" value="class_q_tils_1_1_x_m_l___record__xml__element.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="XML_Record_xml_element"><param name="Local" value="struct_x_m_l___record__xml__element.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="XMLAttribute"><param name="Local" value="struct_x_m_l_attribute.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XMLAttribute"><param name="Local" value="class_q_tils_1_1_x_m_l_attribute.html"><param name="ImageNumber" value="11"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XMLAttributeValue"><param name="Local" value="class_q_tils_1_1_x_m_l_attribute_value.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="XMLAttributeValue"><param name="Local" value="union_x_m_l_attribute_value.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XMLAttributeValue"><param name="Local" value="class_q_tils_1_1_x_m_l_attribute_value.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XMLContent"><param name="Local" value="class_q_tils_1_1_x_m_l_content.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="XMLContent"><param name="Local" value="struct_x_m_l_content.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="XMLDocRecord"><param name="Local" value="struct_x_m_l_doc_record.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XMLDocRecord"><param name="Local" value="class_q_tils_1_1_x_m_l_doc_record.html"><param name="ImageNumber" value="11"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Name" value="XMLElement"><param name="Local" value="struct_x_m_l_element.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XMLElement"><param name="Local" value="class_q_tils_1_1_x_m_l_element.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="XMLElement"><param name="Local" value="struct_x_m_l_element.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="XMLElementContent"><param name="Local" value="union_x_m_l_element_content.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XMLElementContent"><param name="Local" value="class_q_tils_1_1_x_m_l_element_content.html"><param name="ImageNumber" value="11"></OBJECT>
   </UL>
@@ -257,6 +260,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XMLElement"><param name="Local" value="class_q_tils_1_1_x_m_l_element.html"><param name="ImageNumber" value="11"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils::XMLElementContent"><param name="Local" value="class_q_tils_1_1_x_m_l_element_content.html"><param name="ImageNumber" value="11"></OBJECT>
     </UL>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="_SECURITY_ATTRIBUTES"><param name="Local" value="struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="add_reference< T >"><param name="Local" value="structadd__reference.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="add_reference< T & >"><param name="Local" value="structadd__reference_3_01_t_01_6_01_4.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="AnnotationKeyList"><param name="Local" value="struct_annotation_key_list.html"><param name="ImageNumber" value="11"></OBJECT>
@@ -431,9 +435,11 @@
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MCActions"><param name="Local" value="struct_m_c_actions.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MediaRefs"><param name="Local" value="struct_media_refs.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHANDLE"><param name="Local" value="struct_m_s_h_a_n_d_l_e.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHANDLEDATA"><param name="Local" value="union_m_s_h_a_n_d_l_e_d_a_t_a.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHEVENT"><param name="Local" value="struct_m_s_h_e_v_e_n_t.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHMUTEX"><param name="Local" value="struct_m_s_h_m_u_t_e_x.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHSEMAPHORE"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHSEMAPHORECOUNTER"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e_c_o_u_n_t_e_r.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MSHTHREAD"><param name="Local" value="struct_m_s_h_t_h_r_e_a_d.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MyCompressData"><param name="Local" value="struct_my_compress_data.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="MyDocList"><param name="Local" value="struct_my_doc_list.html"><param name="ImageNumber" value="11"></OBJECT>
@@ -507,8 +513,8 @@
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTVODTerminologyQtMovieView"><param name="Local" value="interface_q_t_v_o_d_terminology_qt_movie_view.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTVODTerminologyWindow"><param name="Local" value="interface_q_t_v_o_d_terminology_window.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTVODWindow"><param name="Local" value="interface_q_t_v_o_d_window.html"><param name="ImageNumber" value="11"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Name" value="libc_allocator_with_realloc< T >::rebind< U >"><param name="Local" value="structlibc__allocator__with__realloc_1_1rebind.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="libc_allocator_with_realloc< void >::rebind< U >"><param name="Local" value="structlibc__allocator__with__realloc_3_01void_01_4_1_1rebind.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="libc_allocator_with_realloc< T >::rebind< U >"><param name="Local" value="structlibc__allocator__with__realloc_1_1rebind.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="remove_const< T >"><param name="Local" value="structremove__const.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="remove_const< T const  >"><param name="Local" value="structremove__const_3_01_t_01const_01_01_4.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="remove_cv< T >"><param name="Local" value="structremove__cv.html"><param name="ImageNumber" value="11"></OBJECT>
@@ -566,8 +572,6 @@
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTMovieSink.h"><param name="Local" value="_q_t_movie_sink_8h.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTMovieSink_mod2.c"><param name="Local" value="_q_t_movie_sink__mod2_8c.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTMovieSinkQTStuff.h"><param name="Local" value="_q_t_movie_sink_q_t_stuff_8h.html"><param name="ImageNumber" value="11"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Name" value="timing.c"><param name="Local" value="timing_8c.html"><param name="ImageNumber" value="11"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Name" value="timing.h"><param name="Local" value="timing_8h.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils/copyright.h"><param name="Local" value="_q_tils_2copyright_8h.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils/Lists.cpp"><param name="Local" value="_lists_8cpp.html"><param name="ImageNumber" value="11"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="QTils/Lists.h"><param name="Local" value="_lists_8h.html"><param name="ImageNumber" value="11"></OBJECT>

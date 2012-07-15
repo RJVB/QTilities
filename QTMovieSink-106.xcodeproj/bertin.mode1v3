@@ -233,10 +233,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D647580C1599153700B87D21</string>
+						<string>D64530FB15B23D6B00570FB4</string>
 						<key>history</key>
 						<array>
-							<string>D6F339AA158817D300EE650A</string>
+							<string>D64530BA15B23B5F00570FB4</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -259,46 +259,6 @@
 			<key>Content</key>
 			<dict>
 				<key>PBXProjectModuleGUID</key>
-				<string>D64B63E41582AD3E00FCA20C</string>
-				<key>PBXProjectModuleLabel</key>
-				<string>QTxml.c</string>
-				<key>PBXSplitModuleInNavigatorKey</key>
-				<dict>
-					<key>Split0</key>
-					<dict>
-						<key>PBXProjectModuleGUID</key>
-						<string>D64B63E51582AD3E00FCA20C</string>
-						<key>PBXProjectModuleLabel</key>
-						<string>QTxml.c</string>
-						<key>_historyCapacity</key>
-						<integer>0</integer>
-						<key>bookmark</key>
-						<string>D647580D1599153700B87D21</string>
-						<key>history</key>
-						<array>
-							<string>D6F339AB158817D300EE650A</string>
-						</array>
-					</dict>
-					<key>SplitCount</key>
-					<string>1</string>
-				</dict>
-				<key>StatusBarVisibility</key>
-				<true/>
-			</dict>
-			<key>Geometry</key>
-			<dict>
-				<key>Frame</key>
-				<string>{{0, 20}, {846, 817}}</string>
-				<key>PBXModuleWindowStatusBarHidden2</key>
-				<false/>
-				<key>RubberWindowFrame</key>
-				<string>590 20 846 858 0 0 1440 878 </string>
-			</dict>
-		</dict>
-		<dict>
-			<key>Content</key>
-			<dict>
-				<key>PBXProjectModuleGUID</key>
 				<string>D6C22576157E88CB0053FBEC</string>
 				<key>PBXProjectModuleLabel</key>
 				<string>QTMovieSink.c</string>
@@ -313,10 +273,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D647580E1599153700B87D21</string>
+						<string>D64530FC15B23D6B00570FB4</string>
 						<key>history</key>
 						<array>
-							<string>D6F339AC158817D300EE650A</string>
+							<string>D64530BB15B23B5F00570FB4</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -353,10 +313,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D647580F1599153700B87D21</string>
+						<string>D64530FD15B23D6B00570FB4</string>
 						<key>history</key>
 						<array>
-							<string>D6F339AD158817D300EE650A</string>
+							<string>D64530BC15B23B5F00570FB4</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -393,10 +353,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D64758101599153700B87D21</string>
+						<string>D64530FE15B23D6B00570FB4</string>
 						<key>history</key>
 						<array>
-							<string>D6F339AE158817D300EE650A</string>
+							<string>D64530BD15B23B5F00570FB4</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -433,10 +393,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D64758111599153700B87D21</string>
+						<string>D64530FF15B23D6B00570FB4</string>
 						<key>history</key>
 						<array>
-							<string>D6F339AF158817D300EE650A</string>
+							<string>D64530BE15B23B5F00570FB4</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -541,12 +501,12 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>1</integer>
-									<integer>0</integer>
+									<integer>101</integer>
+									<integer>94</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 0}, {186, 545}}</string>
+							<string>{{0, 1325}, {186, 545}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -646,9 +606,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>D647580A1599153700B87D21</string>
+				<string>D64530F915B23D6B00570FB4</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>D647580B1599153700B87D21</string>
+				<string>D64530FA15B23D6B00570FB4</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -767,7 +727,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>362353975.10057598</real>
+	<real>364002667.96083099</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -784,16 +744,11 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>D64758121599153700B87D21</string>
-		<string>D64758131599153700B87D21</string>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>D619AC2C1276E0CE00FF8489</string>
-		<string>1CD10A99069EF8BA00B06720</string>
 		<string>D6BF21FA154C63F000732A27</string>
 		<string>D6C2257F157E88CB0053FBEC</string>
 		<string>D6C225B6157E91010053FBEC</string>
 		<string>D6C22576157E88CB0053FBEC</string>
-		<string>D64B63E41582AD3E00FCA20C</string>
 		<string>D64B63571582629600FCA20C</string>
 		<string>/Volumes/Debian/Users/bertin/work/src/MacOSX/QTilities/QTMovieSink-106.xcodeproj</string>
 	</array>
@@ -877,7 +832,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>D619AC2C1276E0CE00FF8489</string>
-				<string>D64757C11599149B00B87D21</string>
+				<string>D64530F315B23D6400570FB4</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>

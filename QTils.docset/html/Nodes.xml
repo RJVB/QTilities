@@ -14,6 +14,10 @@
           <Path>class_q_tils_1_1__object.html</Path>
          </Node>
          <Node>
+          <Name>_SECURITY_ATTRIBUTES</Name>
+          <Path>struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html</Path>
+         </Node>
+         <Node>
           <Name>add_reference&lt; T &gt;</Name>
           <Path>structadd__reference.html</Path>
          </Node>
@@ -358,6 +362,10 @@
           <Path>struct_m_s_h_a_n_d_l_e.html</Path>
          </Node>
          <Node>
+          <Name>MSHANDLEDATA</Name>
+          <Path>union_m_s_h_a_n_d_l_e_d_a_t_a.html</Path>
+         </Node>
+         <Node>
           <Name>MSHEVENT</Name>
           <Path>struct_m_s_h_e_v_e_n_t.html</Path>
          </Node>
@@ -368,6 +376,10 @@
          <Node>
           <Name>MSHSEMAPHORE</Name>
           <Path>struct_m_s_h_s_e_m_a_p_h_o_r_e.html</Path>
+         </Node>
+         <Node>
+          <Name>MSHSEMAPHORECOUNTER</Name>
+          <Path>struct_m_s_h_s_e_m_a_p_h_o_r_e_c_o_u_n_t_e_r.html</Path>
          </Node>
          <Node>
           <Name>MSHTHREAD</Name>
@@ -510,12 +522,12 @@
           <Path>interface_q_t_move_command.html</Path>
          </Node>
          <Node>
-          <Name>QTMovieInfo</Name>
-          <Path>struct_q_t_movie_info.html</Path>
-         </Node>
-         <Node>
           <Name>QTils::QTMovieInfo</Name>
           <Path>class_q_tils_1_1_q_t_movie_info.html</Path>
+         </Node>
+         <Node>
+          <Name>QTMovieInfo</Name>
+          <Path>struct_q_t_movie_info.html</Path>
          </Node>
          <Node>
           <Name>QTMovieSinkQTStuff</Name>
@@ -634,12 +646,12 @@
           <Path>interface_q_t_v_o_d_window.html</Path>
          </Node>
          <Node>
-          <Name>libc_allocator_with_realloc&lt; T &gt;::rebind&lt; U &gt;</Name>
-          <Path>structlibc__allocator__with__realloc_1_1rebind.html</Path>
-         </Node>
-         <Node>
           <Name>libc_allocator_with_realloc&lt; void &gt;::rebind&lt; U &gt;</Name>
           <Path>structlibc__allocator__with__realloc_3_01void_01_4_1_1rebind.html</Path>
+         </Node>
+         <Node>
+          <Name>libc_allocator_with_realloc&lt; T &gt;::rebind&lt; U &gt;</Name>
+          <Path>structlibc__allocator__with__realloc_1_1rebind.html</Path>
          </Node>
          <Node>
           <Name>QTils::Rect</Name>
@@ -694,12 +706,12 @@
           <Path>structremove__volatile_3_01_t_01volatile_01_4.html</Path>
          </Node>
          <Node>
-          <Name>QTils::RGBColor</Name>
-          <Path>class_q_tils_1_1_r_g_b_color.html</Path>
-         </Node>
-         <Node>
           <Name>RGBColor</Name>
           <Path>struct_r_g_b_color.html</Path>
+         </Node>
+         <Node>
+          <Name>QTils::RGBColor</Name>
+          <Path>class_q_tils_1_1_r_g_b_color.html</Path>
          </Node>
          <Node>
           <Name>sh_hashtable_settings&lt; Key, HashFunc, SizeType, HT_MIN_BUCKETS &gt;</Name>
@@ -762,12 +774,12 @@
           <Path>structtag2_v_u_y_q_u_a_d.html</Path>
          </Node>
          <Node>
-          <Name>TCTrackInfo</Name>
-          <Path>struct_t_c_track_info.html</Path>
-         </Node>
-         <Node>
           <Name>QTils::TCTrackInfo</Name>
           <Path>class_q_tils_1_1_t_c_track_info.html</Path>
+         </Node>
+         <Node>
+          <Name>TCTrackInfo</Name>
+          <Path>struct_t_c_track_info.html</Path>
          </Node>
          <Node>
           <Name>test23Struct</Name>
@@ -810,12 +822,12 @@
           <Path>union_x_m_l___parsed_value.html</Path>
          </Node>
          <Node>
-          <Name>QTils::XML_Record</Name>
-          <Path>class_q_tils_1_1_x_m_l___record.html</Path>
-         </Node>
-         <Node>
           <Name>XML_Record</Name>
           <Path>struct_x_m_l___record.html</Path>
+         </Node>
+         <Node>
+          <Name>QTils::XML_Record</Name>
+          <Path>class_q_tils_1_1_x_m_l___record.html</Path>
          </Node>
          <Node>
           <Name>QTils::XML_Record_reading</Name>
@@ -826,12 +838,12 @@
           <Path>union_x_m_l___record__reading.html</Path>
          </Node>
          <Node>
-          <Name>XML_Record_xml</Name>
-          <Path>union_x_m_l___record__xml.html</Path>
-         </Node>
-         <Node>
           <Name>QTils::XML_Record_xml</Name>
           <Path>class_q_tils_1_1_x_m_l___record__xml.html</Path>
+         </Node>
+         <Node>
+          <Name>XML_Record_xml</Name>
+          <Path>union_x_m_l___record__xml.html</Path>
          </Node>
          <Node>
           <Name>XML_Record_xml_attribute</Name>
@@ -858,12 +870,12 @@
           <Path>class_q_tils_1_1_x_m_l_attribute.html</Path>
          </Node>
          <Node>
-          <Name>QTils::XMLAttributeValue</Name>
-          <Path>class_q_tils_1_1_x_m_l_attribute_value.html</Path>
-         </Node>
-         <Node>
           <Name>XMLAttributeValue</Name>
           <Path>union_x_m_l_attribute_value.html</Path>
+         </Node>
+         <Node>
+          <Name>QTils::XMLAttributeValue</Name>
+          <Path>class_q_tils_1_1_x_m_l_attribute_value.html</Path>
          </Node>
          <Node>
           <Name>QTils::XMLContent</Name>
@@ -882,12 +894,12 @@
           <Path>class_q_tils_1_1_x_m_l_doc_record.html</Path>
          </Node>
          <Node>
-          <Name>XMLElement</Name>
-          <Path>struct_x_m_l_element.html</Path>
-         </Node>
-         <Node>
           <Name>QTils::XMLElement</Name>
           <Path>class_q_tils_1_1_x_m_l_element.html</Path>
+         </Node>
+         <Node>
+          <Name>XMLElement</Name>
+          <Path>struct_x_m_l_element.html</Path>
          </Node>
          <Node>
           <Name>XMLElementContent</Name>
@@ -1000,6 +1012,10 @@
             <Path>class_q_tils_1_1_x_m_l_element_content.html</Path>
            </Node>
           </Subnodes>
+         </Node>
+         <Node>
+          <Name>_SECURITY_ATTRIBUTES</Name>
+          <Path>struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html</Path>
          </Node>
          <Node>
           <Name>add_reference&lt; T &gt;</Name>
@@ -1590,6 +1606,10 @@
           <Path>struct_m_s_h_a_n_d_l_e.html</Path>
          </Node>
          <Node>
+          <Name>MSHANDLEDATA</Name>
+          <Path>union_m_s_h_a_n_d_l_e_d_a_t_a.html</Path>
+         </Node>
+         <Node>
           <Name>MSHEVENT</Name>
           <Path>struct_m_s_h_e_v_e_n_t.html</Path>
          </Node>
@@ -1600,6 +1620,10 @@
          <Node>
           <Name>MSHSEMAPHORE</Name>
           <Path>struct_m_s_h_s_e_m_a_p_h_o_r_e.html</Path>
+         </Node>
+         <Node>
+          <Name>MSHSEMAPHORECOUNTER</Name>
+          <Path>struct_m_s_h_s_e_m_a_p_h_o_r_e_c_o_u_n_t_e_r.html</Path>
          </Node>
          <Node>
           <Name>MSHTHREAD</Name>
@@ -1870,12 +1894,12 @@
           <Path>interface_q_t_v_o_d_window.html</Path>
          </Node>
          <Node>
-          <Name>libc_allocator_with_realloc&lt; T &gt;::rebind&lt; U &gt;</Name>
-          <Path>structlibc__allocator__with__realloc_1_1rebind.html</Path>
-         </Node>
-         <Node>
           <Name>libc_allocator_with_realloc&lt; void &gt;::rebind&lt; U &gt;</Name>
           <Path>structlibc__allocator__with__realloc_3_01void_01_4_1_1rebind.html</Path>
+         </Node>
+         <Node>
+          <Name>libc_allocator_with_realloc&lt; T &gt;::rebind&lt; U &gt;</Name>
+          <Path>structlibc__allocator__with__realloc_1_1rebind.html</Path>
          </Node>
          <Node>
           <Name>remove_const&lt; T &gt;</Name>
@@ -2098,14 +2122,6 @@
          <Node>
           <Name>QTMovieSinkQTStuff.h</Name>
           <Path>_q_t_movie_sink_q_t_stuff_8h.html</Path>
-         </Node>
-         <Node>
-          <Name>timing.c</Name>
-          <Path>timing_8c.html</Path>
-         </Node>
-         <Node>
-          <Name>timing.h</Name>
-          <Path>timing_8h.html</Path>
          </Node>
          <Node>
           <Name>QTils/copyright.h</Name>

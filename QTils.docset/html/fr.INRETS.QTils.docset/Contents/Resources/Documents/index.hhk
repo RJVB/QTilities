@@ -57,8 +57,12 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_win_8c.html#ac17d60332aa42ef9d7dbe266005bb972"><param name="Name" value="QTMovieWin.c"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_tilities_8h.html#afe8f239f2e7151d7c9fd20705f2f0502"><param name="Name" value="_QTMW_M"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html#ab5b8a4740d01a998a8529ee779a71273"><param name="Name" value="_TIMING_H"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html#ac50762666aa00bd3a4308158510f1748"><param name="Name" value="_WIN32_WINNT"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html"><param name="Name" value="_SECURITY_ATTRIBUTES"></OBJECT>
+  <UL>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html#a8d91cd71bb0dfe51061c2412849dff98"><param name="Name" value="bInheritHandle"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html#a90d1d49f7d2d50b24cc74c5060ae6204"><param name="Name" value="lpSecurityDescriptor"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html#a3ec25c40b65a92b164177b0b230abda9"><param name="Name" value="nLength"></OBJECT>
+  </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="structtest23_struct.html#adead682faa5b0c37d64abae762de88df"><param name="Name" value="a"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#a5c5b7db02052e02365f8ce2b5a522d98"><param name="Name" value="absCurrentTime"></OBJECT>
   <UL>
@@ -267,7 +271,7 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record_1_1content.html#a470878ca967777d8dcc2100e793d841a"><param name="Name" value="attribute"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record_1_1content.html#a470878ca967777d8dcc2100e793d841a"><param name="Name" value="XML_Record::content"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record__xml.html#ae7d128bcaa8a4c38fd1c92a5d722e837"><param name="Name" value="XML_Record_xml"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record__xml.html#aaaa2582c099c2f6cece02e7ff6222b8c"><param name="Name" value="XML_Record_xml"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_x_m_l_element.html#a9f21b67c8ac00cf4a337da0938243a96"><param name="Name" value="attributes"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_tilities_8h.html#aeb1ecf794cd5445eb0e7ae61efcbc1e5a569b8c3385f462b24cbda7c20348cebb"><param name="Name" value="attributeValueKindBoolean"></OBJECT>
@@ -309,6 +313,7 @@
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="structbig__.html#a08072dda4df56b0f7f3916f97d523f1a"><param name="Name" value="dummy"></OBJECT>
   </UL>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html#a8d91cd71bb0dfe51061c2412849dff98"><param name="Name" value="bInheritHandle"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_r_g_b_color.html#aa47c58ce22adb783de5b9c8d4efe1527"><param name="Name" value="blue"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#abb452686968e48b67397da5f97445f5b"><param name="Name" value="bool"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#a70435a7444491c7ca37d4ba34abc036a"><param name="Name" value="boolean"></OBJECT>
@@ -473,8 +478,8 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#ae5dfb09d48605001c57e5d780c3a5fb7"><param name="Name" value="QTMovieSink.c"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8h.html#a4a045859c72849c233fc10f793fda260"><param name="Name" value="QTMovieSink.h"></OBJECT>
   </UL>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#acfa250910d2be057edade0596b935741"><param name="Name" value="CI"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="union_q_t_a_pixel.html#ae094a1d03cd62c2fe9a90f050cfc47a0"><param name="Name" value="ciChannel"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#a092db40e7aa62ec37e362a0c89a43ffc"><param name="Name" value="CI"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="union_q_t_a_pixel.html#ae328befa629da65184ebd408dab17a75"><param name="Name" value="ciChannel"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_compression_codecs.html#a1737e83157b7c28bd9aa55fea8d481b4"><param name="Name" value="Cinepak"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#a66dfc85126289f1fa3a0764c9c966ada"><param name="Name" value="cJPEGCodec"></OBJECT>
   <UL>
@@ -692,6 +697,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_reference.html#a617374c6a637925da1ce5d0b311424eb"><param name="Name" value="QTReference"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="classsparse__hashtable.html#a1d39d24cdd615c16adeca95b104644ae"><param name="Name" value="sparse_hashtable"></OBJECT>
   </UL>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e.html#a09670fe4fbf8d07f0cbe6f8ca7b68250"><param name="Name" value="counter"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_tils_2copyright_8h.html#acf811b167d39ed298eff90e2472edde2"><param name="Name" value="CRASHREPORTER"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#a4202ef9188048e96afd2c2fb0619ac38"><param name="Name" value="cRawCodec"></OBJECT>
   <UL>
@@ -716,7 +722,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_win_8h.html#ae9e88914601edd029179dd0fb73ec569"><param name="Name" value="QTMovieWin.h"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_v_o_d.html#a7286e9146a68e4c5d15b5bfc441c90c7"><param name="Name" value="CreateQI2MFromDesign"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a0f0e3808b680ef38a26a5ab0c36a03f7"><param name="Name" value="CreateSemaphore"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ae56101b7966e38f48f79b32167642a5d"><param name="Name" value="CreateSemaphore"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a31f91a156a7810851bdc4bc33cba1d77"><param name="Name" value="CreateThread"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_v_o_d.html#ac994b497a4b1cc03369af46d7ec27c66"><param name="Name" value="createWithAbsoluteURL:ofType:forDocument:withAssocDataFile:error:"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_n_s_v_o_d_description.html#a0a49aa5e800d320321121061429cd528"><param name="Name" value="createWithDescription:"></OBJECT>
@@ -749,7 +755,6 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html"><param name="Name" value="CritSectEx.h"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html#ad28d86fc21b0f74240950b09c8364bf2"><param name="Name" value="_CRITSECTEX_H"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html#ac50762666aa00bd3a4308158510f1748"><param name="Name" value="_WIN32_WINNT"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html#aca68c0d4ac8df0838e209fb5300f7be3"><param name="Name" value="ASSERT"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html#add660df06580cb2f016f716ee691c420"><param name="Name" value="CreateCSEHandle"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html#a2448e440a6e6582348a94851e34b8290"><param name="Name" value="CRITSECT"></OBJECT>
@@ -775,7 +780,6 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html#ad142baea77fe148d84aeb4fc4d8a7ca8"><param name="Name" value="UnlockCSEHandle"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html#a61022e970520c288db51fd9ea11e1b58"><param name="Name" value="UnlockCSEScopedLock"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html#a3675cf895544424c921cf6f8f5e91887"><param name="Name" value="VERIFY"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html#a966cd377b9f3fdeb1432460c33352af1"><param name="Name" value="WINVER"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html#aae2b04fc8ec220c35aac8fab7d85e7c1"><param name="Name" value="CRITSECTGCC"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_c_s_backup_hook.html"><param name="Name" value="CSBackupHook"></OBJECT>
@@ -820,6 +824,7 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#aa87cf77fae61cef8bb439d45dbac8948"><param name="Name" value="cubicInches"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#a990e3ec153657d4100b26074936ee1e2"><param name="Name" value="cubicMeters"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#ab3d3fc41dd7b25b45b907eef756b80b5"><param name="Name" value="cubicYards"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e_c_o_u_n_t_e_r.html#aadec365e6a2068465cc343e6198760c3"><param name="Name" value="curCount"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sinks.html#a3de713fdfc4f557c5ca63e362ef5d2a6"><param name="Name" value="currentFrame"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#a808e530cb7a6e7c14f1214f3406fac5c"><param name="Name" value="currentTime"></OBJECT>
   <UL>
@@ -898,7 +903,7 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#aca046bb3859deb1a4af5d593f03e6d30"><param name="Name" value="d"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#aca046bb3859deb1a4af5d593f03e6d30"><param name="Name" value="IEEEfp"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_a_n_d_l_e.html#a16695cc897b7a167c6793a96a379caf1"><param name="Name" value="MSHANDLE"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_a_n_d_l_e.html#a642a6db49d61279ba89c85092af52fca"><param name="Name" value="MSHANDLE"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#a66097cf79a4f2ffda4434242321bfb8f"><param name="Name" value="dashStyle"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_my_task_data.html#aed1879c5396c4ff1b2a161d199b5f246"><param name="Name" value="data"></OBJECT>
@@ -1193,11 +1198,12 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_cv_video_writer___q_t.html#a6ef07479017175401a03e3865efd23ac"><param name="Name" value="duration_per_sample"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_t_c_track_info.html#a549c6e624de9403a546814eba191fd0b"><param name="Name" value="durations"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="structswig__const__info.html#a74e477f1dbf515bcb7e2ef07a1d34c35"><param name="Name" value="dvalue"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#af483253b2143078cede883fc3c111ad2"><param name="Name" value="DWORD"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ad342ac907eb044443153a22f964bf0af"><param name="Name" value="DWORD"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="union_m_s_h_a_n_d_l_e_d_a_t_a.html#abafead4255136b5c0aa930f5fa8423c9"><param name="Name" value="e"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record_1_1content.html#a6cccae6bc98739dd7c142a4bbc8ca677"><param name="Name" value="element"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record_1_1content.html#a6cccae6bc98739dd7c142a4bbc8ca677"><param name="Name" value="XML_Record::content"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record__xml.html#a9ccef9513d6819fb83dc78a150e8a841"><param name="Name" value="XML_Record_xml"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record__xml.html#af339662afaced320eff1bf85337c9307"><param name="Name" value="XML_Record_xml"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l_element_content.html#aa2f8cfeec5293e1a8ffc0d2a4fc1c55b"><param name="Name" value="XMLElementContent"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_reference_renderer.html#a20438588d4920458b4937db7195a5878"><param name="Name" value="elementByCode:"></OBJECT>
@@ -1676,21 +1682,6 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sinks.html#a004c2df2cfac11756d99fcd4b28f5e0e"><param name="Name" value="Height"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_compression_qualities.html#af423f170cfe04e6ab9c39d193d694067"><param name="Name" value="High"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_cartesian.html#acf413f43702784f6ec4bf99521d6ac9a"><param name="Name" value="horizontal"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#a0b62c1ad992cc25a0d7db9408edb7c0f"><param name="Name" value="HRTime_tic"></OBJECT>
-  <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#a0b62c1ad992cc25a0d7db9408edb7c0f"><param name="Name" value="timing.c"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html#a973bc796a66df5ff60c634771cc24338"><param name="Name" value="timing.h"></OBJECT>
-  </UL>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#ae7942f52563787c2ba176dfb31248cfe"><param name="Name" value="HRTime_Time"></OBJECT>
-  <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#ae7942f52563787c2ba176dfb31248cfe"><param name="Name" value="timing.c"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html#ab93c1dd99eb63ded6cdf105537032945"><param name="Name" value="timing.h"></OBJECT>
-  </UL>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#a5e17e65130ed045f942c0ef233ff9834"><param name="Name" value="HRTime_toc"></OBJECT>
-  <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#a5e17e65130ed045f942c0ef233ff9834"><param name="Name" value="timing.c"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html#acf6c975577917e85aeb9ca1e7f4d1560"><param name="Name" value="timing.h"></OBJECT>
-  </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="structdense__hashtable__const__iterator.html#a0ab7d41ff3cf80bcff0799eea103faca"><param name="Name" value="ht"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="structdense__hashtable__const__iterator.html#a0ab7d41ff3cf80bcff0799eea103faca"><param name="Name" value="dense_hashtable_const_iterator"></OBJECT>
@@ -1731,8 +1722,8 @@
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_lists_8cpp.html#a174acd863d206c228ecb006caf0a9f3b"><param name="Name" value="hwnd2qtwmh"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#a2eb3e3acfc598435628664f1ee33003d"><param name="Name" value="hyphens"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#abedaf27d79287288d08840307cc2f27f"><param name="Name" value="ICM"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="union_q_t_a_pixel.html#a39e529b6c21ea201f3358974a285d3e4"><param name="Name" value="icmChannel"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#a28f50c425e42e2ab243e9007cdeeb9a7"><param name="Name" value="ICM"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="union_q_t_a_pixel.html#a2484ae6cfa294140926306f3538dfd69"><param name="Name" value="icmChannel"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_i_c_m_encoding_frame.html"><param name="Name" value="ICMEncodingFrame"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_i_c_m_encoding_frame.html#a909ac3425887c93c9150e7124298f9e2"><param name="Name" value="inUse"></OBJECT>
@@ -1773,21 +1764,20 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_win_8c.html#aecffad9a69e5cf99c1ed50571f94b14d"><param name="Name" value="QTMovieWin.c"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_win_w_m_8c.html#ab56616b5c13bab8e7aaf8179988d3b0a"><param name="Name" value="QTMovieWinWM.c"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_txml_8c.html#ab06cbb787294b0d0bbf8aa5d4e65aaf9"><param name="Name" value="QTxml.c"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#a3b3b43a794601cb1d0a07b8d8039b4ec"><param name="Name" value="timing.c"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_c_actions.html#a3ff19074f114fe628b7edcafbc86d6f2"><param name="Name" value="Idle"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_windows.html#a6d90d53b574d8e6f57e95bd4cca63d3e"><param name="Name" value="idx"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html"><param name="Name" value="IEEEfp"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#aca046bb3859deb1a4af5d593f03e6d30"><param name="Name" value="d"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#a89b0e3bcffe1dc6543105537f3151c4a"><param name="Name" value="l"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#a92d02277aeaa8fc8f6a5faaba5fac5d2"><param name="Name" value="s"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#ac6e11e47016247d9310c77d5a4b24830"><param name="Name" value="l"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#ac4035f0cda82a3e48ce5a56127e06c3e"><param name="Name" value="s"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_esfp.html"><param name="Name" value="IEEEsfp"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_esfp.html#a5d8cdb7ca6ec7e749e32d23f67c3b38c"><param name="Name" value="f"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_esfp.html#a62652da7b7bf6ebb7870c94946a230a6"><param name="Name" value="l"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_esfp.html#a1849d2edd66c55e9af5b566fd15b4cfc"><param name="Name" value="s"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_esfp.html#a972462531dc003e1d01a009910ae6574"><param name="Name" value="l"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_esfp.html#a799d00e29e78508f40e16fa934837480"><param name="Name" value="s"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_cv_capture___q_t___cam__barg.html#a928e4d96bbc5ca80da9a11918ddef403"><param name="Name" value="image_bgr"></OBJECT>
   <UL>
@@ -1822,11 +1812,6 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_batch_export_controller.html#a854a4a0335c01439a370e5272bd571b2"><param name="Name" value="infoField"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_v_o_d_window.html#aaa044d619c0f0504abd2498e198f1fbc"><param name="Name" value="inFullscreen"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_application.html#a0a3d8758d2165bb581b547a953604458"><param name="Name" value="init"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#a5407978ea2185a07dceb79678d03ba53"><param name="Name" value="init_HRTime"></OBJECT>
-  <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#a5407978ea2185a07dceb79678d03ba53"><param name="Name" value="timing.c"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html#a851ad3616dddf84885e0d1734f9cae80"><param name="Name" value="timing.h"></OBJECT>
-  </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_lists_8cpp.html#ade52954221c860313a50244b3b320ce8"><param name="Name" value="init_MCActionList"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_lists_8cpp.html#ade52954221c860313a50244b3b320ce8"><param name="Name" value="Lists.cpp"></OBJECT>
@@ -1996,10 +1981,10 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_tils_8c.html#a2565b46b5a6d1b47adcd8a68e27156fe"><param name="Name" value="kTimeCodeTrackMaxHeight"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#a7dc9eb15fa75ef457020a39b331cf78b"><param name="Name" value="kTrackStart"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8c.html#a3ba1f21bdf399988893d07b1657773c3"><param name="Name" value="kVideoTimeScale"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#a89b0e3bcffe1dc6543105537f3151c4a"><param name="Name" value="l"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#ac6e11e47016247d9310c77d5a4b24830"><param name="Name" value="l"></OBJECT>
   <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#a89b0e3bcffe1dc6543105537f3151c4a"><param name="Name" value="IEEEfp"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_esfp.html#a62652da7b7bf6ebb7870c94946a230a6"><param name="Name" value="IEEEsfp"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#ac6e11e47016247d9310c77d5a4b24830"><param name="Name" value="IEEEfp"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_esfp.html#a972462531dc003e1d01a009910ae6574"><param name="Name" value="IEEEsfp"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_reference.html#a289037010fdab7b58fd40643cfb93201"><param name="Name" value="last"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_windows.html#a61a4dbb774ece4008a004dc912e3c34c"><param name="Name" value="lastAction"></OBJECT>
@@ -2275,9 +2260,13 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_v_o_d_window.html#a2153d36e27134cd7bc179c121e82ab6a"><param name="Name" value="Loop"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_compression_qualities.html#ad0d34cead31a6be5df3546672c0b4077"><param name="Name" value="Lossless"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_compression_qualities.html#a08973dc10de09247bab018610a38add7"><param name="Name" value="Low"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a986641dce4ee82b5fb5f491fe33a4e84"><param name="Name" value="LPSECURITY_ATTRIBUTES"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html#a90d1d49f7d2d50b24cc74c5060ae6204"><param name="Name" value="lpSecurityDescriptor"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ab064840df4ab5a8cf90ddb963f94de34"><param name="Name" value="LPVOID"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="structswig__const__info.html#af142e4c21ad4fe61f6c2624bff034583"><param name="Name" value="lvalue"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_lists_8cpp.html#a930401f37e316d2b412843a117ddd383"><param name="Name" value="m2qtmwh"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_lists_8cpp.html#a5f673937054eb4fe01cc7dc61f98d242"><param name="Name" value="m2qtmwh_initialised"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="union_m_s_h_a_n_d_l_e_d_a_t_a.html#ae10d29daeb9c0af89792e973885cee43"><param name="Name" value="m"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_lib_q_tils_base.html#a0b73b31a85d09a8022873d1c4b335ef8"><param name="Name" value="MacErrorString"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_lib_q_tils_base.html#a0b73b31a85d09a8022873d1c4b335ef8"><param name="Name" value="LibQTilsBase"></OBJECT>
@@ -2328,6 +2317,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="classlibc__allocator__with__realloc.html#afda73672b43643113fa080bb5b6561a7"><param name="Name" value="libc_allocator_with_realloc"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="classsparse__hashtable.html#aaab58302e1f3ac5c515db8ecc10b50c0"><param name="Name" value="sparse_hashtable"></OBJECT>
   </UL>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e_c_o_u_n_t_e_r.html#a117d308c2d84a39fe605abef3cfe7cc5"><param name="Name" value="maxCount"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_v_o_d_window.html#ab1354907f9e1ecf201570828a82e2a01"><param name="Name" value="maxSize"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#add961c673d37f62c45238d2f7e116f05"><param name="Name" value="May"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_tils_8c.html#ae2181b427021bd7e5c77790b5b99c1b7"><param name="Name" value="MaybeShowMoviePoster"></OBJECT>
@@ -2473,27 +2463,35 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a98a12c757c95bd7c8ae75999092af30f"><param name="Name" value="CREATE_SUSPENDED"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ac790804ee1eccf7c4b82127f88d4ef77"><param name="Name" value="CreateEvent"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a9004c4d3b59856d41f21be136cfe61d4"><param name="Name" value="CreateMutex"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a0f0e3808b680ef38a26a5ab0c36a03f7"><param name="Name" value="CreateSemaphore"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ae56101b7966e38f48f79b32167642a5d"><param name="Name" value="CreateSemaphore"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a31f91a156a7810851bdc4bc33cba1d77"><param name="Name" value="CreateThread"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#af483253b2143078cede883fc3c111ad2"><param name="Name" value="DWORD"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ad342ac907eb044443153a22f964bf0af"><param name="Name" value="DWORD"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a65e9886d74aaee76545e83dd09011727"><param name="Name" value="false"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ab366cf616851fcfd975823f8aef5e412"><param name="Name" value="GetCurrentThread"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a696fd8c38d9f4f10294f698c41ba02c7"><param name="Name" value="GetThreadPriority"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a4d494197a8042a52f8a9eadbab35613a"><param name="Name" value="HANDLE"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#aa84a29002ab81c719c0d07bb446296e0"><param name="Name" value="INFINITE"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a0b5c40eec28b08994d111a468b29c030"><param name="Name" value="InterlockedCompareExchangePointer"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a986641dce4ee82b5fb5f491fe33a4e84"><param name="Name" value="LPSECURITY_ATTRIBUTES"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ab064840df4ab5a8cf90ddb963f94de34"><param name="Name" value="LPVOID"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#adc99cbe063b2dc69a2d9bd1f13604bb4"><param name="Name" value="msCreateEvent"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#afad24d84a7813dfb8cb1b9fcae77c18f"><param name="Name" value="MSHANDLE"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a0ad5a13c3529fdbb0515fac4597add6a"><param name="Name" value="MSHANDLEDATA"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a6343ab6b96507c95438d29d211b3fc42"><param name="Name" value="MSHEVENT"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#af165ba2ab46053520b7a8dc89458f935"><param name="Name" value="MSHMUTEX"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a16f289359c920d61665968db8a4b91c6"><param name="Name" value="MSHSEMAPHORE"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a0a3db4ff4a27d245cbc908cb0e85fbd6"><param name="Name" value="MSHSEMAPHORECOUNTER"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a9a6680b6d249e4e9d23369f4544f4936"><param name="Name" value="MSHTHREAD"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ab34cc8a3ffe37f7a46a19898825ec47f"><param name="Name" value="OpenSemaphore"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a6d6b01ecf167af69d8a278969bb6cb2b"><param name="Name" value="PSECURITY_ATTRIBUTES"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a2b5e00c0c5a5aa5199ba9f28ec3e8caa"><param name="Name" value="PVOID"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ab5552f0d44d7122d19d8aac7c23856eb"><param name="Name" value="ResumeThread"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ae1658f511de470ae2131e00fefa18a2f"><param name="Name" value="SECURITY_ATTRIBUTES"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#acca8c2e59cae82b1a51b4ef1e631abbc"><param name="Name" value="SetThreadPriority"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a5461e6a0bfbbe824ac50e716edf88439"><param name="Name" value="SuspendThread"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a41f9c5fb8b08eb5dc3edce4dcb37fee7"><param name="Name" value="true"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a1321b83ee958aca806d68d87cf248fc5"><param name="Name" value="WAIT_ABANDONED"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ac5425c25bf79dba241265bcc8f869715"><param name="Name" value="WAIT_FAILED"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#abb2c63c1933cab709a4fd4aef2012bbb"><param name="Name" value="WAIT_OBJECT_0"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a5578de68603dc6185924f95f1ae4be6e"><param name="Name" value="WAIT_TIMEOUT"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a2af832cf9248b790ab7c002f18d4e72d"><param name="Name" value="WaitForSingleObject"></OBJECT>
@@ -2502,9 +2500,17 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="structlog_entries.html#af15bc3b786f4f1586a5deeef4cf7ace0"><param name="Name" value="msg"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_a_n_d_l_e.html"><param name="Name" value="MSHANDLE"></OBJECT>
   <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_a_n_d_l_e.html#a16695cc897b7a167c6793a96a379caf1"><param name="Name" value="d"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_a_n_d_l_e.html#a642a6db49d61279ba89c85092af52fca"><param name="Name" value="d"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#afad24d84a7813dfb8cb1b9fcae77c18f"><param name="Name" value="msemul.h"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_a_n_d_l_e.html#ab3cd86f4f2585b828c04aae26ededa41"><param name="Name" value="type"></OBJECT>
+  </UL>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="union_m_s_h_a_n_d_l_e_d_a_t_a.html"><param name="Name" value="MSHANDLEDATA"></OBJECT>
+  <UL>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_m_s_h_a_n_d_l_e_d_a_t_a.html#abafead4255136b5c0aa930f5fa8423c9"><param name="Name" value="e"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_m_s_h_a_n_d_l_e_d_a_t_a.html#ae10d29daeb9c0af89792e973885cee43"><param name="Name" value="m"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a0ad5a13c3529fdbb0515fac4597add6a"><param name="Name" value="msemul.h"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_m_s_h_a_n_d_l_e_d_a_t_a.html#a14c9505b2865e87ff9e73f5e5e97e658"><param name="Name" value="s"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_m_s_h_a_n_d_l_e_d_a_t_a.html#ae4f90fb0469326cc305643c01babd0f6"><param name="Name" value="t"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_e_v_e_n_t.html"><param name="Name" value="MSHEVENT"></OBJECT>
   <UL>
@@ -2526,10 +2532,19 @@
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e.html"><param name="Name" value="MSHSEMAPHORE"></OBJECT>
   <UL>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e.html#a09670fe4fbf8d07f0cbe6f8ca7b68250"><param name="Name" value="counter"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a16f289359c920d61665968db8a4b91c6"><param name="Name" value="msemul.h"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e.html#ac784ddf33a16cd7732d81390697ba55e"><param name="Name" value="name"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e.html#ad7108d737a24c8958b6961c7ec9723fa"><param name="Name" value="owner"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e.html#adab3fc350ba11dc0556cb999cd66537d"><param name="Name" value="refHANDLEs"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e.html#a8f0a6a4273c3005056428615cf5017ed"><param name="Name" value="sem"></OBJECT>
+  </UL>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e_c_o_u_n_t_e_r.html"><param name="Name" value="MSHSEMAPHORECOUNTER"></OBJECT>
+  <UL>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e_c_o_u_n_t_e_r.html#aadec365e6a2068465cc343e6198760c3"><param name="Name" value="curCount"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e_c_o_u_n_t_e_r.html#a117d308c2d84a39fe605abef3cfe7cc5"><param name="Name" value="maxCount"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a0a3db4ff4a27d245cbc908cb0e85fbd6"><param name="Name" value="msemul.h"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e_c_o_u_n_t_e_r.html#adf57530dcf8935ec0a76cbcb0262f90b"><param name="Name" value="refHANDLEp"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_t_h_r_e_a_d.html"><param name="Name" value="MSHTHREAD"></OBJECT>
   <UL>
@@ -2636,6 +2651,7 @@
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_cv_capture___q_t___movie.html#a5e933398b820eb5bdfffc62fdc203d07"><param name="Name" value="next_frame_number"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_cv_capture___q_t___movie.html#a4a977ffcda08b94cdcbb3a247cc9af4a"><param name="Name" value="next_frame_time"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html#a3ec25c40b65a92b164177b0b230abda9"><param name="Name" value="nLength"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#a6eb7701598814caae10996ff85b1e524"><param name="Name" value="no"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="classdense__hashtable.html#a8d9111d421cdef2bbf78c4b0a581d4b8"><param name="Name" value="nonempty_bucket_count"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_compression_qualities.html#a8098a003e54d915ba64fb264e347a08a"><param name="Name" value="Normal"></OBJECT>
@@ -2812,6 +2828,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_win_8h.html#a693777b75c083604e4f937576f7f41e4"><param name="Name" value="QTMovieWin.h"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_win_w_m_8c.html#a679e3fc201390adfc21b4e8438b70a76"><param name="Name" value="QTMovieWinWM.c"></OBJECT>
   </UL>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ab34cc8a3ffe37f7a46a19898825ec47f"><param name="Name" value="OpenSemaphore"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_v_o_d.html#a3856b37e0fcd975c2a35ce4f0a86be85"><param name="Name" value="OpenVideo:error:"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="classdense__hashtable.html#a7ab260bf522838a4a4c1a689c42367aa"><param name="Name" value="operator!="></OBJECT>
   <UL>
@@ -3016,6 +3033,7 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#aab117517137053da16e88501d68f5730"><param name="Name" value="property"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_reference_renderer.html#a26a1374cdf9482fcf03600b1d1ff5091"><param name="Name" value="propertyByCode:"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#aef777b5dd5ce1f8e4aec0fb8a8e6e5c6"><param name="Name" value="propertyInfo"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a6d6b01ecf167af69d8a278969bb6cb2b"><param name="Name" value="PSECURITY_ATTRIBUTES"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_t_h_r_e_a_d.html#ad2686a8163e66842ddf10a59673d8aaf"><param name="Name" value="pThread"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_swig_py_object.html#a41b1d569a8ba4fa9b1d87579c144891b"><param name="Name" value="ptr"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="structswig__const__info.html#aedd46d173c5b5ed4ee60ad5660233557"><param name="Name" value="ptype"></OBJECT>
@@ -3058,8 +3076,8 @@
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="union_q_t_a_pixel.html"><param name="Name" value="QTAPixel"></OBJECT>
   <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_q_t_a_pixel.html#ae094a1d03cd62c2fe9a90f050cfc47a0"><param name="Name" value="ciChannel"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_q_t_a_pixel.html#a39e529b6c21ea201f3358974a285d3e4"><param name="Name" value="icmChannel"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_q_t_a_pixel.html#ae328befa629da65184ebd408dab17a75"><param name="Name" value="ciChannel"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_q_t_a_pixel.html#a2484ae6cfa294140926306f3538dfd69"><param name="Name" value="icmChannel"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_8h.html#a909b166a82ed109d37fd162c0d8073b7"><param name="Name" value="QTMovieSink.h"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="union_q_t_a_pixel.html#aac52c38a0fd6acb3b8df94f5c6787e8c"><param name="Name" value="value"></OBJECT>
   </UL>
@@ -3952,13 +3970,13 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html"><param name="Name" value="QTMovieSinkQTStuff"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#a4ba4ee2395cd316e17bbb130e9123f18"><param name="Name" value="cbState"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#acfa250910d2be057edade0596b935741"><param name="Name" value="CI"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#a092db40e7aa62ec37e362a0c89a43ffc"><param name="Name" value="CI"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#a711b569acc16d821a332faee64c24b5b"><param name="Name" value="codecType"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#ad53ee8a58bbcaa8685e5a4787d8cc514"><param name="Name" value="dataHandler"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#a80b0b2d1bd6c4ec56672348fbbb3f88c"><param name="Name" value="dataRef"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#a9106d025daff5e0dfc0d53dfed7b4cec"><param name="Name" value="dataRefType"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#a40285d4a994e6682c9cbc4cc4f8028e6"><param name="Name" value="Frames"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#abedaf27d79287288d08840307cc2f27f"><param name="Name" value="ICM"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#a28f50c425e42e2ab243e9007cdeeb9a7"><param name="Name" value="ICM"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#a00b7a4ef6eb9c793b3af43a71fdcbe46"><param name="Name" value="numPixels"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_sink_q_t_stuff.html#aa2142279ed122880428b5510c1a179f7"><param name="Name" value="pixelFormat"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_sink_q_t_stuff_8h.html#a5ee7ad815776a783364570188971837d"><param name="Name" value="QTMovieSinkQTStuff.h"></OBJECT>
@@ -4801,6 +4819,8 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="structsparse__hashtable__destructive__iterator.html#a024465ee90f774293d078e5c86b72d67"><param name="Name" value="sparse_hashtable_destructive_iterator"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="structsparse__hashtable__iterator.html#a5f81d5bd1ed997ec0cb83654447759a3"><param name="Name" value="sparse_hashtable_iterator"></OBJECT>
   </UL>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e_c_o_u_n_t_e_r.html#adf57530dcf8935ec0a76cbcb0262f90b"><param name="Name" value="refHANDLEp"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e.html#adab3fc350ba11dc0556cb999cd66537d"><param name="Name" value="refHANDLEs"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_lib_q_tils_base.html#a83ec382a04531a93db53aadc5c5d5dc2"><param name="Name" value="register_MCAction"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_lib_q_tils_base.html#a83ec382a04531a93db53aadc5c5d5dc2"><param name="Name" value="LibQTilsBase"></OBJECT>
@@ -4934,10 +4954,11 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#aef820d75611435947657105be02a5a76"><param name="Name" value="rotation"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_reference.html#a703a9c02b093f6cc56bcc1f3f731c4d4"><param name="Name" value="run:"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_reference.html#ac91b5e6c692b530e04f5b7bca5addbf2"><param name="Name" value="run"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#a92d02277aeaa8fc8f6a5faaba5fac5d2"><param name="Name" value="s"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#ac4035f0cda82a3e48ce5a56127e06c3e"><param name="Name" value="s"></OBJECT>
   <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#a92d02277aeaa8fc8f6a5faaba5fac5d2"><param name="Name" value="IEEEfp"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_esfp.html#a1849d2edd66c55e9af5b566fd15b4cfc"><param name="Name" value="IEEEsfp"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_efp.html#ac4035f0cda82a3e48ce5a56127e06c3e"><param name="Name" value="IEEEfp"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_i_e_e_esfp.html#a799d00e29e78508f40e16fa934837480"><param name="Name" value="IEEEsfp"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_m_s_h_a_n_d_l_e_d_a_t_a.html#a14c9505b2865e87ff9e73f5e5e97e658"><param name="Name" value="MSHANDLEDATA"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_constant.html#a12296cc648f62c8e9846c4138f44e0b6"><param name="Name" value="Saturday"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_reference.html#a142fa893c942180255b5bcf26c4eb645"><param name="Name" value="save:"></OBJECT>
@@ -5000,6 +5021,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_tilities_8h.html#aca95de77cb778d588e479367a987b8e4"><param name="Name" value="QTilities.h"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_tils_8c.html#a80744e846f7e39322648d8be1f1d59aa"><param name="Name" value="QTils.c"></OBJECT>
   </UL>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ae1658f511de470ae2131e00fefa18a2f"><param name="Name" value="SECURITY_ATTRIBUTES"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_n_s_m_c_action_info.html#a94cf588ef32f6b111a3fd76125612ba1"><param name="Name" value="selector"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_q_t_movie_windows.html#a63c8a1e720be05000cab989702d3fb42"><param name="Name" value="self"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_s_e_m_a_p_h_o_r_e.html#a8f0a6a4273c3005056428615cf5017ed"><param name="Name" value="sem"></OBJECT>
@@ -5452,6 +5474,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_swig_py_packed.html#aa6f6be0a8a1bff7710200fbe8d51acf0"><param name="Name" value="ty"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_v_o_d.html#a7d0ea26edbf8c2d371785cf6777d5b5a"><param name="Name" value="sysOwned"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="union_m_s_h_a_n_d_l_e_d_a_t_a.html#ae4f90fb0469326cc305643c01babd0f6"><param name="Name" value="t"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_batch_export_controller.html#a715c8dcc713f1dee9c22aadb7d284083"><param name="Name" value="tableContents"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_batch_export_controller.html#ad3615774fb69e33f0681ab8cd8d176b6"><param name="Name" value="tableView"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_n_s_object_07_batch_table_view_data_source_08.html#a9773ed0d41656c19d07ae1397f8cba4f"><param name="Name" value="tableViewDeleteSelectedRows:"></OBJECT>
@@ -5615,24 +5638,6 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_time_interval.html#a4e1bd6fc56404e9ed581dcc5f160c422"><param name="Name" value="timeStampA"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_time_interval.html#ade337b1d5c131e7f32bcbf73a36f310d"><param name="Name" value="timeStampB"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_v_o_d_description.html#a44355e4a86920de9b4ef1d61075faa4c"><param name="Name" value="timeZone"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html"><param name="Name" value="timing.c"></OBJECT>
-  <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#a0b62c1ad992cc25a0d7db9408edb7c0f"><param name="Name" value="HRTime_tic"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#ae7942f52563787c2ba176dfb31248cfe"><param name="Name" value="HRTime_Time"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#a5e17e65130ed045f942c0ef233ff9834"><param name="Name" value="HRTime_toc"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#a3b3b43a794601cb1d0a07b8d8039b4ec"><param name="Name" value="IDENTIFY"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8c.html#a5407978ea2185a07dceb79678d03ba53"><param name="Name" value="init_HRTime"></OBJECT>
-  </UL>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html"><param name="Name" value="timing.h"></OBJECT>
-  <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html#ab5b8a4740d01a998a8529ee779a71273"><param name="Name" value="_TIMING_H"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html#a973bc796a66df5ff60c634771cc24338"><param name="Name" value="HRTime_tic"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html#ab93c1dd99eb63ded6cdf105537032945"><param name="Name" value="HRTime_Time"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html#acf6c975577917e85aeb9ca1e7f4d1560"><param name="Name" value="HRTime_toc"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html#a851ad3616dddf84885e0d1734f9cae80"><param name="Name" value="init_HRTime"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html#a0706365a62a12007c304f7c20b6ef730"><param name="Name" value="TIMINGext"></OBJECT>
-  </UL>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="timing_8h.html#a0706365a62a12007c304f7c20b6ef730"><param name="Name" value="TIMINGext"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_duplicate_command.html#a1d130a6f21a841de0feff710d5126e81"><param name="Name" value="to:"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_duplicate_command.html#a1d130a6f21a841de0feff710d5126e81"><param name="Name" value="QTDuplicateCommand"></OBJECT>
@@ -5879,6 +5884,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="_q_t_movie_win_8h.html#aba39420b6407fe36d5ef2b8c8c5d64fe"><param name="Name" value="QTMovieWin.h"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a1321b83ee958aca806d68d87cf248fc5"><param name="Name" value="WAIT_ABANDONED"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#ac5425c25bf79dba241265bcc8f869715"><param name="Name" value="WAIT_FAILED"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#abb2c63c1933cab709a4fd4aef2012bbb"><param name="Name" value="WAIT_OBJECT_0"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="msemul_8h.html#a5578de68603dc6185924f95f1ae4be6e"><param name="Name" value="WAIT_TIMEOUT"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_m_s_h_e_v_e_n_t.html#a0087a32e3a069daf947c79186050c383"><param name="Name" value="waiter"></OBJECT>
@@ -5923,7 +5929,6 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_v_o_d_window.html#ab3f72c912744120001076118f95a6d0c"><param name="Name" value="QTVODWindow"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_v_o_d.html#ae8c6f276d2afa3c877250a97e430e5fa"><param name="Name" value="winlist"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="_crit_sect_ex_8h.html#a966cd377b9f3fdeb1432460c33352af1"><param name="Name" value="WINVER"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_make_command.html#a72ac9d93ddfe83df68e12457f31908b4"><param name="Name" value="withData:"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="interface_q_t_duplicate_command.html#ad17dfbc8adf99e8eed537ea7f28f8412"><param name="Name" value="withProperties:"></OBJECT>
   <UL>
@@ -5996,8 +6001,8 @@
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record__xml.html"><param name="Name" value="XML_Record_xml"></OBJECT>
   <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record__xml.html#ae7d128bcaa8a4c38fd1c92a5d722e837"><param name="Name" value="attribute"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record__xml.html#a9ccef9513d6819fb83dc78a150e8a841"><param name="Name" value="element"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record__xml.html#aaaa2582c099c2f6cece02e7ff6222b8c"><param name="Name" value="attribute"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="union_x_m_l___record__xml.html#af339662afaced320eff1bf85337c9307"><param name="Name" value="element"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="struct_x_m_l___record__xml__attribute.html"><param name="Name" value="XML_Record_xml_attribute"></OBJECT>
   <UL>

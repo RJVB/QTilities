@@ -11,6 +11,24 @@
   </Token>
   <Token>
     <TokenIdentifier>
+      <Name>SECURITY_ATTRIBUTES</Name>
+      <APILanguage>c</APILanguage>
+      <Type>tdef</Type>
+    </TokenIdentifier>
+    <Path>msemul_8h.html</Path>
+    <Anchor>ae1658f511de470ae2131e00fefa18a2f</Anchor>
+  </Token>
+  <Token>
+    <TokenIdentifier>
+      <Name>MSHSEMAPHORECOUNTER</Name>
+      <APILanguage>c</APILanguage>
+      <Type>tdef</Type>
+    </TokenIdentifier>
+    <Path>msemul_8h.html</Path>
+    <Anchor>a0a3db4ff4a27d245cbc908cb0e85fbd6</Anchor>
+  </Token>
+  <Token>
+    <TokenIdentifier>
       <Name>MSHSEMAPHORE</Name>
       <APILanguage>c</APILanguage>
       <Type>tdef</Type>
@@ -70,7 +88,16 @@
       <Type>func</Type>
     </TokenIdentifier>
     <Path>msemul_8h.html</Path>
-    <Anchor>a0f0e3808b680ef38a26a5ab0c36a03f7</Anchor>
+    <Anchor>ae56101b7966e38f48f79b32167642a5d</Anchor>
+  </Token>
+  <Token>
+    <TokenIdentifier>
+      <Name>OpenSemaphore</Name>
+      <APILanguage>c</APILanguage>
+      <Type>func</Type>
+    </TokenIdentifier>
+    <Path>msemul_8h.html</Path>
+    <Anchor>ab34cc8a3ffe37f7a46a19898825ec47f</Anchor>
   </Token>
   <Token>
     <TokenIdentifier>
@@ -98,15 +125,6 @@
     </TokenIdentifier>
     <Path>msemul_8h.html</Path>
     <Anchor>acca8c2e59cae82b1a51b4ef1e631abbc</Anchor>
-  </Token>
-  <Token>
-    <TokenIdentifier>
-      <Name>CloseHandle</Name>
-      <APILanguage>c</APILanguage>
-      <Type>func</Type>
-    </TokenIdentifier>
-    <Path>msemul_8h.html</Path>
-    <Anchor>a7b868f65309cd6e5d281e4f19d7a725e</Anchor>
   </Token>
   <Token>
     <TokenIdentifier>
@@ -2399,6 +2417,27 @@
   </Token>
   <Token>
     <TokenIdentifier>
+      <Name>_SECURITY_ATTRIBUTES</Name>
+      <APILanguage>c</APILanguage>
+      <Type>cl</Type>
+      <Scope>_SECURITY_ATTRIBUTES</Scope>
+    </TokenIdentifier>
+    <Path>struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html</Path>
+    <DeclaredIn>msemul.h</DeclaredIn>
+  </Token>
+  <Token>
+    <TokenIdentifier>
+      <Name>nLength</Name>
+      <APILanguage>cpp</APILanguage>
+      <Type>data</Type>
+      <Scope>_SECURITY_ATTRIBUTES</Scope>
+    </TokenIdentifier>
+    <Path>struct___s_e_c_u_r_i_t_y___a_t_t_r_i_b_u_t_e_s.html</Path>
+    <Anchor>a3ec25c40b65a92b164177b0b230abda9</Anchor>
+    <Abstract>set to sizeof(SECURITY_ATTRIBUTES)</Abstract>
+  </Token>
+  <Token>
+    <TokenIdentifier>
       <Name>add_reference</Name>
       <APILanguage>c</APILanguage>
       <Type>tmplt</Type>
@@ -3222,6 +3261,15 @@
   </Token>
   <Token>
     <TokenIdentifier>
+      <Name>MSHANDLEDATA</Name>
+      <APILanguage>c</APILanguage>
+      <Type>cl</Type>
+      <Scope>MSHANDLEDATA</Scope>
+    </TokenIdentifier>
+    <Path>union_m_s_h_a_n_d_l_e_d_a_t_a.html</Path>
+  </Token>
+  <Token>
+    <TokenIdentifier>
       <Name>MSHEVENT</Name>
       <APILanguage>c</APILanguage>
       <Type>cl</Type>
@@ -3247,6 +3295,16 @@
       <Scope>MSHSEMAPHORE</Scope>
     </TokenIdentifier>
     <Path>struct_m_s_h_s_e_m_a_p_h_o_r_e.html</Path>
+    <DeclaredIn>msemul.h</DeclaredIn>
+  </Token>
+  <Token>
+    <TokenIdentifier>
+      <Name>MSHSEMAPHORECOUNTER</Name>
+      <APILanguage>c</APILanguage>
+      <Type>cl</Type>
+      <Scope>MSHSEMAPHORECOUNTER</Scope>
+    </TokenIdentifier>
+    <Path>struct_m_s_h_s_e_m_a_p_h_o_r_e_c_o_u_n_t_e_r.html</Path>
     <DeclaredIn>msemul.h</DeclaredIn>
   </Token>
   <Token>
@@ -3946,7 +4004,7 @@
       <Scope>QTMovieSinkQTStuff</Scope>
     </TokenIdentifier>
     <Path>struct_q_t_movie_sink_q_t_stuff.html</Path>
-    <Anchor>acfa250910d2be057edade0596b935741</Anchor>
+    <Anchor>a092db40e7aa62ec37e362a0c89a43ffc</Anchor>
     <Abstract>parameters for use with CompressImage</Abstract>
   </Token>
   <Token>
@@ -3957,7 +4015,7 @@
       <Scope>QTMovieSinkQTStuff</Scope>
     </TokenIdentifier>
     <Path>struct_q_t_movie_sink_q_t_stuff.html</Path>
-    <Anchor>abedaf27d79287288d08840307cc2f27f</Anchor>
+    <Anchor>a28f50c425e42e2ab243e9007cdeeb9a7</Anchor>
     <Abstract>parameters for use with ICMCompressionSession</Abstract>
   </Token>
   <Token>
