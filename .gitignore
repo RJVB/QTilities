@@ -24,3 +24,4 @@ DestroyWindow
 */Release
 *.kml
 *.dll
+*.docset
