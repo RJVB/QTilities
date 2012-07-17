@@ -219,6 +219,46 @@
 			<key>Content</key>
 			<dict>
 				<key>PBXProjectModuleGUID</key>
+				<string>D6C2257F157E88CB0053FBEC</string>
+				<key>PBXProjectModuleLabel</key>
+				<string>QTMovieSink.h</string>
+				<key>PBXSplitModuleInNavigatorKey</key>
+				<dict>
+					<key>Split0</key>
+					<dict>
+						<key>PBXProjectModuleGUID</key>
+						<string>D6C22580157E88CB0053FBEC</string>
+						<key>PBXProjectModuleLabel</key>
+						<string>QTMovieSink.h</string>
+						<key>_historyCapacity</key>
+						<integer>0</integer>
+						<key>bookmark</key>
+						<string>D64532BF15B5BE0200570FB4</string>
+						<key>history</key>
+						<array>
+							<string>D645328215B5BC5000570FB4</string>
+						</array>
+					</dict>
+					<key>SplitCount</key>
+					<string>1</string>
+				</dict>
+				<key>StatusBarVisibility</key>
+				<true/>
+			</dict>
+			<key>Geometry</key>
+			<dict>
+				<key>Frame</key>
+				<string>{{0, 20}, {755, 717}}</string>
+				<key>PBXModuleWindowStatusBarHidden2</key>
+				<false/>
+				<key>RubberWindowFrame</key>
+				<string>-805 120 755 758 -1280 100 1280 800 </string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Content</key>
+			<dict>
+				<key>PBXProjectModuleGUID</key>
 				<string>D645327715B5BC3E00570FB4</string>
 				<key>PBXProjectModuleLabel</key>
 				<string>QTils.c</string>
@@ -233,10 +273,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D645327F15B5BC5000570FB4</string>
+						<string>D64532C015B5BE0200570FB4</string>
 						<key>history</key>
 						<array>
-							<string>D645326A15B5BC2200570FB4</string>
+							<string>D645327F15B5BC5000570FB4</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -273,10 +313,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D645328015B5BC5000570FB4</string>
+						<string>D64532C115B5BE0200570FB4</string>
 						<key>history</key>
 						<array>
-							<string>D64530FC15B23D6B00570FB4</string>
+							<string>D645328015B5BC5000570FB4</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -313,10 +353,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D645328115B5BC5000570FB4</string>
+						<string>D64532C215B5BE0200570FB4</string>
 						<key>history</key>
 						<array>
-							<string>D64530FD15B23D6B00570FB4</string>
+							<string>D645328115B5BC5000570FB4</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -339,46 +379,6 @@
 			<key>Content</key>
 			<dict>
 				<key>PBXProjectModuleGUID</key>
-				<string>D6C2257F157E88CB0053FBEC</string>
-				<key>PBXProjectModuleLabel</key>
-				<string>QTMovieSink.h</string>
-				<key>PBXSplitModuleInNavigatorKey</key>
-				<dict>
-					<key>Split0</key>
-					<dict>
-						<key>PBXProjectModuleGUID</key>
-						<string>D6C22580157E88CB0053FBEC</string>
-						<key>PBXProjectModuleLabel</key>
-						<string>QTMovieSink.h</string>
-						<key>_historyCapacity</key>
-						<integer>0</integer>
-						<key>bookmark</key>
-						<string>D645328215B5BC5000570FB4</string>
-						<key>history</key>
-						<array>
-							<string>D64530FE15B23D6B00570FB4</string>
-						</array>
-					</dict>
-					<key>SplitCount</key>
-					<string>1</string>
-				</dict>
-				<key>StatusBarVisibility</key>
-				<true/>
-			</dict>
-			<key>Geometry</key>
-			<dict>
-				<key>Frame</key>
-				<string>{{0, 20}, {755, 717}}</string>
-				<key>PBXModuleWindowStatusBarHidden2</key>
-				<false/>
-				<key>RubberWindowFrame</key>
-				<string>-805 120 755 758 -1280 100 1280 800 </string>
-			</dict>
-		</dict>
-		<dict>
-			<key>Content</key>
-			<dict>
-				<key>PBXProjectModuleGUID</key>
 				<string>D6BF21FA154C63F000732A27</string>
 				<key>PBXProjectModuleLabel</key>
 				<string>QTMovieWinWM.m</string>
@@ -393,10 +393,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>D645328315B5BC5000570FB4</string>
+						<string>D64532C315B5BE0200570FB4</string>
 						<key>history</key>
 						<array>
-							<string>D64530FF15B23D6B00570FB4</string>
+							<string>D645328315B5BC5000570FB4</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -606,9 +606,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>D645327515B5BC3E00570FB4</string>
+				<string>D64532BD15B5BE0200570FB4</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>D645327615B5BC3E00570FB4</string>
+				<string>D64532BE15B5BE0200570FB4</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -727,7 +727,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>364231760.105901</real>
+	<real>364232194.091824</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -744,14 +744,14 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1C530D57069F1CE1000CFCEE</string>
+		<string>1CD10A99069EF8BA00B06720</string>
 		<string>D619AC2C1276E0CE00FF8489</string>
 		<string>D6BF21FA154C63F000732A27</string>
-		<string>D6C2257F157E88CB0053FBEC</string>
 		<string>D6C225B6157E91010053FBEC</string>
 		<string>D6C22576157E88CB0053FBEC</string>
-		<string>/Volumes/Debian/Users/bertin/work/src/MacOSX/QTilities/QTMovieSink-106.xcodeproj</string>
 		<string>D645327715B5BC3E00570FB4</string>
+		<string>D6C2257F157E88CB0053FBEC</string>
+		<string>/Volumes/Debian/Users/bertin/work/src/MacOSX/QTilities/QTMovieSink-106.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>-1051 259 688 604 -1280 100 1280 800 </string>
@@ -833,7 +833,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>D619AC2C1276E0CE00FF8489</string>
-				<string>D645326115B5BBCB00570FB4</string>
+				<string>D645329915B5BD8B00570FB4</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -955,13 +955,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
-				<string>D64757C21599149B00B87D21</string>
+				<string>D64532B715B5BDFF00570FB4</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>D64757C31599149B00B87D21</string>
-				<string>D64757C41599149B00B87D21</string>
-				<string>D64757C51599149B00B87D21</string>
-				<string>D64757C61599149B00B87D21</string>
-				<string>D64757C71599149B00B87D21</string>
+				<string>D64532B815B5BDFF00570FB4</string>
+				<string>D64532B915B5BDFF00570FB4</string>
+				<string>D64532BA15B5BDFF00570FB4</string>
+				<string>D64532BB15B5BDFF00570FB4</string>
+				<string>D64532BC15B5BDFF00570FB4</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
