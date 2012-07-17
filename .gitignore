@@ -25,3 +25,7 @@ DestroyWindow
 *.kml
 *.dll
 *.docset
+
+QTMovieSink-VS2008/ipch
+*.opensdf
+*.sdf
