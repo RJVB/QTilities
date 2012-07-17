@@ -8,7 +8,17 @@
 
 #endif //CRITSECTGCC
 
-#if defined(WIN32) || defined(_MSC_VER) || defined(CRITSECTGCC)
+void cseAssertEx(bool expected, const char *fileName, int linenr, const char *title )
+{
+	cseAssertExInline( expected, fileName, linenr, title );
+}
+
+void cseAssertEx(bool expected, const char *fileName, int linenr )
+{
+	cseAssertExInline( expected, fileName, linenr );
+}
+
+#if defined(__windows__) || defined(CRITSECTGCC)
 
 DWORD CritSectEx::s_dwProcessors = 0;
 
@@ -17,7 +27,7 @@ void CritSectEx::AllocateKernelSemaphore()
 	if (!m_hSemaphore)
 	{
 		HANDLE hSemaphore = CreateSemaphore(NULL, 0, 0x7FFFFFFF, NULL);
-		cseAssertEx(!hSemaphore, __FILE__, __LINE__);
+		cseAssertEx(hSemaphore, __FILE__, __LINE__);
 		if (InterlockedCompareExchangePointer( (PVOID*) &m_hSemaphore, hSemaphore, NULL))
 			VERIFY(CloseHandle(hSemaphore)); // we're late
 	}
@@ -25,7 +35,7 @@ void CritSectEx::AllocateKernelSemaphore()
 
 bool CritSectEx::PerfLock(DWORD dwThreadID, DWORD dwTimeout)
 {
-#ifdef DEBUG
+#if DEBUG > 1
 	if( m_bIsLocked ){
 		fprintf( stderr, "Thread %lu attempting to lock mutex of thread %lu\n",
 			   dwThreadID, m_nLocker
@@ -90,7 +100,7 @@ inline bool CritSectEx::PerfLockKernel(DWORD dwThreadID, DWORD dwTimeout)
 				bWaiter = true;
 				break;
 			default:
-				cseAssertEx(true, __FILE__, __LINE__);
+				cseAssertEx(false, __FILE__, __LINE__);
 				return false;
 		}
 	}
@@ -100,14 +110,16 @@ inline bool CritSectEx::PerfLockKernel(DWORD dwThreadID, DWORD dwTimeout)
 
 void CritSectEx::SetSpinMax(DWORD dwSpinMax)
 {
-#if defined(WIN32) || defined(_MSC_VER)
+#if defined(__windows__)
 	if (!s_dwProcessors)
 	{
 		SYSTEM_INFO stSI;
 		GetSystemInfo(&stSI);
 		s_dwProcessors = stSI.dwNumberOfProcessors;
 	}
-	if (s_dwProcessors > 1)
+	// RJVB 20120713: not sure why spinlocking should NOT happen on single-core machines;
+	// it works fine with gcc under *n*x ...
+	if (s_dwProcessors >= 1)
 #endif
 		m_dwSpinMax = dwSpinMax;
 }

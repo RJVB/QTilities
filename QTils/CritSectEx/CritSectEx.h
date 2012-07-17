@@ -11,7 +11,7 @@
 
 %module CritSectEx
 %{
-#	if !(defined(WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(SWIGWIN))
+#	if !(defined(WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__) || defined(SWIGWIN))
 #		include "msemul.h"
 #	endif
 #	include "CritSectEx.h"
@@ -29,13 +29,14 @@
 
 #pragma once
 
-#if defined(WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(SWIGWIN)
+#if defined(WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__) || defined(SWIGWIN)
 #	if !defined(WINVER) || WINVER < 0x0501
 #		define WINVER 0x0501
 #	endif
 #	if !defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0501
 #		define _WIN32_WINNT 0x0501
 #	endif
+#	define	__windows__
 #endif
 
 #include <stdio.h>
@@ -45,17 +46,8 @@
 #	define CRITSECT	CritSectEx
 #endif
 
-#if defined(WIN32) || defined(_MSC_VER) || defined(__MINGW32__)
-#	include <windows.h>
-#	include <tchar.h>
-#	ifdef _MSC_VER
-#		include <intrin.h>
-#		define inline			__forceinline
-#	else
-#		define __forceinline	inline
-#	endif
-#else
-#	include "msemul.h"
+#include "msemul.h"
+#if !defined(__windows__)
 #	ifdef __cplusplus
 #		include <cstdlib>
 #		include <exception>
@@ -71,7 +63,7 @@
 
 
 #if /*defined(WIN32) || */ defined(_MSC_VER)
-	__forceinline void InlDebugBreak() { __asm { int 3 }; }
+	__forceinline void InlDebugBreak(){ __asm { int 3 }; }
 #	pragma intrinsic(_WriteBarrier)
 #	pragma intrinsic(_ReadWriteBarrier)
 #elif (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
@@ -79,21 +71,31 @@
 #	define _ReadWriteBarrier()	__sync_synchronize()
 #endif
 
-#ifdef _DEBUG
-#	ifndef ASSERT
-#		define ASSERT(x) do { if (!(x)) InlDebugBreak(); } while (false)
-#	endif // ASSERT
-#	ifndef VERIFY
-#		define VERIFY(x) ASSERT(x)
+#if defined(DEBUG)
+#	if defined(_MSC_VER)
+#		ifndef ASSERT
+#			define ASSERT(x) do { if (!(x)) InlDebugBreak(); } while (false)
+#		endif // ASSERT
+#		ifndef VERIFY
+#			define VERIFY(x) ASSERT(x)
+#		endif
+#	else
+#		include <assert.h>
+#		ifndef ASSERT
+#			define ASSERT(x) assert(x)
+#		endif // ASSERT
+#		ifndef VERIFY
+#			define VERIFY(x) ASSERT(x)
+#		endif
 #	endif
-#else // _DEBUG
+#else // DEBUG
 #	ifndef ASSERT
 #		define ASSERT(x)
 #	endif // ASSERT
 #	ifndef VERIFY
 #		define VERIFY(x) (x)
 #	endif
-#endif // _DEBUG
+#endif // DEBUG
 
 #ifndef STR
 #	define STR(name)	# name
@@ -108,10 +110,10 @@
 
 #	include <typeinfo>
 
-	__forceinline void cseAssertEx(bool bFailed, const char *fileName, int linenr, const char *title="CritSectEx malfunction")
+	__forceinline void cseAssertExInline(bool expected, const char *fileName, int linenr, const char *title="CritSectEx malfunction")
 	{
-		if( bFailed ){
-#	if defined(WIN32) || defined(_MSC_VER)
+		if( !(expected) ){
+#	if defined(__windows__)
 		  ULONG_PTR args[2];
 		  int confirmation;
 		  char msgBuf[1024];
@@ -141,10 +143,15 @@
 					"fatal CRITSECT malfunction at '%s':%d)",
 					fileName, linenr
 			);
+#		ifdef DEBUG
+			fprintf( stderr, "%s\n", msgBuf ) ; fflush(stderr);
+#		endif
 			throw cseAssertFailure(msgBuf);
 #	endif
 		}
 	}
+	extern void cseAssertEx(bool, const char *, int, const char*);
+	extern void cseAssertEx(bool, const char *, int);
 
 #endif // __cplusplus
 
@@ -170,14 +177,22 @@ static inline void _InterlockedSetTrue( volatile long &atomic )
 
 static inline void _InterlockedSetFalse( volatile long &atomic )
 {
-	if /*while*/( atomic ){
-		if( _InterlockedDecrement(&atomic) ){
-			YieldProcessor();
+	while( atomic ){
+		if( atomic > 0 ){
+			if( _InterlockedDecrement(&atomic) ){
+				YieldProcessor();
+			}
+		}
+		else{
+			if( _InterlockedIncrement(&atomic) ){
+				YieldProcessor();
+			}
 		}
 	}
 }
 #endif //__cplusplus
 
+#ifndef _MSEMUL_H
 /*!
 	set the referenced state variable to True in an atomic operation
 	(which avoids changing the state while another thread is reading it)
@@ -203,8 +218,17 @@ static inline void _InterlockedSetFalse( volatile long *atomic )
 		}
 	}
 }
+#endif //_MSEMUL_H
 
-#if defined(__cplusplus) && (defined(WIN32) || defined(_MSC_VER) || defined(CRITSECTGCC))
+#if defined(__cplusplus) && (defined(__windows__) || defined(CRITSECTGCC))
+/*!
+	A fast critical section class based on Vladislav Gelfer's implementation
+	at http://www.codeproject.com/KB/threads/CritSectEx.aspx . It uses a
+	spinlock and/or semaphore, reducing the chance that the thread will be
+	suspended. The class also provides a scoped lock, allowing create critical
+	(preempted) blocks of code that will be unlocked even if one exits through
+	an interrupt.
+ */
 class CritSectEx {
 
 	static DWORD s_dwProcessors;
@@ -255,7 +279,7 @@ class CritSectEx {
 
 	__forceinline void PerfUnlock()
 	{
-#ifdef DEBUG
+#if DEBUG > 1
 		if( !m_bUnlocking ){
 			fprintf( stderr, "Mutex of thread %lu will be unlocked by thread %lu at t=%gs\n",
 				m_nLocker, GetCurrentThreadId(), HRTime_toc()
@@ -274,7 +298,7 @@ class CritSectEx {
 			WaiterMinus();
 
 			ASSERT(m_hSemaphore);
-			cseAssertEx(!ReleaseSemaphore(m_hSemaphore, 1, NULL), __FILE__, __LINE__);
+			cseAssertExInline(ReleaseSemaphore(m_hSemaphore, 1, NULL), __FILE__, __LINE__);
 		}
 		m_bIsLocked = false;
 #ifdef DEBUG0
@@ -283,6 +307,21 @@ class CritSectEx {
 	}
 
 public:
+	/*!
+		CRITSECTEX_ALLOWSHARED: if defined, operators new and delete are added that use
+		shared memory allocation depending on a thread-specific flag
+	 */
+#ifdef CRITSECTEX_ALLOWSHARED
+	void *operator new(size_t size)
+	{ extern void *MSEreallocShared( void* ptr, size_t N, size_t oldN );
+		return MSEreallocShared( NULL, size, 0 );
+	}
+	void operator delete(void *p)
+	{ extern void MSEfreeShared(void *ptr);
+		MSEfreeShared(p);
+	}
+#endif //CRITSECTEX_ALLOWSHARED
+
 	// Constructor/Destructor
 //	CritSectEx()
 //	{
@@ -296,8 +335,9 @@ public:
 	}
 	~CritSectEx()
 	{
-		if (m_hSemaphore)
+		if( m_hSemaphore ){
 			VERIFY(CloseHandle(m_hSemaphore));
+		}
 	}
 
 	// Lock/Unlock
@@ -357,13 +397,17 @@ public:
 		return m_nLockedBy;
 	}
 #endif
-	operator bool () const { return m_bIsLocked; }
+	virtual operator bool () const { return m_bIsLocked; }
 
 	// Some extra
 	void SetSpinMax(DWORD dwSpinMax);
 	void AllocateKernelSemaphore();
 
-	// Scope
+	/*!
+		Scope: the class that implements the scoped lock. Creating a scoped lock
+		will lock the CritSectEx and if no explicit action is taking, the lock will
+		persist as long as the scoped lock exists.
+	 */
 	class Scope {
 
 		// disable copy constructor and assignment
@@ -489,6 +533,16 @@ class CritSectRec {
 	void operator = (const CritSectRec&);
 
 public:
+#ifdef CRITSECTEX_ALLOWSHARED
+	void *operator new(size_t size)
+	{ extern void *MSEreallocShared( void* ptr, size_t N, size_t oldN );
+		return MSEreallocShared( NULL, size, 0 );
+	}
+	void operator delete(void *p)
+	{ extern void MSEfreeShared(void *ptr);
+		MSEfreeShared(p);
+	}
+#endif //CRITSECTEX_ALLOWSHARED
 	CritSectRec()
 		:m_nRecursion(0)
 	{
@@ -539,8 +593,8 @@ public:
 	operator bool () const { return m_cs.IsLocked(); }
 
 	// Some extra
-	void SetSpinMax(DWORD dwSpinMax) { m_cs.SetSpinMax(dwSpinMax); }
-	void AllocateKernelSemaphore() { m_cs.AllocateKernelSemaphore(); }
+	void SetSpinMax(DWORD dwSpinMax){ m_cs.SetSpinMax(dwSpinMax); }
+	void AllocateKernelSemaphore(){ m_cs.AllocateKernelSemaphore(); }
 
 	struct Scope {
 
@@ -646,7 +700,7 @@ public:
 };
 #endif
 
-#if defined(__cplusplus) && (defined(WIN32) || defined(_MSC_VER))
+#if defined(__cplusplus) && defined(__windows__)
 class CritSect {
 
 	// Declare all variables volatile, so that the compiler won't
@@ -685,6 +739,16 @@ class CritSect {
 	}
 
 public:
+#ifdef CRITSECTEX_ALLOWSHARED
+	void *operator new(size_t size)
+	{ extern void *MSEreallocShared( void* ptr, size_t N, size_t oldN );
+		return MSEreallocShared( NULL, size, 0 );
+	}
+	void operator delete(void *p)
+	{ extern void MSEfreeShared(void *ptr);
+		MSEfreeShared(p);
+	}
+#endif //CRITSECTEX_ALLOWSHARED
 	// Constructor/Destructor
 	CritSect(DWORD dwSpinMax=0)
 	{
@@ -842,14 +906,14 @@ public:
 	};
 	friend class Scope;
 };
-#endif // WIN32 || _MSC_VER
+#endif // __windows__
 
 #if defined(__cplusplus)
 class MutexEx {
 
 	// Declare all variables volatile, so that the compiler won't
 	// try to optimise something important away.
-#if defined(WIN32) || defined(_MSC_VER)
+#if defined(__windows__)
 	volatile HANDLE	m_hMutex;
 	volatile DWORD	m_bIsLocked;
 #else
@@ -881,7 +945,8 @@ class MutexEx {
 #endif
 		switch( WaitForSingleObject( m_hMutex, dwTimeout ) ){
 			case WAIT_ABANDONED:
-				cseAssertEx(true, __FILE__, __LINE__);
+			case WAIT_FAILED:
+				cseAssertExInline(false, __FILE__, __LINE__);
 				break;
 			case WAIT_TIMEOUT:
 				m_bTimedOut = true;
@@ -898,7 +963,7 @@ class MutexEx {
 	__forceinline void PerfUnlock()
 	{
 //		if( m_bIsLocked ){
-#if defined(WIN32) || defined(_MSC_VER)
+#if defined(__windows__)
 		ReleaseMutex(m_hMutex);
 #else
 		ReleaseSemaphore(m_hMutex, 1, NULL);
@@ -917,16 +982,26 @@ class MutexEx {
 	}
 
 public:
+#ifdef CRITSECTEX_ALLOWSHARED
+	void *operator new(size_t size)
+	{ extern void *MSEreallocShared( void* ptr, size_t N, size_t oldN );
+		return MSEreallocShared( NULL, size, 0 );
+	}
+	void operator delete(void *p)
+	{ extern void MSEfreeShared(void *ptr);
+		MSEfreeShared(p);
+	}
+#endif //CRITSECTEX_ALLOWSHARED
 	// Constructor/Destructor
 	MutexEx(DWORD dwSpinMax=0)
 	{
 		memset(this, 0, sizeof(*this));
-#if defined(WIN32) || defined(_MSC_VER)
+#if defined(__windows__)
 		m_hMutex = CreateMutex( NULL, FALSE, NULL );
 #else
 		m_hMutex = CreateSemaphore( NULL, 1, -1, NULL );
 #endif
-		cseAssertEx( (m_hMutex==NULL), __FILE__, __LINE__);
+		cseAssertExInline( (m_hMutex!=NULL), __FILE__, __LINE__);
 	}
 
 	~MutexEx()
@@ -1091,6 +1166,16 @@ typedef struct CSEHandle {
 private:
 	const char *info;
 public:
+#ifdef CRITSECTEX_ALLOWSHARED
+	void *operator new(size_t size)
+	{ extern void *MSEreallocShared( void* ptr, size_t N, size_t oldN );
+		return MSEreallocShared( NULL, size, 0 );
+	}
+	void operator delete(void *p)
+	{ extern void MSEfreeShared(void *ptr);
+		MSEfreeShared(p);
+	}
+#endif //CRITSECTEX_ALLOWSHARED
 	const char *CSEHandleInfo()
 	{
 		return info;
@@ -1129,6 +1214,16 @@ typedef struct CSEScopedLock {
 	CRITSECT::Scope *scope;
 	unsigned char IsLocked;
 	DWORD timeOut;
+#ifdef CRITSECTEX_ALLOWSHARED
+	void *operator new(size_t size)
+	{ extern void *MSEreallocShared( void* ptr, size_t N, size_t oldN );
+		return MSEreallocShared( NULL, size, 0 );
+	}
+	void operator delete(void *p)
+	{ extern void MSEfreeShared(void *ptr);
+		MSEfreeShared(p);
+	}
+#endif //CRITSECTEX_ALLOWSHARED
 	__forceinline CSEScopedLock(CRITSECT *_cse, DWORD dwTimeout = INFINITE)
 	{
 		cse = _cse;

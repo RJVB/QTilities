@@ -1,7 +1,7 @@
 /*!
  *  @file timing.c
  *
- *  (C) René J.V. Bertin on 20080926.
+ *  (C) RenÃ© J.V. Bertin on 20080926.
  *
  */
 
@@ -160,7 +160,7 @@ static double calibrator= 0;
 
 #ifdef __LCC__
 #	define	__forceinline	/**/
-#elif defined(__MINGW32__)
+#elif defined(__MINGW32__) || defined(__MINGW64__)
 #	define	__forceinline	inline
 #endif
 

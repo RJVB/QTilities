@@ -11,7 +11,7 @@
 
 %module MSEmul
 %{
-#	if !(defined(WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(SWIGWIN))
+#	if !(defined(WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__) || defined(SWIGWIN))
 #		include "msemul.h"
 #	endif
 #include "CritSectEx.h"
@@ -36,28 +36,32 @@
 
 #endif //SWIG
 
-#ifndef _MSEMUL_H
+#if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
+#	include "CritSectEx/msemul4win.h"
+#	include "timing.h"
+#	define	__windows__
+#elif !defined(_MSEMUL_H)
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include <signal.h>
-#include <sys/time.h>
-#ifdef linux
-#	include <fcntl.h>
-#	include <sys/syscall.h>
-#endif
-#include <sys/stat.h>
-#include <semaphore.h>
-#include <pthread.h>
-#ifdef __SSE2__
-#	include <xmmintrin.h>
-#endif
+#	include <stdio.h>
+#	include <stdint.h>
+#	include <stdlib.h>
+#	include <unistd.h>
+#	include <string.h>
+#	include <errno.h>
+#	include <signal.h>
+#	include <sys/time.h>
+#	ifdef linux
+#		include <fcntl.h>
+#		include <sys/syscall.h>
+#	endif
+#	include <sys/stat.h>
+#	include <semaphore.h>
+#	include <pthread.h>
+#	ifdef __SSE2__
+#		include <xmmintrin.h>
+#	endif
 
-#include "timing.h"
+#	include "timing.h"
 
 #ifndef __forceinline
 #	define __forceinline	inline
@@ -81,9 +85,11 @@
 #	ifndef true
 #		define true		((bool)1)
 #	endif
+#	define NSSYNCHROTR		/**/
 #else
 #	include <string>
-#	include <sstream>
+#	define NSSYNCHROTR		SynchrTr::
+	namespace SynchrTr{}
 #endif // !__cplusplus
 
 //#	ifndef DWORD
@@ -92,16 +98,33 @@
 
 typedef void*		PVOID;
 typedef void*		LPVOID;
-#if !defined(__MINGW32__)
+#if !defined(__MINGW32__) && !defined(__MINGW64__)
 #	ifndef DWORD
-		typedef unsigned long	DWORD;
+		/*!
+			DWORD is MS's slang for size_t
+		 */
+		typedef size_t	DWORD, *LPDWORD;
 #	endif
+#	ifndef WINAPI
+#		define WINAPI	/*WINAPI*/
+#	endif //WINAPI
+	typedef void*			THREAD_RETURN;
+	typedef THREAD_RETURN	(WINAPI *LPTHREAD_START_ROUTINE)(LPVOID);
+
+#	define ZeroMemory(p,s)	memset((p), 0, (s))
 
 	/*!
 	 the types of MS Windows HANDLEs that we can emulate:
 	 */
 	typedef enum { MSH_EMPTY, MSH_SEMAPHORE, MSH_MUTEX, MSH_EVENT, MSH_THREAD, MSH_CLOSED } MSHANDLETYPE;
 #	define CREATE_SUSPENDED	0x00000004
+#	define STILL_ACTIVE		259
+#	define TLS_OUT_OF_INDEXES	NULL
+#	define MAXIMUM_WAIT_OBJECTS	1
+#	define WAIT_ABANDONED	((DWORD)0x00000080)
+#	define WAIT_OBJECT_0	((DWORD)0x00000000)
+#	define WAIT_TIMEOUT		((DWORD)0x00000102)
+#	define WAIT_FAILED		((DWORD)0xffffffff)
 
 	enum { THREAD_PRIORITY_ABOVE_NORMAL=1, THREAD_PRIORITY_BELOW_NORMAL=-1, THREAD_PRIORITY_HIGHEST=2,
 		THREAD_PRIORITY_IDLE=-15, THREAD_PRIORITY_LOWEST=-2, THREAD_PRIORITY_NORMAL=0,
@@ -187,18 +210,42 @@ typedef void*		LPVOID;
 	} MSHEVENT;
 
 	/*!
-	 an emulated thread HANDLE
+		POSIX threads do not provide a timed join() function, allowing to wait for
+		thread termination for a limited time only. It is possible to implement such a function
+		using thread cancellation; this structure holds the information necessary to do that.
+	 */
+	typedef struct pthread_timed_t {
+		pthread_t			thread;
+		pthread_mutex_t	m, *mutex;
+		pthread_cond_t		exit_c, *cond;
+		bool				exiting, exited, detached;
+		LPTHREAD_START_ROUTINE	start_routine;
+		LPVOID			arg;
+		THREAD_RETURN		status;
+		double			startTime;
+#ifdef __cplusplus
+		pthread_timed_t(const pthread_attr_t *attr,
+					 LPTHREAD_START_ROUTINE start_routine, void *arg);
+
+		~pthread_timed_t();
+#endif
+	} pthread_timed_t;
+
+	/*!
+		an emulated thread HANDLE
 	 */
 	typedef struct MSHTHREAD {
-		pthread_t theThread, *pThread;
+		pthread_timed_t	*theThread;
+		pthread_t			*pThread;
 #if defined(__APPLE__) || defined(__MACH__)
-		mach_port_t machThread;
+		mach_port_t		machThread;
+		char				name[32];
 #else
-		HANDLE threadLock;
-		HANDLE lockOwner;
+		HANDLE			threadLock;
+		HANDLE			lockOwner;
 #endif
-		void *returnValue;
-		DWORD threadId, suspendCount;
+		THREAD_RETURN		returnValue;
+		DWORD			threadId, suspendCount;
 	} MSHTHREAD;
 
 	typedef union MSHANDLEDATA {
@@ -209,335 +256,119 @@ typedef void*		LPVOID;
 	} MSHANDLEDATA;
 
 	/*!
-	 an emulated HANDLE of one of the supported types (see MSHANDLETYPE)
-	 @n
-	 MS Windows uses the same type for a wealth of things, here we are only concerned
-	 with its use in the context of multithreaded operations.
+		 an emulated HANDLE of one of the supported types (see MSHANDLETYPE)
+		 @n
+		 MS Windows uses the same type for a wealth of things, here we are only concerned
+		 with its use in the context of multithreaded operations.
 	 */
 	typedef struct MSHANDLE {
 		MSHANDLETYPE type;
-		// for SWIG: no support for union-in-struct, so we sacrifice some space and use a struct
 		MSHANDLEDATA d;
 #	ifdef __cplusplus
-	 private:
-		DWORD NextThreadID()
-		{ static DWORD Id = 1;
-			return Id++;
-		}
-		void mmfree(void *p)
-		{ extern void MSEfreeShared(void *ptr);
-			MSEfreeShared(p);
-		}
-		void Register()
-		{ extern void AddSemaListEntry(HANDLE h);
-		  void RegisterHANDLE(HANDLE h);
-			switch( type ){
-				case MSH_SEMAPHORE:
-					AddSemaListEntry(this);
-					break;
-				default:
-					break;
+		 private:
+			DWORD NextThreadID()
+			{ static DWORD Id = 1;
+				return Id++;
 			}
-			RegisterHANDLE(this);
-		}
-		void Unregister()
-		{ extern void RemoveSemaListEntry(sem_t*);
-		  void UnregisterHANDLE(HANDLE h);
-			switch( type ){
-				case MSH_SEMAPHORE:
-					RemoveSemaListEntry(d.s.sem);
-					break;
-				default:
-					break;
+			void mmfree(void *p)
+			{ extern void MSEfreeShared(void *ptr);
+				MSEfreeShared(p);
 			}
-			UnregisterHANDLE(this);
-		}
-	 public:
+			void Register();
+			void Unregister();
+		 public:
 #pragma mark new MSHANDLE
-		/*!
-			new() operator that allocates from anonymous shared memory - necessary to be able
-			to share semaphore handles among processes
-		 */
-		void *operator new(size_t size)
-		{ extern void *MSEreallocShared( void* ptr, size_t N, size_t oldN );
-			return MSEreallocShared( NULL, size, 0 );
-		}
-		/*!
-			delete operator that frees anonymous shared memory
-		 */
-		void operator delete(void *p)
-		{ extern void MSEfreeShared(void *ptr);
-			MSEfreeShared(p);
-		}
-#pragma mark initialise a new semaphore HANDLE
-		/*!
-			initialise a new semaphore HANDLE
-		 */
-		MSHANDLE( void* ign_lpSemaphoreAttributes, long lInitialCount, long lMaximumCount, char *lpName )
-		{
-			type = MSH_EMPTY;
-			if( lpName ){
-				if( lInitialCount >= 0 && lMaximumCount > 0
-				   && (d.s.sem = sem_open( lpName, O_CREAT, S_IRWXU, lInitialCount)) != SEM_FAILED
-				){
-					d.s.name = lpName;
-					d.s.owner = 0;
-					d.s.refHANDLEs = 0;
-					d.s.counter = new MSHSEMAPHORECOUNTER(lInitialCount, lMaximumCount, &d.s.refHANDLEs);
-					type = MSH_SEMAPHORE;
-					Register();
-				}
+			/*!
+				new() operator that allocates from anonymous shared memory - necessary to be able
+				to share semaphore handles among processes
+			 */
+			void *operator new(size_t size)
+			{ extern void *MSEreallocShared( void* ptr, size_t N, size_t oldN );
+				return MSEreallocShared( NULL, size, 0 );
 			}
-		}
-#pragma mark initialise a duplicate semaphore HANDLE
-		/*!
-			initialise a new semaphore HANDLE that references an existing semaphore HANDLE
-		 */
-		MSHANDLE( sem_t *sema, MSHSEMAPHORECOUNTER *counter, char *lpName )
-		{
-			d.s.name = lpName;
-			d.s.sem = sema;
-			d.s.owner = 0;
-			d.s.counter = counter;
-			*(counter->refHANDLEp) += 1;
-			type = MSH_SEMAPHORE;
-			Register();
-		}
-#pragma mark initialise a mutex HANDLE
-		/*!
-			initialise a mutex HANDLE
-		 */
-		MSHANDLE( void *ign_lpMutexAttributes, BOOL bInitialOwner, char *ign_lpName )
-		{
-			if( !pthread_mutex_init( &d.m.mutbuf, NULL ) ){
-				d.m.mutex = &d.m.mutbuf;
-				type = MSH_MUTEX;
-				if( bInitialOwner ){
-					pthread_mutex_trylock(d.m.mutex);
-					d.m.owner = pthread_self();
-				}
-				else{
-					d.m.owner = 0;
-				}
-				Register();
+			/*!
+				delete operator that frees anonymous shared memory
+			 */
+			void operator delete(void *p)
+			{ extern void MSEfreeShared(void *ptr);
+				MSEfreeShared(p);
 			}
-			else{
-				type = MSH_EMPTY;
-			}
-		}
-#pragma mark initialise an event HANDLE
-		/*!
-			initialise an event HANDLE
-		 */
-		MSHANDLE( void *ign_lpEventAttributes, BOOL bManualReset, BOOL bInitialState, char *ign_lpName )
-		{
-			if( !pthread_cond_init( &d.e.condbuf, NULL ) ){
-				d.e.cond = &d.e.condbuf;
-			}
-			else{
-				d.e.cond = NULL;
-			}
-			if( d.e.cond && !pthread_mutex_init( &d.e.mutbuf, NULL ) ){
-				d.e.mutex = &d.e.mutbuf;
-				d.e.waiter = 0;
-			}
-			else{
-				d.e.mutex = NULL;
-				if( d.e.cond ){
-					pthread_cond_destroy(d.e.cond);
-					d.e.cond = NULL;
-				}
-			}
-			if( d.e.cond && d.e.mutex ){
-				type = MSH_EVENT;
-				d.e.isManual = bManualReset;
-				d.e.isSignalled = bInitialState;
-				Register();
-			}
-			else{
-				type = MSH_EMPTY;
-			}
-		}
-#pragma mark initialise a thread HANDLE
-		/*!
-			initialise a thread HANDLE
-		 */
-		MSHANDLE( void *ign_lpThreadAttributes, size_t ign_dwStackSize, void *(*lpStartAddress)(void *),
-			    void *lpParameter, DWORD dwCreationFlags, DWORD *lpThreadId )
-		{
-#if defined(__APPLE__) || defined(__MACH__)
-			if( (dwCreationFlags & CREATE_SUSPENDED) ){
-				if( !pthread_create_suspended_np( &d.t.theThread, NULL, lpStartAddress, lpParameter ) ){
-					d.t.pThread = &d.t.theThread;
-					d.t.machThread = pthread_mach_thread_np(d.t.theThread);
-					d.t.suspendCount = 1;
-				}
-			}
-			else{
-				if( !pthread_create( &d.t.theThread, NULL, lpStartAddress, lpParameter ) ){
-					d.t.pThread = &d.t.theThread;
-					d.t.machThread = pthread_mach_thread_np(d.t.theThread);
-					d.t.suspendCount = 0;
-				}
-			}
-#else
-		  extern int pthread_create_suspendable( HANDLE mshThread, const pthread_attr_t *attr,
-						  void *(*start_routine)(void *), void *arg, bool suspended );
-			d.t.threadLock = new MSHANDLE(NULL, false, NULL);
-			d.t.lockOwner = NULL;
-			if( d.t.threadLock
-			   && !pthread_create_suspendable( this, NULL, lpStartAddress, lpParameter, (dwCreationFlags & CREATE_SUSPENDED) )
-			){
-				d.t.pThread = &d.t.theThread;
-			}
-			else{
-				if( d.t.threadLock ){
-					delete d.t.threadLock;
-					d.t.threadLock = NULL;
-				}
-			}
-#endif // !__APPLE__ && !__MACH__
-			if( d.t.pThread ){
-				type = MSH_THREAD;
-				d.t.threadId = NextThreadID();
-				if( lpThreadId ){
-					*lpThreadId = d.t.threadId;
-				}
-				Register();
-			}
-			else{
-				type = MSH_EMPTY;
-			}
-		}
+#pragma mark CreateSemaphore
+			/*!
+				initialise a new semaphore HANDLE
+			 */
+			MSHANDLE( void* ign_lpSemaphoreAttributes, long lInitialCount, long lMaximumCount, char *lpName );
+#pragma mark OpenSemaphore
+			/*!
+				initialise a new semaphore HANDLE that references an existing semaphore HANDLE
+			 */
+			MSHANDLE( sem_t *sema, MSHSEMAPHORECOUNTER *counter, char *lpName );
+#pragma mark CreateMutex
+			/*!
+				initialise a mutex HANDLE
+			 */
+			MSHANDLE( void *ign_lpMutexAttributes, BOOL bInitialOwner, char *ign_lpName );
+#pragma mark CreateEvent
+			/*!
+				initialise an event HANDLE
+			 */
+			MSHANDLE( void *ign_lpEventAttributes, BOOL bManualReset, BOOL bInitialState, char *ign_lpName );
+#pragma mark CreateThread
+			/*!
+				initialise a thread HANDLE
+			 */
+			MSHANDLE( void *ign_lpThreadAttributes, size_t ign_dwStackSize, LPTHREAD_START_ROUTINE lpStartAddress,
+				    void *lpParameter, DWORD dwCreationFlags, DWORD *lpThreadId );
 #pragma mark initialise a HANDLE from an existing pthread identifier
-		/*!
-			Initialise a HANDLE from an existing pthread identifier
-		 */
-		MSHANDLE(pthread_t fromThread)
-		{
-			type = MSH_THREAD;
-			d.t.pThread = &d.t.theThread;
-			d.t.theThread = fromThread;
-#if defined(__APPLE__) || defined(__MACH__)
-			if( fromThread == pthread_self() && pthread_main_np() ){
-				d.t.threadId = 0;
-			}
-			else
-#elif defined(linux)
-			if( fromThread == pthread_self() && syscall(SYS_gettid) == getpid() ){
-				d.t.threadId = 0;
-			}
-			else
-#endif
-			{
-				d.t.threadId = NextThreadID();
-			}
-			Register();
-		}
-#pragma mark HANDLE destructor
-		/*!
-			HANDLE destructor
-		 */
-		~MSHANDLE()
-		{ bool ret = false;
-			switch( type ){
-				case MSH_SEMAPHORE:{
-					if( d.s.sem ){
-						if( d.s.counter->refHANDLEp != &d.s.refHANDLEs ){
-							// just decrement the counter of the semaphore HANDLE we're referring to:
-							*(d.s.counter->refHANDLEp) -= 1;
-							if( d.s.counter->curCount == 0 ){
-								sem_post(d.s.sem);
-								d.s.counter->curCount += 1;
-							}
-							ret == (sem_close(d.s.sem) == 0);
-						}
-						else if( d.s.refHANDLEs == 0 ){
-							if( d.s.counter->curCount == 0 ){
-								sem_post(d.s.sem);
-								d.s.counter->curCount += 1;
-							}
-							ret = (sem_close(d.s.sem) == 0);
-							if( d.s.name ){
-								sem_unlink(d.s.name);
-							}
-							delete d.s.counter;
-							d.s.counter = NULL;
-						}
-						if( d.s.name ){
-							mmfree(d.s.name);
-							d.s.name = NULL;
-						}
-						ret = true;
-					}
-					break;
-				}
-				case MSH_MUTEX:
-					if( d.m.mutex ){
-						ret = (pthread_mutex_destroy(d.m.mutex) == 0);
-					}
-					break;
-				case MSH_EVENT:
-					if( d.e.cond ){
-						ret = (pthread_cond_destroy(d.e.cond) == 0);
-					}
-					if( ret && d.e.mutex ){
-						ret = (pthread_mutex_destroy(d.e.mutex) == 0 );
-					}
-					break;
-				case MSH_THREAD:
-					if( d.t.pThread ){
-						ret = (pthread_join(d.t.theThread, &d.t.returnValue) == 0);
-					}
-					else{
-						// 20120625: thread already exited, we can set ret=TRUE!
-						ret = true;
-					}
-#if !defined(__APPLE__) && !defined(__MACH__)
-					if( d.t.threadLock ){
-						delete d.t.threadLock;
-						d.t.threadLock = NULL;
-					}
-#endif
-					break;
-			}
-			if( ret ){
-				Unregister();
-				memset( this, 0, sizeof(MSHANDLE) );
-				type = MSH_CLOSED;
-			}
-		}
-		std::string asString()
-		{ std::ostringstream ret;
-			switch( type ){
-				case MSH_SEMAPHORE:{
-				  char *name = (d.s.name)? d.s.name : (char*) "<NULL>";
-					if( d.s.counter ){
-						ret << "<MSH_SEMAPHORE \"" << name << "\" curCnt=" << d.s.counter->curCount << " " << d.s.refHANDLEs << " references owner=" << d.s.owner << ">";
-					}
-					else{
-						ret << "<MSH_SEMAPHORE \"" << name << "\" curCnt=??" << " " << d.s.refHANDLEs << " references owner=" << d.s.owner << ">";
-					}
-					break;
-				}
-				case MSH_MUTEX:
-					ret << "<MSH_MUTEX owner=" << d.m.owner << ">";
-					break;
-				case MSH_EVENT:
-					ret << "<MSH_EVENT manual=" << d.e.isManual << " signalled=" << d.e.isSignalled << " waiter=" << d.e.waiter << ">";
-					break;
-				case MSH_THREAD:
-					ret << "<MSH_THREAD thread=" << d.t.theThread << " Id=" << d.t.threadId << ">";
-					break;
-				default:
-					ret << "<Unknown HANDLE>";
-					break;
-			}
-			return ret.str();
-		}
+			/*!
+				Initialise a HANDLE from an existing pthread identifier
+			 */
+			MSHANDLE(pthread_t fromThread);
+#pragma mark CloseHandle
+			/*!
+				HANDLE destructor
+			 */
+			~MSHANDLE();
+			/*!
+				HANDLE string representation (cf. Python's __repr__)
+			 */
+			std::string asString();
 #	endif //cplusplus
 	} MSHANDLE;
-#endif // !__MINGW32__
+#endif // !__MINGWxx__
+
+#if defined(TARGET_OS_MAC) && defined(__THREADS__)
+#	define GetCurrentThread()	GetCurrentThreadHANDLE()
+#endif
+
+#	ifdef __cplusplus
+	extern int MSEmul_UseSharedMemory();
+extern "C" {
+#	endif
+
+	extern int MSEmul_UseSharedMemory(int useShared);
+	extern int MSEmul_UsesSharedMemory();
+
+	extern DWORD WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds);
+	extern HANDLE CreateSemaphore( void* ign_lpSemaphoreAttributes, long lInitialCount, long lMaximumCount, char *lpName );
+	extern HANDLE OpenSemaphore( DWORD ign_dwDesiredAccess, BOOL ign_bInheritHandle, char *lpName );
+	extern HANDLE CreateMutex( void *ign_lpMutexAttributes, BOOL bInitialOwner, char *ign_lpName );
+	extern HANDLE msCreateEvent( void *ign_lpEventAttributes, BOOL bManualReset, BOOL bInitialState, char *ign_lpName );
+/*!
+	CreateEvent: macro interface to msCreateEvent.
+ */
+#	define CreateEvent(A,R,I,N)	msCreateEvent((A),(R),(I),(N))
+	extern HANDLE CreateThread( void *ign_lpThreadAttributes, size_t ign_dwStackSize, LPTHREAD_START_ROUTINE lpStartAddress,
+				void *lpParameter, DWORD dwCreationFlags, DWORD *lpThreadId );
+	extern DWORD ResumeThread( HANDLE hThread );
+	extern DWORD SuspendThread( HANDLE hThread );
+	extern HANDLE GetCurrentThread();
+	extern int GetThreadPriority(HANDLE hThread);
+	extern bool SetThreadPriority( HANDLE hThread, int nPriority );
+	extern bool CloseHandle( HANDLE hObject );
+#	ifdef __cplusplus
+}
+#	endif
 
 static inline DWORD GetCurrentProcessId()
 {
@@ -560,6 +391,63 @@ static inline DWORD GetThreadId(HANDLE Thread)
 	}
 }
 
+static inline BOOL GetExitCodeThread( HANDLE hThread, DWORD *lpExitCode )
+{ BOOL ret = false;
+	if( hThread && hThread->type == MSH_THREAD && lpExitCode ){
+		if( hThread->d.t.pThread ){
+			if( pthread_kill(hThread->d.t.theThread->thread, 0) == 0 ){
+				*lpExitCode = STILL_ACTIVE;
+			}
+			else{
+				*lpExitCode = (DWORD) hThread->d.t.theThread->status;
+			}
+		}
+		else{
+			*lpExitCode = (DWORD) hThread->d.t.theThread->status;
+		}
+		ret = true;
+	}
+	else{
+		errno = EINVAL;
+	}
+	return ret;
+}
+
+static inline BOOL TerminateThread( HANDLE hThread, DWORD dwExitCode )
+{ BOOL ret = false;
+	if( hThread && hThread->type == MSH_THREAD ){
+		if( hThread->d.t.pThread ){
+			if( pthread_cancel(hThread->d.t.theThread->thread) == 0 ){
+			  int i;
+			  DWORD code;
+				for( i = 0 ; i < 5 ; ){
+					if( (code = WaitForSingleObject( hThread, 1000 )) == WAIT_OBJECT_0 ){
+						break;
+					}
+					else{
+						i += 1;
+					}
+				}
+				if( i == 5 ){
+					pthread_kill( hThread->d.t.theThread->thread, SIGTERM );
+				}
+				ret = true;
+			}
+			else{
+				pthread_kill( hThread->d.t.theThread->thread, SIGTERM );
+				ret = true;
+			}
+			hThread->d.t.theThread->status = (THREAD_RETURN) dwExitCode;
+		}
+	}
+	return ret;
+}
+
+static inline void ExitThread(THREAD_RETURN dwExitCode)
+{
+	pthread_exit((void*) dwExitCode);
+}
+				
 /*!
  Emulates the Microsoft-specific intrinsic of the same name.
  @n
@@ -587,7 +475,7 @@ static inline long _InterlockedCompareExchange( volatile long *Destination,
 	return old;
 }
 
-#if !defined(__MINGW32__)
+#if !defined(__MINGW32__) && !defined(__MINGW64__)
 /*!
  Performs an atomic compare-and-exchange operation on the specified values.
  The function compares two specified pointer values and exchanges with another pointer
@@ -611,7 +499,7 @@ inline PVOID InterlockedCompareExchangePointer( volatile PVOID *Destination,
 
 	return old;
 }
-#endif // !__MINGW32__
+#endif // !__MINGWxx__
 
 /*
  Emulates the Microsoft-specific intrinsic of the same name.
@@ -671,18 +559,17 @@ static inline DWORD GetLastError()
 	return (DWORD) errno;
 }
 
+static inline void SetLastError(DWORD dwErrCode)
+{
+	errno = (int) dwErrCode;
+}
+
 static inline void Sleep(DWORD dwMilliseconds)
 {
 	usleep( dwMilliseconds * 1000 );
 }
 
-#if !defined(__MINGW32__)
-#	define ZeroMemory(p,s)	memset((p), 0, (s))
-
-#	define WAIT_ABANDONED	0x00000080L
-#	define WAIT_OBJECT_0	0x00000000L
-#	define WAIT_TIMEOUT		0x00000102L
-#	define WAIT_FAILED		(DWORD) 0xffffffff
+#if !defined(__MINGW32__) && !defined(__MINGW64__)
 
 /*!
  Release the given semaphore.
@@ -703,11 +590,11 @@ static inline bool ReleaseSemaphore( HANDLE hSemaphore, long lReleaseCount, long
 			ok = (sem_post(hSemaphore->d.s.sem) == 0);
 				hSemaphore->d.s.counter->curCount += 1;
 		} while( ok && hSemaphore->d.s.counter->curCount < lReleaseCount );
-#ifdef linux
+#ifdef DEBUG
 		{ int cval;
 			if( sem_getvalue( hSemaphore->d.s.sem, &cval ) != -1 ){
 				if( cval != hSemaphore->d.s.counter->curCount ){
-					fprintf( stderr, "ReleaseSemaphore(\"%s\"): value mismatch, %ld != %d\n",
+					fprintf( stderr, "@@ ReleaseSemaphore(\"%s\"): value mismatch, %ld != %d\n",
 						   hSemaphore->d.s.name, hSemaphore->d.s.counter->curCount, cval
 					);
 				}
@@ -732,8 +619,38 @@ static inline bool ReleaseMutex(HANDLE hMutex)
 	return true;
 }
 
-static inline void _InterlockedSetTrue( volatile long *atomic );
-static inline void _InterlockedSetFalse( volatile long *atomic );
+/*!
+	set the referenced state variable to True in an atomic operation
+	(which avoids changing the state while another thread is reading it)
+ */
+static inline void _InterlockedSetTrue( volatile long *atomic )
+{
+	if /*while*/( !*atomic ){
+		if( !_InterlockedIncrement(atomic) ){
+			YieldProcessor();
+		}
+	}
+}
+
+/*!
+	set the referenced state variable to False in an atomic operation
+	(which avoids changing the state while another thread is reading it)
+ */
+static inline void _InterlockedSetFalse( volatile long *atomic )
+{
+	while( *atomic ){
+		if( atomic > 0 ){
+			if( _InterlockedDecrement(atomic) ){
+				YieldProcessor();
+			}
+		}
+		else{
+			if( _InterlockedIncrement(atomic) ){
+				YieldProcessor();
+			}
+		}
+	}
+}
 
 static inline bool SetEvent( HANDLE hEvent )
 { bool ret = false;
@@ -761,31 +678,65 @@ static inline bool ResetEvent( HANDLE hEvent )
 	return ret;
 }
 
-#if defined(TARGET_OS_MAC) && defined(__THREADS__)
-#	define GetCurrentThread()	GetCurrentThreadHANDLE()
-#endif
-
-#	ifdef __cplusplus
-extern "C" {
-#	endif
-	extern DWORD WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds);
-	extern HANDLE CreateSemaphore( void* ign_lpSemaphoreAttributes, long lInitialCount, long lMaximumCount, char *lpName );
-	extern HANDLE OpenSemaphore( DWORD ign_dwDesiredAccess, BOOL ign_bInheritHandle, char *lpName );
-	extern HANDLE CreateMutex( void *ign_lpMutexAttributes, BOOL bInitialOwner, char *ign_lpName );
-	extern HANDLE msCreateEvent( void *ign_lpEventAttributes, BOOL bManualReset, BOOL bInitialState, char *ign_lpName );
-#	define CreateEvent(A,R,I,N)	msCreateEvent((A),(R),(I),(N))
-	extern HANDLE CreateThread( void *ign_lpThreadAttributes, size_t ign_dwStackSize, void *(*lpStartAddress)(void *),
-				void *lpParameter, DWORD dwCreationFlags, DWORD *lpThreadId );
-	extern DWORD ResumeThread( HANDLE hThread );
-	extern DWORD SuspendThread( HANDLE hThread );
-	extern HANDLE GetCurrentThread();
-	extern int GetThreadPriority(HANDLE hThread);
-	extern bool SetThreadPriority( HANDLE hThread, int nPriority );
-	extern bool CloseHandle( HANDLE hObject );
-#	ifdef __cplusplus
+static inline BOOL TlsFree(DWORD dwTlsIndex)
+{ BOOL ret;
+  pthread_key_t *key = (pthread_key_t*) dwTlsIndex;
+  extern void MSEfreeShared(void *ptr);
+	if( dwTlsIndex ){
+		ret = (pthread_key_delete(*key) == 0);
+		MSEfreeShared(key);
+	}
+	else{
+		ret = false;
+	}
+	return ret;
 }
-#	endif
-#endif // !__MINGW32__
+
+static inline DWORD TlsAlloc(void)
+{ extern void *MSEreallocShared( void* ptr, size_t N, size_t oldN );
+  extern void MSEfreeShared(void *ptr);
+  pthread_key_t *key = (pthread_key_t*) MSEreallocShared( NULL, sizeof(pthread_key_t), 0 );
+
+	if( key ){
+		if( pthread_key_create(key, NULL) != 0 ){
+			MSEfreeShared(key);
+			key = TLS_OUT_OF_INDEXES;
+		}
+	}
+	else{
+		key = TLS_OUT_OF_INDEXES;
+	}
+	return (DWORD) key;
+}
+
+static inline BOOL TlsSetValue( DWORD dwTlsIndex, LPVOID lpTlsValue )
+{ pthread_key_t *key = (pthread_key_t*) dwTlsIndex;
+  BOOL ret;
+	if( key ){
+		ret = (pthread_setspecific( *key, lpTlsValue ) == 0);
+	}
+	else{
+		ret = false;
+	}
+	return ret;
+}
+
+static inline LPVOID TlsGetValue( DWORD dwTlsIndex )
+{ pthread_key_t *key = (pthread_key_t*) dwTlsIndex;
+  LPVOID ret;
+	if( key ){
+		ret = pthread_getspecific(*key);
+		// http://msdn.microsoft.com/en-us/library/windows/desktop/ms686812(v=vs.85).aspx
+		SetLastError(0);
+	}
+	else{
+		ret = NULL;
+		SetLastError(EINVAL);
+	}
+	return ret;
+}
+
+#endif // !__MINGWxx__
 
 #define _MSEMUL_H
 #endif

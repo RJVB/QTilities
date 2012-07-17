@@ -1,5 +1,5 @@
-/*
- *  msemul.cpp
+/*!
+ *  @file msemul.cpp
  *  emulation of certain concurrent-programming MS Windows functions for gcc.
 	Developed/tested on Mac OS X and Debian 6
  *
@@ -8,14 +8,18 @@
  *
  */
 
-#include "msemul.h"
-#if defined(__APPLE__) || defined(__MACH__)
-#	include <mach/thread_act.h>
-#endif
+#if !defined(_MSC_VER) && !defined(__MINGW32__) && !defined(__MINGW64__) && !defined(WIN32) && !defined(_WIN64)
 
 #ifdef linux
 #	include <fcntl.h>
 #	include <sys/time.h>
+#endif
+#include <sstream>
+
+#include "msemul.h"
+
+#if defined(__APPLE__) || defined(__MACH__)
+#	include <mach/thread_act.h>
 #endif
 
 #include "CritSectEx.h"
@@ -25,14 +29,14 @@ static void cseUnsleep( int sig )
 //	fprintf( stderr, "SIGALRM\n" );
 }
 
-#include <google/dense_hash_map>
+#include <sparsehash/dense_hash_map>
 #include <sys/mman.h>
 
 int mseShFD = -1;
 #define MSESHAREDMEMNAME	"/dev/zero"; //"MSEShMem-XXXXXX"
 char MSESharedMemName[64] = "";
 static size_t mmapCount = 0;
-static BOOL theMSEShMemListReady = FALSE;
+static BOOL theMSEShMemListReady = false;
 
 typedef google::dense_hash_map<void*,size_t> MSEShMemLists;
 static MSEShMemLists theMSEShMemList;
@@ -40,23 +44,78 @@ static MSEShMemLists theMSEShMemList;
 typedef google::dense_hash_map<HANDLE,MSHANDLETYPE> OpenHANDLELists;
 static OpenHANDLELists theOpenHandleList;
 static google::dense_hash_map<int,const char*> HANDLETypeName;
-static BOOL theOpenHandleListReady = FALSE;
+static BOOL theOpenHandleListReady = false;
+
+static pthread_key_t suspendKey = 0;
+static BOOL suspendKeyCreated = false;
 
 static pthread_key_t currentThreadKey = 0;
-bool ForceCloseHandle(HANDLE);
+static pthread_once_t currentThreadKeyCreated = PTHREAD_ONCE_INIT;
+static bool ForceCloseHandle(HANDLE);
 
+static pthread_key_t timedThreadKey;
+static pthread_once_t timedThreadCreated = PTHREAD_ONCE_INIT;
+
+static pthread_key_t sharedMemKey;
+static pthread_once_t sharedMemKeyCreated = PTHREAD_ONCE_INIT;
+
+static void createSharedMemKey()
+{
+	pthread_key_create(&sharedMemKey, NULL);
+}
+
+/*!
+	A THREAD SPECIFIC selector whether shared memory should be used. In other words,
+	if set by the parent process, childs (processes) will have access to memory allocated
+	by the parent, but not vice versa. If the parent also has to have access to memory allocated
+	by the child, the child has to call MSEmul_UseSharedMemory(true) as well.
+ */
+int MSEmul_UseSharedMemory(int useShared)
+{ int ret;
+	pthread_once( &sharedMemKeyCreated, createSharedMemKey );
+	ret = (int) ((size_t)pthread_getspecific(sharedMemKey));
+	pthread_setspecific( sharedMemKey, (void*) useShared );
+	return ret;
+}
+
+/*!
+	query the thread-specific use-shared-memory flag
+ */
+int MSEmul_UseSharedMemory()
+{
+	pthread_once( &sharedMemKeyCreated, createSharedMemKey );
+	return (int) ((size_t)pthread_getspecific(sharedMemKey));
+}
+
+/*!
+	query the thread-specific use-shared-memory flag
+ */
+int MSEmul_UsesSharedMemory()
+{
+	return MSEmul_UseSharedMemory();
+}
+
+/*!
+	Free memory. If the pointer is not a known shared-memory allocation by MSEreallocShared,
+	the system's default deallocator is used.
+ */
 void MSEfreeShared(void *ptr)
 { static short calls = 0;
-	if( ptr && theMSEShMemList.count(ptr) ){
-		size_t N = theMSEShMemList[ptr];
-		if( munmap( ptr, N ) == 0 ){
-			theMSEShMemList[ptr] = 0;
-			theMSEShMemList.erase(ptr);
-			if( ++calls >= 32 ){
-				theMSEShMemList.resize(0);
-				calls = 0;
+	if( ptr ){
+		if( theMSEShMemListReady && theMSEShMemList.count(ptr) ){
+		  size_t N = theMSEShMemList[ptr];
+			if( munmap( ptr, N ) == 0 ){
+				theMSEShMemList[ptr] = 0;
+				theMSEShMemList.erase(ptr);
+				if( ++calls >= 32 ){
+					theMSEShMemList.resize(0);
+					calls = 0;
+				}
+				mmapCount -= 1;
 			}
-			mmapCount -= 1;
+		} 
+		else{
+			free(ptr);
 		}
 		ptr = NULL;
 	}
@@ -70,8 +129,12 @@ void MSEfreeShared(void *ptr)
 	}
 }
 
+/*!
+	atexit handler that frees all remaining allocated shared memory and performs
+	some associated house-keeping.
+ */
 void MSEfreeAllShared()
-{ 
+{
 	if( currentThreadKey ){
 		// this means that at least one invocation to GetCurrentThread was made, and
 		// thus that there is a corresponding entry in theOpenHandleList that will not have
@@ -87,18 +150,34 @@ void MSEfreeAllShared()
 	if( theOpenHandleListReady && theOpenHandleList.size() ){
 		fprintf( stderr, "@@@ Exit with %lu HANDLEs still open\n", theOpenHandleList.size() );
 	}
+	if( currentThreadKey ){
+		pthread_key_delete(currentThreadKey);
+		currentThreadKey = 0;
+	}
+	if( suspendKeyCreated ){
+		pthread_key_delete(suspendKey);
+		suspendKeyCreated = false;
+	}
 }
 
-void *MSEreallocShared( void* ptr, size_t N, size_t oldN )
+/*!
+	Allocate or reallocate memory of size <oldN> to size <N>. If the thread-specific flag is
+	set or forceShared==true, the memory is allocated in anonymous shared memory, otherwise
+	the system's default (re)allocator is used.
+ */
+void *MSEreallocShared( void* ptr, size_t N, size_t oldN, int forceShared )
 { void *mem;
-	int flags = MAP_SHARED;
+  int flags = MAP_SHARED;
+	if( !forceShared && !MSEmul_UseSharedMemory() ){
+		return (ptr)? realloc(ptr,N) : calloc(N,1);
+	}
 #ifndef MAP_ANON
 	if( mseShFD < 0 ){
 		if( !MSESharedMemName[0] ){
 			strcpy( MSESharedMemName, MSESHAREDMEMNAME );
 // 			mktemp(MSESharedMemName);
 		}
- 		if( (mseShFD = open( MSESharedMemName, O_RDWR )) < 0 ){
+		if( (mseShFD = open( MSESharedMemName, O_RDWR )) < 0 ){
 //			fprintf( stderr, "MSEreallocShared(): can't open/create descriptor for allocating %s=0x%lx, size %s=%lu -> 0x%lx (%s)\n",
 //				   (name)? name : "<unknown>", ptr, size, (unsigned long) N, mem, serror()
 //			);
@@ -116,19 +195,28 @@ void *MSEreallocShared( void* ptr, size_t N, size_t oldN )
 			theMSEShMemList.set_empty_key(NULL);
 			theMSEShMemList.set_deleted_key( (void*)-1 );
 			atexit(MSEfreeAllShared);
-			theMSEShMemListReady = TRUE;
+			theMSEShMemListReady = true;
 		}
 		theMSEShMemList[mem] = N;
 		if( ptr ){
-			memmove( mem, ptr, N );
-			if( munmap( ptr, oldN ) == 0 ){
-				mmapCount -= 1;
-			}
+			memmove( mem, ptr, oldN );
+			MSEfreeShared(ptr);
 		}
 	}
 	return( mem );
 }
 
+/*!
+	invokes MSEreallocShared with forceShared=false
+ */
+void *MSEreallocShared( void* ptr, size_t N, size_t oldN )
+{
+	return MSEreallocShared( ptr, N, oldN, false );
+}
+
+/*!
+	duplicate a string in shared memory (if the thread-specific flag is set)
+ */
 static char *mmstrdup( char *str )
 { char *ret = NULL;
 	if( (ret = (char*) MSEreallocShared(NULL, strlen(str), 0 )) ){
@@ -137,49 +225,28 @@ static char *mmstrdup( char *str )
 	return ret;
 }
 
-void RegisterHANDLE(HANDLE h)
-{
-	if( !theOpenHandleListReady ){
-		theOpenHandleList.set_empty_key(NULL);
-		theOpenHandleList.set_deleted_key( (HANDLE)-1 );
-		HANDLETypeName.set_empty_key(-1);
-		HANDLETypeName.set_deleted_key(-2);
-		HANDLETypeName[MSH_EMPTY] = "MSH_EMPTY";
-		HANDLETypeName[MSH_SEMAPHORE] = "MSH_SEMAPHORE";
-		HANDLETypeName[MSH_MUTEX] = "MSH_MUTEX";
-		HANDLETypeName[MSH_EVENT] = "MSH_EVENT";
-		HANDLETypeName[MSH_THREAD] = "MSH_THREAD";
-		HANDLETypeName[MSH_CLOSED] = "MSH_CLOSED";
-		theOpenHandleListReady = TRUE;
-	}
-	theOpenHandleList[h] = h->type;
-//	fprintf( stderr, "@@ Registering HANDLE 0x%p (type %d %s)\n", h, h->type, h->asString().c_str() );
-}
+static int pthread_timedjoin( pthread_timed_t *tt, struct timespec *timeout, void **status );
 
-void UnregisterHANDLE(HANDLE h)
-{
-	if( theOpenHandleListReady && theOpenHandleList.count(h) ){
-		theOpenHandleList.erase(h);
-//		fprintf( stderr, "@@ Unregistering HANDLE 0x%p (type %d %s)\n", h, h->type, h->asString().c_str() );
-	}
-}
+#if !defined(__MINGW32__) && !defined(__MINGW64__)
 
-#ifndef __MINGW32__
 /*!
- Emulates the Microsoft function of the same name:
- @n
- Wait for an event to occur on hHandle, for a maximum of dwMilliseconds
- @n
- semaphore: wait to lock the semaphore
- @n
- mutex: wait to lock the mutex
- @n
- Returns WAIT_OBJECT_0 on success, WAIT_TIMEOUT on a timeout and WAIT_ABANDONED on error.
+	 Emulates the Microsoft function of the same name:
+	 @n
+	 Wait for an event to occur on hHandle, for a maximum of dwMilliseconds
+	 @n
+	 semaphore: wait to lock the semaphore
+	 @n
+	 mutex: wait to lock the mutex
+	 @n
+	 event: wait for the event to be signalled
+	 @n
+	 thread: wait for the thread to terminate
+	 Returns WAIT_OBJECT_0 on success, WAIT_TIMEOUT on a timeout and WAIT_ABANDONED or WAIT_FAILED on error.
  */
 DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 {
 	if( !hHandle ){
-		return WAIT_ABANDONED;
+		return WAIT_FAILED;
 	}
 
 	if( dwMilliseconds != (DWORD) -1 ){
@@ -187,15 +254,16 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 #ifdef __APPLE__
 	  struct sigaction h, oh;
 	  struct itimerval rtt, ortt;
-		if( hHandle->type != MSH_EVENT ){
+		if( hHandle->type != MSH_EVENT && hHandle->type != MSH_THREAD ){
 			h.__sigaction_u.__sa_handler = cseUnsleep;
+			sigemptyset(&h.sa_mask);
 			rtt.it_value.tv_sec= (unsigned long) (dwMilliseconds/1000);
 			rtt.it_value.tv_usec= (unsigned long) ( (dwMilliseconds- rtt.it_value.tv_sec*1000)* 1000 );
 			rtt.it_interval.tv_sec= 0;
 			rtt.it_interval.tv_usec= 0;
 			if( sigaction( SIGALRM, &h, &oh ) ){
 //				fprintf( stderr, "Error calling sigaction: %s\n", strerror(errno) );
-				return WAIT_ABANDONED;
+				return WAIT_FAILED;
 			}
 			setitimer( ITIMER_REAL, &rtt, &ortt );
 		}
@@ -211,15 +279,15 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 			}
 		}
 #else
-	  	clock_gettime( CLOCK_REALTIME, &timeout );
-	  	{ time_t sec = (time_t) (dwMilliseconds/1000);
+		clock_gettime( CLOCK_REALTIME, &timeout );
+		{ time_t sec = (time_t) (dwMilliseconds/1000);
 			timeout.tv_sec += sec;
 			timeout.tv_nsec += (long) ( (dwMilliseconds- sec*1000)* 1000000 );
 			while( timeout.tv_nsec > 999999999 ){
 				timeout.tv_sec += 1;
 				timeout.tv_nsec -= 1000000000;
 			}
-	  	}
+		}
 #endif
 		switch( hHandle->type ){
 			case MSH_SEMAPHORE:
@@ -227,47 +295,45 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 				if( sem_wait(hHandle->d.s.sem) ){
 //					fprintf( stderr, "sem_wait error %s\n", strerror(errno) );
 					setitimer( ITIMER_REAL, &ortt, &rtt );
-					return (errno == EINTR)? WAIT_TIMEOUT : WAIT_ABANDONED;
+					return (errno == EINTR)? WAIT_TIMEOUT : WAIT_FAILED;
 				}
 				else{
 					setitimer( ITIMER_REAL, &ortt, &rtt );
 					hHandle->d.s.owner = pthread_self();
 					if( hHandle->d.s.counter->curCount > 0 ){
 						hHandle->d.s.counter->curCount -= 1;
-#ifdef linux
-						{ int cval;
-							if( sem_getvalue( hHandle->d.s.sem, &cval ) != -1 ){
-								if( cval != hHandle->d.s.counter->curCount ){
-									fprintf( stderr, "WaitForSingleObject(\"%s\"): value mismatch, %ld != %d\n",
-										   hHandle->d.s.name, hHandle->d.s.counter->curCount, cval
-									);
-								}
+#	ifdef DEBUG
+					{ int cval;
+						if( sem_getvalue( hHandle->d.s.sem, &cval ) != -1 ){
+							if( cval != hHandle->d.s.counter->curCount ){
+								fprintf( stderr, "@@ WaitForSingleObject(\"%s\"): value mismatch, %ld != %d\n",
+								         hHandle->d.s.name, hHandle->d.s.counter->curCount, cval );
 							}
 						}
-#endif
+					}
+#	endif
 					}
 					return WAIT_OBJECT_0;
 				}
-#else
+#else // !__APPLE__
 				if( sem_timedwait(hHandle->d.s.sem, &timeout) ){
 //					fprintf( stderr, "sem_timedwait error %s\n", strerror(errno) );
-					return (errno == ETIMEDOUT)? WAIT_TIMEOUT : WAIT_ABANDONED;
+					return (errno == ETIMEDOUT)? WAIT_TIMEOUT : WAIT_FAILED;
 				}
 				else{
 					hHandle->d.s.owner = pthread_self();
 					if( hHandle->d.s.counter->curCount > 0 ){
 						hHandle->d.s.counter->curCount -= 1;
-#ifdef linux
+#	if defined(linux) && defined(DEBUG)
 						{ int cval;
 							if( sem_getvalue( hHandle->d.s.sem, &cval ) != -1 ){
 								if( cval != hHandle->d.s.counter->curCount ){
 									fprintf( stderr, "WaitForSingleObject(\"%s\"): value mismatch, %ld != %d\n",
-										   hHandle->d.s.name, hHandle->d.s.counter->curCount, cval
-									);
+										    hHandle->d.s.name, hHandle->d.s.counter->curCount, cval );
 								}
 							}
 						}
-#endif
+#	endif
 					}
 					return WAIT_OBJECT_0;
 				}
@@ -278,7 +344,17 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 				if( pthread_mutex_lock( hHandle->d.m.mutex ) ){
 //					fprintf( stderr, "pthread_mutex_lock error %s\n", strerror(errno) );
 					setitimer( ITIMER_REAL, &ortt, &rtt );
-					return (errno == EINTR)? WAIT_TIMEOUT : WAIT_ABANDONED;
+					switch( errno ){
+						case EINTR:
+							return WAIT_TIMEOUT;
+							break;
+						case EDEADLK:
+							return WAIT_ABANDONED;
+							break;
+						default:
+							return WAIT_FAILED;
+							break;
+					}
 				}
 				else{
 					setitimer( ITIMER_REAL, &ortt, &rtt );
@@ -288,7 +364,17 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 #else
 				if( pthread_mutex_timedlock( hHandle->d.m.mutex, &timeout ) ){
 //					fprintf( stderr, "pthread_mutex_timedlock error %s\n", strerror(errno) );
-					return (errno == ETIMEDOUT)? WAIT_TIMEOUT : WAIT_ABANDONED;
+					switch( errno ){
+						case ETIMEDOUT:
+							return WAIT_TIMEOUT;
+							break;
+						case EDEADLK:
+							return WAIT_ABANDONED;
+							break;
+						default:
+							return WAIT_FAILED;
+							break;
+					}
 				}
 				else{
 					hHandle->d.m.owner = pthread_self();
@@ -296,7 +382,7 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 				}
 #endif
 				break;
-			case MSH_EVENT:{
+			case MSH_EVENT: {
 			  int err;
 				if( hHandle->d.e.isSignalled ){
 					if( !hHandle->d.e.isManual ){
@@ -310,7 +396,17 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 					if( (err = pthread_cond_timedwait( hHandle->d.e.cond, hHandle->d.e.mutex, &timeout )) ){
 						pthread_mutex_unlock( hHandle->d.e.mutex );
 						hHandle->d.e.waiter = 0;
-						return (err == ETIMEDOUT || errno == ETIMEDOUT)? WAIT_TIMEOUT : WAIT_ABANDONED;
+						switch( (errno = err) ){
+							case ETIMEDOUT:
+								return WAIT_TIMEOUT;
+								break;
+							case EDEADLK:
+								return WAIT_ABANDONED;
+								break;
+							default:
+								return WAIT_FAILED;
+								break;
+						}
 					}
 					else{
 						pthread_mutex_unlock( hHandle->d.e.mutex );
@@ -322,43 +418,82 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 					}
 				}
 				else{
-					return WAIT_ABANDONED;
+					switch( errno ){
+						case EINTR:
+							return WAIT_TIMEOUT;
+							break;
+						case EDEADLK:
+							return WAIT_ABANDONED;
+							break;
+						default:
+							return WAIT_FAILED;
+							break;
+					}
 				}
 				break;
 			}
-			case MSH_THREAD:
-				if( pthread_join( hHandle->d.t.theThread, &hHandle->d.t.returnValue ) ){
-//					fprintf( stderr, "pthread_join error %s\n", strerror(errno) );
-#ifdef __APPLE__
-					setitimer( ITIMER_REAL, &ortt, &rtt );
-#endif
-					return (errno == EINTR)? WAIT_TIMEOUT : WAIT_ABANDONED;
+			case MSH_THREAD: {
+			  int err;
+				if( (err = pthread_timedjoin( hHandle->d.t.theThread, &timeout, &(hHandle->d.t.theThread->status) )) ){
+//					fprintf( stderr, "pthread_timedjoin error %s\n", strerror(errno) );
+					switch( (errno = err) ){
+						case ETIMEDOUT:
+							return WAIT_TIMEOUT;
+							break;
+						case EDEADLK:
+							return WAIT_ABANDONED;
+							break;
+						default:
+							return WAIT_FAILED;
+							break;
+					}
 				}
 				else{
 					hHandle->d.t.pThread = NULL;
-#ifdef __APPLE__
-					setitimer( ITIMER_REAL, &ortt, &rtt );
-#endif
 					return WAIT_OBJECT_0;
 				}
 				break;
+			}
 		}
 	}
 	else switch( hHandle->type ){
 		case MSH_SEMAPHORE:
 			if( sem_wait(hHandle->d.s.sem) ){
 //				fprintf( stderr, "sem_wait error %s\n", strerror(errno) );
-				return (errno == EINTR)? WAIT_TIMEOUT : WAIT_ABANDONED;
+				return WAIT_FAILED;
 			}
 			else{
 				hHandle->d.s.owner = pthread_self();
+				if( hHandle->d.s.counter->curCount > 0 ){
+					hHandle->d.s.counter->curCount -= 1;
+#if defined(linux) && defined(DEBUG)
+					{ int cval;
+						if( sem_getvalue( hHandle->d.s.sem, &cval ) != -1 ){
+							if( cval != hHandle->d.s.counter->curCount ){
+								fprintf( stderr, "@@ WaitForSingleObject(\"%s\"): value mismatch, %ld != %d\n",
+								         hHandle->d.s.name, hHandle->d.s.counter->curCount, cval );
+							}
+						}
+					}
+#endif
+				}
 				return WAIT_OBJECT_0;
 			}
 			break;
 		case MSH_MUTEX:
 			if( pthread_mutex_lock( hHandle->d.m.mutex ) ){
 //				fprintf( stderr, "pthread_mutex_lock error %s\n", strerror(errno) );
-				return WAIT_ABANDONED;
+				switch( errno ){
+					case ETIMEDOUT:
+						return WAIT_TIMEOUT;
+						break;
+					case EDEADLK:
+						return WAIT_ABANDONED;
+						break;
+					default:
+						return WAIT_FAILED;
+						break;
+				}
 			}
 			else{
 				hHandle->d.m.owner = pthread_self();
@@ -378,7 +513,7 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 				if( pthread_cond_wait( hHandle->d.e.cond, hHandle->d.e.mutex ) ){
 					pthread_mutex_unlock( hHandle->d.e.mutex );
 					hHandle->d.e.waiter = 0;
-					return WAIT_ABANDONED;
+					return WAIT_FAILED;
 				}
 				else{
 					pthread_mutex_unlock( hHandle->d.e.mutex );
@@ -390,12 +525,12 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 				}
 			}
 			else{
-				return WAIT_ABANDONED;
+				return WAIT_FAILED;
 			}
 			break;
 		case MSH_THREAD:
-			if( pthread_join( hHandle->d.t.theThread, &hHandle->d.t.returnValue ) ){
-				return WAIT_ABANDONED;
+			if( pthread_join( hHandle->d.t.theThread->thread, &hHandle->d.t.theThread->status ) ){
+				return WAIT_FAILED;
 			}
 			else{
 				hHandle->d.t.pThread = NULL;
@@ -403,7 +538,7 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 			}
 			break;
 	}
-	return WAIT_ABANDONED;
+	return WAIT_FAILED;
 }
 
 #ifdef linux
@@ -413,9 +548,9 @@ DWORD WaitForSingleObject( HANDLE hHandle, DWORD dwMilliseconds )
 #include <vector>
 typedef std::vector<HANDLE> SemaLists;
 static SemaLists theSemaList;
-static BOOL theSemaListReady = FALSE;
+static BOOL theSemaListReady = false;
 
-void FreeAllSemaHandles()
+static void FreeAllSemaHandles()
 { long i;
   HANDLE h;
 	while( !theSemaList.empty() ){
@@ -441,22 +576,27 @@ void FreeAllSemaHandles()
 	}
 }
 
-void AddSemaListEntry(HANDLE h)
+static void AddSemaListEntry(HANDLE h)
 {
 	if( !theSemaListReady ){
 //		theSemaList.set_empty_key(NULL);
 //		theSemaList.set_deleted_key( SEM_FAILED );
 		atexit(FreeAllSemaHandles);
-		theSemaListReady = TRUE;
+		theSemaListReady = true;
 	}
 	if( h->type == MSH_SEMAPHORE ){
 		theSemaList.push_back(h);
 	}
 }
 
-void RemoveSemaListEntry(sem_t *sem)
+static void RemoveSemaListEntry(sem_t *sem)
 { unsigned int i, N = theSemaList.size();
 	for( i = 0 ; i < N ; i++ ){
+		if( theOpenHandleListReady && theOpenHandleList.count(theSemaList.at(i)) == 0 ){
+			fputs( "@@ internal inconsistency: theSemaList refers to an unregistered HANDLE\n", stderr );
+			theSemaList.erase( theSemaList.begin() + i );
+			return;
+		}
 		if( theSemaList.at(i)->d.s.sem == sem ){
 			theSemaList.erase( theSemaList.begin() + i );
 			return;
@@ -464,7 +604,7 @@ void RemoveSemaListEntry(sem_t *sem)
 	}
 }
 
-HANDLE FindSemaphoreHANDLE(sem_t *sem, char *name)
+static HANDLE FindSemaphoreHANDLE(sem_t *sem, char *name)
 { unsigned int i, N = theSemaList.size();
   HANDLE ret = NULL;
 	if( sem != SEM_FAILED || name ){
@@ -477,13 +617,24 @@ HANDLE FindSemaphoreHANDLE(sem_t *sem, char *name)
 			else if( name ){
 				ret = theSemaList.at(i);
 				if( strcmp( ret->d.s.name, name ) || ret->d.s.counter->refHANDLEp != &ret->d.s.refHANDLEs ){
-					// wrong name or not the source semaphore 
+					// wrong name or not the source semaphore
 					ret = NULL;
 				}
 			}
 		}
 	}
 	return ret;
+}
+
+MSHANDLE::MSHANDLE( sem_t *sema, MSHSEMAPHORECOUNTER *counter, char *lpName )
+{
+	d.s.name = lpName;
+	d.s.sem = sema;
+	d.s.owner = 0;
+	d.s.counter = counter;
+	*(counter->refHANDLEp) += 1;
+	type = MSH_SEMAPHORE;
+	Register();
 }
 
 /*!
@@ -493,10 +644,13 @@ HANDLE FindSemaphoreHANDLE(sem_t *sem, char *name)
 HANDLE OpenSemaphore( DWORD ign_dwDesiredAccess, BOOL ign_bInheritHandle, char *lpName )
 { HANDLE org, ret = NULL;
 	if( lpName ){
-	  sem_t *sema = sem_open( lpName, 0 );
+		sem_t *sema = sem_open( lpName, 0 );
 		if( sema != SEM_FAILED ){
-			if( (org = FindSemaphoreHANDLE(SEM_FAILED, lpName))
-			   && strcmp( org->d.s.name, lpName ) == 0
+			// find a matching entry, first by name then by semaphore
+			// (for platforms where the original descriptor is returned by sem_open)
+			if( ((org = FindSemaphoreHANDLE(sema, NULL))
+				|| (org = FindSemaphoreHANDLE(SEM_FAILED, lpName)) )
+				&& strcmp( org->d.s.name, lpName ) == 0
 			){
 				ret = new MSHANDLE( sema, org->d.s.counter, mmstrdup(lpName) );
 			}
@@ -504,25 +658,42 @@ HANDLE OpenSemaphore( DWORD ign_dwDesiredAccess, BOOL ign_bInheritHandle, char *
 	}
 	else{
 		fprintf( stderr, "OpenSemaphore(%lu,%d,NULL): call is meaningless without a semaphore name\n",
-			   ign_dwDesiredAccess, ign_bInheritHandle );
+		         ign_dwDesiredAccess, ign_bInheritHandle );
 		return NULL;
 	}
 	return ret;
 }
 
+
+MSHANDLE::MSHANDLE( void* ign_lpSemaphoreAttributes, long lInitialCount, long lMaximumCount, char *lpName )
+{ type = MSH_EMPTY;
+	if( lpName ){
+		if( lInitialCount >= 0 && lMaximumCount > 0
+		   && (d.s.sem = sem_open( lpName, O_CREAT, S_IRWXU, lInitialCount)) != SEM_FAILED
+		){
+			d.s.name = lpName;
+			d.s.owner = 0;
+			d.s.refHANDLEs = 0;
+			d.s.counter = new MSHSEMAPHORECOUNTER(lInitialCount, lMaximumCount, &d.s.refHANDLEs);
+			type = MSH_SEMAPHORE;
+			Register();
+		}
+	}
+}
 /*!
  Creates the named semaphore with the given initial count (value). The ign_ arguments are ignored in this emulation
  of the MS function of the same name.
  */
 HANDLE CreateSemaphore( void* ign_lpSemaphoreAttributes, long lInitialCount, long ign_lMaximumCount, char *lpName )
-{ HANDLE ret = NULL;
+{  HANDLE ret = NULL;
 	if( lpName ){
 		lpName = mmstrdup(lpName);
 	}
 	else{
 		if( (lpName = mmstrdup( (char*) "/CSEsemXXXXXX" )) ){
 #ifdef linux
-			{ char *(*fun)(char *) = (char* (*)(char*))dlsym(RTLD_DEFAULT, (char*) "mktemp");
+			{
+				char *(*fun)(char *) = (char* (*)(char*))dlsym(RTLD_DEFAULT, (char*) "mktemp");
 				lpName = (**fun)(lpName);
 			}
 //			{ int fd = mkstemp(lpName);
@@ -536,12 +707,12 @@ HANDLE CreateSemaphore( void* ign_lpSemaphoreAttributes, long lInitialCount, lon
 #endif
 		}
 	}
-	if( !(ret = OpenSemaphore( 0, FALSE, lpName )) ){
+	if( !(ret = OpenSemaphore( 0, false, lpName )) ){
 		if( !(ret = (HANDLE) new MSHANDLE( ign_lpSemaphoreAttributes, lInitialCount, ign_lMaximumCount, lpName ))
-		   || ret->type != MSH_SEMAPHORE
+			|| ret->type != MSH_SEMAPHORE
 		){
 			fprintf( stderr, "CreateSemaphore(%p,%ld,%ld,%s) failed (%s)\n",
-				ign_lpSemaphoreAttributes, lInitialCount, ign_lMaximumCount, lpName, strerror(errno) );
+			         ign_lpSemaphoreAttributes, lInitialCount, ign_lMaximumCount, lpName, strerror(errno) );
 			free(lpName);
 			delete ret;
 			ret = NULL;
@@ -550,71 +721,345 @@ HANDLE CreateSemaphore( void* ign_lpSemaphoreAttributes, long lInitialCount, lon
 	return ret;
 }
 
+MSHANDLE::MSHANDLE( void *ign_lpMutexAttributes, BOOL bInitialOwner, char *ign_lpName )
+{
+	if( !pthread_mutex_init( &d.m.mutbuf, NULL ) ){
+		d.m.mutex = &d.m.mutbuf;
+		type = MSH_MUTEX;
+		if( bInitialOwner ){
+			pthread_mutex_trylock(d.m.mutex);
+			d.m.owner = pthread_self();
+		}
+		else{
+			d.m.owner = 0;
+		}
+		Register();
+	}
+	else{
+		type = MSH_EMPTY;
+	}
+}
+
+/*!
+	Emulation of the Microsoft function with the same name. Creates a mutex handle, locking
+	it if bInitialOwner==true. The attributes and name arguments are ignored in this implementation.
+ */
 HANDLE CreateMutex( void *ign_lpMutexAttributes, BOOL bInitialOwner, char *ign_lpName )
 { HANDLE ret = NULL;
 	if( !(ret = (HANDLE) new MSHANDLE( ign_lpMutexAttributes, bInitialOwner, ign_lpName ))
-	   || ret->type != MSH_MUTEX
+		|| ret->type != MSH_MUTEX
 	){
 		fprintf( stderr, "CreateMutex(%p,%s,%s) failed with errno=%d (%s)\n",
-			   ign_lpMutexAttributes, (bInitialOwner)? "TRUE" : "FALSE", ign_lpName,
-			   errno, strerror(errno)
-		);
+		         ign_lpMutexAttributes, (bInitialOwner)? "TRUE" : "FALSE", ign_lpName,
+		         errno, strerror(errno)
+		       );
 		delete ret;
 		ret = NULL;
 	}
 	return ret;
 }
 
+MSHANDLE::MSHANDLE( void *ign_lpEventAttributes, BOOL bManualReset, BOOL bInitialState, char *ign_lpName )
+{
+	if( !pthread_cond_init( &d.e.condbuf, NULL ) ){
+		d.e.cond = &d.e.condbuf;
+	}
+	else{
+		d.e.cond = NULL;
+	}
+	if( d.e.cond && !pthread_mutex_init( &d.e.mutbuf, NULL ) ){
+		d.e.mutex = &d.e.mutbuf;
+		d.e.waiter = 0;
+	}
+	else{
+		d.e.mutex = NULL;
+		if( d.e.cond ){
+			pthread_cond_destroy(d.e.cond);
+			d.e.cond = NULL;
+		}
+	}
+	if( d.e.cond && d.e.mutex ){
+		type = MSH_EVENT;
+		d.e.isManual = bManualReset;
+		d.e.isSignalled = bInitialState;
+		Register();
+	}
+	else{
+		type = MSH_EMPTY;
+	}
+}
+
+/*!
+	Create an event handle like its Microsoft CreateEvent() counterpart. Only the ManualReset argument is
+	taken into account in this implementation; if false, WaitForSingleObject will reset the event as soon
+	as the 1st wait on it returns, otherwise the event has to be reset manually.
+	NB: I do not know if in the MS implementation auto-resetting events are guaranteed to release only a
+	single wait at a time, I don't think that guarantee exists in this implementation.
+ */
 HANDLE msCreateEvent( void *ign_lpEventAttributes, BOOL bManualReset, BOOL ign_bInitialState, char *ign_lpName )
 { HANDLE ret = NULL;
 	if( !(ret = (HANDLE) new MSHANDLE( ign_lpEventAttributes, bManualReset, ign_bInitialState, ign_lpName ))
 	   || ret->type != MSH_EVENT
 	){
 		fprintf( stderr, "CreateEvent(%p,%s,%s,%s) failed with errno=%d (%s)\n",
-			   ign_lpEventAttributes, (bManualReset)? "TRUE" : "FALSE",
-			   (ign_bInitialState)? "TRUE" : "FALSE", ign_lpName,
-			   errno, strerror(errno)
-		);
+		         ign_lpEventAttributes, (bManualReset)? "TRUE" : "FALSE",
+		         (ign_bInitialState)? "TRUE" : "FALSE", ign_lpName,
+		         errno, strerror(errno) );
 		delete ret;
 		ret = NULL;
 	}
 	return ret;
 }
 
-HANDLE CreateThread( void *ign_lpThreadAttributes, size_t ign_dwStackSize, void *(*lpStartAddress)(void *),
-				void *lpParameter, DWORD dwCreationFlags, DWORD *lpThreadId )
-{ HANDLE ret = NULL;
-	if( !(ret = (HANDLE) new MSHANDLE( ign_lpThreadAttributes, ign_dwStackSize, lpStartAddress,
-							    lpParameter, dwCreationFlags, lpThreadId ))
-		|| ret->type != MSH_THREAD
-	){
-		fprintf( stderr, "CreateThread(%p,%lu,0x%p,0x%p,%lu,0x%p) failed with errno=%d (%s)\n",
-			   ign_lpThreadAttributes, ign_dwStackSize, lpStartAddress,
-			   lpParameter, dwCreationFlags, lpThreadId,
-			   errno, strerror(errno)
-		);
-		delete ret;
-		ret = NULL;
+/*!
+	initialises a pthread_timed_t structure EXCEPT for the actual thread creation
+ */
+static int timedThreadInitialise(pthread_timed_t *tt, const pthread_attr_t *attr,
+                          LPTHREAD_START_ROUTINE start_routine, void *arg )
+{ int ret = 0;
+	if( tt ){
+		memset( tt, 0, sizeof(pthread_timed_t) );
+		ret = pthread_mutex_init( &tt->m, NULL );
+		if( ret ){
+			return ret;
+		}
+		tt->mutex = &tt->m;
+		ret = pthread_cond_init( &tt->exit_c, NULL );
+		if( ret ){
+			return ret;
+		}
+		tt->cond = &tt->exit_c;
+		tt->start_routine = start_routine;
+		tt->arg = arg;
+		tt->startTime = HRTime_Time();
 	}
+	else{
+		ret = 1;
+	}
+	return ret;
+}
+
+pthread_timed_t::pthread_timed_t(const pthread_attr_t *attr,
+			 LPTHREAD_START_ROUTINE start_routine, void *arg)
+{ extern int timedThreadInitialise(pthread_timed_t *, const pthread_attr_t *attr,
+					  LPTHREAD_START_ROUTINE start_routine, void *arg );
+  extern void cseAssertEx(bool, const char *, int, const char*);
+	cseAssertEx( timedThreadInitialise(this, attr, start_routine, arg ) == 0, __FILE__, __LINE__,
+			  "failure to initialise a new pthread_timed_t" );
+}
+
+/*!
+	The thread wrapper routine that takes care of 'unlocking' anyone trying to join
+	(with or without timeout)
+ */
+void pthread_timedexit(void *status)
+{ pthread_timed_t *tt;
+
+	if( (tt = (pthread_timed_t*) pthread_getspecific(timedThreadKey)) ){
+		pthread_mutex_lock(tt->mutex);
+		// tell any joiners that we're packing up:
+		tt->status = status;
+		tt->exiting = true;
+		pthread_cond_signal(tt->cond);
+		pthread_mutex_unlock(tt->mutex);
+//		fprintf( stderr, "@@ thread %p->%p (%p) calling pthread_exit() at lifeTime=%gs\n",
+//			   tt, pthread_self(), tt->thread, HRTime_Time() - tt->startTime );
+	}
+	pthread_exit(status);
+	cseAssertEx( false, __FILE__, __LINE__, "pthread_exit() returned - should never happen" );
+}
+
+/*!
+	release any resources contained in pthread_timed_t
+	(but not the structure itself, nor the thread handle)
+ */
+static int timedThreadRelease(pthread_timed_t *tt)
+{ int ret = 0;
+	if( tt ){
+		if( tt->mutex ){
+			pthread_mutex_destroy(tt->mutex);
+			tt->mutex = NULL;
+		}
+		if( tt->cond ){
+			pthread_cond_destroy(tt->cond);
+			tt->cond = NULL;
+		}
+//		fprintf( stderr, "@@ %p released thread %p->%p at lifeTime=%gs\n",
+//			   pthread_self(), tt, tt->thread, HRTime_Time() - tt->startTime );
+	}
+	else{
+		ret = 1;
+	}
+	return ret;
+}
+
+pthread_timed_t::~pthread_timed_t()
+{ extern int timedThreadRelease(pthread_timed_t *);
+  extern void cseAssertEx(bool, const char *, int, const char*);
+	cseAssertEx( timedThreadRelease(this) == 0, __FILE__, __LINE__,
+			  "failure destructing a pthread_timed_t" );
+}
+
+/*!
+	cleanup routine that handles thread cancellation (and incidentally also
+	pthread_exit() being called in the user's start_routine). It sets
+	tt->exiting as pthread_timedexit would.
+ */
+static void threadCancelHandler(void *dum)
+{ pthread_timed_t *tt;
+#if DEBUG > 1
+	fprintf( stderr, "@@ %p is being cancelled\n", pthread_self() );
+#endif
+	if( (tt = (pthread_timed_t*) pthread_getspecific(timedThreadKey)) ){
+		pthread_mutex_lock(tt->mutex);
+		// tell any joiners that we're packing up:
+		tt->exiting = true;
+		tt->status = PTHREAD_CANCELED;
+		pthread_cond_signal(tt->cond);
+		pthread_mutex_unlock(tt->mutex);
+	}
+}
+
+/*!
+	pthread_once callback init_routine to create the thread-specific key
+	associating the pthread_timed_t structure with the thread it belongs to
+ */
+static void timed_thread_init()
+{
+	pthread_key_create(&timedThreadKey, NULL);
+}
+
+/*!
+	upbeat to the thread wrapper routine. It retrieves the pthread_timed_t structure,
+	associates it with the current thread handle via specific storage and then calls the
+	actual wrapper routine
+ */
+static void *timedThreadStartRoutine( void *args )
+{ pthread_timed_t *tt = (pthread_timed_t*) args;
+  int old;
+  void *status;
+	pthread_once( &timedThreadCreated, timed_thread_init );
+	pthread_setspecific( timedThreadKey, (void*) tt );
+	pthread_setcancelstate( PTHREAD_CANCEL_ENABLE, &old );
+	pthread_setcanceltype( PTHREAD_CANCEL_DEFERRED, &old );
+	// now call the user's start_routine, with a safety net provided
+	// by threadCancelHandler
+	{
+		// pthread_cleanup_push & pop must be called in the same scope
+		// (the extra braces are redundant though)
+		pthread_cleanup_push(threadCancelHandler, NULL);
+		status = (tt->start_routine)(tt->arg);
+		pthread_cleanup_pop(0);
+	}
+	pthread_timedexit(status);
+	// never here:
+	return NULL;
+}
+
+/*!
+	timed version of pthread_join(). Upon the 1st invocation, the thread corresponding to the
+	argument is detached, and a conditional wait of the specified timeout duration is
+	started on the corresponding condition. This condition (and the exiting flag) is set in
+	the pthread_timedexit() wrapper function. If timeout is a NULL pointer, a regular pthread_join()
+	is done (instead of the pthread_detach, of course). Note that the status returned by
+	pthread_timedjoin() is the one set in the actual thread payload function, copied into
+	tt->status by pthread_timedexit().
+	NB: don't call call pthread_exit from the thread function - return, or call pthread_timedexit() !!
+	pthread_timedjoin() based on http://pubs.opengroup.org/onlinepubs/000095399/xrat/xsh_chap02.html#tag_03_02_08_21
+*/
+int pthread_timedjoin( pthread_timed_t *tt, struct timespec *timeout, void **status )
+{ int ret = 1;
+	// start by detaching the thread. The reference implementation does this in its version of
+	// pthread_timedcreate (timed_thread_create). We do it here because we invoke pthread_create separately;
+	// necessary because we do not know at creation time if the thread will be joined with timeout or not.
+//	if( !tt ){
+//	  // this doesn't make sense??
+//		pthread_once( &timedThreadCreated, timed_thread_init );
+//		tt = pthread_getspecific(timedThreadKey);
+//	}
+	if( tt ){
+		SetLastError(0);
+		if( timeout ){
+		  int perrno;
+			if( !tt->detached ){
+				if( (ret = pthread_detach(tt->thread)) ){
+					goto bail;
+				}
+				tt->detached = true;
+			}
+			if( (ret = pthread_mutex_lock(tt->mutex)) ){
+				goto bail;
+			}
+			// wait until the thread announces it's exiting (it may already have...)
+			// or until timeout occurs:
+			while( ret == 0 && !tt->exiting ){
+				ret = pthread_cond_timedwait( tt->cond, tt->mutex, timeout );
+				perrno = ret;
+			}
+			pthread_mutex_unlock(tt->mutex);
+			// we don't really care about any unlocking errors, but we do wish to know whether the
+			// wait timed out:
+			SetLastError(perrno);
+		}
+		else{
+		  void *dum;
+			ret = pthread_join( tt->thread, &dum );
+			if( ret == 0 ){
+				tt->exiting = true;
+			}
+		}
+		if( ret == 0 && tt->exiting ){
+			*status = tt->status;
+			tt->exited = true;
+		}
+	}
+bail:
 	return ret;
 }
 
 #if !defined(__APPLE__) && !defined(__MACH__)
 
+/*!
+	structure for passing startup information to a suspendable thread.
+ */
 struct TFunParams {
 	HANDLE mshThread;
 	void *(*start_routine)(void *);
 	void *arg;
-	TFunParams(HANDLE h, void *(*threadFun)(void*), void *args)
-	{
+	bool mustSuspend;
+	TFunParams( HANDLE h, void *(*threadFun)(void*), void *args, bool suspended ){
 		mshThread = h;
 		start_routine = threadFun;
 		arg = args;
+		mustSuspend = suspended;
 	}
 };
 
-static pthread_key_t suspendKey = 0;
-static BOOL suspendKeyCreated = false;
+static bool ThreadSuspender(HANDLE mshThread)
+{
+	if( mshThread && mshThread->type == MSH_THREAD
+	    && mshThread->d.t.threadLock && mshThread->d.t.threadLock->d.m.mutex
+	){
+		// when we receive this signal, the mutex ought to be lock by the thread
+		// trying to suspend us. If so, trying to lock the mutex will suspend us.
+#if DEBUG > 1
+		fprintf( stderr, "@@ %p suspending itself by locking the suspend mutex\n", mshThread );
+#endif
+		pthread_mutex_lock(mshThread->d.t.threadLock->d.m.mutex);
+		// got the lock ... meaning we were just resumed.
+		// now unlock it ASAP so that someone else can try to suspend us again.
+		pthread_mutex_unlock(mshThread->d.t.threadLock->d.m.mutex);
+#if DEBUG > 1
+		fprintf( stderr, "@@ %p suspending unlocked the suspend mutex\n", mshThread );
+#endif
+		return true;
+	}
+	else{
+		fprintf( stderr, "@@ suspend attempt on invalid thread HANDLE (%p%s)\n",
+		         mshThread, (mshThread)? mshThread->asString().c_str() : "" );
+		return false;
+	}
+}
 
 /*!
 	specific USR2 signal handler that will attempt to suspend the current thread by
@@ -628,27 +1073,26 @@ static void pthread_u2_handler(int sig)
 			case SIGUSR2:{
 			  HANDLE mshThread;
 				// get the mutex from a specific key
-				if( (mshThread = (HANDLE) pthread_getspecific(suspendKey)) && mshThread->type == MSH_THREAD
-				   && mshThread->d.t.threadLock && mshThread->d.t.threadLock->d.m.mutex
-				){
-					// when we receive this signal, the mutex ought to be lock by the thread
-					// trying to suspend us. If so, trying to lock the mutex will suspend us.
-					pthread_mutex_lock(mshThread->d.t.threadLock->d.m.mutex);
-					// got the lock ... meaning we were just resumed.
-					// now unlock it ASAP so that someone else can try to suspend us again.
-					pthread_mutex_unlock(mshThread->d.t.threadLock->d.m.mutex);
-				}
+				ThreadSuspender( (HANDLE) pthread_getspecific(suspendKey) );
 				break;
 			}
 		}
 	}
 }
 
+/*!
+	entry point for a suspendable thread
+ */
 static void *ThreadFunStart(void *params)
 { struct TFunParams *tp = (struct TFunParams*) params;
   void *(*threadFun)(void*) = tp->start_routine;
   void *args = tp->arg;
 	pthread_setspecific( suspendKey, tp->mshThread );
+	if( tp->mustSuspend ){
+		// now that everything has been set up properly, we can (attempt to)
+		// suspend ourselves:
+		ThreadSuspender(tp->mshThread);
+	}
 	delete tp;
 	return (*threadFun)(args);
 }
@@ -663,33 +1107,154 @@ static void *ThreadFunStart(void *params)
 	The thread function is launched through a proxy that stores the thread HANDLE in the suspendKey.
  */
 int pthread_create_suspendable( HANDLE mshThread, const pthread_attr_t *attr,
-						  void *(*start_routine)(void *), void *arg, bool suspended )
+                                void *(*start_routine)(void *), void *arg, bool suspended )
 { int ret;
 	if( !suspendKeyCreated ){
-		cseAssertEx( pthread_key_create( &suspendKey, NULL ), __FILE__, __LINE__,
-				  "failure to create the thread suspend key in pthread_create_suspendable()" );
+		cseAssertEx( pthread_key_create( &suspendKey, NULL )==0, __FILE__, __LINE__,
+		             "failure to create the thread suspend key in pthread_create_suspendable()" );
 		suspendKeyCreated = true;
 	}
 
-	struct TFunParams *params = new TFunParams( mshThread, start_routine, arg );
+	struct TFunParams *params = new TFunParams( mshThread, start_routine, arg, suspended );
 
-	mshThread->d.t.pThread = &mshThread->d.t.theThread;
+	mshThread->d.t.pThread = &mshThread->d.t.theThread->thread;
 	mshThread->type = MSH_THREAD;
 	// it doesn't seem to work to install the signal handler from the background thread. Since
 	// it's process-wide anyway we can just as well do it here.
 	signal( SIGUSR2, pthread_u2_handler );
-	ret = pthread_create( &mshThread->d.t.theThread, attr, ThreadFunStart, params );
-	if( ret == 0 && suspended ){
-		SuspendThread(mshThread);
+	if( suspended ){
+		// lock the suspend mutex so that ThreadFunStart() will suspend its thread when
+		// it calls ThreadSuspender()
+			if( !pthread_mutex_lock( mshThread->d.t.threadLock->d.m.mutex ) ){
+				mshThread->d.t.lockOwner = GetCurrentThread();
+				mshThread->d.t.suspendCount = 1;
+			}
 	}
+	ret = pthread_create( &mshThread->d.t.theThread->thread, attr, ThreadFunStart, params );
 	return ret;
 }
 
 #endif // !__APPLE__ && !__MACH__
 
+MSHANDLE::MSHANDLE( void *ign_lpThreadAttributes, size_t ign_dwStackSize, LPTHREAD_START_ROUTINE lpStartAddress,
+	    void *lpParameter, DWORD dwCreationFlags, DWORD *lpThreadId )
+{ void* (*start_routine)(void*) = (void* (*)(void*)) lpStartAddress;
+  extern void *timedThreadStartRoutine( void *args );
+	if( !(d.t.theThread = new pthread_timed_t(NULL, start_routine, lpParameter)) ){
+		type = MSH_EMPTY;
+		return;
+	}
+#if defined(__APPLE__) || defined(__MACH__)
+	if( (dwCreationFlags & CREATE_SUSPENDED) ){
+		if( !pthread_create_suspended_np( &d.t.theThread->thread, NULL, timedThreadStartRoutine, d.t.theThread ) ){
+			d.t.pThread = &d.t.theThread->thread;
+			d.t.machThread = pthread_mach_thread_np(d.t.theThread->thread);
+			pthread_getname_np( d.t.theThread->thread, d.t.name, sizeof(d.t.name) );
+			d.t.name[ sizeof(d.t.name)-1 ] = '\0';
+			d.t.suspendCount = 1;
+		}
+	}
+	else{
+		if( !pthread_create( &d.t.theThread->thread, NULL, timedThreadStartRoutine, d.t.theThread ) ){
+			d.t.pThread = &d.t.theThread->thread;
+			d.t.machThread = pthread_mach_thread_np(d.t.theThread->thread);
+			pthread_getname_np( d.t.theThread->thread, d.t.name, sizeof(d.t.name) );
+			d.t.name[ sizeof(d.t.name)-1 ] = '\0';
+			d.t.suspendCount = 0;
+		}
+	}
+#else
+  extern int pthread_create_suspendable( HANDLE mshThread, const pthread_attr_t *attr,
+				  void *(*start_routine)(void *), void *arg, bool suspended );
+	d.t.threadLock = new MSHANDLE(NULL, false, NULL);
+	d.t.lockOwner = NULL;
+	if( d.t.threadLock
+	   && !pthread_create_suspendable( this, NULL, timedThreadStartRoutine, d.t.theThread, (dwCreationFlags & CREATE_SUSPENDED) )
+	){
+		d.t.pThread = &d.t.theThread->thread;
+	}
+	else{
+		if( d.t.threadLock ){
+			delete d.t.threadLock;
+			d.t.threadLock = NULL;
+		}
+	}
+#endif // !__APPLE__ && !__MACH__
+	if( d.t.pThread ){
+		type = MSH_THREAD;
+		d.t.threadId = NextThreadID();
+		if( lpThreadId ){
+			*lpThreadId = d.t.threadId;
+		}
+		d.t.theThread->status = (THREAD_RETURN) STILL_ACTIVE;
+		Register();
+	}
+	else{
+		type = MSH_EMPTY;
+	}
+}
+
+/*!
+	Initialise a HANDLE from an existing pthread identifier
+ */
+MSHANDLE::MSHANDLE(pthread_t fromThread)
+{
+	if( !(d.t.theThread = new pthread_timed_t(NULL, (LPTHREAD_START_ROUTINE)abort, NULL)) ){
+		type = MSH_EMPTY;
+		return;
+	}
+	type = MSH_THREAD;
+	d.t.pThread = &d.t.theThread->thread;
+	d.t.theThread->thread = fromThread;
+	d.t.theThread->status = (THREAD_RETURN) STILL_ACTIVE;
+#if defined(__APPLE__) || defined(__MACH__)
+	d.t.machThread = pthread_mach_thread_np(d.t.theThread->thread);
+	pthread_getname_np( d.t.theThread->thread, d.t.name, sizeof(d.t.name) );
+	d.t.name[ sizeof(d.t.name)-1 ] = '\0';
+	if( fromThread == pthread_self() && pthread_main_np() ){
+		d.t.threadId = 0;
+	}
+	else
+#elif defined(linux)
+	if( fromThread == pthread_self() && syscall(SYS_gettid) == getpid() ){
+		d.t.threadId = 0;
+	}
+	else
+#endif
+	{
+		d.t.threadId = NextThreadID();
+	}
+	Register();
+}
+
+/*!
+	Emulation of the Microsoft CreateThread() function. This implementation uses the start address
+	(thread "payload"/worker function), the CreationFlags (only CREATE_SUSPENDED) and will return
+	a thread ID in the ThreadId return variable if non-null.
+ */
+HANDLE CreateThread( void *ign_lpThreadAttributes, size_t ign_dwStackSize, LPTHREAD_START_ROUTINE lpStartAddress,
+                     void *lpParameter, DWORD dwCreationFlags, DWORD *lpThreadId )
+{ HANDLE ret = NULL;
+	if( !(ret = (HANDLE) new MSHANDLE( ign_lpThreadAttributes, ign_dwStackSize, lpStartAddress,
+	                                   lpParameter, dwCreationFlags, lpThreadId ))
+	    || ret->type != MSH_THREAD
+	){
+		fprintf( stderr, "CreateThread(%p,%lu,0x%p,0x%p,%lu,0x%p) failed with errno=%d (%s)\n",
+		         ign_lpThreadAttributes, ign_dwStackSize, lpStartAddress,
+		         lpParameter, dwCreationFlags, lpThreadId,
+		         errno, strerror(errno) );
+		delete ret;
+		ret = NULL;
+	}
+	return ret;
+}
+
+/*!
+	Resume a thread after suspension.
+ */
 DWORD ResumeThread( HANDLE hThread )
 { DWORD prevCount = -1;
-	if( hThread && hThread->type == MSH_THREAD && hThread->d.t.theThread != pthread_self() ){
+	if( hThread && hThread->type == MSH_THREAD && hThread->d.t.theThread->thread != pthread_self() ){
 		prevCount = hThread->d.t.suspendCount;
 		if( hThread->d.t.suspendCount ){
 			if( (--hThread->d.t.suspendCount) == 0 ){
@@ -732,7 +1297,7 @@ DWORD SuspendThread( HANDLE hThread )
 #else
 			if( !pthread_mutex_lock( hThread->d.t.threadLock->d.m.mutex ) ){
 				hThread->d.t.lockOwner = current;
-				if( !pthread_kill( hThread->d.t.theThread, SIGUSR2 ) ){
+				if( !pthread_kill( hThread->d.t.theThread->thread, SIGUSR2 ) ){
 					hThread->d.t.suspendCount = 1;
 				}
 			}
@@ -745,12 +1310,22 @@ DWORD SuspendThread( HANDLE hThread )
 	return prevCount;
 }
 
+static void currentThreadKeyCreate()
+{
+	cseAssertEx( pthread_key_create( &currentThreadKey, (void (*)(void*))ForceCloseHandle ) == 0, __FILE__, __LINE__,
+	             "failure to create the currentThreadKey for GetCurrentThread()" );
+}
+
+/*!
+	Return a HANDLE to the current thread.
+ */
 HANDLE GetCurrentThread()
 { HANDLE currentThread = NULL;
-	if( !currentThreadKey ){
-		cseAssertEx( pthread_key_create( &currentThreadKey, (void (*)(void*))ForceCloseHandle ), __FILE__, __LINE__,
-				  "failure to create the currentThreadKey in GetCurrentThread()" );
-	}
+	pthread_once( &currentThreadKeyCreated, currentThreadKeyCreate );
+//	if( !currentThreadKey ){
+//		cseAssertEx( pthread_key_create( &currentThreadKey, (void (*)(void*))ForceCloseHandle ) == 0, __FILE__, __LINE__,
+//				  "failure to create the currentThreadKey in GetCurrentThread()" );
+//	}
 	if( !(currentThread = (HANDLE) pthread_getspecific(currentThreadKey)) || currentThread->type != MSH_THREAD ){
 		if( currentThread ){
 			delete currentThread;
@@ -800,10 +1375,11 @@ bool SetThreadPriority( HANDLE hThread, int nPriority )
 { struct sched_param param;
   int policy;
 	if( hThread && hThread->type == MSH_THREAD
-	   && !pthread_getschedparam( hThread->d.t.theThread, &policy, &param )
+	    && !pthread_getschedparam( hThread->d.t.theThread->thread, &policy, &param )
 	){
+		SetLastError(0);
 		param.sched_priority = SchedPriorityFromThreadPriority( policy, nPriority );
-		return (bool) pthread_setschedparam( hThread->d.t.theThread, policy, &param );
+		return (bool) pthread_setschedparam( hThread->d.t.theThread->thread, policy, &param );
 	}
 	return true;
 }
@@ -848,14 +1424,14 @@ int GetThreadPriority(HANDLE hThread)
 	if( hThread && hThread->type == MSH_THREAD ){
 	  int policy, Prior;
 	  struct sched_param param;
-		if( !pthread_getschedparam( hThread->d.t.theThread, &policy, &param ) ){
-//				fprintf( stderr, "pmin=%d pmax=%d\n", sched_get_priority_min(policy), sched_get_priority_max(policy) );
+		if( !pthread_getschedparam( hThread->d.t.theThread->thread, &policy, &param ) ){
+//			fprintf( stderr, "pmin=%d pmax=%d\n", sched_get_priority_min(policy), sched_get_priority_max(policy) );
 			ret = ThreadPriorityFromSchedPriority( policy, param.sched_priority );
 			// check if the thread priority is different from the current sched_priority
 			// and correct
 			if( (Prior = SchedPriorityFromThreadPriority(policy, ret)) != param.sched_priority ){
 				param.sched_priority = Prior;
-				pthread_setschedparam( hThread->d.t.theThread, policy, &param );
+				pthread_setschedparam( hThread->d.t.theThread->thread, policy, &param );
 			}
 		}
 	}
@@ -863,12 +1439,154 @@ int GetThreadPriority(HANDLE hThread)
 }
 
 /*!
- Emulates the MS function of the same name:
- Closes the specified HANDLE, after closing the semaphore or mutex.
+	registers the given HANDLE in the registry
  */
-bool CloseHandle( HANDLE hObject, bool joinThread=true )
+static void RegisterHANDLE(HANDLE h)
+{
+	if( !theOpenHandleListReady ){
+		theOpenHandleList.set_empty_key(NULL);
+		theOpenHandleList.set_deleted_key( (HANDLE)-1 );
+		HANDLETypeName.set_empty_key(-1);
+		HANDLETypeName.set_deleted_key(-2);
+		HANDLETypeName[MSH_EMPTY] = "MSH_EMPTY";
+		HANDLETypeName[MSH_SEMAPHORE] = "MSH_SEMAPHORE";
+		HANDLETypeName[MSH_MUTEX] = "MSH_MUTEX";
+		HANDLETypeName[MSH_EVENT] = "MSH_EVENT";
+		HANDLETypeName[MSH_THREAD] = "MSH_THREAD";
+		HANDLETypeName[MSH_CLOSED] = "MSH_CLOSED";
+		theOpenHandleListReady = true;
+	}
+	switch( h->type ){
+		case MSH_SEMAPHORE:
+			if( h->d.s.counter->refHANDLEp != &h->d.s.refHANDLEs ){
+			  HANDLE source = FindSemaphoreHANDLE( h->d.s.sem, h->d.s.name );
+				// not a source, check if we have d.s.sem == source->d.s.sem
+				if( source && source->d.s.sem != h->d.s.sem ){
+					fprintf( stderr, "@@ registering copycat semaphore with unique d.s.sem\n" );
+					AddSemaListEntry(h);
+				}
+			}
+			else{
+				AddSemaListEntry(h);
+			}
+			break;
+		default:
+			break;
+	}
+	theOpenHandleList[h] = h->type;
+//	fprintf( stderr, "@@ Registering HANDLE 0x%p (type %d %s)\n", h, h->type, h->asString().c_str() );
+}
+
+/*!
+	Unregisters the given HANDLE from the registry
+ */
+static void UnregisterHANDLE(HANDLE h)
+{
+	switch( h->type ){
+		case MSH_SEMAPHORE:
+			RemoveSemaListEntry(h->d.s.sem);
+			break;
+		default:
+			break;
+	}
+	if( theOpenHandleListReady && theOpenHandleList.count(h) ){
+		theOpenHandleList.erase(h);
+//		fprintf( stderr, "@@ Unregistering HANDLE 0x%p (type %d %s)\n", h, h->type, h->asString().c_str() );
+	}
+}
+
+void MSHANDLE::Register()
+{ void RegisterHANDLE(HANDLE h);
+	RegisterHANDLE(this);
+}
+void MSHANDLE::Unregister()
+{ void UnregisterHANDLE(HANDLE h);
+	UnregisterHANDLE(this);
+}
+
+/*!
+	HANDLE destructor. It will do any unlocking/releasing/terminating required and release
+	all associated memory (i.e. it does most of the work for CloseHandle()).
+ */
+MSHANDLE::~MSHANDLE()
+{ bool ret = false;
+	switch( type ){
+		case MSH_SEMAPHORE:{
+			if( d.s.sem ){
+				if( d.s.counter->refHANDLEp != &d.s.refHANDLEs ){
+					// just decrement the counter of the semaphore HANDLE we're referring to:
+					*(d.s.counter->refHANDLEp) -= 1;
+					if( d.s.counter->curCount == 0 ){
+						sem_post(d.s.sem);
+						d.s.counter->curCount += 1;
+					}
+					ret == (sem_close(d.s.sem) == 0);
+				}
+				else if( d.s.refHANDLEs == 0 ){
+					if( d.s.counter->curCount == 0 ){
+						sem_post(d.s.sem);
+						d.s.counter->curCount += 1;
+					}
+					ret = (sem_close(d.s.sem) == 0);
+					if( d.s.name ){
+						sem_unlink(d.s.name);
+					}
+					delete d.s.counter;
+					d.s.counter = NULL;
+				}
+				if( d.s.name ){
+					mmfree(d.s.name);
+					d.s.name = NULL;
+				}
+				ret = true;
+			}
+			break;
+		}
+		case MSH_MUTEX:
+			if( d.m.mutex ){
+				ret = (pthread_mutex_destroy(d.m.mutex) == 0);
+			}
+			break;
+		case MSH_EVENT:
+			if( d.e.cond ){
+				ret = (pthread_cond_destroy(d.e.cond) == 0);
+			}
+			if( ret && d.e.mutex ){
+				ret = (pthread_mutex_destroy(d.e.mutex) == 0 );
+			}
+			break;
+		case MSH_THREAD:
+			if( d.t.pThread ){
+				ret = (pthread_join(d.t.theThread->thread, &d.t.theThread->status) == 0);
+			}
+			else{
+				// 20120625: thread already exited, we can set ret=TRUE!
+				ret = true;
+			}
+#if !defined(__APPLE__) && !defined(__MACH__)
+			if( d.t.threadLock ){
+				delete d.t.threadLock;
+				d.t.threadLock = NULL;
+			}
+#endif
+			if( d.t.theThread && d.t.theThread->exited ){
+				delete d.t.theThread;
+			}
+			break;
+	}
+	if( ret ){
+		Unregister();
+		memset( this, 0, sizeof(MSHANDLE) );
+		type = MSH_CLOSED;
+	}
+}
+
+static bool CloseHandle( HANDLE hObject, bool joinThread=true )
 {
 	if( hObject && theOpenHandleListReady && theOpenHandleList.count(hObject) ){
+#ifdef DEBUG
+		fprintf( stderr, "CloseHandle(%p%s)\n", hObject, hObject->asString().c_str() );
+#endif
 		if( hObject->type == MSH_SEMAPHORE ){
 			if( hObject->d.s.counter->refHANDLEp != &hObject->d.s.refHANDLEs || hObject->d.s.refHANDLEs == 0 ){
 				delete hObject;
@@ -883,17 +1601,243 @@ bool CloseHandle( HANDLE hObject, bool joinThread=true )
 		}
 		return true;
 	}
-	fprintf( stderr, "CloseHandle(0x%p) invalid HANDLE\n", hObject );
+	fprintf( stderr, "CloseHandle(0x%p) invalid HANDLE (%s)\n", hObject, (hObject)? hObject->asString().c_str() : "??" );
 	return false;
 }
 
+/*!
+	Emulates the MS function of the same name:
+	Closes the specified HANDLE, after closing the semaphore or mutex.
+ */
 bool CloseHandle( HANDLE hObject )
 {
 	return CloseHandle( hObject, true );
 }
 
-bool ForceCloseHandle( HANDLE hObject )
+static bool ForceCloseHandle( HANDLE hObject )
 {
 	return CloseHandle( hObject, false );
 }
-#endif // MINGW32
+#endif // __MINGWxx__
+
+/*!
+	HANDLE string representation (cf. Python's __repr__)
+ */
+std::string MSHANDLE::asString()
+{ std::ostringstream ret;
+	switch( type ){
+		case MSH_SEMAPHORE:{
+		  char *name = (d.s.name)? d.s.name : (char*) "<NULL>";
+			if( d.s.counter ){
+				ret << "<MSH_SEMAPHORE \"" << name << "\" curCnt=" << d.s.counter->curCount << " " << d.s.refHANDLEs << " references owner=" << d.s.owner << ">";
+			}
+			else{
+				ret << "<MSH_SEMAPHORE \"" << name << "\" curCnt=??" << " " << d.s.refHANDLEs << " references owner=" << d.s.owner << ">";
+			}
+			break;
+		}
+		case MSH_MUTEX:
+			ret << "<MSH_MUTEX owner=" << d.m.owner << ">";
+			break;
+		case MSH_EVENT:
+			ret << "<MSH_EVENT manual=" << d.e.isManual << " signalled=" << d.e.isSignalled << " waiter=" << d.e.waiter << ">";
+			break;
+		case MSH_THREAD:{
+		  std::ostringstream name;
+#if defined(__APPLE__) || defined(__MACH__)
+			if( strlen(d.t.name) ){
+				name << " \"" << d.t.name << "\" ";
+			}
+			else
+#endif
+			{
+				name << "";
+			}
+			if( d.t.pThread ){
+				ret << "<MSH_THREAD thread=" << d.t.theThread << name.str() << " Id=" << d.t.threadId << ">";
+			}
+			else{
+				ret << "<MSH_THREAD thread=" << d.t.theThread << name.str() << " Id=" << d.t.threadId << " returned " << d.t.theThread->status << ">";
+			}
+			break;
+		}
+		default:
+			ret << "<Unknown HANDLE>";
+			break;
+	}
+	return ret.str();
+}
+
+#pragma mark ---end non-MSWin code---
+#else // __windows__
+
+#include "CritSectEx/msemul4win.h"
+#include <sparsehash/dense_hash_map>
+#include <windows.h>
+#include <tchar.h>
+
+int mseShFD = -1;
+TCHAR MSESharedMemName[] = "Global\\MSEmulFileMappingObject";
+static size_t mmapCount = 0;
+static BOOL theMSEShMemListReady = false;
+
+//typedef struct MSEShMemEntries {
+//	HANDLE hmem;
+//	size_t size;
+//} MSEShMemEntries;
+
+typedef google::dense_hash_map<void*,HANDLE> MSEShMemLists;
+static MSEShMemLists theMSEShMemList;
+static DWORD sharedMemKey;
+static bool sharedMemKeyCreated = false;
+
+/*!
+	A THREAD SPECIFIC selector whether shared memory should be used. In other words,
+	if set by the parent process, childs (processes) will have access to memory allocated
+	by the parent, but not vice versa. If the parent also has to have access to memory allocated
+	by the child, the child has to call MSEmul_UseSharedMemory(true) as well.
+ */
+int MSEmul_UseSharedMemory(int useShared)
+{ int ret;
+	if( !sharedMemKeyCreated ){
+		sharedMemKey = TlsAlloc();
+		sharedMemKeyCreated = true;
+	}
+	ret = (int) TlsGetValue(sharedMemKey);
+	TlsSetValue( sharedMemKey, (LPVOID) useShared );
+	return ret;
+}
+
+/*!
+	query the thread-specific use-shared-memory flag
+ */
+int MSEmul_UseSharedMemory()
+{
+	if( !sharedMemKeyCreated ){
+		sharedMemKey = TlsAlloc();
+		sharedMemKeyCreated = true;
+	}
+	return (int) TlsGetValue(sharedMemKey);
+}
+
+/*!
+	query the thread-specific use-shared-memory flag
+ */
+int MSEmul_UsesSharedMemory()
+{
+	return MSEmul_UseSharedMemory();
+}
+
+/*!
+	Free memory. If the pointer is not a known shared-memory allocation by MSEreallocShared,
+	the system's default deallocator is used.
+ */
+void MSEfreeShared(void *ptr)
+{ static short calls = 0;
+	if( ptr ){
+		if( theMSEShMemListReady && theMSEShMemList.count(ptr) ){
+		  HANDLE hmem = theMSEShMemList[ptr];
+			UnmapViewOfFile(ptr);
+			if( CloseHandle(hmem) ){
+				theMSEShMemList[ptr] = NULL;
+				theMSEShMemList.erase(ptr);
+				if( ++calls >= 32 ){
+					theMSEShMemList.resize(0);
+					calls = 0;
+				}
+				mmapCount -= 1;
+			}
+		} 
+		else{
+			free(ptr);
+		}
+		ptr = NULL;
+	}
+}
+
+/*!
+	atexit handler that frees all remaining allocated shared memory and performs
+	some associated house-keeping.
+ */
+void MSEfreeAllShared()
+{
+	while( theMSEShMemList.size() > 0 ){
+	  MSEShMemLists::iterator i = theMSEShMemList.begin();
+	  std::pair<void*,HANDLE> elem = *i;
+//		fprintf( stderr, "MSEfreeShared(0x%p) of %lu remaining elements\n", elem.first, theMSEShMemList.size() );
+		MSEfreeShared(elem.first);
+	}
+}
+
+/*!
+	Allocate or reallocate memory of size <oldN> to size <N>. If the thread-specific flag is
+	set or forceShared==true, the memory is allocated in anonymous shared memory, otherwise
+	the system's default (re)allocator is used.
+ */
+void *MSEreallocShared( void* ptr, size_t N, size_t oldN, int forceShared )
+{ void *mem = NULL;
+  HANDLE hmem;
+	if( !forceShared && !MSEmul_UseSharedMemory() ){
+		return (ptr)? realloc(ptr,N) : calloc(N,1);
+	}
+	// split the size specified over 2 32bit values, if it is larger than UINT_MAX;
+	// (N >> 32) is undefined in 32bit operation!
+	DWORD size_lo = (N & 0xffffffff), size_hi = (N > size_lo)? (N >> 32) : 0;
+	// 20120713: Should send NULL for the name, or else allocated memory buffers might overlap?!
+	// I guess lpName==NULL is what gives anonymous memory...
+	hmem = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE,
+						size_hi, size_lo, NULL );
+	if( hmem ){
+		mem = (void*) MapViewOfFile( hmem, FILE_MAP_ALL_ACCESS, 0, 0, N );
+	}
+	if( mem ){
+//	  MSEShMemEntries entry;
+		memset( mem, 0, N );
+		mmapCount += 1;
+		if( !theMSEShMemListReady ){
+//			entry.hmem = NULL, entry.size = 0;
+			theMSEShMemList.set_empty_key(NULL);
+//			entry.hmem = (HANDLE)-1, entry.size = -1;
+			theMSEShMemList.set_deleted_key( (HANDLE)-1 );
+			atexit(MSEfreeAllShared);
+			theMSEShMemListReady = true;
+		}
+//		entry.hmem = hmem, entry.size = N;
+		theMSEShMemList[mem] = hmem;
+#ifdef DEBUG
+//		fprintf( stderr, "MSEreallocShared(%p,%lu)=%p, file mapping handle=%p\n", ptr, N, mem, hmem );
+#endif
+		if( ptr ){
+			memmove( mem, ptr, oldN );
+			MSEfreeShared(ptr);
+		}
+	}
+	else{
+		if( hmem ){
+			CloseHandle(hmem);
+		}
+	}
+	return( mem );
+}
+
+/*!
+	invokes MSEreallocShared with forceShared=false
+ */
+void *MSEreallocShared( void* ptr, size_t N, size_t oldN )
+{
+	return MSEreallocShared( ptr, N, oldN, false );
+}
+
+/*!
+	duplicate a string in shared memory (if the thread-specific flag is set)
+ */
+static char *mmstrdup( char *str )
+{ char *ret = NULL;
+	if( (ret = (char*) MSEreallocShared(NULL, strlen(str), 0 )) ){
+		strcpy( ret, str );
+	}
+	return ret;
+}
+
+
+#endif // MSWin exclusion
