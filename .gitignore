@@ -25,8 +25,9 @@ DestroyWindow
 *.kml
 *.dll
 *.docset
-
 QTMovieSink-VS2008/ipch
 *.opensdf
 *.sdf
+*/bertin.mode1v3
+*/bertin.pbxuser
 bertin.mode1v3
