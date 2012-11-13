@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "QTVODm2 && BinAsciiSumo"
-!define PRODUCT_VERSION "1.2"
+!define PRODUCT_VERSION "1.3"
 !define PRODUCT_PUBLISHER "IFSTTAR"
 !define PRODUCT_WEB_SITE "http://www.inrets.fr"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\QTVODm2.exe"
@@ -100,7 +100,7 @@ SectionEnd
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "QTVODm2+BAS-v12-installer.exe"
+OutFile "QTVODm2+BAS-v${PRODUCT_VERSION}-installer.exe"
 InstallDir "$EXEDIR\QTVODm2"
 ; Icon "S:\MacOSX\QTilities\QTils\QTils.ico"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
@@ -125,8 +125,8 @@ LangString QI2Mfail  ${LANG_ENGLISH} "could not be installed; to be copied manua
 LangString QI2Mfail  ${LANG_FRENCH} "echec d'installation, à copier à la main dans"
 LangString DirSelectSText  ${LANG_ENGLISH} "Install dir (QTImage2Mov will go into $QTDIR\QTComponents!)"
 LangString DirSelectSText  ${LANG_FRENCH} "Répertoire d'installation (QTImage2Mov ira dans $QTDIR\QTComponents!)"
-LangString AuthorText  ${LANG_ENGLISH} "QTImage2Mov and QTVODm2 © 2010-2011 R.J.V. Bertin/INRETS/IFSTTAR; SS_Log © S. Schaneville. Icon by N.D. Oppong."
-LangString AuthorText  ${LANG_FRENCH} "QTImage2Mov et QTVODm2 © 2010-2011 R.J.V. Bertin/INRETS/IFSTTAR; SS_Log © S. Schaneville. Icone par N.D. Oppong."
+LangString AuthorText  ${LANG_ENGLISH} "QTImage2Mov and QTVODm2 © 2010-2012 R.J.V. Bertin/INRETS/IFSTTAR; SS_Log © S. Schaneville. Icon by N.D. Oppong."
+LangString AuthorText  ${LANG_FRENCH} "QTImage2Mov et QTVODm2 © 2010-2012 R.J.V. Bertin/INRETS/IFSTTAR; SS_Log © S. Schaneville. Icone par N.D. Oppong."
 LangString KillProcs1   ${LANG_ENGLISH} "Please wait"
 LangString KillProcs1   ${LANG_FRENCH} "Merci de patienter"
 LangString KillProcs2   ${LANG_ENGLISH} "Verifying running processes"
@@ -183,6 +183,12 @@ Section "Documentation" SEC03
   SetOverwrite ifnewer
   File /nonfatal "S:\MacOSX\QTilities\QTVODm2.pdf"
   File /nonfatal "S:\MacOSX\QTImage2Mov\QTImage2Mov-v1.1.pdf"
+SectionEnd
+
+Section "Monaco.ttf" SEC04
+  SetOutPath "$WINDIR\Fonts"
+  SetOverwrite ifnewer
+  File "S:\MacOSX\QTImage2Mov\Monaco.ttf"
 SectionEnd
 
 ;Section -AdditionalIcons

@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "QTVODm2"
-!define PRODUCT_VERSION "1.2 (devel)"
+!define PRODUCT_VERSION "1.3 (devel)"
 !define PRODUCT_PUBLISHER "IFSTTAR"
 !define PRODUCT_WEB_SITE "http://www.inrets.fr"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\QTVODm2.exe"
@@ -102,7 +102,7 @@ SectionEnd
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "QTVODm2-v12-dev-installer.exe"
+OutFile "QTVODm2-v${PRODUCT_VERSION}-dev-installer.exe"
 InstallDir "$EXEDIR\QTVODm2"
 ; Icon "S:\MacOSX\QTilities\QTils\QTils.ico"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
@@ -132,8 +132,8 @@ LangString QI2Mfail  ${LANG_ENGLISH} "could not be installed; to be copied manua
 LangString QI2Mfail  ${LANG_FRENCH} "echec d'installation, à copier à la main dans"
 LangString DirSelectSText  ${LANG_ENGLISH} "Install dir (QTImage2Mov will go into $QTDIR\QTComponents!)"
 LangString DirSelectSText  ${LANG_FRENCH} "Répertoire d'installation (QTImage2Mov ira dans $QTDIR\QTComponents!)"
-LangString AuthorText  ${LANG_ENGLISH} "QTImage2Mov and QTVODm2 © 2010-2011 R.J.V. Bertin/INRETS/IFSTTAR; SS_Log © S. Schaneville. Icon by N.D. Oppong. NB: QTilsM2 will load the dev versions of QTils.dll and POSIXm2.dll if they exist."
-LangString AuthorText  ${LANG_FRENCH} "QTImage2Mov et QTVODm2 © 2010-2011 R.J.V. Bertin/INRETS/IFSTTAR; SS_Log © S. Schaneville. Icone par N.D. Oppong. NB: QTilsM2 chargera les versions 'dev' de QTils.dll et POSIXm2.dll si elles existent."
+LangString AuthorText  ${LANG_ENGLISH} "QTImage2Mov and QTVODm2 © 2010-2012 R.J.V. Bertin/INRETS/IFSTTAR; SS_Log © S. Schaneville. Icon by N.D. Oppong. NB: QTilsM2 will load the dev versions of QTils.dll and POSIXm2.dll if they exist."
+LangString AuthorText  ${LANG_FRENCH} "QTImage2Mov et QTVODm2 © 2010-2012 R.J.V. Bertin/INRETS/IFSTTAR; SS_Log © S. Schaneville. Icone par N.D. Oppong. NB: QTilsM2 chargera les versions 'dev' de QTils.dll et POSIXm2.dll si elles existent."
 LangString KillProcs1   ${LANG_ENGLISH} "Please wait"
 LangString KillProcs1   ${LANG_FRENCH} "Merci de patienter"
 LangString KillProcs2   ${LANG_ENGLISH} "Verifying running processes"
@@ -229,6 +229,12 @@ Section /o "SS_Log lib" SEC06
   SetOutPath "C:\Libs"
   SetOverwrite ifnewer
   File /r "C:\Libs\SS_Log_bin"
+SectionEnd
+
+Section "Monaco.ttf" SEC07
+  SetOutPath "$WINDIR\Fonts"
+  SetOverwrite ifnewer
+  File "S:\MacOSX\QTImage2Mov\Monaco.ttf"
 SectionEnd
 
 ;Section -AdditionalIcons
