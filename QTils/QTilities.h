@@ -327,6 +327,17 @@ QTLSext ErrCode GetMovieIndChapter( Movie theMovie, long ind, double *time, char
 QTLSext ErrCode MovieAddChapter( Movie theMovie, Track refTrack, const char *name,
 				    double time, double duration );
 /*!
+	Return a track's name
+ */
+QTLSext ErrCode GetTrackName( Movie theMovie, Track theTrack, char **trackName );
+/*!
+	Return a movie's track that has the given name. Specify a type to search only
+	for tracks of the given type, or type=0 to search among all tracks. If trackNr!=NULL
+	it will contain the index of the found track upon return.
+ */
+QTLSext ErrCode GetTrackWithName( Movie theMovie, char *trackName, OSType type, long flags, Track *theTrack, long *trackNr );
+
+/*!
 	a movie's duration in seconds
  */
 QTLSext double GetMovieDurationSeconds(Movie theMovie);
@@ -1014,8 +1025,12 @@ typedef struct LibQTilsBase {
 	ErrCode (*FindTimeStampInMovieAtTime)( Movie theMovie, double Time, char **foundText, double *foundTime );
 	long (*GetMovieChapterCount)( Movie theMovie );
 	ErrCode (*GetMovieIndChapter)( Movie theMovie, long ind, double *time, char **text );
-	ErrCode (*MovieAddChapter)( Movie theMovie, Track refTrack, const char *name,
+	ErrCode (*MovieAddChapter)( Movie theMovie, long refTrackNr, const char *name,
 							double time, double duration );
+	ErrCode (*GetTrackName)( Movie theMovie, int trackNr, char *trackName, int tlen );
+	ErrCode (*GetTrackWithName)( Movie theMovie, char *trackName, int tlen, int *trackNr );
+	ErrCode (*EnableTrack)( Movie theMovie, int trackNr );
+	ErrCode (*DisableTrack)( Movie theMovie, int trackNr );
 
 	// QTXML functions:
 

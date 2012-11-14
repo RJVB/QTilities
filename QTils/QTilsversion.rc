@@ -8,8 +8,8 @@
 #include <winver.h>
 
 VS_VERSION_INFO VERSIONINFO
-  FILEVERSION    1,2
-  PRODUCTVERSION 1,2
+  FILEVERSION    1,21
+  PRODUCTVERSION 1,21
   FILEFLAGSMASK  VS_FFI_FILEFLAGSMASK
   FILEFLAGS      0
   FILEOS         VOS__WINDOWS32
@@ -20,12 +20,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "QuickTime utility routines\0"
-            VALUE "ProductVersion", "1.2\0"
-            VALUE "FileVersion", "1.2\0"
+            VALUE "ProductVersion", "1.21\0"
+            VALUE "FileVersion", "1.21\0"
             VALUE "InternalName", "QTilities\0"
             VALUE "OriginalFilename", "QTils\0"
             VALUE "CompanyName", "INRETS/IFSTTAR - LEPSIS\0"
-            VALUE "LegalCopyright", "Copyright (C) RJVB/LEPSIS 2010,2011\0"
+            VALUE "LegalCopyright", "Copyright (C) RJVB/LEPSIS 2010,2011,2012\0"
         END
     END
     BLOCK "VarFileInfo"

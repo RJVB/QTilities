@@ -540,6 +540,7 @@ ErrCode MetaDataHandler( Movie theMovie, Track toTrack,
 	  UInt8 *inkeyPtr;
 	  ByteCount inkeySize;
 
+		// store the entry Value
 		value = (const char*) *Value;
 		if( Lang ){
 			lang = (const char*) *Lang;
@@ -568,6 +569,8 @@ ErrCode MetaDataHandler( Movie theMovie, Track toTrack,
 //				inkey = kUserDataTextFullName;
 //				storageF = kQTMetaDataStorageFormatUserData;
 //				inkeyF = kQTMetaDataKeyFormatUserData;
+// with kQTMetaDataCommonKeyDisplayName, akDisplayName sets the track name
+// as shown in the QT Player inspector.
 				inkey = kQTMetaDataCommonKeyDisplayName;
 				storageF = kQTMetaDataStorageFormatUserData;
 				inkeyF = kQTMetaDataKeyFormatUserData;
@@ -740,9 +743,11 @@ ErrCode MetaDataHandler( Movie theMovie, Track toTrack,
 bail:
 			// 20110927; 20120608: leak analysis suggests that we are supposed to release allocated memory
 			// also when the metadata has been updated successfully:
-			if( newvalue ){
+			// 20121115: but doing this would mean that we return nothing. And that's not what we want ... so
+			// we check if value==NULL (which is the indication that we were reading the metadata)
+			if( newvalue && value ){
 				if( *Value == newvalue ){
-					*Value = NULL;
+					*Value = (value == newvalue)? NULL : value;
 				}
 				free((void*)newvalue);
 				newvalue = NULL;
@@ -2599,9 +2604,13 @@ add_track_reference:
 	err = AddTrackReference( theTrack, theTCTrack, kTrackReferenceTimeCode, NULL );
 	if( err == noErr ){
 	  char *lng = "en_GB";
+	  char *trackName = "Timecode Track";
 		if( theURL ){
 			MetaDataHandler( theMovie, theTCTrack, akSource, (char**) &theURL, &lng, NULL );
+			MetaDataHandler( theMovie, theTCTrack, akTrack, (char**) &theURL, &lng, NULL );
 		}
+		// 20121115:
+		MetaDataHandler( theMovie, theTCTrack, akDisplayName, (char**) &trackName, NULL, ", " );
 		UpdateMovie( theMovie );
 
 		if( newtrack ){
@@ -3139,6 +3148,108 @@ ErrCode MovieAddChapter_Mod2( Movie theMovie, long trackNr, const char *name, in
 	}
 }
 
+ErrCode GetTrackName( Movie theMovie, Track theTrack, char **trackName )
+{ ErrCode err = paramErr;
+  UserData uData = NULL;
+
+	if( theMovie && theTrack && trackName ){
+		*trackName = NULL;
+//		err = GetMetaDataStringFromTrack( theMovie, theTrack, akDisplayName, trackName, NULL );
+		if( (uData = GetTrackUserData(theTrack)) ){
+		  Handle h = NewHandle(0);
+		  long len;
+			if( (err = GetUserData( uData, h, kUserDataName, 1 )) == noErr ){
+				len = GetHandleSize(h);
+				if( len > 0 && (*trackName = calloc( len + 1, sizeof(char) )) ){
+					memcpy( *trackName, *h, len );
+					(*trackName)[len] = '\0';
+				}
+			}
+			DisposeHandle(h);
+		}
+		else{
+			err = GetMoviesError();
+		}
+	}
+	return err;
+}
+
+ErrCode GetTrackName_Mod2( Movie theMovie, long trackNr, char *trackName, int tlen )
+{ ErrCode err = paramErr;
+  char *tn = NULL;
+	if( !theMovie || trackNr <= 0 || trackNr > GetMovieTrackCount(theMovie) ){
+		return paramErr;
+	}
+	if( (err = GetTrackName( theMovie, GetMovieIndTrack( theMovie, trackNr ), &tn )) == noErr ){
+		if( tn ){
+			strncpy( trackName, tn, tlen );
+			trackName[tlen-1] = '\0';
+		}
+		else{
+			trackName[0] = '\0';
+		}
+		free(tn);
+	}
+	return err;
+}
+
+ErrCode GetTrackWithName( Movie theMovie, char *trackName, OSType type, long flags, Track *theTrack, long *trackNr )
+{ ErrCode err = paramErr;
+  long i = 1;
+  char *tn;
+  Track ret = NULL;
+	if( theMovie && theTrack && trackName ){
+		*theTrack = NULL;
+		while( !*theTrack && ( (type && (ret = GetMovieIndTrackType( theMovie, i, type, flags )))
+				|| (ret = GetMovieIndTrack( theMovie, i )) )
+		){
+			tn = NULL;
+//			err = GetMetaDataStringFromTrack( theMovie, ret, akDisplayName, &tn, NULL );
+			err = GetTrackName( theMovie, ret, &tn );
+			if( tn ){
+				if( strcmp( trackName, tn ) == 0 ){
+					*theTrack = ret;
+					if( trackNr ){
+						*trackNr = i;
+					}
+				}
+				free(tn);
+			}
+			i += 1;
+		}
+	}
+	return err;
+}
+
+ErrCode GetTrackWithName_Mod2( Movie theMovie, char *trackName, int tlen, long *trackNr )
+{ Track theTrack;
+	return GetTrackWithName( theMovie, trackName, 0, 0, &theTrack, trackNr );
+}
+
+ErrCode EnableTrack_Mod2( Movie theMovie, long trackNr )
+{ Track theTrack;
+	if( !theMovie || trackNr <= 0 || trackNr > GetMovieTrackCount(theMovie) ){
+		return paramErr;
+	}
+	if( !GetTrackEnabled( (theTrack = GetMovieIndTrack(theMovie, trackNr)) ) ){
+		SetTrackEnabled( theTrack, true );
+		UpdateMovie(theMovie);
+	}
+	return GetMoviesError();
+}
+
+ErrCode DisableTrack_Mod2( Movie theMovie, long trackNr )
+{ Track theTrack;
+	if( !theMovie || trackNr <= 0 || trackNr > GetMovieTrackCount(theMovie) ){
+		return paramErr;
+	}
+	if( GetTrackEnabled( (theTrack = GetMovieIndTrack(theMovie, trackNr)) ) ){
+		SetTrackEnabled( theTrack, false );
+		UpdateMovie(theMovie);
+	}
+	return GetMoviesError();
+}
+
 #ifndef QTMOVIESINK
 
 #include "QTMovieSink.h"
@@ -3202,6 +3313,10 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->GetMovieChapterCount = GetMovieChapterCount;
 		dmbase->GetMovieIndChapter = GetMovieIndChapter;
 		dmbase->MovieAddChapter = MovieAddChapter;
+		dmbase->GetTrackName = GetTrackName_Mod2;
+		dmbase->GetTrackWithName = GetTrackWithName_Mod2;
+		dmbase->EnableTrack = EnableTrack_Mod2;
+		dmbase->DisableTrack = DisableTrack_Mod2;
 
 		dmbase->Check4XMLError = Check4XMLError;
 		dmbase->ParseXMLFile = ParseXMLFile;

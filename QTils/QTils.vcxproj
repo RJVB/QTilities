@@ -266,7 +266,11 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
     <ResourceCompile Include="QTilsversion.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Mod2\QTVODm2.res" />
+    <Resource Include="Mod2\QTVODm2.res">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </Resource>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

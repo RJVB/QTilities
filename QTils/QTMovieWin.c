@@ -138,8 +138,12 @@ QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theU
 				 && !wi->theTimeStampTrack
 			){
 				trackName = NULL;
-				err = GetMetaDataStringFromTrack( wi->theMovie, tTrack, akDisplayName, &trackName, NULL );
+//				err = GetMetaDataStringFromTrack( wi->theMovie, tTrack, akDisplayName, &trackName, NULL );
+				err = GetTrackName( wi->theMovie, tTrack, &trackName );
 				if( trackName ){
+#ifdef DEBUG
+					Log( qtLogPtr, "Movie '%s' track #%ld \"%s\"\n", theURL, i, trackName );
+#endif
 					if( strcmp( trackName, "timeStamp Track" ) == 0 ){
 						wi->theTimeStampTrack = tTrack;
 					}
@@ -148,6 +152,14 @@ QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theU
 				i += 1;
 			}
 		}
+#ifdef DEBUG
+		{ Track tcTrack;
+		  long idx=-1;
+			if( GetTrackWithName( wi->theMovie, "Timecode Track", 0, 0, &tcTrack, &idx ) == noErr ){
+				Log( qtLogPtr, "Movie '%s' has Timecode Track #%d\n", theURL, idx );
+			}
+		}
+#endif
 		wi->theInfo.TCframeRate = -1;
 		if( GetMovieStaticFrameRate( wi->theMovie, NULL, &wi->theInfo.TCframeRate, &wi->theInfo.frameRate ) ){
 			wi->theInfo.frameRate = 1.0e308; // Inf
