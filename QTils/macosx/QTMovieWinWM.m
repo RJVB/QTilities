@@ -347,40 +347,11 @@ int DrainQTMovieWindowPool( QTMovieWindowH WI )
 
 QTMovieWindowH lastQTWMH = NULL;
 
-// Attempts to open <theURL> as a QuickTime movie, and upon success opens a window of our
-// own class (QTMWClass) in which the movie will be displayed. If requested, a movie controller
-// is also created.
-QTMovieWindowH OpenQTMovieInWindow( const char *theURL, int controllerVisible )
+static QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
+									    Handle dataRef, OSType dataRefType, int controllerVisible )
 { QTMovieWindows *wi = NULL;
-#ifdef USE_QTHANDLES
-  QTMovieWindowH wih;
-#endif
+  QTMovieWindowH wih = NULL;
   ErrCode err;
-  short resId;
-  Movie theMovie;
-  Handle dataRef;
-  OSType dataRefType;
-
-	if( !QTMovieWindowList || !QTMWInitialised ){
-		return NULL;
-	}
-
-	if( !theURL || !*theURL ){
-		theURL = AskFileName( "Please choose a video or movie to display" );
-	}
-
-	if( !theURL || !*theURL ){
-		return NULL;
-	}
-
-	err = OpenMovieFromURL( &theMovie, newMovieActive, &resId, theURL, &dataRef, &dataRefType );
-	if( err != noErr ){
-		Log( qtLogPtr, "OpenMovieFromURL('%s') returned err=%d, dataRefType='%s'\n",
-		    theURL, err, OSTStr(dataRefType)
-		);
-		return NULL;
-	}
-
 	if( (wih = QTMovieWindowH_from_Movie(theMovie)) || (wih = NewQTMovieWindowH()) ){
 		wi = *wih;
 	}
@@ -484,7 +455,42 @@ QTMovieWindowH OpenQTMovieInWindow( const char *theURL, int controllerVisible )
 		}
 		PumpMessages(FALSE);
 	}
-	else{
+	return wih;
+}
+
+// Attempts to open <theURL> as a QuickTime movie, and upon success opens a window of our
+// own class (QTMWClass) in which the movie will be displayed. If requested, a movie controller
+// is also created.
+QTMovieWindowH OpenQTMovieInWindow( const char *theURL, int controllerVisible )
+{ QTMovieWindowH wih;
+  ErrCode err;
+  short resId;
+  Movie theMovie;
+  Handle dataRef;
+  OSType dataRefType;
+
+	if( !QTMovieWindowList || !QTMWInitialised ){
+		return NULL;
+	}
+
+	if( !theURL || !*theURL ){
+		theURL = AskFileName( "Please choose a video or movie to display" );
+	}
+
+	if( !theURL || !*theURL ){
+		return NULL;
+	}
+
+	err = OpenMovieFromURL( &theMovie, newMovieActive, &resId, theURL, &dataRef, &dataRefType );
+	if( err != noErr ){
+		Log( qtLogPtr, "OpenMovieFromURL('%s') returned err=%d, dataRefType='%s'\n",
+		    theURL, err, OSTStr(dataRefType)
+		);
+		return NULL;
+	}
+
+	wih = OpenQTMovieWindowWithMovie( theMovie, theURL, resId, dataRef, dataRefType, controllerVisible );
+	if( !wih ){
 		DisposeMovie(theMovie);
 	}
 	return wih;
@@ -505,6 +511,34 @@ QTMovieWindowH OpenQTMovieInWindow_Mod2( const char *theURL, int ulen, int contr
 				(*wih)->theURL = URL;
 			}
 		}
+	}
+	return wih;
+}
+
+QTMovieWindowH OpenQTMovieFromMemoryDataRefInWindow( MemoryDataRef *memRef, OSType contentType, int controllerVisible )
+{ QTMovieWindowH wih;
+  ErrCode err;
+  Movie theMovie;
+
+	if( !QTMovieWindowList || !QTMWInitialised ){
+		return NULL;
+	}
+
+	if( !memRef || !memRef->dataRef ){
+		return NULL;
+	}
+
+	err = OpenMovieFromMemoryDataRef( &theMovie, memRef, contentType );
+	if( err != noErr ){
+		Log( qtLogPtr, "OpenMovieFromMemoryDataRef() returned err=%d, dataRefType='%s'\n",
+		    err, OSTStr(memRef->dataRefType)
+		);
+		return NULL;
+	}
+
+	wih = OpenQTMovieWindowWithMovie( theMovie, "<in-memory>", 1, memRef->dataRef, memRef->dataRefType, controllerVisible );
+	if( !wih ){
+		DisposeMovie(theMovie);
 	}
 	return wih;
 }

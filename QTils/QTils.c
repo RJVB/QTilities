@@ -1414,6 +1414,27 @@ static ErrCode CFURLFromDataRef( Handle dataRef, OSType dataRefType, CFURLRef *t
 }
 #endif
 
+void DisposeDataRef(Handle dataRef)
+{
+	if( dataRef ){
+		DisposeHandle(dataRef);
+	}
+}
+
+void DisposeMemoryDataRef(MemoryDataRef *memRef)
+{
+	if( memRef ){
+		if( memRef->dataRef ){
+			DisposeHandle(memRef->dataRef);
+			memRef->dataRef = NULL;
+		}
+		if( memRef->memory ){
+			DisposeHandle(memRef->memory);
+			memRef->memory = NULL;
+		}
+	}
+}
+
 /*!
 	QuickTime uses a number of proprietary ways to access files, one of which consists of a "data handle"
 	(not to be confounded with handler!), the data references, and its associated type.
@@ -1599,6 +1620,29 @@ bail:
 	}
 	if( *URL != theURL && theURL ){
 		free(theURL);
+	}
+	return err;
+}
+
+/*!
+	Initialises a structure containing a dataRef/dataRefType combination corresponding
+	to the data passed in the string argument.
+ */
+ErrCode MemoryDataRefFromString( const char *string, size_t len, MemoryDataRef *memRef )
+{ ErrCode err = paramErr;
+	if( string && memRef ){
+		memRef->dataRef = NULL;
+		memRef->memory = NewHandle(len);
+		memcpy( *(memRef->memory), string, len );
+		err = PtrToHand( &(memRef->memory), &(memRef->dataRef), sizeof(Handle) );
+		if( err != noErr ){
+			memRef->dataRef = NULL;
+			DisposeHandle(memRef->memory);
+			memRef->memory = NULL;
+		}
+		else{
+			memRef->dataRefType = HandleDataHandlerSubType;
+		}
 	}
 	return err;
 }
@@ -1861,6 +1905,33 @@ ErrCode OpenMovieFromURL_Mod2( Movie *newMovie, short flags, char *URL, int ulen
 		}
 	}
 	return ret;
+}
+
+ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memRef, OSType contentType )
+{ ErrCode err = paramErr;
+  DataHandler ldataHandler = NULL;
+  ErrCode wihErr;
+  MovieImportComponent miComponent = OpenDefaultComponent( MovieImportType, contentType );
+  Track usedTrack = nil;
+  TimeValue addedDuration = 0;
+  long outFlags = 0;
+	if( miComponent ){
+		*newMovie = NewMovie(0);
+		err = (ErrCode) MovieImportDataRef( miComponent, memRef->dataRef, memRef->dataRefType, *newMovie, nil,
+							   &usedTrack, 0, &addedDuration,
+							   movieImportCreateTrack, &outFlags );
+		if( err == noErr ){
+			GoToBeginningOfMovie(*newMovie);
+		}
+	}
+#ifndef QTMOVIESINK
+	if( err == noErr ){
+		InitQTMovieWindowHFromMovie( NewQTMovieWindowH(), "<dataRef>", *newMovie,
+							   memRef->dataRef, memRef->dataRefType, ldataHandler, 1, &wihErr
+		);
+	}
+#endif
+	return err;
 }
 
 // Saves the given movie in a file. If noDialog is False, or fname is NULL or points to an empty string,
@@ -3291,6 +3362,11 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->get_MCAction = get_MCAction;
 		dmbase->unregister_MCAction = unregister_MCAction;
 
+		dmbase->DisposeMemoryDataRef = DisposeMemoryDataRef;
+		dmbase->MemoryDataRefFromString = MemoryDataRefFromString;
+		dmbase->OpenMovieFromMemoryDataRef = OpenMovieFromMemoryDataRef;
+		dmbase->OpenQTMovieFromMemoryDataRefInWindow = OpenQTMovieFromMemoryDataRefInWindow;
+
 		dmbase->OpenMovieFromURL = OpenMovieFromURL;
 		dmbase->HasMovieChanged = HasMovieChanged_Mod2;
 		dmbase->SaveMovie = SaveMovie;
@@ -3313,10 +3389,10 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->GetMovieChapterCount = GetMovieChapterCount;
 		dmbase->GetMovieIndChapter = GetMovieIndChapter;
 		dmbase->MovieAddChapter = MovieAddChapter;
-		dmbase->GetTrackName = GetTrackName_Mod2;
-		dmbase->GetTrackWithName = GetTrackWithName_Mod2;
-		dmbase->EnableTrack = EnableTrack_Mod2;
-		dmbase->DisableTrack = DisableTrack_Mod2;
+		dmbase->GetTrackName = GetTrackName;
+		dmbase->GetTrackWithName = GetTrackWithName;
+		dmbase->EnableTrackNr = EnableTrack_Mod2;
+		dmbase->DisableTrackNr = DisableTrack_Mod2;
 
 		dmbase->Check4XMLError = Check4XMLError;
 		dmbase->ParseXMLFile = ParseXMLFile;
@@ -3385,6 +3461,10 @@ size_t initDMBaseQTils_Mod2( LibQTilsBase *dmbase )
 		dmbase->FindTimeStampInMovieAtTime = (void*) FindTimeStampInMovieAtTime_Mod2;
 		dmbase->GetMovieIndChapter = (void*) GetMovieIndChapter_Mod2;
 		dmbase->MovieAddChapter = (void*) MovieAddChapter_Mod2;
+		dmbase->GetTrackName = (void*) GetTrackName_Mod2;
+		dmbase->GetTrackWithName = (void*) GetTrackWithName_Mod2;
+		dmbase->EnableTrackNr = (void*) EnableTrack_Mod2;
+		dmbase->DisableTrackNr = (void*) DisableTrack_Mod2;
 		dmbase->QTils_LogMsg = (void*) QTils_LogMsg_Mod2;
 		dmbase->QTils_LogMsgEx = (void*) QTils_LogMsgEx_Mod2;
 		dmbase->Check4XMLError = (void*) Check4XMLError_Mod2;

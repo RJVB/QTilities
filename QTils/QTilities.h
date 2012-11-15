@@ -254,8 +254,26 @@ QTLSext ErrCode FlattenMovieToURL( const char *dstURL, Movie theMovie, Movie *th
  */
 QTLSext ErrCode CloseMovie( Movie *theMovie );
 
+typedef struct MemoryDataRef {
 #if defined(__QUICKTIME__) || defined(__MOVIES__)
+	Handle dataRef;
+	OSType dataRefType;
+	Handle memory;
+#else
+	void **dataRef;
+	OSType dataRefType;
+	void **memory;
+#endif
+} MemoryDataRef;
+
+QTLSext void DisposeMemoryDataRef(MemoryDataRef *memRef);
+QTLSext ErrCode MemoryDataRefFromString( const char *string, size_t len, MemoryDataRef *memRef );
+QTLSext ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memRef, OSType contentType );
+
+#if defined(__QUICKTIME__) || defined(__MOVIES__)
+	QTLSext void DisposeDataRef(Handle dataRef);
 	QTLSext ErrCode DataRefFromURL( const char **URL, Handle *dataRef, OSType *dataRefType );
+
 	QTLSext ErrCode AnchorMovie2TopLeft( Movie theMovie );
 	QTLSext void GetMovieDimensions( Movie theMovie, Fixed *width, Fixed *height );
 	QTLSext void ClipFlipCurrentTrackToQuadrant( Movie theMovie, Track theTrack,
@@ -548,6 +566,7 @@ QTLSext ErrCode CloseQTMovieWindow( QTMovieWindowH WI );
  */
 QTLSext QTMovieWindowH OpenQTMovieInWindow( const char *theURL, int visibleController );
 QTLSext NativeWindowH NativeWindowHFromQTMovieWindowH( QTMovieWindowH wi );
+QTLSext QTMovieWindowH OpenQTMovieFromMemoryDataRefInWindow( MemoryDataRef *memRef, OSType contentType, int controllerVisible );
 
 QTLSext ErrCode ActivateQTMovieWindow( QTMovieWindowH wih );
 QTLSext ErrCode QTMovieWindowPlay( QTMovieWindowH wih );
@@ -993,6 +1012,11 @@ typedef struct LibQTilsBase {
 	MCActionCallback (*get_MCAction)( QTMovieWindowH wi, short action );
 	void (*unregister_MCAction)( QTMovieWindowH wi, short action );
 
+	void (*DisposeMemoryDataRef)(MemoryDataRef *memRef);
+	ErrCode (*MemoryDataRefFromString)( const char *string, size_t len, MemoryDataRef *memRef );
+	ErrCode (*OpenMovieFromMemoryDataRef)( Movie *newMovie, MemoryDataRef *memRef, OSType contentType );
+	QTMovieWindowH (*OpenQTMovieFromMemoryDataRefInWindow)( MemoryDataRef *memRef, OSType contentType, int controllerVisible );
+
 #if !defined(__QUICKTIME__) && !defined(__MOVIES__)
 	ErrCode (*OpenMovieFromURL)( Movie *newMovie, short flags, short *id, const char *URL, void *dum1, OSType *type );
 #else
@@ -1025,12 +1049,12 @@ typedef struct LibQTilsBase {
 	ErrCode (*FindTimeStampInMovieAtTime)( Movie theMovie, double Time, char **foundText, double *foundTime );
 	long (*GetMovieChapterCount)( Movie theMovie );
 	ErrCode (*GetMovieIndChapter)( Movie theMovie, long ind, double *time, char **text );
-	ErrCode (*MovieAddChapter)( Movie theMovie, long refTrackNr, const char *name,
+	ErrCode (*MovieAddChapter)( Movie theMovie, Track refTrack, const char *name,
 							double time, double duration );
-	ErrCode (*GetTrackName)( Movie theMovie, int trackNr, char *trackName, int tlen );
-	ErrCode (*GetTrackWithName)( Movie theMovie, char *trackName, int tlen, int *trackNr );
-	ErrCode (*EnableTrack)( Movie theMovie, int trackNr );
-	ErrCode (*DisableTrack)( Movie theMovie, int trackNr );
+	ErrCode (*GetTrackName)( Movie theMovie, Track track, char **trackName );
+	ErrCode (*GetTrackWithName)( Movie theMovie, char *trackName, OSType type, long flags, Track *track, long *trackNr );
+	ErrCode (*EnableTrackNr)( Movie theMovie, long trackNr );
+	ErrCode (*DisableTrackNr)( Movie theMovie, long trackNr );
 
 	// QTXML functions:
 

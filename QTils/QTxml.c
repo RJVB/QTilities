@@ -74,7 +74,7 @@ ErrCode Check4XMLError( ComponentInstance xmlParser, ErrCode err, const char *th
 			len = (unsigned char) descr[0];
 			if( len > 0 ){
 				memmove( descr, &descr[1], len );
-				descr[len-1] = '\0';
+				descr[len] = '\0';
 			}
 			Log( qtLogPtr, "Error parsing XML file \"%s\" at line %ld: \"%s\" (error code %d)\n",
 				theURL, line, descr, (int) err

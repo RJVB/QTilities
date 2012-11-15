@@ -8,6 +8,8 @@ IDENTIFY("Unit tests for QTils (QTMovieWindows) and QTMovieSink");
 
 #ifndef _MSC_VER
 #	include <unistd.h>
+#else
+#	include "winixdefs.h"
 #endif
 
 #include "QTilities.h"
@@ -83,6 +85,13 @@ XML_Record xml_design_parser[28] = {
 			{xml_attribute, "journal", attr_log, recordAttributeValueTypeBoolean, &xmlVD.log}
 };
 
+const char *qi2mStringMask =
+"<?xml version=\"1.0\"?>\n"
+"<?quicktime type=\"video/x-qt-img2mov\"?>\n"
+"<import autoSave=False askSave=False >\n"
+"	<description txt=\"UTC timeZone=1, DST=0, assoc.data:*FromVODFile*\" />\n"
+"	<sequence src=\"%s\" channel=-1 freq=-1 hidetc=False timepad=False hflip=False vmgi=True newchapter=False log=False />\n"
+"</import>\n";
 
 QTMovieWindowH *winlist = NULL;
 int numQTMW = 0, MaxnumQTMW = 0;
@@ -361,6 +370,7 @@ int main( int argc, char* argv[] )
   double searchTime;
   long searchOffset;
   char *foundText = NULL;
+  char *qi2mString = NULL;
 
 	otype = 'TVOD';
 	ostr = OSTStr(otype);
@@ -486,10 +496,39 @@ int main( int argc, char* argv[] )
 			register_wi(wi);
 		}
 		else{
+#if defined(DEBUG) && defined(_MSC_VER)
+			{ Movie theMovie;
+			  ErrCode err;
+				if( (err = OpenMovieFromURL( &theMovie, 1, NULL, NULL, NULL, NULL )) == noErr ){
+					CloseMovie(&theMovie);
+				}
+			}
+#endif
 			for( i = 1 ; i < argc ; i++ ){
 				wi = OpenQTMovieInWindow( argv[i], (i> 0 && i==argc-1)? 0 : 1 );
 				// register the window in our local list:
 				register_wi(wi);
+				if( wi ){
+				  size_t qlen = strlen(qi2mStringMask) + strlen(argv[i]) + 1;
+					if( (qi2mString = calloc( qlen, sizeof(char) )) ){
+					  MemoryDataRef memRef;
+					  ErrCode err;
+					  Movie theMovie;
+						snprintf( qi2mString, qlen, qi2mStringMask, argv[i] );
+						err = MemoryDataRefFromString( qi2mString, qlen, &memRef );
+						QTils_LogMsgEx( "Importing movie from (qi2m) dataRef %p\n", memRef.dataRef );
+//						err = OpenMovieFromMemoryDataRef( &theMovie, &memRef, 'QI2M' );
+//						QTils_LogMsgEx( "Imported movie with code %d\n", err );
+						wi = OpenQTMovieFromMemoryDataRefInWindow( &memRef, 'QI2M', 1 );
+						QTils_LogMsgEx( "Imported movie with wi=%p, code %d\n", wi, LastQTError() );
+						if( wi ){
+//							CloseMovie(&theMovie);
+							CloseQTMovieWindow(wi);
+						}
+						free(qi2mString);
+						DisposeMemoryDataRef(&memRef);
+					}
+				}
 			}
 		}
 		signal( SIGABRT, doSigExit );
@@ -499,9 +538,11 @@ int main( int argc, char* argv[] )
 		if( numQTMW ){
 		  Movie theMovie;
 		  ErrCode err;
+#if !(defined(DEBUG) && defined(_MSC_VER))
 			if( (err = OpenMovieFromURL( &theMovie, 1, NULL, NULL, NULL, NULL )) == noErr ){
 				CloseMovie(&theMovie);
 			}
+#endif
 			if( (err = OpenMovieFromURL( &theMovie, 1, NULL, (*(winlist[0]))->theURL, NULL, NULL )) == noErr ){
 			  char *dst = "c:/TEMP/kk.mov", *odst;
 				err = AddMetaDataStringToMovie( theMovie, akComment, xg_id_string_stub(), NULL );
