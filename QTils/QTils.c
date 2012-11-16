@@ -490,8 +490,8 @@ void ClipFlipCurrentTrackToQuadrant( Movie theMovie, Track theTrack, short quadr
 		);
 #endif
 		SetTrackMatrix( theTrack, &m );
-		if( GetMoviesError() == noErr ){
-			snprintf( mdInfo, sizeof(mdInfo), "%s%s", mdInfo, "h-flipped" );
+		if( GetMoviesError() == noErr && strlen(mdInfo) < sizeof(mdInfo) - 9 ){
+			strcat( mdInfo, "h-flipped" );
 		}
 	}
 	if( clipped || hflip ){
@@ -686,7 +686,9 @@ ErrCode MetaDataHandler( Movie theMovie, Track toTrack,
 								goto bail;
 							}
 							// construct the new value string
-							snprintf( newvalue, nvlen, "%s%s%s", newvalue, separator, value );
+							{ size_t tlen = strlen(newvalue);
+								snprintf( &newvalue[tlen], nvlen-tlen, "%s%s", separator, value );
+							}
 							value = newvalue;
 							 // set the item to the new value:
 							if( (qmdErr = QTMetaDataSetItem( theMetaData, item,

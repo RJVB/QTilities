@@ -1554,8 +1554,8 @@ static ErrCode AddMetaDataString( QTMovieSinks *qms, int toTrack,
 						// get the <size> bytes of the value:
 						if( (qmdErr = QTMetaDataGetItemValue( theMetaData, item,
 										(UInt8*) newvalue, size, 0 )) == noErr
-						){
-							snprintf( newvalue, nvlen, "%s\n%s", newvalue, value );
+						){ size_t len = strlen(newvalue);
+							snprintf( &newvalue[len], nvlen-len, "\n%s", value );
 							free((void*)value);
 							value = newvalue;
 							newvalue = NULL;

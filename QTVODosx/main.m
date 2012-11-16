@@ -19,7 +19,7 @@
 @implementation NSApplication (toggleLogging)
 
 NSMenuItem *DoLoggingMI = NULL;
-BOOL doLogging;
+BOOL doLogging = NO;
 
 - (void)updateMenus
 {
@@ -31,6 +31,7 @@ BOOL doLogging;
 - (void)toggleLogging:sender
 { extern BOOL QTils_LogSetActive(BOOL);
 	doLogging = !doLogging;
+	QTils_LogMsgEx( "toggleLogging: logging now %s\n", (doLogging)? "ON" : "OFF" );
 	QTils_LogSetActive(doLogging);
 	if( sender != self ){
 		DoLoggingMI = sender;

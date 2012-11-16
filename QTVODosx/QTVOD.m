@@ -1031,6 +1031,7 @@ BOOL addToRecentDocs = YES;
 		err = OpenMovieFromURL( &theMovie, 1, NULL, fName, NULL, NULL );
 	}
 	if( !theMovie ){
+#ifdef USECHANNELVIEWIMPORTFILES
 	  FILE *fp;
 	  NSString *importFile = [NSString stringWithFormat:@"%@%s.qi2m", [src path], chName ];
 		fName = [importFile UTF8String];
@@ -1108,6 +1109,79 @@ BOOL addToRecentDocs = YES;
 				strcpy( eMsg, "Creation/opening error" );
 			}
 		}
+#else
+	  MemoryDataRef memRef;
+	  NSMutableString *qi2mString = [NSMutableString stringWithCString:"<?xml version=\"1.0\"?>\n"
+							   "<?quicktime type=\"video/x-qt-img2mov\"?>\n"
+							   "<import autoSave=False askSave=False >\n" encoding:NSUTF8StringEncoding];
+		if( doLogging ){
+			QTils_LogMsgEx( "Creating in-memory view for channel %d", channel );
+		}
+		if( assocDataFile ){
+			[qi2mString appendFormat:@"\t<description txt=\"UTC timeZone=%g, DST=%hd, assoc.data:%s\" />\n",
+				   description->timeZone, (short) description->DST, [assocDataFile UTF8String] ];
+		}
+		else{
+			[qi2mString appendFormat:@"\t<description txt=\"UTC timeZone=%g, DST=%hd\" />\n",
+				   description->timeZone, (short) description->DST ];
+		}
+		[qi2mString appendFormat:@"\t<sequence src=\"%s.mov\" channel=%d", [[src path] UTF8String], channel ];
+		if( channel == 5 || channel == 6 ){
+			// ch.5: TimeCode track; ch.6: extended/text timecode track
+			[qi2mString appendString:@" hidetc=False timepad=False asmovie=True newchapter=False" ];
+		}
+		else{
+			// we hide the timecode display of the 4 camera views
+			[qi2mString appendString:@" hidetc=True timepad=False asmovie=True" ];
+			if( description->flipLeftRight
+			   && (channel == description->channels.left || channel == description->channels.right)
+			){
+				[qi2mString appendString:@" hflip=True" ];
+			}
+			else{
+				[qi2mString appendString:@" hflip=False" ];
+			}
+		}
+		[qi2mString appendString:@" />\n"
+				"</import>\n" ];
+		if( (err = MemoryDataRefFromString( [qi2mString cStringUsingEncoding:NSUTF8StringEncoding], [qi2mString length], &memRef )) == noErr ){
+			@synchronized(self){
+				err = OpenMovieFromMemoryDataRef( &theMovie, &memRef, 'QI2M' );
+			}
+			if( !theMovie ){
+			  const char *es, *ec;
+				es = MacErrorString( LastQTError(), &ec );
+				if( es ){
+					QTils_LogMsgEx( "Channel view creation failure: %s (%s)", es, ec );
+				}
+				else{
+					QTils_LogMsgEx( "Channel view creation failure: %d (%d)", LastQTError(), err );
+				}
+				if( openNow ){
+					PostMessage( fName, lastSSLogMsg );
+				}
+				else if( eMsg ){
+					strcpy( eMsg, lastSSLogMsg );
+				}
+			}
+			else{
+			  const char *fName;
+				cachedMovieFile = [NSURL fileURLWithPath:fn];
+				fName = [[cachedMovieFile path] cStringUsingEncoding:NSUTF8StringEncoding];
+				err = SaveMovieAsRefMov( fName, theMovie );
+				if( err != noErr ){
+					QTils_LogMsgEx( "Channel view creation failure saving '%s': %d", fName, err );
+				}
+				else if( doLogging ){
+					QTils_LogMsgEx( "channel view '%s' created", fName );
+				}
+			}
+			// we shouldn't dispose the dataRef here, it's still associated with theMovie and will be disposed
+			// when the movie is closed.
+			memRef.dataRef = NULL;
+			DisposeMemoryDataRef(&memRef);
+		}
+#endif
 	}
 	if( theMovie && err == noErr ){
 		CloseMovie(&theMovie);
@@ -1318,8 +1392,9 @@ BOOL addToRecentDocs = YES;
 				    [[theURL lastPathComponent] fileSystemRepresentation], (*wih)->info->duration,
 				    (int) ft.hours, (int) ft.minutes, (int) ft.seconds, (int) ft.frames );
 		if( assocDataFile ){
-			snprintf( header, sizeof(header), "%sassociated data file: %s\n\n",
-				    header, [[[NSURL fileURLWithPath:assocDataFile] relativeString] fileSystemRepresentation] );
+		  size_t len = strlen(header);
+			snprintf( &header[len], sizeof(header)-len, "%sassociated data file: %s\n\n",
+				    [[[NSURL fileURLWithPath:assocDataFile] relativeString] fileSystemRepresentation] );
 		}
 		MetaDataDisplayStr = [[[NSMutableString alloc] init] autorelease];
 		[MetaDataDisplayStr appendString:metaDataNSStr( fullMovie, 1, akDisplayName, "Name: " ) ];

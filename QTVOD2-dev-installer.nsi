@@ -14,6 +14,8 @@ SetCompressor lzma
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
+!include "FontRegAdv.nsh"
+!include "FontName.nsh"
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -128,6 +130,8 @@ LangString Sec3Descr ${LANG_FRENCH} "Documentation pour QTVODm2, QTImage2Mov et 
 LangString Sec4Descr ${LANG_FRENCH} "sources et projets Modula-2"
 LangString Sec5Descr ${LANG_FRENCH} "SS_Log: fonctions journal (pour $WINDIR)"
 LangString Sec6Descr ${LANG_FRENCH} "libraires pour les fonctions journal SS_Log (pour c:\Libs\SS_Log_Bin)"
+LangString Sec7Descr ${LANG_ENGLISH} "Font used for the time and GPS info track in imported videos"
+LangString Sec7Descr ${LANG_FRENCH} "La police utilisée pour la piste d'horodatage et GPS dans les vidéos importées"
 LangString QI2Mfail  ${LANG_ENGLISH} "could not be installed; to be copied manually into"
 LangString QI2Mfail  ${LANG_FRENCH} "echec d'installation, à copier à la main dans"
 LangString DirSelectSText  ${LANG_ENGLISH} "Install dir (QTImage2Mov will go into $QTDIR\QTComponents!)"
@@ -191,8 +195,8 @@ Section "Documentation" SEC03
   File /nonfatal "S:\MacOSX\QTilities\QTVODm2.pdf"
   File /nonfatal "S:\MacOSX\QTilities\QTilities-v1.2.pdf"
   File /nonfatal "S:\MacOSX\QTImage2Mov\QTImage2Mov-v1.1.pdf"
-  File /nonfatal "S:\MacOSX\QTilities\QTils.docset\html\QTils.chm"
-  File /nonfatal "S:\MacOSX\QTImage2Mov\QTImage2Mov.docset\html\QTImage2Mov.chm"
+  File /nonfatal "S:\MacOSX\QTilities\QTils.chm"
+  File /nonfatal "S:\MacOSX\QTImage2Mov\QTImage2Mov.chm"
 
 SectionEnd
 
@@ -232,9 +236,9 @@ Section /o "SS_Log lib" SEC06
 SectionEnd
 
 Section "Monaco.ttf" SEC07
-  SetOutPath "$WINDIR\Fonts"
-  SetOverwrite ifnewer
-  File "S:\MacOSX\QTImage2Mov\Monaco.ttf"
+  StrCpy $FONT_DIR $FONTS
+  !insertmacro InstallTTF "S:\MacOSX\QTImage2Mov\Monaco.ttf"
+  SendMessage ${HWND_BROADCAST} ${WM_FONTCHANGE} 0 0 /TIMEOUT=5000
 SectionEnd
 
 ;Section -AdditionalIcons
@@ -263,6 +267,7 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} $(Sec4Descr)
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} $(Sec5Descr)
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} $(Sec6Descr)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC07} $(Sec7Descr)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 

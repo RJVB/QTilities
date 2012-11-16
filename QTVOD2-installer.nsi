@@ -14,6 +14,8 @@ SetCompressor lzma
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
+!include "FontRegAdv.nsh"
+!include "FontName.nsh"
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -118,6 +120,8 @@ LangString Sec3Descr ${LANG_ENGLISH} "Documentation for QTVODm2 and QTImage2Mov 
 LangString Sec1Descr ${LANG_FRENCH} "Le 'QuickTime Importer' QTImage2Mov qui permet d'importer les fichiers VOD et QI2M dans QuickTime.  s'Installe dans $QTDIR\QTComponents"
 LangString Sec2Descr ${LANG_FRENCH} "Le Lecteur QTVODm2 ainsi qu'un exemple de script de lancement et de fichier de configuration"
 LangString Sec3Descr ${LANG_FRENCH} "Documentation pour QTVODm2 et QTImage2Mov (le moteur utilisé par QTVODm2)"
+LangString Sec4Descr  ${LANG_ENGLISH} "Font used for the time and GPS info track in imported videos"
+LangString Sec4Descr  ${LANG_FRENCH} "La police utilisée pour la piste d'horodatage et GPS dans les vidéos importées"
 LangString QI2Mfail  ${LANG_ENGLISH} "could not be installed; to be copied manually into"
 LangString QI2Mfail  ${LANG_FRENCH} "echec d'installation, à copier à la main dans"
 LangString DirSelectSText  ${LANG_ENGLISH} "Install dir (QTImage2Mov will go into $QTDIR\QTComponents!)"
@@ -175,10 +179,10 @@ Section "Documentation" SEC03
   File /nonfatal "S:\MacOSX\QTImage2Mov\QTImage2Mov-v1.1.pdf"
 SectionEnd
 
-Section "Monaco.ttf" SEC04
-  SetOutPath "$WINDIR\Fonts"
-  SetOverwrite ifnewer
-  File "S:\MacOSX\QTImage2Mov\Monaco.ttf"
+Section "Monaco font" SEC04
+  StrCpy $FONT_DIR $FONTS
+  !insertmacro InstallTTF "S:\MacOSX\QTImage2Mov\Monaco.ttf"
+  SendMessage ${HWND_BROADCAST} ${WM_FONTCHANGE} 0 0 /TIMEOUT=5000
 SectionEnd
 
 ;Section -AdditionalIcons
@@ -204,6 +208,7 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} $(Sec1Descr)
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} $(Sec2Descr)
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} $(Sec3Descr)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} $(Sec4Descr)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
