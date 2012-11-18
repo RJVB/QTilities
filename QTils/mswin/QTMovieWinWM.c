@@ -350,6 +350,10 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 			wi->theURL = NULL;
 		}
 		if( wi->dataRef ){
+			if( wi->memRef && wi->memRef->dataRef == wi->dataRef ){
+				wi->memRef->dataRef = NULL;
+				DisposeMemoryDataRef(wi->memRef);
+			}
 			DisposeHandle( wi->dataRef );
 			wi->dataRef = nil;
 			wi->dataRefType = 0;
@@ -586,15 +590,18 @@ QTMovieWindowH OpenQTMovieFromMemoryDataRefInWindow( MemoryDataRef *memRef, OSTy
 
 	err = OpenMovieFromMemoryDataRef( &theMovie, memRef, contentType );
 	if( err != noErr ){
-		Log( qtLogPtr, "OpenMovieFromMemoryDataRef() returned err=%d, dataRefType='%s'\n",
-		    err, OSTStr(memRef->dataRefType)
+		Log( qtLogPtr, "OpenMovieFromMemoryDataRef((virtual)%s) returned err=%d, dataRefType='%s'\n",
+		    memRef->virtURL, err, OSTStr(memRef->dataRefType)
 		);
 		return NULL;
 	}
 
-	wih = OpenQTMovieWindowWithMovie( theMovie, "<in-memory>", 1, memRef->dataRef, memRef->dataRefType, controllerVisible );
+	wih = OpenQTMovieWindowWithMovie( theMovie, memRef->virtURL, 1, memRef->dataRef, memRef->dataRefType, controllerVisible );
 	if( !wih ){
 		DisposeMovie(theMovie);
+	}
+	else{
+		(*wih)->memRef = memRef;
 	}
 	return wih;
 }

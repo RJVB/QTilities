@@ -433,14 +433,16 @@ int main( int argc, char* argv[] )
 			);
 			memset( &data, 0, sizeof(data) );
 			if( xmlErr == noErr && xmldoc->rootElement.identifier == element_root ){
+			  char *boolstr = NULL;
 				xmlErr = GetAttributeIndex( xmldoc->rootElement.attributes, attr_atint, &idx );
 				xmlErr = QTils.GetAttributeIndex( xmldoc->rootElement.attributes, attr_atbool, &idx );
 				xmlErr = GetAttributeIndex( xmldoc->rootElement.attributes, attr_atdouble, &idx );
 				xmlErr = GetIntegerAttribute( &xmldoc->rootElement, attr_atint, &data.atint );
 				xmlErr = QTils.GetBooleanAttribute( &xmldoc->rootElement, attr_atbool, &data.atbool );
+				xmlErr = QTils.GetStringAttribute( &xmldoc->rootElement, attr_atbool, &boolstr );
 				idx = 0;
 				root_content = xmldoc->rootElement.contents;
-				while( root_content[idx].kind != xmlContentTypeInvalid ){
+				while( root_content && root_content[idx].kind != xmlContentTypeInvalid ){
 					if( root_content[idx].kind == xmlContentTypeElement ){
 						element_content = xmldoc->rootElement.contents;
 						theElement = &element_content[idx].actualContent.element;
@@ -509,13 +511,13 @@ int main( int argc, char* argv[] )
 				// register the window in our local list:
 				register_wi(wi);
 				if( wi ){
-				  size_t qlen = strlen(qi2mStringMask) + strlen(argv[i]) + 1;
-					if( (qi2mString = calloc( qlen, sizeof(char) )) ){
+//				  size_t qlen = strlen(qi2mStringMask) + strlen(argv[i]) + 1;
+					qi2mString = NULL;
+					ssprintf( &qi2mString, qi2mStringMask, argv[i] );
+					if( qi2mString ){
 					  MemoryDataRef memRef;
 					  ErrCode err;
-					  Movie theMovie;
-						snprintf( qi2mString, qlen, qi2mStringMask, argv[i] );
-						err = MemoryDataRefFromString( qi2mString, qlen, &memRef );
+						err = MemoryDataRefFromString( qi2mString, "inMemory.qi2m", &memRef );
 						QTils_LogMsgEx( "Importing movie from (qi2m) dataRef %p\n", memRef.dataRef );
 //						err = OpenMovieFromMemoryDataRef( &theMovie, &memRef, 'QI2M' );
 //						QTils_LogMsgEx( "Imported movie with code %d\n", err );
@@ -526,6 +528,7 @@ int main( int argc, char* argv[] )
 							CloseQTMovieWindow(wi);
 						}
 						free(qi2mString);
+						// this should be completely redundant:
 						DisposeMemoryDataRef(&memRef);
 					}
 				}

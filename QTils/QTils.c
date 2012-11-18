@@ -140,6 +140,154 @@ int vsnprintf_Mod2( char *dest, int dlen, const char *format, int flen, va_list 
 	return ret;
 }
 
+int vssprintf( char **buffer, const char *format, va_list ap )
+{ CFStringRef sRef;
+  CFStringRef formatRef;
+  int ret = -1;
+  CFIndex len = -1;
+  char *string;
+  CFStringEncoding enc = CFStringGetSystemEncoding();
+	if( buffer
+	   && (formatRef = CFStringCreateWithCString( kCFAllocatorDefault, format, enc ))
+	   && (sRef = CFStringCreateWithFormatAndArguments( kCFAllocatorDefault, NULL, formatRef, ap ))
+	){
+		CFAllocatorDeallocate( kCFAllocatorDefault, (void*) formatRef );
+		string = (char*) CFStringGetCStringPtr( sRef, enc );
+		if( !string ){
+			len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(sRef), enc ) + 1;
+			if( (string = calloc( len, sizeof(char) )) ){
+				if( !CFStringGetCString( sRef, string, len, enc ) ){
+					free(string);
+					string = NULL;
+				}
+				else{
+					string[len-1] = '\0';
+				}
+			}
+		}
+		if( string ){
+		  size_t slen = strlen(string) + 1;
+			if( *buffer ){
+				*buffer = realloc( *buffer, slen * sizeof(char) );
+			}
+			else{
+				*buffer = calloc( slen, sizeof(char) );
+			}
+			if( *buffer ){
+				strncpy( *buffer, string, slen );
+				(*buffer)[slen-1] = '\0';
+				ret = (int) strlen(*buffer);
+			}
+			if( string && len >= 0 ){
+				free(string);
+			}
+		}
+		CFAllocatorDeallocate( kCFAllocatorDefault, (void*) sRef );
+	}
+	return ret;
+}
+
+int ssprintf( char **buffer, const char *format, ... )
+{ va_list ap;
+  int ret;
+	va_start( ap, format );
+	ret = vssprintf( buffer, format, ap );
+	va_end(ap);
+	return ret;
+}
+	
+int vssprintfAppend( char **buffer, const char *format, va_list ap )
+{ CFMutableStringRef sRef;
+  CFStringRef formatRef;
+  int ret = -1;
+  CFIndex len = -1;
+  char *string;
+  CFStringEncoding enc = CFStringGetSystemEncoding();
+	if( buffer
+	   && (formatRef = CFStringCreateWithCString( kCFAllocatorDefault, format, enc ))
+	   && (sRef = (CFMutableStringRef) CFStringCreateMutable( kCFAllocatorDefault, 0 ))
+	){
+		if( *buffer ){
+			CFStringAppendCString( sRef, *buffer, enc );
+		}
+		CFStringAppendFormatAndArguments( sRef, NULL, formatRef, ap );
+		CFAllocatorDeallocate( kCFAllocatorDefault, (void*) formatRef );
+		string = (char*) CFStringGetCStringPtr( sRef, enc );
+		if( !string ){
+			len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(sRef), enc ) + 1;
+			if( (string = calloc( len, sizeof(char) )) ){
+				if( !CFStringGetCString( sRef, string, len, enc ) ){
+					free(string);
+					string = NULL;
+				}
+				else{
+					string[len-1] = '\0';
+				}
+			}
+		}
+		if( string ){
+		  size_t slen = strlen(string) + 1, slen0;
+			if( *buffer ){
+				slen0 = strlen(*buffer);
+				*buffer = realloc( *buffer, slen * sizeof(char) );
+			}
+			else{
+				slen0 = 0;
+				*buffer = calloc( slen, sizeof(char) );
+			}
+			if( *buffer ){
+				strncpy( *buffer, string, slen );
+				(*buffer)[slen-1] = '\0';
+				ret = (int) strlen(*buffer) - slen0;
+			}
+			if( string && len >= 0 ){
+				free(string);
+			}
+		}
+		CFAllocatorDeallocate( kCFAllocatorDefault, (void*) sRef );
+	}
+	return ret;
+}
+
+int ssprintfAppend( char **buffer, const char *format, ... )
+{ va_list ap;
+  int ret;
+	va_start(ap, format);
+	ret = vssprintfAppend( buffer, format, ap );
+	va_end(ap);
+	return ret;
+}
+
+int vssprintf_Mod2( char **buffer, const char *format, int flen, va_list ap )
+{ char *fmt = (char*) format;
+  int ret = -1;
+	if( strchr( format, '\\' ) ){
+		if( !(fmt = parse_format_opcodes( strdup(format), format )) ){
+			fmt = (char*) format;
+		}
+	}
+	ret = vssprintf( buffer, fmt, ap );
+	if( fmt != format ){
+		free(fmt);
+	}
+	return ret;
+}
+
+int vssprintfAppend_Mod2( char **buffer, const char *format, int flen, va_list ap )
+{ char *fmt = (char*) format;
+  int ret = -1;
+	if( strchr( format, '\\' ) ){
+		if( !(fmt = parse_format_opcodes( strdup(format), format )) ){
+			fmt = (char*) format;
+		}
+	}
+	ret = vssprintfAppend( buffer, fmt, ap );
+	if( fmt != format ){
+		free(fmt);
+	}
+	return ret;
+}
+
 void QTils_LogInit()
 {
 #if (defined(__APPLE_CC__) || defined(__MACH__)) && !defined(EMBEDDED_FRAMEWORK)
@@ -1434,6 +1582,10 @@ void DisposeMemoryDataRef(MemoryDataRef *memRef)
 			DisposeHandle(memRef->memory);
 			memRef->memory = NULL;
 		}
+		if( memRef->virtURL ){
+			free(memRef->virtURL);
+			memRef->virtURL = NULL;
+		}
 	}
 }
 
@@ -1628,11 +1780,15 @@ bail:
 
 /*!
 	Initialises a structure containing a dataRef/dataRefType combination corresponding
-	to the data passed in the string argument.
+	to the data passed in the string argument. If len==0 and string!=NULL, len will be
+	set to strlen(string).
  */
-ErrCode MemoryDataRefFromString( const char *string, size_t len, MemoryDataRef *memRef )
+ErrCode MemoryDataRefFromMemory( const char *string, size_t len, const char *virtURL, MemoryDataRef *memRef )
 { ErrCode err = paramErr;
 	if( string && memRef ){
+		if( !len ){
+			len = strlen(string);
+		}
 		memRef->dataRef = NULL;
 		memRef->memory = NewHandle(len);
 		memcpy( *(memRef->memory), string, len );
@@ -1645,6 +1801,30 @@ ErrCode MemoryDataRefFromString( const char *string, size_t len, MemoryDataRef *
 		else{
 			memRef->dataRefType = HandleDataHandlerSubType;
 		}
+		if( virtURL ){
+			memRef->virtURL = strdup( (virtURL)? virtURL : "<in-memory>" );
+		}
+	}
+	return err;
+}
+
+/*!
+	Initialises a structure containing a dataRef/dataRefType combination corresponding
+	to the data passed in the string argument. If len==0 and string!=NULL, len will be
+	set to strlen(string).
+ */
+ErrCode MemoryDataRefFromString( const char *string, const char *virtURL, MemoryDataRef *memRef )
+{ ErrCode err = paramErr;
+	if( string && memRef ){
+		err = MemoryDataRefFromMemory( string, strlen(string), virtURL, memRef );
+	}
+	return err;
+}
+
+ErrCode MemoryDataRefFromString_Mod2( const char *string, int len, const char *virtURL, int vlen, MemoryDataRef *memRef )
+{ ErrCode err = paramErr;
+	if( string && memRef ){
+		err = MemoryDataRefFromMemory( string, strlen(string), virtURL, memRef );
 	}
 	return err;
 }
@@ -1910,7 +2090,7 @@ ErrCode OpenMovieFromURL_Mod2( Movie *newMovie, short flags, char *URL, int ulen
 }
 
 ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memRef, OSType contentType )
-{ ErrCode err = paramErr;
+{ ErrCode err = couldntGetRequiredComponent;
   DataHandler ldataHandler = NULL;
   ErrCode wihErr;
   MovieImportComponent miComponent = OpenDefaultComponent( MovieImportType, contentType );
@@ -1926,9 +2106,12 @@ ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memRef, OSTy
 			GoToBeginningOfMovie(*newMovie);
 		}
 	}
+	else{
+		err = GetMoviesError();
+	}
 #ifndef QTMOVIESINK
 	if( err == noErr ){
-		InitQTMovieWindowHFromMovie( NewQTMovieWindowH(), "<dataRef>", *newMovie,
+		InitQTMovieWindowHFromMovie( NewQTMovieWindowH(), memRef->virtURL, *newMovie,
 							   memRef->dataRef, memRef->dataRefType, ldataHandler, 1, &wihErr
 		);
 	}
@@ -3428,6 +3611,8 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 
 		dmbase->vsscanf = vsscanf_Mod2;
 		dmbase->vsnprintf = vsnprintf_Mod2;
+		dmbase->vssprintf = vssprintf_Mod2;
+		dmbase->vssprintfAppend = vssprintfAppend_Mod2;
 
 		return sizeof(*dmbase);
 	}
@@ -3452,6 +3637,7 @@ size_t initDMBaseQTils_Mod2( LibQTilsBase *dmbase )
 		// argument after each 'open array' (string pointer) argument; therefore they do NOT conform
 		// to the prototypes in dmbase.
 		// NEVER To be used from C!!
+		dmbase->MemoryDataRefFromString = (void*) MemoryDataRefFromString_Mod2;
 		dmbase->OpenMovieFromURL = (void*) OpenMovieFromURL_Mod2;
 		dmbase->HasMovieChanged = (void*) HasMovieChanged_Mod2;
 		dmbase->SaveMovieAsRefMov = (void*) SaveMovieAsRefMov_Mod2;

@@ -256,18 +256,20 @@ QTLSext ErrCode CloseMovie( Movie *theMovie );
 
 typedef struct MemoryDataRef {
 #if defined(__QUICKTIME__) || defined(__MOVIES__)
-	Handle dataRef;
-	OSType dataRefType;
-	Handle memory;
+	Handle dataRef;		//!< dataRef pointing to in-memory content, e.g. a QI2M file
+	OSType dataRefType;		//!< the dataRef type ('hndl')
+	Handle memory;			//!< the actual in-memory content
 #else
 	void **dataRef;
 	OSType dataRefType;
 	void **memory;
 #endif
+	const char *virtURL;	//!< a description/reference/tag, a virtual URL for the dataRef
 } MemoryDataRef;
 
 QTLSext void DisposeMemoryDataRef(MemoryDataRef *memRef);
-QTLSext ErrCode MemoryDataRefFromString( const char *string, size_t len, MemoryDataRef *memRef );
+QTLSext ErrCode MemoryDataRefFromMemory( const char *string, size_t len, const char *virtURL, MemoryDataRef *memRef );
+QTLSext ErrCode MemoryDataRefFromString( const char *string, const char *virtURL, MemoryDataRef *memRef );
 QTLSext ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memRef, OSType contentType );
 
 #if defined(__QUICKTIME__) || defined(__MOVIES__)
@@ -461,6 +463,7 @@ typedef struct QTMovieWindows {
 	Handle dataRef;
 	OSType dataRefType;
 	DataHandler dataHandler;
+	MemoryDataRef *memRef;			//!< set if the movie was opened from an in-memory dataRef
 	short resId;
 #ifdef _WINDOWS_
 	WINDOWPOS gOldWindowPos;			//!< to keep track of the window's previous position
@@ -667,6 +670,18 @@ QTLSext size_t QTils_LogMsg( const char *msg );
  */
 QTLSext size_t QTils_vLogMsgEx( const char *msg, va_list ap );
 QTLSext size_t QTils_LogMsgEx( const char *msg, ... );
+
+/*!
+	a version of sprintf() that allocates the necessary buffer to hold the result, and
+	returns the number of characters in the resulting buffer. Uses CFStringCreateWithFormatAndArguments
+	to do the actual work and then (re)allocates a buffer that can be released with free() when done.
+ */
+QTLSext int ssprintf( char **buffer, const char *format, ... );
+/*!
+	Like ssprintf(), but appends the formated string to the existing buffer, expanding it as necessary.
+	It returns the number of characters added.
+ */
+QTLSext int ssprintfAppend( char **buffer, const char *format, ... );
 
 #pragma mark ----XML----
 
@@ -989,7 +1004,9 @@ typedef struct LibQTilsBase {
 
 	int (*vsscanf)( const char *source, int slen, const char *format, int flen, va_list ap );
 	int (*vsnprintf)( char *dest, int slen, const char *format, int flen, va_list ap );
-
+	int (*vssprintf)( char **buffer, const char *format, int flen, va_list ap );
+	int (*vssprintfAppend)( char **buffer, const char *format, int flen, va_list ap );
+	
 	/////////////////////////////
 	// public Modula-2 interface:
 	void (*DisposeQTMovieWindow)( QTMovieWindowH WI );
@@ -1013,7 +1030,8 @@ typedef struct LibQTilsBase {
 	void (*unregister_MCAction)( QTMovieWindowH wi, short action );
 
 	void (*DisposeMemoryDataRef)(MemoryDataRef *memRef);
-	ErrCode (*MemoryDataRefFromString)( const char *string, size_t len, MemoryDataRef *memRef );
+	ErrCode (*MemoryDataRefFromString)( const char *string, const char *virtURL, MemoryDataRef *memRef );
+//	ErrCode (*MemoryDataRefFromStringPtr)( const char *string, size_t len, MemoryDataRef *memRef );
 	ErrCode (*OpenMovieFromMemoryDataRef)( Movie *newMovie, MemoryDataRef *memRef, OSType contentType );
 	QTMovieWindowH (*OpenQTMovieFromMemoryDataRefInWindow)( MemoryDataRef *memRef, OSType contentType, int controllerVisible );
 

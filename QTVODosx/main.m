@@ -71,6 +71,7 @@ BOOL doLogging = NO;
 		}
 		[QTVODList release];
 		QTVODList = nil;
+		CloseQT();
 	}
 	if( nsXMLVD ){
 		[nsXMLVD release];
