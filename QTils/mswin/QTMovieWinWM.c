@@ -470,6 +470,7 @@ static QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *th
 				// internal registry based on a C++ hash_map (see list.cpp)
 
 				ShowMoviePoster( wi->theMovie );
+				SetMovieActive( wi->theMovie, TRUE );
 				CreateNewMovieController(wih, visibleController);
 				// call QTMovieWindowSetGeometry with scale==1 to update the controllerHeight:
 				QTMovieWindowSetGeometry( wih, NULL, NULL, 1.0, 0 );
