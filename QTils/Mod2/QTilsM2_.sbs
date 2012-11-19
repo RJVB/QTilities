@@ -1,0 +1,130 @@
+SCRIPT QTilsM2_;
+
+BEGIN
+    CreateProject(Win32, "S:\MacOSX\QTilities\QTils\Mod2\QTilsM2_.sbp");
+
+    SetDirectory(DEF, ".;def");
+    SetDirectory(MOD, ".;mod");
+    SetDirectory(SYM, "win32sym");
+    SetDirectory(OBJ, "win32obj");
+    SetDirectory(RES, ".");
+    SetDirectory(LIB, ".");
+
+    SetValidVersionTags("DLL,SGI,GPLINUX,LIB_UTIL,VK,PF");
+    SetVersionTags("DLL,LIB_UTIL");
+
+    (* Project options *)
+
+    SetProjectOption(PrjRecompileForDebug, Yes);
+    SetProjectOption(PrjDebugFormat, StonyBrook);
+    SetProjectOption(PrjSafetyBelts, No);
+    SetProjectOption(PrjRestrictCpu, No);
+    SetProjectOption(PrjStackSize, 32);
+    SetProjectOption(PrjObjFormat, msCOFF);
+    SetProjectOption(PrjScanProjectsFirst, No);
+    SetProjectOption(PrjCheckRemoteDirectories, No);
+    SetProjectOption(PrjImportsAreReadWrite, No);
+    SetProjectOption(PrjLinkDllRtl, No);
+    SetProjectOption(PrjInitDataValue, 0BAADF00Dh);
+    SetProjectOption(PrjStopBuildOnError, No);
+
+
+    (* Global compiler options *)
+
+    SetCompilerOption(CheckSubscripts, GlobalOption, No);
+    SetCompilerOption(CheckAssignments, GlobalOption, No);
+    SetCompilerOption(CheckVariants, GlobalOption, No);
+    SetCompilerOption(CheckPointers, GlobalOption, No);
+    SetCompilerOption(CheckOverflow, GlobalOption, No);
+    SetCompilerOption(CheckStack, GlobalOption, No);
+    SetCompilerOption(ModuleCheck, GlobalOption, Yes);
+    SetCompilerOption(CheckUninitialized, GlobalOption, No);
+    SetCompilerOption(InitializeData, GlobalOption, No);
+    SetCompilerOption(Lines, GlobalOption, Yes);
+    SetCompilerOption(Debug, GlobalOption, Yes);
+    SetCompilerOption(MakeDebuggable, GlobalOption, Yes);
+    SetCompilerOption(AliasGlobalLocal, GlobalOption, No);
+    SetCompilerOption(AliasParams, GlobalOption, No);
+    SetCompilerOption(AliasPointers, GlobalOption, Yes);
+    SetCompilerOption(SparseCase, GlobalOption, Yes);
+    SetCompilerOption(PackedRecords, GlobalOption, Yes);
+    SetCompilerOption(InlineSingleCalls, GlobalOption, Yes);
+    SetCompilerOption(ModuleInitCode, GlobalOption, Yes);
+    SetCompilerOption(Cmain, GlobalOption, No);
+    SetCompilerOption(CharImplementation, GlobalOption, ASCII);
+    SetCompilerOption(Alignment, GlobalOption, Align4);
+    SetCompilerOption(InlineLimit, GlobalOption, Inline0);
+    SetCompilerOption(ForceTraceableCode, GlobalOption, No);
+    SetCompilerOption(TargetProcessor, GlobalOption, PentiumII);
+    SetCompilerOption(CodeListing, GlobalOption, No);
+    SetCompilerOption(ExtendedSyntax, GlobalOption, Yes);
+    SetCompilerOption(TypedPointers, GlobalOption, No);
+    SetCompilerOption(OutputLibrary, GlobalOption, No);
+    SetCompilerOption(ExtendedArchive, GlobalOption, Yes);
+    SetCompilerOption(WarnCodeGen, GlobalOption, Yes);
+    SetCompilerOption(WarnAlignment, GlobalOption, Yes);
+    SetCompilerOption(WarnCaseSelectors, GlobalOption, Yes);
+    SetCompilerOption(WarnDead, GlobalOption, Yes);
+    SetCompilerOption(WarnCast, GlobalOption, Yes);
+    SetCompilerOption(WarnProcNotImplemented, GlobalOption, Yes);
+    SetCompilerOption(WarnFuncCalledAsProc, GlobalOption, Yes);
+    SetCompilerOption(WarnRange, GlobalOption, Yes);
+    SetCompilerOption(WarnWith, GlobalOption, Yes);
+    SetCompilerOption(OptimizeSpace, GlobalOption, Yes);
+    SetCompilerOption(EnableSrcOptimize, GlobalOption, Yes);
+    SetCompilerOption(CommonSubs, GlobalOption, Yes);
+    SetCompilerOption(ConditionalCommonSubs, GlobalOption, Yes);
+    SetCompilerOption(LoopInvariants, GlobalOption, Yes);
+    SetCompilerOption(InductionVariables, GlobalOption, Yes);
+    SetCompilerOption(LoopRewriting, GlobalOption, Yes);
+    SetCompilerOption(Propagation, GlobalOption, Yes);
+    SetCompilerOption(DeadCode, GlobalOption, Yes);
+    SetCompilerOption(DeadStores, GlobalOption, Yes);
+    SetCompilerOption(JumpChaining, GlobalOption, Yes);
+    SetCompilerOption(LiveVariables, GlobalOption, Yes);
+    SetCompilerOption(RegisterParameterPassing, GlobalOption, Yes);
+    SetCompilerOption(CrossModuleRegUse, GlobalOption, No);
+    SetCompilerOption(EnableAsmOptimize, GlobalOption, Yes);
+    SetCompilerOption(PeepholeFlow, GlobalOption, Yes);
+    SetCompilerOption(PeepholeLife, GlobalOption, Yes);
+    SetCompilerOption(InstructionHoisting, GlobalOption, Yes);
+    SetCompilerOption(TailMerging, GlobalOption, Yes);
+
+    (* Linker options *)
+
+    SetLinkerOption(LinkDebug, No);
+    SetLinkerOption(LinkPackDebug, Yes);
+    SetLinkerOption(LinkMap, No);
+    SetLinkerOption(LinkMapLines, No);
+    SetLinkerOption(LinkIgnoreCase, No);
+    SetLinkerOption(LinkDefaultLibs, Yes);
+    SetLinkerOption(LinkAllowUndefined, No);
+    SetLinkerOption(LinkSmartVMethods, No);
+    SetLinkerOption(LinkConsoleApp, No);
+    SetLinkerOption(LinkOtherLinker, No);
+    SetLinkerOption(LinkPostProcess, No);
+    SetLinkerOption(LinkSectionAlign, Align4k);
+    SetLinkerOption(LinkSystemVersion, 4.00);
+    SetLinkerOption(LinkStackReserve, 256);
+    SetLinkerOption(LinkHeapReserve, 1024);
+    SetLinkerOption(LinkHeapCommit, 4);
+    SetLinkerOption(LinkOutputFixups, Default);
+    SetLinkerOption(LinkLargeAddressAware, No);
+    SetLinkerOption(LinkSwapRunRemovable, No);
+    SetLinkerOption(LinkSwapRunNet, No);
+
+    (* Librarian options *)
+
+    SetLibrarianOption(LibDeleteObj, No);
+    SetLibrarianOption(LibOtherLibrarian, No);
+    SetLibrarianOption(LibIncludeObjLibs, Yes);
+    SetLibrarianOption(LibExtendedArchive, Yes);
+
+    (* Add sources to project *)
+
+    AddAllModules;
+
+    BuildObjectLibrary;
+
+    ExitProgram;
+END QTilsM2_.

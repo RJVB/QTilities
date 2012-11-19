@@ -78,6 +78,7 @@ QTLSext QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const ch
 QTLSext void DisposeQTMovieWindow( QTMovieWindowH WI );
 QTLSext void DisposeQTMovieWindow_Mod2( QTMovieWindowH *WI );
 QTLSext QTMovieWindowH OpenQTMovieInWindow_Mod2( const char *theURL, int ulen, int withController );
+QTLSext QTMovieWindowH OpenQTMovieWindowWithMovie_Mod2( Movie theMovie, char *theURL, int ulen, int visibleController );
 
 QTLSext ErrCode Check4XMLError_Mod2( ComponentInstance xmlParser, ErrCode err, const char *theURL,
 						int ulen, unsigned char *descr, int dlen );

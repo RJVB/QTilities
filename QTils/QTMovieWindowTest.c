@@ -509,8 +509,7 @@ int main( int argc, char* argv[] )
 			for( i = 1 ; i < argc ; i++ ){
 				wi = OpenQTMovieInWindow( argv[i], (i> 0 && i==argc-1)? 0 : 1 );
 				// register the window in our local list:
-				register_wi(wi);
-				if( wi ){
+				if( i == 1 && wi ){
 //				  size_t qlen = strlen(qi2mStringMask) + strlen(argv[i]) + 1;
 					qi2mString = NULL;
 					ssprintf( &qi2mString, qi2mStringMask, argv[i] );
@@ -521,17 +520,18 @@ int main( int argc, char* argv[] )
 						QTils_LogMsgEx( "Importing movie from (qi2m) dataRef %p\n", memRef.dataRef );
 //						err = OpenMovieFromMemoryDataRef( &theMovie, &memRef, 'QI2M' );
 //						QTils_LogMsgEx( "Imported movie with code %d\n", err );
-						wi = OpenQTMovieFromMemoryDataRefInWindow( &memRef, 'QI2M', 1 );
-						QTils_LogMsgEx( "Imported movie with wi=%p, code %d\n", wi, LastQTError() );
-						if( wi ){
-//							CloseMovie(&theMovie);
+						if( err == noErr ){
 							CloseQTMovieWindow(wi);
+							wi = OpenQTMovieFromMemoryDataRefInWindow( &memRef, 'QI2M', 1 );
+							if( wi ){
+								QTMovieWindowSetTime( wi, 0, 0 );
+								QTils_LogMsgEx( "Imported movie with wi=%p, code %d\n", wi, LastQTError() );
+							}
 						}
 						free(qi2mString);
-						// this should be completely redundant:
-						DisposeMemoryDataRef(&memRef);
 					}
 				}
+				register_wi(wi);
 			}
 		}
 		signal( SIGABRT, doSigExit );
@@ -577,7 +577,7 @@ int main( int argc, char* argv[] )
 
 		for( i = 0 ; i < numQTMW ; i++ ){
 			// play the movie
-			QTMovieWindowPlay( winlist[i] );
+			//QTMovieWindowPlay( winlist[i] );
 		}
 
 		if( numQTMW > 1 ){

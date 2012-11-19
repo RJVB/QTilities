@@ -1,0 +1,832 @@
+DEFINITION MODULE QTilsM2;
+
+(*
+	module d'interface avec QTils.dll, elle-même interface avec QuickTime
+	contient également un nombre de fonctionalités non liées à QuickTime
+	et qui pourraient être migrées vers un module/DLL séparé
+	(LogMsg, sscanf/sprintf)
+ *)
+
+FROM SYSTEM IMPORT
+    ADDRESS, CAST;
+
+%IF WIN32 %THEN
+	IMPORT WIN32;
+	FROM WIN32 IMPORT
+%ELSE
+	IMPORT Windows;
+	FROM Windows IMPORT
+%END
+		HWND, DWORD;
+
+CONST
+
+	(* QT XML constants *)
+	xmlIdentifierInvalid					= 0;
+	xmlIdentifierUnrecognized			= 0FFFFFFFFh;
+	xmlContentTypeInvalid					= 0;
+	xmlContentTypeElement					= 1;
+	xmlContentTypeCharData				= 2;
+	attributeValueKindCharString	= 0;
+	(* RJVB: cas particulier de attributeValueKindCharString... *)
+	attributeValueKindDouble			= attributeValueKindCharString;
+	attributeValueKindInteger			= 1;		(* Number*)
+	attributeValueKindPercent			= 2;		(* Number or percent*)
+	attributeValueKindBoolean			= 4;		(* "true" or "false"*)
+	attributeValueKindOnOff				= 8;		(* "on" or "off"*)
+	attributeValueKindColour				= 16;		(* Either "#rrggbb" or a color name*)
+	attributeValueKindEnum				= 32;		(* one of a number of strings; the enum strings are passed as a zero-separated, Real64-zero-terminated C string in the attributeKindValueInfo param*)
+	attributeValueKindCaseSensEnum	= 64;		(* one of a number of strings; the enum strings are passed as for attributeValueKindEnum, but the values are case-sensitive*)
+	MAX_ATTRIBUTE_VALUE_KIND			= attributeValueKindCaseSensEnum;
+	recordAttributeValueTypeCharString	= 0;
+	recordAttributeValueTypeInteger			= 1;		(* Number*)
+	recordAttributeValueTypePercent			= 2;		(* Number or percent*)
+	recordAttributeValueTypeBoolean			= 4;		(* "true" or "false"*)
+	recordAttributeValueTypeOnOff				= 8;		(* "on" or "off"*)
+	recordAttributeValueTypeDouble			= (1+MAX_ATTRIBUTE_VALUE_KIND);
+	MAX_RECORD_ATTRIBUTE_VALUE_TYPE			= recordAttributeValueTypeDouble;
+	attributeNotFound							= -1;
+
+TYPE
+
+%IF StonyBrook %THEN
+	Int8 = INTEGER8;
+	UInt8 = CARDINAL8;
+	Int16 = INTEGER16; (*[-32768..32767]*)
+	UInt16 = CARDINAL16;
+	Int32 = INTEGER32;
+	UInt32 = CARDINAL32;
+	Int64 = INTEGER64;
+	float = REAL;
+	Real32 = REAL;
+	(* double = LONGREAL; *)
+	Real64 = LONGREAL;
+%END
+
+	Ptr						=	POINTER TO ADDRESS;
+	StringPtr			=	POINTER TO ARRAY OF CHAR;
+	String5b			=	ARRAY[0..4] OF CHAR;
+	(* String1kPtr permet aussi de déboguer des chaines C retournées par une DLL C/C++;
+	 * la taille ne sert que pour l'affichage dans le debogueur à ce moment; cf. ssprintf et ssprintfAppend *)
+	String1kPtr		= POINTER TO ARRAY[0..1023] OF CHAR;
+	Str255				= ARRAY[0..256] OF CHAR;
+	OSTypeStr			= ARRAY[0..3] OF CHAR;
+	Cartesian			=
+		RECORD
+			vertical, horizontal : Int16;
+		END;
+	CartesianPtr	= POINTER TO Cartesian;
+	QTRect					=
+		RECORD
+			top, left, bottom, right : Int16;
+		END;
+	QTRectPtr				= POINTER TO QTRect;
+
+	(* QuickTime utilise des OSErr en 16 octets, MSWin des codes en 32 octets *)
+	ErrCode				= Int32;
+	(* un OSType en 'MacSpeak' est un entier 32 octets représenté par 4 caractères imprimables,
+	 * du genre 'MooV' (0x566f6f4d) pour un Movie. *)
+	OSType				= UInt32;
+	TimeValue			= Int32;
+	MemoryDataRef	= RECORD
+			dataRef : POINTER TO ADDRESS;
+			dataRefType : OSType;
+			memory : POINTER TO ADDRESS;
+			virtURL : String1kPtr;
+		END;
+	(* le type Movie est un pointer vers un type opaque dans le SDK QuickTime: on émule: *)
+	Movie					= POINTER TO ADDRESS;
+	Track					= POINTER TO ADDRESS;
+	ComponentInstance	= POINTER TO ADDRESS;
+	EventKind			= UInt16;
+	EventModifiers= UInt16;
+	EventRecord		= RECORD
+			what : EventKind;
+			message, when : UInt32;
+			where : Cartesian;
+			modifiers : EventModifiers;
+		END;
+	EventRecordPtr= POINTER TO EventRecord;
+
+	RGBColour			=
+		RECORD
+			red, green, blue : UInt16;
+		END;
+
+	MovieFrameTime= RECORD
+			hours, minutes, seconds, frames : UInt8;
+		END;
+	MovieFrameTimePtr	= POINTER TO MovieFrameTime;
+
+	(* ==== QTMovieSinks ==== *)
+
+<*/VALIDVERSION:TARGET_OS_MAC*>
+	QTPixelAddressingClass =
+		(
+			QTCompressImage, QTImageCompressionSession, QTRawBits
+		);
+
+	(*
+		on ne donne qu'un type complet pour les images d'entrée avec canal alpha (le cas le plus courant?)
+		car le cas sans alpha est un trop compliqué (4 octets sur Mac, 3 sur Win32)
+	*)
+	QTAPixel				=
+		RECORD
+			CASE : QTPixelAddressingClass OF
+				QTCompressImage :
+						ciChannel :
+							RECORD
+%IF TARGET_OS_MAC %THEN
+								(* pour info: l'ordre est differente ici *)
+								alpha, red, green, blue	: UInt8;
+%ELSE
+								red, green, blue, alpha	: UInt8;
+%END
+							END;
+				| QTImageCompressionSession :
+						icmChannel :
+							RECORD
+%IF TARGET_OS_MAC %THEN
+								(* pour info: l'ordre est differente ici *)
+								alpha, red, green, blue	: UInt8;
+%ELSE
+								blue, green, red, alpha	: UInt8;
+%END
+							END;
+				| QTRawBits :
+						value : UInt32;
+			END;
+		END;
+
+	QTPixel				=
+		RECORD
+			CASE : QTPixelAddressingClass OF
+				QTCompressImage, QTImageCompressionSession :
+						Channel :
+							RECORD
+%IF %NOT TARGET_OS_MAC %THEN
+								blue, green, red	: UInt8;
+%END
+							END;
+				ELSE
+			END;
+		END;
+
+	QTAPixelPtr				= POINTER TO QTAPixel;
+	(*
+		a "reasonable" maximal length for an imageFrame framebuffer element: 1920x1080 pixels. Most
+		will undoubtedly be smaller...
+	*)
+	QTFrameBuffer			= POINTER TO ARRAY[0..1920*1080-1] OF QTAPixel;
+	(*
+		there are a maximum of 255 imageFrame framebuffers in a QTMovieSink. Again, most will use
+		(far) less.
+	*)
+	QTFrameBuffers		= POINTER TO ARRAY[0..255] OF QTFrameBuffer;
+
+	QTMovieSinkQTStuff = RECORD (* affaires intérieures *) END;
+
+(*
+	The public descriptor structure for a QuickTime Movie sink. This is an object
+	that allows to 'dump' a stream of raster images with identical dimensions to a QuickTime movie, compressing
+	on the fly with one of several codecs.
+	Two methods are supported: the legacy approach using CompressImage, and the more modern
+	approach using ICM Compression Sessions.
+*)
+	QTMovieSinks		=
+		RECORD
+			privQT : POINTER TO QTMovieSinkQTStuff;
+			theURL : String1kPtr;						(* the (full) pathname where to save the video *)
+			useICM : UInt16;								(* whether or not the more modern ICM Compression Sessions are used *)
+			Width, Height : UInt16;					(* width and height of the images *)
+			hasAlpha : UInt16;							(* whether the images have an alpha channel *)
+			dealloc_qms, dealloc_imageFrame : Int16;
+			AddFrame_RT : Int16;						(* Win32 only: whether to switch to "realtime" priority in the
+																				QTMovieSink_AddFrame functions
+																			*)
+			imageFrame : QTFrameBuffers;
+																			(* pointer to the image data, allocated at initialisation.
+																				This is where the user code has to copy or generate the image.
+																				imageFrame contains frameBuffers matrices of Width * Height * 4
+																				bytes.
+																				NB: frameBuffers is forced to 1 for CompressImage
+																			*)
+			currentFrame,										(* current ICMEncodingFrame *)
+				frameBuffers : UInt16;				(* number of ICMEncodingFrames configured *)
+			lastErr : ErrCode;							(* last error that occurred. *)
+		END;
+	QTMovieSinkPtr	= POINTER TO QTMovieSinks;
+
+(*
+	public structure containing the encoding statistics of a compression session
+*)
+QTMSEncodingStats	=
+	RECORD
+		Duration,													(* current duration *)
+			frameRate : Real64;							(* current instantaneous frame rate *)
+		Total,														(* total number of encoded frames until now *)
+			Dropped,												(* ICM: number of dropped frames *)
+			Merged,													(* ICM: number of frames that were merged (with preceding frame(s)) *)
+			timeChanged,										(* ICM: number of frames for which the frametime was modified *)
+			bufferCopied : Int32;						(* ICM: number of frames that had to be copied to allow encoding *)
+	END;
+
+(*
+	The video codecs supported by default. These are just convenience variables allowing to avoid
+	dependencies on the QuickTime headers (it should be possible to use QTMovieSink without having the
+	QuickTime SDK installed). It is perfectly possible to use the FOURCHARCODE of another codec, as
+	long as it works with RGB or RGBA data.
+*)
+QTCompressionCodecs	=
+	RECORD
+		Video															(* the Video codec *)
+			, JPEG													(* the Motion JPEG codec *)
+			, JPEGA													(* the Motion JPEGA codec *)
+			, Animation											(* an animation codec, lossless and appropriate for computer-generated images *)
+			, HD720p												(* the DVCPro HD 720 p codec *)
+			, HD1080i60											(* the DVCPro HD 1080i 60Hz codec *)
+			, MPEG4													(* an MPEG4 encoder *)
+			, H264													(* an MPEG4 - H.264 encoder *)
+			, Raw														(* raw image stream output *)
+			, Cinepak												(* the old CinePak codec *)
+%IF TARGET_OS_MAC %THEN
+			, ApplePixlet										(* Macintosh only: the Pixlet fractal codec. *)
+%END
+									: UInt32;
+	END;
+
+(*
+	Convenience structure encapsulating QuickTime's quality levels
+*)
+QTCompressionQualities	=
+	RECORD
+		Lossless,													(* lossless quality; the animation codec uses RLE in this case *)
+		Max,															(* highest quality, slowest *)
+		Min,															(* lowest quality, fastest *)
+		Low,															(* low quality, faster *)
+		Normal,														(* normal quality; optimal quality/speed trade-off *)
+		High 					: UInt32;						(* high quality: acceptable quality/speed trade-off *)
+	END;
+
+	(* ==== QTMovieWindows ==== *)
+
+	NativeWindow	= HWND;
+	NativeWindowPtr	= POINTER TO NativeWindow;
+	NativeError		= DWORD;
+
+	QTMovieInfo		=
+		RECORD
+			(* NB: Real64s are aligned on 8-byte boundaries using padding ... take this into account
+			 * when interfacing from e.g. Modula-2! Listing them all together at the beginning of this
+			 * structure should avoid any alignment issues. *)
+			frameRate, TCframeRate,
+				duration,
+				startTime	: Real64;
+			timeScale		: TimeValue;
+			startFrameNr	: Int32;
+			naturalBounds	: QTRect;
+			controllerHeight : Int16;
+		END;
+
+	QTMovieWindows=
+		RECORD
+			self : POINTER TO QTMovieWindows;
+			theView : NativeWindow;
+			theViewPtr : NativeWindowPtr;
+			theURL : String1kPtr;
+			idx : Int32;
+
+			isPlaying, isActive : Int32;
+			loadState : Int32;
+			wasStepped, wasScanned : Int32;
+			handlingEvent, shouldClose : Int32;
+			theMovie : Movie;
+			info : POINTER TO QTMovieInfo;
+			user_data : ADDRESS;
+			(* ATTENTION: ce type n'est pas complet, l'allocation d'instances
+				est faite par QTils.dll!!
+			*)
+		END;
+
+	QTMovieWindowPtr= POINTER TO QTMovieWindows;
+	(* Handle: pointer to pointer to quelquechose *)
+	QTMovieWindowH	= POINTER TO QTMovieWindowPtr;
+
+	(* type de fonction appellée quand une QuickTime MovieController action se produit *)
+	MCActionParams	= ADDRESS;
+	MCActionCallback= PROCEDURE(QTMovieWindowH, MCActionParams):Int32 [CDECL];
+	(* les actions supportées: *)
+	MCActions				=
+		RECORD
+			(* Step: the action sent when the user 'steps' the movie with the cursor keys. The action
+			 * is received *before* the step is executed!
+			 * NB: we know in which direction the movie is being stepped:
+			 * params==1 -> forward; params==-1 -> backward
+			 * The action is not yet finished when the next Play action is received, but during a subsequent
+			 * Idle action. That Idle action will call the Step MCActionCallback with param==NULL *)
+			Step,
+			(* Play: received when the movie is about to be played, even if for only a single frame
+			 * (i.e. to display a new current frame). *)
+			Play,
+			(* Activate: sent each time the movie is activated *)
+			Activate,
+			Deactivate,
+			(* GoToTime: sent when the current movie time is about to be changed, including when the
+			 * user steps or scans the movie. The params argument passed to the MCActionCallback points
+			 * to a Real64 containing the movie's new time, in seconds.
+			 * The action is finished when the next Play action is received. *)
+			GoToTime,
+			(* for MousDown, MovieClick and KeyUp, params is a pointer to an EventRecord *)
+			MouseDown,
+			MovieClick,
+			KeyUp,
+			Suspend,
+			Resume,
+			(* LoadState: actions received during loading of streamed movies. params==kMovieLoadStateComplete
+			 * when the movie has been loaded fully. The loadState variable in the QTMovieWindow will NOT
+			 * yet have been updated! (MCActions arrive before the action is executed) *)
+			LoadState,
+			(* Finished: sent when the movie has finished *)
+			Finished,
+			(* For completeness sake: the Idle action which can be received *very* often *)
+			Idle,
+			(* non-QT actions: starting/stopping playback and closing the window. params will be NULL *)
+			Start, Stop, Close									: Int16;
+		END;
+	MCActionsPtr	= POINTER TO MCActions;
+
+	(* les types de méta-données supportés: *)
+	AnnotationKey	= UInt32;
+	AnnotationKeys=
+		RECORD
+			akAuthor, akComment, akCopyRight, akDisplayName,
+			akInfo, akKeywords, akDescr, akFormat, akSource,
+			akSoftware, akWriter, akYear, akCreationDate, akTrack : AnnotationKey;
+		END;
+	(* chaine pour spécifier le langage d'un item de méta-données, par exemple "fr_FR" *)
+	MDLangStr			= ARRAY[0..16] OF CHAR;
+
+	(* QuickTime XML functionality: work in progress! *)
+	XMLAttributeValue	=
+		RECORD
+			CASE : CARDINAL OF
+				attributeValueKindInteger, attributeValueKindPercent :
+						number : Int32;
+				| attributeValueKindBoolean, attributeValueKindOnOff :
+						boolean : UInt8;
+				| attributeValueKindColour :
+						colour : RGBColour;
+				| attributeValueKindEnum :
+						enumType : UInt32;
+				ELSE
+			END;
+		END;
+	XMLAttribute		=
+		RECORD
+			identifier : UInt32;
+			name : String1kPtr;
+			valueKind : Int32;
+			value : XMLAttributeValue;
+			valueStr : String1kPtr;
+		END;
+	XMLAttributePtr	= POINTER TO XMLAttribute;
+	XMLContentPtr		= POINTER TO XMLContent;
+	XMLElement			=
+		RECORD
+			identifier : UInt32;
+			name : String1kPtr; (* normalement bien plus court que 1024... *)
+			(* attributes est en fait un array of XMLAttribute! *)
+			attributes : XMLAttributePtr;
+			contents : XMLContentPtr;
+		END;
+	XMLElementContent	=
+		RECORD
+			CASE : CARDINAL OF
+				xmlContentTypeElement :
+						element : XMLElement;
+				| xmlContentTypeCharData :
+						charData : String1kPtr;
+				ELSE
+			END;
+		END;
+	XMLContent				=
+		RECORD
+			kind : UInt32;
+			actualContent : XMLElementContent;
+		END;
+	XMLElementContentArrayPtr	= POINTER TO ARRAY[0..0] OF XMLElementContent;
+	XMLContentArrayPtr	= POINTER TO ARRAY[0..0] OF XMLContent;
+	XMLElementArrayPtr	= POINTER TO ARRAY[0..0] OF XMLElement;
+	XMLDocRecord			=
+		RECORD
+			xmlDataStorage : ADDRESS;
+			rootElement	: XMLElement;
+		END;
+	XMLDoc						= POINTER TO XMLDocRecord;
+
+	(* 20111003: interprétation "automatisée" *)
+	XML_ITEM_TYPES = ( xml_element, xml_attribute );
+
+	XMLAttributeParseCallback = PROCEDURE(XMLElement, UInt32, ARRAY OF XML_RECORD,
+									UInt32, ARRAY OF CHAR) : ErrCode;
+
+	XML_RECORD =
+		RECORD
+			CASE itemType : XML_ITEM_TYPES OF
+				xml_element :
+					elementTag : ARRAY[0..63] OF CHAR;
+					elementID : UInt32;
+				| xml_attribute :
+					attributeTag : ARRAY[0..63] OF CHAR;
+					attributeID, attributeType : UInt32;
+					CASE useHandler : BOOLEAN OF
+						FALSE :
+							parsed : ADDRESS;
+						| TRUE :
+							handler : XMLAttributeParseCallback;
+					END;
+			END;
+	END;
+
+	(* tableau avec les fonctions exportées par QTils.dll et nous-mêmes : *)
+	(* NB: il semble qu'il vaut mieux déclarer tout [CDECL] et non [StdCall]! *)
+	QTilsExports			=
+		RECORD
+			(* ferme une QTMovieWindow (si encore ouvert) et libère le handle *)
+			DisposeQTMovieWindow : PROCEDURE(VAR QTMovieWindowH) [CDECL];
+			(*
+					obtient le QTMovieWindowH associé à un Movie; même un movie ouvert avec
+					OpenMovieFromURL en aura un qui contiendra toutes les informations pertinentes
+					pour un Movie qui n'est pas ouverte dans une fenêtre.
+			*)
+			QTMovieWindowHFromMovie : PROCEDURE(Movie):QTMovieWindowH [CDECL];
+
+			ActivateQTMovieWindow : PROCEDURE(QTMovieWindowH):ErrCode [CDECL];
+			QTMovieWindowToggleMCController : PROCEDURE(QTMovieWindowH):ErrCode [CDECL];
+			QTMovieWindowPlay : PROCEDURE(QTMovieWindowH):ErrCode [CDECL];
+			QTMovieWindowStop : PROCEDURE(QTMovieWindowH):ErrCode [CDECL];
+
+			(* procedure pour gérer le temps: si <absolute> est TRUE, le temps absolut "réel"
+			 * est utilisé si le Movie dispose d'une piste TimeCode. Sinon, c'est le temps relatif,
+			 * c-a-d à partir du début du Movie. A priori, tempsAbsolut = startTime + tempsRelatif . *)
+			QTMovieWindowGetTime : PROCEDURE(QTMovieWindowH, (*t*) VAR Real64,
+				(*absolute*) Int32):ErrCode [CDECL];
+			(* obtient le temps actuel dans le format heures/minutes/secondes/trames *)
+			QTMovieWindowGetFrameTime : PROCEDURE(QTMovieWindowH, (*ft*) VAR MovieFrameTime,
+				(*absolute*) Int32):ErrCode [CDECL];
+			QTMovieWindowSetTime : PROCEDURE(QTMovieWindowH, (*t*) Real64,
+				(*absolute*) Int32):ErrCode [CDECL];
+			(* envoie le movie vers un nouveau temps dans le format heures/minutes/secondes/trames *)
+			QTMovieWindowSetFrameTime : PROCEDURE(QTMovieWindowH, (*ft*) VAR MovieFrameTime,
+				(*absolute*) Int32):ErrCode [CDECL];
+			(* conversion; NB: utiliser TCframeRate pour convertir un temps absolut! *)
+			secondsToFrameTime : PROCEDURE((*t*) Real64, (*freq*) Real64,
+									(*ft*) VAR MovieFrameTime ):MovieFrameTimePtr [CDECL];
+			(* pour changer position et/ou taille d'une QTMovieWindow sur l'écran. pos et/ou size
+			 * peuvent être NULL pour ne pas être changée(s); l'échelle sizeScale s'applique sur la
+			 * taille (en plus de <size>!) *)
+			QTMovieWindowSetGeometry : PROCEDURE(QTMovieWindowH, (*pos*) CartesianPtr,
+									(*size*) CartesianPtr, (*sizeScale*) Real64,
+									(*setEnvelope*) Int32):ErrCode [CDECL];
+			QTMovieWindowGetGeometry : PROCEDURE(QTMovieWindowH, (*pos*) CartesianPtr,
+									(*size*) CartesianPtr, (*getEnvelope*) Int32):ErrCode [CDECL];
+
+			(* enregistre une fonction à appeler quand l'action spécifiée est sur le point de se produire.
+			 * Si la fonction retourne FALSE (0), l'action est annulée *)
+			register_MCAction : PROCEDURE(QTMovieWindowH, (*action*) Int16, MCActionCallback) [CDECL];
+			(* obtient la fonction actuellement enregistrée pour l'action spécifiée *)
+			get_MCAction : PROCEDURE(QTMovieWindowH, (*action*) Int16 ):MCActionCallback [CDECL];
+			(* enlève la fonction actuellement enregistrée pour l'action spécifiée *)
+			unregister_MCAction : PROCEDURE(QTMovieWindowH, (*action*) Int16) [CDECL];
+
+			(* quelques fonctions QuickTime de base: *)
+
+			DisposeMemoryDataRef : PROCEDURE( (*memRef*) VAR MemoryDataRef ) [CDECL];
+			(* initialise memRef avec le contenu de la chaine string *)
+			MemoryDataRefFromString : PROCEDURE( (*string*) ARRAY OF CHAR, (*virtURL*) ARRAY OF CHAR, (*memRef*) VAR MemoryDataRef ):ErrCode [CDECL];
+			(*MemoryDataRefFromStringPtr : PROCEDURE( StringPtr, Uint32, VAR MemoryDataRef ):ErrCode [CDECL];*)
+			(* crée un Movie à partir des données de type 'contentType' (par exemple FOUR_CHAR_CODE("QI2M"))
+			 * contenues dans memRef *)
+			OpenMovieFromMemoryDataRef : PROCEDURE( VAR (*newMovie*) Movie, (*memRef*) VAR MemoryDataRef, (*contentType*) OSType ):ErrCode [CDECL];
+			OpenQTMovieFromMemoryDataRefInWindow : PROCEDURE( (*memRef*) VAR MemoryDataRef, (*contentType*) OSType,
+				(*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
+			OpenQTMovieWindowWithMovie : PROCEDURE( (*theMovie*)Movie, (*theURL*) ARRAY OF CHAR, (*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
+
+			(* ouvre le fichier QuickTime spécifié et retourne un 'handle' dans Movie. Passer flags=1 pour
+			 * ouvrir le Movie en mode active. NB: ce Movie ne sera pas affichée dans une fenêtre! *)
+			OpenMovieFromURL : PROCEDURE(VAR Movie, (*flags*) Int16,
+									(*fileName*) ARRAY OF CHAR):ErrCode [CDECL];
+			HasMovieChanged : PROCEDURE(Movie):UInt16 [CDECL];
+			(* enregistre Movie dans son fichier sur disque *)
+			SaveMovie : PROCEDURE(Movie):ErrCode [CDECL];
+			(* enregistre le Movie spécifié dans le fichier spécifié. Ce nouveau fichier ne sera qu'une
+			 * référence vers la source (multimedia) d'origine! *)
+			SaveMovieAsRefMov : PROCEDURE((*fileName*) ARRAY OF CHAR, Movie):ErrCode [CDECL];
+			(* enregistre Movie dans un fichier qui peut être spécifié et/ou sélectionné via la fenêtre
+			 * dialogue qui est affichée par défaut. *)
+			SaveMovieAs : PROCEDURE((*fileName*) ARRAY OF CHAR, Movie, (*noDialog*) Int32):ErrCode [CDECL];
+			(* ferme un Movie - Movie sera NIL au retour *)
+			CloseMovie : PROCEDURE(VAR Movie):ErrCode [CDECL];
+			SetMoviePlayHints : PROCEDURE( Movie, (*hints*) UInt32, (*isExclusive*) Int32 ) [CDECL];
+			GetMovieTrackCount : PROCEDURE(Movie):Int32 [CDECL];
+			(* a movie's duration in seconds: *)
+			GetMovieDuration : PROCEDURE(Movie):Real64 [CDECL];
+			(* smallest time lapse that can be represented on this movie's timescale: *)
+			GetMovieTimeResolution : PROCEDURE(Movie):Real64 [CDECL];
+
+			(* fonctions pour ajouter/lire les méta-données associées à un Movie ou une piste *)
+
+			AddMetaDataStringToTrack : PROCEDURE(Movie, (*trackNr*) Int32, AnnotationKey,
+									(*value*) ARRAY OF CHAR, MDLangStr):ErrCode [CDECL];
+			AddMetaDataStringToMovie : PROCEDURE(Movie, AnnotationKey,
+									ARRAY OF CHAR, MDLangStr):ErrCode [CDECL];
+			(* retourne la longueur de la chaine enrégistrée dans les meta-données spécifiées
+			 * (inclut le "nullbyte") *)
+			GetMetaDataStringLengthFromTrack : PROCEDURE(Movie, Int32,AnnotationKey,
+									VAR UInt32):ErrCode [CDECL];
+			(* retourne la longueur de la chaine enrégistrée dans les meta-données spécifiées
+			 * (inclut le "nullbyte") *)
+			GetMetaDataStringLengthFromMovie : PROCEDURE(Movie, AnnotationKey,
+									VAR UInt32):ErrCode [CDECL];
+			(* obtient les metadonnées du track spécifié et retourne la chaine dans <value> *)
+			GetMetaDataStringFromTrack : PROCEDURE(Movie, (*trackNr*) Int32, AnnotationKey,
+									(*value*) VAR ARRAY OF CHAR,
+									(*langage*) VAR ARRAY OF CHAR):ErrCode [CDECL];
+			(* idem pour un movie *)
+			GetMetaDataStringFromMovie : PROCEDURE(Movie, AnnotationKey,
+									(*value*) VAR ARRAY OF CHAR,
+									(*language*) VAR ARRAY OF CHAR):ErrCode [CDECL];
+			(*
+					Trouve "clef" dans theMovie, et retourne la numéro de la piste trouvée, le temps où le texte a
+					été trouvé ainsi que où dans le texte (la chaine) complet la cléf se trouve (offset par rapport au
+					début de la chaine). Si displayResult <> 0, theMovie est envoyé à foundTime et le texte trouvé
+					est mis en surbrillance (si sa piste est visible).
+					Cherche dans le texte contenu dans des pistes (y inclus les noms de chapitre),
+					*pas* dans les méta-données!
+			*)
+			FindTextInMovie : PROCEDURE( (*theMovie*) Movie, (*clef*) ARRAY OF CHAR, (*displayResult*) Int32,
+									VAR (*foundTrackNr*) Int32, VAR (*foundTime*) Real64, VAR (*foundOffset*) Int32,
+									VAR (*foundText*) ARRAY OF CHAR ):ErrCode [CDECL];
+			FindTimeStampInMovieAtTime : PROCEDURE( (*theMovie*) Movie, (*Time*) Real64,
+									VAR (*foundText*) ARRAY OF CHAR ):ErrCode [CDECL];
+			GetMovieChapterCount : PROCEDURE( (*theMovie*) Movie ):Int32 [CDECL];
+			GetMovieIndChapter : PROCEDURE( (*theMovie*) Movie, (*idx*) Int32,
+									VAR (*time*) Real64, VAR (*text*) ARRAY OF CHAR ):ErrCode [CDECL];
+			(*
+					ajoute un titre de chapitre au temps et de la durée spécifié. refTrackNr désigne la piste
+					à laquelle ce chapitre est associé et peut être 0 pour laisser QTils faire un choix raisonnable.
+					Un durée de 0 équivaut une durée d'une trame (GetMovieTimeResolution).
+			*)
+			MovieAddChapter : PROCEDURE( (*theMovie*) Movie, (*refTrackNr*) Int32, (*title*) ARRAY OF CHAR,
+									(*time*) Real64, (*duration*) Real64 ):ErrCode [CDECL];
+			(*
+					obtient le nom d'une piste
+			*)
+			GetTrackName : PROCEDURE( (*theMovie*) Movie, (*trackNr*) Int32, (*trackName*) ARRAY OF CHAR ):ErrCode [CDECL];
+			(*
+					trouve la piste avec le nom donné
+			*)
+			GetTrackWithName : PROCEDURE( (*theMovie*) Movie, (*trackName*) ARRAY OF CHAR, (*trackNr*) VAR Int32 ):ErrCode [CDECL];
+			EnableTrack : PROCEDURE( (*theMovie*) Movie, (*trackNr*) Int32 ):ErrCode [CDECL];
+			DisableTrack : PROCEDURE( (*theMovie*) Movie, (*trackNr*) Int32 ):ErrCode [CDECL];
+
+			Check4XMLError : PROCEDURE( (*xmlParser*) ComponentInstance, (*err*) ErrCode,
+									(*theURL*) ARRAY OF CHAR, VAR (*descr*) Str255 ):ErrCode [CDECL];
+			ParseXMLFile : PROCEDURE( (*theURL*) ARRAY OF CHAR, (*xmlParser*) ComponentInstance,
+									(*flags*) Int32, VAR (*xmldoc*) XMLDoc ):ErrCode [CDECL];
+			(* le 'namespace' à utiliser. Non testé ... *)
+			XMLnameSpaceID : UInt32;
+			XMLParserAddElement : PROCEDURE( VAR (*xmlParser*) ComponentInstance, (*elementName*) ARRAY OF CHAR,
+									(*elementID*) UInt32, (*elementFlags*) Int32 ):ErrCode [CDECL];
+			XMLParserAddElementAttribute : PROCEDURE( VAR (*xmlParser*) ComponentInstance, (*elementID*) UInt32,
+									(*attrName*) ARRAY OF CHAR, (*attrID*) UInt32,
+									(*attrType*) UInt32 ):ErrCode [CDECL];
+			DisposeXMLParser : PROCEDURE( VAR (*xmlParser*) ComponentInstance, VAR (*xmlDoc*) XMLDoc,
+									(*parserToo*) Int32 ):ErrCode [CDECL];
+			GetAttributeIndex : PROCEDURE( (*attrs*) XMLAttributePtr, (*ID*) UInt32, (*idx*)VAR Int32 ):ErrCode [CDECL];
+			GetStringAttribute : PROCEDURE( VAR (*element*) XMLElement, (*ID*) UInt32,
+									(*str*) VAR ARRAY OF CHAR ):ErrCode [CDECL];
+			GetIntegerAttribute : PROCEDURE( VAR (*element*) XMLElement, (*ID*)UInt32,
+									(*num*) VAR Int32 ):ErrCode [CDECL];
+			GetShortAttribute : PROCEDURE( VAR (*element*) XMLElement, (*ID*) UInt32,
+									(*num*) VAR Int16 ):ErrCode [CDECL];
+			GetDoubleAttribute : PROCEDURE( VAR (*element*) XMLElement, (*ID*) UInt32,
+									(*num*) VAR Real64 ):ErrCode [CDECL];
+			GetBooleanAttribute : PROCEDURE( VAR (*element*) XMLElement, (*ID*) UInt32,
+									(*bool*) VAR UInt8 ):ErrCode [CDECL];
+
+			(* QTMovieSinks functions: *)
+			(* NB: frameBuffer et frameBuffers sont bridés à 256 dans QTils.dll (et 1 quand useICM=0)! *)
+
+			(*
+				initialise une structure et fichier QuickTime pour recevoir un flux d'images de la taille
+				donnée, utilisant un codec et une qualité donnés pour la compression, et initialisant QuickTime
+				au préalable si besoin. Les images doivent être passées dans qms.imageFrame, mémoire allouée
+				par la fonction.
+			 *)
+			OpenQTMovieSink : PROCEDURE( VAR (*qms*) QTMovieSinks, (*theURL*) ARRAY OF CHAR,
+									(*Width*) UInt16, (*Height*) UInt16, (*hasAlpha*) INTEGER,
+									(*frameBuffers*) UInt16,
+									(*codec*) UInt32, (*quality*) UInt32,
+									(*useICM*) INTEGER, (*openQT*) INTEGER ):ErrCode [CDECL];
+			(*
+				idem, mais utilise de la mémoire déjà allouée
+			 *)
+			OpenQTMovieSinkWithData : PROCEDURE( VAR (*qms*) QTMovieSinks, (*theURL*) ARRAY OF CHAR,
+									(*imageFrame*) QTFrameBuffers,
+									(*Width*) UInt16, (*Height*) UInt16, (*hasAlpha*) INTEGER,
+									(*frameBuffers*) UInt16, (*codec*) UInt32, (*quality*) UInt32,
+									(*useICM*) INTEGER, (*openQT*) INTEGER ):ErrCode [CDECL];
+			(*
+				finalise et ferme un movie QuickTime généré à partir d'un flux d'images. Au besoin, QuickTime
+				est désinitialisé, et/ou une piste TimeCode ajoutée au movie. NB: cette piste n'a qu'un sens
+				si la fréquence de rafraichissement est constante! stats est optionel.
+			 *)
+			CloseQTMovieSink : PROCEDURE( VAR (*qms*) QTMovieSinks, (*addTCTrack*) INTEGER,
+									(*stats*) POINTER TO QTMSEncodingStats, (*closeQT*) INTEGER ):ErrCode [CDECL];
+			(*
+				une image est chargée dans qms.imageFrame: AddFrameToQTMovieSink l'ajoute à la vidéo, précisant
+				la durée d'affichage de la trame.
+			 *)
+			AddFrameToQTMovieSink : PROCEDURE( VAR (*qms*) QTMovieSinks, (*frameDuration*) Real64 ):ErrCode [CDECL];
+			(*
+				idem, mais en précisant le temps relatif au début de la vidéo où l'image doit être affichée. Il convient
+				d'ajouter les images dans l'ordre!
+			 *)
+			AddFrameToQTMovieSinkWithTime : PROCEDURE( VAR (*qms*) QTMovieSinks, (*frameTime*) Real64 ):ErrCode [CDECL];
+			(*
+				retourne le pointeur vers le tampon <frameBuffer>; frameBuffer est un entier >= 0 et < qms.frameBuffers
+			 *)
+			QTMSFrameBuffer : PROCEDURE( VAR (*qms*) QTMovieSinks, (*frameBuffer*) UInt16 ):QTFrameBuffer [CDECL];
+			(*
+				retourne le pointer vers le tampon image actuel
+			 *)
+			QTMSCurrentFrameBuffer : PROCEDURE( VAR (*qms*) QTMovieSinks ):QTFrameBuffer [CDECL];
+			(*
+				retourne un pointeur vers le pixel <pixnr> dans le tampon <frameBuffer>. <pixnr> est un entier
+				>= 0 et < qms.Width * qms.Height
+			 *)
+			QTMSPixelAddress : PROCEDURE( VAR (*qms*) QTMovieSinks, (*frameBuffer*) UInt16, (*pixnr*) UInt32 ):QTAPixelPtr [CDECL];
+			QTMSPixelAddressInCurrentFrameBuffer : PROCEDURE( VAR (*qms*) QTMovieSinks, (*pixnr*) UInt32 ):QTAPixelPtr [CDECL];
+			(*
+				retourne l'object Movie par exemple pour ajouter des méta données
+			 *)
+			GetQTMovieSinkMovie : PROCEDURE( VAR (*qms*) QTMovieSinks ):Movie [CDECL];
+			(*
+				retourne une structure avec quelques statistiques du processus d'encodage ICM
+			 *)
+			GetQTMovieSinkEncodingStats : PROCEDURE( VAR (*qms*) QTMovieSinks, VAR (*stats*) QTMSEncodingStats ):INTEGER [CDECL];
+
+			(* le code d'erreur actuellement enregistré *)
+			LastQTError : PROCEDURE():ErrCode [CDECL];
+
+			(* 'pompe' (vide) la boucle d'évenements; si <wait> est TRUE (non-zero), attend d'abord
+			 * l'arrivée d'un évenement si le fil est vide. *)
+			PumpMessages : PROCEDURE((*wait*) Int32):UInt32 [CDECL];
+			(* enregistre un message dans le journal
+			 * nécessite la présence de la fonctionnalité 'SS_Log' dans QTils.DLL !
+			 * (sinon aucun effet)
+			 *)
+			LogMsg : PROCEDURE((*msg*) ARRAY OF CHAR):UInt32 [CDECL];
+			(* pointe vers le dernier message enregistré dans le journal (même si la fonctionnalité
+			 * 'SS_Log' n'a pas été inclue dans QTils.DLL). Concerne touts les messages, donc également
+			 * ceux générés dans QTils.DLL . *)
+			lastSSLogMsg : POINTER TO ARRAY[0..2048] OF CHAR;
+			MacErrorString : PROCEDURE( (*err*) ErrCode, VAR (*errString*) ARRAY OF CHAR,
+									VAR (*errComment*) ARRAY OF CHAR) : UInt32 [CDECL];
+
+			(* ================================================================
+				fin de la partie initialisée par QTils.dll::initDMBase_Mod2();
+				les fonctions suivantes sont implémentées dans QTilsM2.mod
+			   ================================================================ *)
+			(*
+					vérifie si l'argument est un QTMovieWindowH minimalement valide. Un QTMovieWindowH
+					alloué en interne par OpenMovieFromURL ne passera pas le QTMovieWindowH_Check ...
+			*)
+			QTMovieWindowH_BasicCheck : PROCEDURE(QTMovieWindowH):BOOLEAN;
+			(*
+					vérifie si l'argument est un QTMovieWindowH valide qui est ou
+					a été ouvert dans une fenêtre
+			*)
+			QTMovieWindowH_Check : PROCEDURE(QTMovieWindowH):BOOLEAN;
+			(* vérifie si l'argument est un QTMovieWindowH valide avec une fenêtre ouverte *)
+			QTMovieWindowH_isOpen : PROCEDURE(QTMovieWindowH):BOOLEAN;
+			(* ouvre un fichier QuickTime dans une nouvelle fenêtre, avec contrôleur si demandé *)
+			OpenQTMovieInWindow : PROCEDURE((*fileName*) ARRAY OF CHAR,
+									(*avecControleur?*) Int32):QTMovieWindowH;
+			CloseQTMovieWindow : PROCEDURE(QTMovieWindowH):ErrCode;
+			(* conversion; NB: utiliser TCframeRate pour convertir un temps absolut! *)
+			FTTS : PROCEDURE((*ft*) VAR MovieFrameTime, (*frameRate*) Real64):Real64;
+			LogMsgEx : PROCEDURE((*msg*) ARRAY OF CHAR):UInt32 [RightToLeft, LEAVES, VARIABLE];
+			XMLRootElementID : PROCEDURE( (*xmldoc*) XMLDoc ) : UInt32;
+			XMLContentKind : PROCEDURE( (*theContent*) XMLContentArrayPtr, (*element*) CARDINAL ) : UInt32;
+			XMLRootElementContentKind : PROCEDURE( (*xmldoc*) XMLDoc, (*element*) CARDINAL ) : UInt32;
+			XMLContentOfElementOfRootElement : PROCEDURE( (*xmldoc*) XMLDoc, (*element*) CARDINAL,
+									VAR (*theContent*) XMLContentArrayPtr ) : BOOLEAN;
+			XMLContentOfElement : PROCEDURE( VAR (*parentElement*) XMLElement,
+									VAR (*theElements*) XMLContentArrayPtr ) : BOOLEAN;
+			XMLElementOfContent : PROCEDURE( (*theContent*) XMLContentArrayPtr,
+									(*element*) CARDINAL, VAR (*theElement*) XMLElement ) : BOOLEAN;
+			CreateXMLParser : PROCEDURE( VAR (*xmlParser*) ComponentInstance, (*design*) ARRAY OF XML_RECORD,
+									VAR (*errors*) Int32 ) : ErrCode;
+			ReadXMLContent : PROCEDURE( (*fName*) ARRAY OF CHAR, (*theContent*) XMLContentArrayPtr,
+														(*design*) ARRAY OF XML_RECORD, VAR (*elm*) CARDINAL );
+			sscanf : PROCEDURE( (*source*) ARRAY OF CHAR, (*format*) ARRAY OF CHAR ):Int32 [RightToLeft, LEAVES, VARIABLE];
+			sprintf : PROCEDURE( VAR (*dest*) ARRAY OF CHAR, (*format*) ARRAY OF CHAR ):Int32 [RightToLeft, LEAVES, VARIABLE];
+			ssprintf : PROCEDURE( VAR (*dest*) String1kPtr, (*format*) ARRAY OF CHAR ):Int32 [RightToLeft, LEAVES, VARIABLE];
+			ssprintfAppend : PROCEDURE( VAR (*dest*) String1kPtr, (*format*) ARRAY OF CHAR ):Int32 [RightToLeft, LEAVES, VARIABLE];
+	END;
+
+CONST
+
+	noErr = VAL(ErrCode,0);
+	paramErr = VAL(ErrCode,-50);
+  invalidDuration = VAL(ErrCode,-2014);
+  invalidTime = VAL(ErrCode,-2015);
+
+	(* MCAction LoadState MCActionParams values (Int32) : *)
+	kMovieLoadStateError		= -1;
+	kMovieLoadStateLoading		= 1000;
+	kMovieLoadStateLoaded		= 2000;
+	kMovieLoadStatePlayable		= 10000;
+	(* le Movie peut être lancé *)
+	kMovieLoadStatePlaythroughOK	= 20000;
+	(* le Movie est complètement chargé *)
+	kMovieLoadStateComplete		= 100000;
+
+	(* event kinds *)
+	nullEvent = 0;
+	mouseDown = 1;
+	mouseUp = 2;
+	keyDown = 3;
+	keyUp = 4;
+	autoKey = 5;
+	updateEvt = 6;
+	diskEvt = 7;
+	activateEvt = 8;
+	osEvt = 15;
+	kHighLevelEvent = 23;
+
+	(* event modifiers *)
+	activeFlagBit = 0;
+	btnStateBit = 7;
+	cmdKeyBit = 8;
+	shiftKeyBit = 9;
+	alphaLockBit = 10;
+	optionKeyBit = 11;
+	controlKeyBit = 12;
+	rightShiftKeyBit = 13;
+	rightOptionKeyBit = 14;
+	rightControlKeyBit = 15;
+
+	(* XML Constants *)
+	elementFlagAlwaysSelfContained	= 1;		(* Element doesn't have contents or closing tag even if it doesn't end with />, as in the HTML <img> tag*)
+	elementFlagPreserveWhiteSpace		= 2;		(* Preserve whitespace in content, default is to remove it *)
+	xmlParseFlagAllowUppercase			= 1;		(* Elements and attributes do not have to be lowercase (strict XML), but can be upper or mixed case as in HTML*)
+	xmlParseFlagAllowUnquotedAttributeValues = 2;	(* Attributes values do not have to be enclosed in quotes (strict XML), but can be left unquoted if they contain no spaces*)
+	xmlParseFlagEventParseOnly			= 4;		(* Do event parsing only*)
+	xmlParseFlagPreserveWhiteSpace	= 8;		(* Preserve whitespace throughout the document*)
+	nameSpaceIDNone = 0;
+
+	%IF WIN32 %THEN
+		NULL			= WIN32.NULL;
+	%ELSE
+		NULL			= Windows.NULL;
+	%END
+	NULL_NativeWindow	=	CAST(NativeWindow, NULL);
+	NULL_QTMovieWindowH	=	CAST(QTMovieWindowH, NULL);
+	NULL_String		=	CAST(String1kPtr, NULL);
+	NULL_Cartesian		=	CAST(CartesianPtr, NULL);
+	NULL_MCActionCallback = CAST(MCActionCallback, NULL);
+	NULL_XMLAttributeParseCallback = CAST(XMLAttributeParseCallback, NULL);
+
+	(* playback hints pour SetMoviePlayHints: *)
+  hintsLoop = 2 (*1 << 1*) ;
+  hintsHighQuality = 256 (*1 << 8*);
+  hintsPlayingEveryFrame = 262144 (*1 << 18*);
+
+VAR
+	QTCompressionCodec : QTCompressionCodecs;
+	QTCompressionQuality : QTCompressionQualities;
+ 	MCAction : MCActions;
+	MetaData : AnnotationKeys;
+	QTils : QTilsExports;
+
+(* QT initialisation procedure: as of 20110112 this is no longer done at module initialisation time! *)
+PROCEDURE QTilsAvailable() : BOOLEAN;
+PROCEDURE OpenQT() : ErrCode;
+PROCEDURE QTOpened() : BOOLEAN;
+PROCEDURE QTOpenError() : ErrCode;
+
+(* les 2 fonctions suivantes sont valables pour les plate-formes "little-endian"! *)
+(* converti la représentation 'humaine' d'un OSType en sa représentation numérique *)
+PROCEDURE FOUR_CHAR_CODE(code : OSTypeStr) : OSType;
+(* converti la représentation numérique d'un OSType en sa représentation 'humaine' *)
+PROCEDURE OSTStr(otype : OSType) : OSTypeStr;
+PROCEDURE BoolStr(state : BOOLEAN) : String5b;
+
+PROCEDURE MSWinErrorString( err : INTEGER; VAR errStr : ARRAY OF CHAR ) : UInt32;
+PROCEDURE PostMessage( title, message : ARRAY OF CHAR ): CARDINAL;
+PROCEDURE PostYesNoDialog( title, message : ARRAY OF CHAR ): BOOLEAN;
+
+END QTilsM2.

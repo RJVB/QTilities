@@ -1,0 +1,351 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		D6A47B2112BD49760059F0F4 /* Archive */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D6A47B3212BD49950059F0F4 /* Build configuration list for PBXAggregateTarget "Archive" */;
+			buildPhases = (
+				D6A47B2012BD49760059F0F4 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Archive;
+			productName = Archive;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXFileReference section */
+		D6FEB7BC12E9DB820067155E /* FileCirc50.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = FileCirc50.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB7BE12E9DB820067155E /* FiltreMedian.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = FiltreMedian.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB83212E9DB830067155E /* SumoClement.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoClement.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB83412E9DB830067155E /* SumoCstes.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoCstes.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB83612E9DB830067155E /* SumoEtiquette.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoEtiquette.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB83812E9DB830067155E /* SumoFichier.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoFichier.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB83A12E9DB830067155E /* SumoKml.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoKml.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB83C12E9DB830067155E /* SumoMoto.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoMoto.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB83E12E9DB830067155E /* SumoSynchro.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoSynchro.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB84012E9DB830067155E /* SumoVideoQT.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoVideoQT.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB84212E9DB830067155E /* SumoVisuel.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoVisuel.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB91412E9DB840067155E /* QTilsM2.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = QTilsM2.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB92B12E9DB840067155E /* TypeConv.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = TypeConv.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB95812E9DB850067155E /* Chaussette2.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = Chaussette2.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB98B12E9DCBC0067155E /* Sumotori.res */ = {isa = PBXFileReference; explicitFileType = file; path = Sumotori.res; sourceTree = "<group>"; };
+		D6FEB9F112E9DCE70067155E /* FileCirc50.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = FileCirc50.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEB9F312E9DCE70067155E /* FiltreMedian.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = FiltreMedian.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBA7312E9DCE80067155E /* SumoClement.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoClement.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBA7512E9DCE80067155E /* SumoCstes.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoCstes.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBA7712E9DCE80067155E /* SumoEtiquette.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoEtiquette.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBA7912E9DCE80067155E /* SumoFichier.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoFichier.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBA7B12E9DCE80067155E /* SumoKml.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoKml.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBA7D12E9DCE80067155E /* SumoMoto.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoMoto.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBA7F12E9DCE80067155E /* SumoSynchro.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoSynchro.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBA8112E9DCE80067155E /* SumoVideoQT.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoVideoQT.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBA8312E9DCE80067155E /* SumoVisuel.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = SumoVisuel.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBAB512E9DCE90067155E /* QTVODlib.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = QTVODlib.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBAB612E9DCE90067155E /* QTVODcomm.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = QTVODcomm.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBB7112E9DCEA0067155E /* QTilsM2.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = QTilsM2.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBB9112E9DCEA0067155E /* TypeConv.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = TypeConv.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBBC512E9DCEA0067155E /* Chaussette2.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = Chaussette2.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBBC612E9DDCF0067155E /* QTVODcomm.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = QTVODcomm.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBBC712E9DDCF0067155E /* QTVODlib.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = QTVODlib.def; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBBDC12E9E4BE0067155E /* BinAsciiSumo.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = BinAsciiSumo.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBBDD12E9E4BE0067155E /* QTVODm2.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2; path = QTVODm2.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FEBBF512E9F0740067155E /* SumoSurM.sbs */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = text; path = SumoSurM.sbs; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* QTVODm2 */ = {
+			isa = PBXGroup;
+			children = (
+				D6FEB95912E9DCBB0067155E /* res */,
+				D699F80912BA189800E0C3D0 /* def */,
+				D699F80C12BA189800E0C3D0 /* mod */,
+				D6FEBBF412E9F0550067155E /* misc */,
+			);
+			name = QTVODm2;
+			sourceTree = "<group>";
+		};
+		D699F80912BA189800E0C3D0 /* def */ = {
+			isa = PBXGroup;
+			children = (
+				D6FEB87112E9DB830067155E /* LibUtDef */,
+				D6FEB76E12E9DB820067155E /* libdrdef */,
+			);
+			fileEncoding = 12;
+			lineEnding = 2;
+			name = def;
+			path = QTils/Mod2/def;
+			sourceTree = "<group>";
+		};
+		D699F80C12BA189800E0C3D0 /* mod */ = {
+			isa = PBXGroup;
+			children = (
+				D6FEBBDC12E9E4BE0067155E /* BinAsciiSumo.mod */,
+				D6FEBBDD12E9E4BE0067155E /* QTVODm2.mod */,
+				D6FEBAB712E9DCE90067155E /* LibUtMod */,
+				D6FEB9A212E9DCE70067155E /* libdrmod */,
+			);
+			fileEncoding = 12;
+			indentWidth = 2;
+			lineEnding = 2;
+			name = mod;
+			path = ../Archisim/mod;
+			sourceTree = "<group>";
+			tabWidth = 2;
+		};
+		D6FEB76E12E9DB820067155E /* libdrdef */ = {
+			isa = PBXGroup;
+			children = (
+				D6FEBBC612E9DDCF0067155E /* QTVODcomm.def */,
+				D6FEBBC712E9DDCF0067155E /* QTVODlib.def */,
+				D6FEB7BC12E9DB820067155E /* FileCirc50.def */,
+				D6FEB7BE12E9DB820067155E /* FiltreMedian.def */,
+				D6FEB83212E9DB830067155E /* SumoClement.def */,
+				D6FEB83412E9DB830067155E /* SumoCstes.def */,
+				D6FEB83612E9DB830067155E /* SumoEtiquette.def */,
+				D6FEB83812E9DB830067155E /* SumoFichier.def */,
+				D6FEB83A12E9DB830067155E /* SumoKml.def */,
+				D6FEB83C12E9DB830067155E /* SumoMoto.def */,
+				D6FEB83E12E9DB830067155E /* SumoSynchro.def */,
+				D6FEB84012E9DB830067155E /* SumoVideoQT.def */,
+				D6FEB84212E9DB830067155E /* SumoVisuel.def */,
+			);
+			indentWidth = 2;
+			name = libdrdef;
+			path = ../Archisim/libdrdef;
+			sourceTree = SOURCE_ROOT;
+			tabWidth = 2;
+		};
+		D6FEB87112E9DB830067155E /* LibUtDef */ = {
+			isa = PBXGroup;
+			children = (
+				D6FEB92B12E9DB840067155E /* TypeConv.def */,
+				D6FEB95812E9DB850067155E /* Chaussette2.def */,
+				D6FEB91412E9DB840067155E /* QTilsM2.def */,
+			);
+			name = LibUtDef;
+			path = ../Archisim/LibUtDef;
+			sourceTree = SOURCE_ROOT;
+		};
+		D6FEB95912E9DCBB0067155E /* res */ = {
+			isa = PBXGroup;
+			children = (
+				D6FEB98B12E9DCBC0067155E /* Sumotori.res */,
+			);
+			name = res;
+			path = ../Archisim/res;
+			sourceTree = SOURCE_ROOT;
+		};
+		D6FEB9A212E9DCE70067155E /* libdrmod */ = {
+			isa = PBXGroup;
+			children = (
+				D6FEBAB512E9DCE90067155E /* QTVODlib.mod */,
+				D6FEBAB612E9DCE90067155E /* QTVODcomm.mod */,
+				D6FEB9F112E9DCE70067155E /* FileCirc50.mod */,
+				D6FEB9F312E9DCE70067155E /* FiltreMedian.mod */,
+				D6FEBA7312E9DCE80067155E /* SumoClement.mod */,
+				D6FEBA7512E9DCE80067155E /* SumoCstes.mod */,
+				D6FEBA7712E9DCE80067155E /* SumoEtiquette.mod */,
+				D6FEBA7912E9DCE80067155E /* SumoFichier.mod */,
+				D6FEBA7B12E9DCE80067155E /* SumoKml.mod */,
+				D6FEBA7D12E9DCE80067155E /* SumoMoto.mod */,
+				D6FEBA7F12E9DCE80067155E /* SumoSynchro.mod */,
+				D6FEBA8112E9DCE80067155E /* SumoVideoQT.mod */,
+				D6FEBA8312E9DCE80067155E /* SumoVisuel.mod */,
+			);
+			indentWidth = 2;
+			name = libdrmod;
+			path = ../Archisim/libdrmod;
+			sourceTree = SOURCE_ROOT;
+			tabWidth = 2;
+		};
+		D6FEBAB712E9DCE90067155E /* LibUtMod */ = {
+			isa = PBXGroup;
+			children = (
+				D6FEBB9112E9DCEA0067155E /* TypeConv.mod */,
+				D6FEBBC512E9DCEA0067155E /* Chaussette2.mod */,
+				D6FEBB7112E9DCEA0067155E /* QTilsM2.mod */,
+			);
+			indentWidth = 2;
+			name = LibUtMod;
+			path = ../Archisim/LibUtMod;
+			sourceTree = SOURCE_ROOT;
+			tabWidth = 2;
+		};
+		D6FEBBF412E9F0550067155E /* misc */ = {
+			isa = PBXGroup;
+			children = (
+				D6FEBBF512E9F0740067155E /* SumoSurM.sbs */,
+			);
+			name = misc;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		D28A88AD04BDD90700651E21 /* SumoSurM */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 1DEB918F08733D9F0010E9CD /* Build configuration list for PBXLegacyTarget "SumoSurM" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			dependencies = (
+			);
+			name = SumoSurM;
+			passBuildSettingsInEnvironment = 1;
+			productName = QTVODm2;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "SumoSurM" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* QTVODm2 */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D28A88AD04BDD90700651E21 /* SumoSurM */,
+				D6A47B2112BD49760059F0F4 /* Archive */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D6A47B2012BD49760059F0F4 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd ${PROJECT_DIR}\npwd\nexec ./make_archive.sh";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB919008733D9F0010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = QTVODm2;
+			};
+			name = Debug;
+		};
+		1DEB919108733D9F0010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = QTVODm2;
+			};
+			name = Release;
+		};
+		1DEB919408733D9F0010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		1DEB919508733D9F0010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		D6A47B2212BD49770059F0F4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = Archive;
+			};
+			name = Debug;
+		};
+		D6A47B2312BD49770059F0F4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Archive;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB918F08733D9F0010E9CD /* Build configuration list for PBXLegacyTarget "SumoSurM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB919008733D9F0010E9CD /* Debug */,
+				1DEB919108733D9F0010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "SumoSurM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB919408733D9F0010E9CD /* Debug */,
+				1DEB919508733D9F0010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D6A47B3212BD49950059F0F4 /* Build configuration list for PBXAggregateTarget "Archive" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6A47B2212BD49770059F0F4 /* Debug */,
+				D6A47B2312BD49770059F0F4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

@@ -1,0 +1,61 @@
+DEFINITION MODULE QTVODlib;
+
+%IF CHAUSSETTE2 %THEN
+FROM Chaussette2 IMPORT
+%ELSE
+FROM Chaussette IMPORT
+%END
+	sock_nulle, SOCK;
+
+FROM QTilsM2 IMPORT
+	QTMovieWindowH, Movie, Int32, Real64, ErrCode;
+
+FROM QTVODcomm IMPORT
+	(* ces types sont définis dans QTVODcomm.def pour ne pas obliger d'inclure QTVODlib
+	 * pour des logiciels qui ne font que communiquer avec QTVODm2 !
+	 *)
+	VODDescription, URLString;
+
+(* test
+FROM QTilsM2 IMPORT
+	XMLElement, XML_RECORD, UInt32;
+*)
+
+PROCEDURE SetTimes( t : Real64; ref : QTMovieWindowH; absolute : Int32 );
+PROCEDURE StartVideo(excl : QTMovieWindowH);
+PROCEDURE StopVideo(excl : QTMovieWindowH);
+PROCEDURE register_window( AqtwmH : ARRAY OF QTMovieWindowH; idx : CARDINAL );
+PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription ) : ErrCode;
+PROCEDURE FlushCaches;
+PROCEDURE CloseVideo(final : BOOLEAN);
+PROCEDURE ResetVideo(complete : BOOLEAN) : ErrCode;
+PROCEDURE isPlayable(wih : QTMovieWindowH) : BOOLEAN;
+PROCEDURE ClipInt( VAR val : INTEGER; min, max : INTEGER );
+PROCEDURE ReadDefaultVODDescription( fName : URLString; VAR descr : VODDescription ) : ErrCode;
+PROCEDURE ScanForDefaultVODDescription( movie, fName : URLString; VAR descr : VODDescription ) : ErrCode;
+PROCEDURE CalcTimeInterval(reset, display : BOOLEAN);
+
+(* test
+PROCEDURE FrequencyFromXMLElementAttributes( theElement : XMLElement; elm : UInt32;
+								design : ARRAY OF XML_RECORD; idx : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
+*)
+
+CONST
+	maxQTWM = 4;
+	fwWin = 0;
+	pilotWin = 1;
+	leftWin = 2;
+	rightWin = 3;
+	tcWin = 4;
+
+VAR
+	numQTWM : Int32;
+	qtwmH : ARRAY[0..maxQTWM] OF QTMovieWindowH;
+	sServeur : SOCK;
+	lastKeyUp : CHAR;
+	baseFileName, assocDataFileName : URLString;
+	baseDescription : VODDescription;
+	fullMovie : Movie;
+	fullMovieChanged : BOOLEAN;
+
+END QTVODlib.

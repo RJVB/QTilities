@@ -1,0 +1,178 @@
+DEFINITION MODULE QTVODcomm;
+
+<*/VALIDVERSION:DEBUG,CHAUSSETTE2,COMMTIMING*>
+FROM SYSTEM IMPORT
+	BYTE, CAST, ADDRESS;
+
+%IF CHAUSSETTE2 %THEN
+FROM Chaussette2 IMPORT
+%ELSE
+FROM Chaussette IMPORT
+%END
+	SOCK, sock_nulle, errSock, BasicReceiveNetMessage;
+
+FROM QTilsM2 IMPORT
+	Real64, Int32, QTMovieWindowH, ErrCode, UInt16;
+
+TYPE
+
+	VODChannels =
+		RECORD
+			forward, pilot, left, right : INTEGER;
+		END;
+
+	VODDescription	=
+		RECORD
+			frequency, scale : Real64;
+			timeZone : Real64;
+			DST, useVMGI, log, flipLeftRight : BOOLEAN;
+			channels : VODChannels;
+		END;
+	VODDescriptionPtr = POINTER TO VODDescription;
+
+	URLString = ARRAY[0..1024] OF CHAR;
+	String256 = ARRAY[0..255] OF CHAR;
+	NetMessageClass =
+		(
+			qtvod_NoClass, qtvod_Command, qtvod_Confirmation, qtvod_Notification
+		);
+	NetMessageType =
+		(
+			qtvod_NoType,
+			(* commands to QTVOD that are also sent back as confirmation: *)
+			qtvod_Open, qtvod_Start, qtvod_Stop,
+			qtvod_Close, qtvod_Reset, qtvod_Quit, qtvod_GotoTime, qtvod_NewChapter,
+			qtvod_MarkIntervalTime,
+			(* commands that are confirmed via a dedicated message: *)
+			qtvod_GetTime, qtvod_GetStartTime, qtvod_GetDuration, qtvod_GetChapter,
+			qtvod_GetLastInterval,
+			(* reply messages *)
+			qtvod_OK, qtvod_Err,
+			qtvod_CurrentTime, qtvod_StartTime, qtvod_Duration, qtvod_Chapter,
+			qtvod_LastInterval
+		);
+
+	NetMessage =
+		RECORD
+			flags :
+				RECORD
+					type : NetMessageType;
+					class : NetMessageClass;
+				END;
+			data :
+				RECORD
+					(* valeur(s) consignée(s) ou retournée(s) *)
+					val1, val2 : Real64;
+					iVal1 : Int32;
+					boolean : BOOLEAN;
+					(* URN - Universal Resource Name: p-e le nom du fichier a ouvrir, ou un titre de chapitre *)
+					URN : URLString;
+					(* une description du fichier à ouvrir *)
+					description : VODDescription;
+					error : ErrCode;
+				END;
+%IF COMMTIMING %THEN
+				sentTime, recdTime : Real64;
+%END
+	END;
+
+	TIME_INTERVAL =
+		RECORD
+			timeA, timeB, dt : Real64;
+			timeStampA, timeStampB : ARRAY[0..255] OF CHAR;
+	END;
+
+PROCEDURE InitCommClient(
+	VAR clnt : SOCK; IP : ARRAY OF CHAR; portS, portC : UInt16;
+	timeOutms : INTEGER )  : BOOLEAN;
+
+PROCEDURE InitCommServer(
+	VAR srv : SOCK; port : UInt16) : BOOLEAN;
+
+PROCEDURE ServerCheckForClient(
+	srv : SOCK; VAR clnt : SOCK;
+	timeOutms : INTEGER; block : BOOLEAN ) : BOOLEAN;
+
+PROCEDURE CloseCommClient(
+	VAR clnt : SOCK );
+
+PROCEDURE CloseCommServeur(
+	VAR srv, clnt : SOCK );
+
+PROCEDURE SendMessageToNet(
+	ss : SOCK; VAR msg : NetMessage; timeOutms : INTEGER; block : BOOLEAN;
+	caller : ARRAY OF CHAR ) : BOOLEAN;
+
+PROCEDURE ReceiveMessageFromNet(
+	ss : SOCK; VAR msg : NetMessage; timeOutms : INTEGER; block : BOOLEAN;
+	caller : ARRAY OF CHAR ) : BOOLEAN;
+
+PROCEDURE NetMessageToString(
+	VAR msg : NetMessage ) : String256;
+
+PROCEDURE NetMessageToLogMsg(
+	title, caption : ARRAY OF CHAR; VAR msg : NetMessage );
+
+(* =========================================================================================================== *)
+(* Procedures to construct commands sent by clients to QTVODm2 *)
+
+PROCEDURE msgOpenFile(VAR msg : NetMessage; URL : URLString; VAR descr : VODDescription);
+PROCEDURE msgPlayMovie( VAR msg : NetMessage );
+PROCEDURE msgStopMovie( VAR msg : NetMessage );
+PROCEDURE msgCloseMovie( VAR msg : NetMessage );
+PROCEDURE msgResetQTVOD( VAR msg : NetMessage; complete : BOOLEAN );
+PROCEDURE msgQuitQTVOD( VAR msg : NetMessage );
+PROCEDURE msgGotoTime( VAR msg : NetMessage; t : Real64; absolute : BOOLEAN );
+PROCEDURE msgGetTime( VAR msg : NetMessage; absolute : BOOLEAN );
+PROCEDURE msgGetStartTime( VAR msg : NetMessage );
+PROCEDURE msgGetDuration( VAR msg : NetMessage );
+PROCEDURE msgGetChapter(VAR msg : NetMessage; idx : Int32);
+PROCEDURE msgNewChapter(VAR msg : NetMessage; title : URLString; startTime, duration : Real64; absolute : BOOLEAN);
+PROCEDURE msgMarkIntervalTime( VAR msg : NetMessage; reset : BOOLEAN );
+PROCEDURE msgGetLastInterval( VAR msg : NetMessage );
+
+(* =========================================================================================================== *)
+(* Procedures for QTVODm2 to construct reply messages to send back in response to commands from the client: *)
+
+PROCEDURE replyCurrentTime( VAR reply : NetMessage; class : NetMessageClass; wih : QTMovieWindowH;
+														absolute : BOOLEAN ) : BOOLEAN;
+PROCEDURE replyStartTime( VAR reply : NetMessage; class : NetMessageClass; wih : QTMovieWindowH ) : BOOLEAN;
+PROCEDURE replyDuration( VAR reply : NetMessage; class : NetMessageClass; wih : QTMovieWindowH ) : BOOLEAN;
+PROCEDURE replyChapter( VAR reply : NetMessage; class : NetMessageClass;
+														title : URLString; idx : Int32; startTime, duration : Real64 ) : BOOLEAN;
+PROCEDURE replyLastInterval( VAR reply : NetMessage; class : NetMessageClass ) : BOOLEAN;
+
+(* =========================================================================================================== *)
+(* transceiving functions *)
+
+PROCEDURE SendNetCommandOrNotification( ss : SOCK; type : NetMessageType; class : NetMessageClass );
+PROCEDURE SendNetErrorNotification( ss : SOCK; msg : ARRAY OF CHAR; err : ErrCode );
+
+PROCEDURE LaunchQTVODm2(
+	path : ARRAY OF CHAR; fileName, extraArgs : URLString;
+	descr : VODDescriptionPtr; serverIP : ARRAY OF CHAR;
+	VAR mustSendVODDescription : BOOLEAN ) : BOOLEAN;
+
+PROCEDURE HasExtension( VAR URL : ARRAY OF CHAR; ext : ARRAY OF CHAR ) : BOOLEAN;
+PROCEDURE PruneExtension( VAR URL : ARRAY OF CHAR; ext : ARRAY OF CHAR );
+
+TYPE
+
+	CommErrorHandler = PROCEDURE( (*errors*) CARDINAL );
+
+VAR
+
+	HandleSendErrors, HandleReceiveErrors : CommErrorHandler;
+	quitRequest, resetRequest, closeRequest : BOOLEAN;
+	theTimeInterVal : TIME_INTERVAL;
+
+CONST
+
+	SENDTIMEOUT = 2;
+	CommErrorHandler_nulle = CAST(CommErrorHandler,0);
+	(* 0x5351 == 'QS' : Quicktime Server *)
+	ServerPortNr = 5351;
+	(* 0x4351 == 'QC' : Quicktime Client *)
+	ClientPortNr = 4351;
+
+END QTVODcomm.

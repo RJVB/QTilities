@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<root atint=2 atbool=True >
+	<el1 atstring=atsoum atdouble=3.1415 />
+	<el2 atshort=4 atint=-2 />
+</root>

@@ -1,0 +1,469 @@
+DEFINITION MODULE Chaussette2;
+
+<*/VALIDVERSION:CHAUSSETTE2,GDOS*>
+<*/VERSION:CHAUSSETTE2*>
+
+%IF DLL %THEN
+<*/EXPORTALL/PROPAGATEEXCEPTIONALL/COPYATTRIBUTES*>(*/CALLS:WIN32SYSTEM*)
+%END
+
+FROM SYSTEM IMPORT
+%IF GDOS %THEN
+	ADDRESS,
+%END
+	WORD, DWORD, BYTE;
+
+FROM TypeConv IMPORT
+	Int16, Int32, Card16, Card32;
+IMPORT TypeConv; (* SOCK, sock_nulle *)
+
+%IF WIN32 %THEN
+IMPORT WINSOCK2;
+%ELSE
+IMPORT UnixSock, UNIX;
+%END
+IMPORT Socket;
+
+(*
+	une bonne référence : http://prografix.games-creators.org/document/164#twotypes
+*)
+
+TYPE
+
+	ETATS = (ouverte, connecte, udp)
+	%IF StonyBrook %THEN BIG %END;
+	ETAT_SOCK = SET OF ETATS
+	%IF StonyBrook %THEN BIG %END;
+
+	PTR_CHAINE = POINTER TO ARRAY[0..65535] OF CHAR;
+
+	PTR_HOST_ENT = POINTER TO HOST_ENT;
+	HOST_ENT =
+		RECORD
+			hName : PTR_CHAINE;
+			hAliases : POINTER TO PTR_CHAINE;
+			hAddrType,
+			hLength : INTEGER;
+			hAddr : POINTER TO ARRAY[0..100] OF Card32
+		END;
+
+	TIME_VAL =
+		RECORD
+			tvSec, tvUsec : Card32
+		END;
+
+	SOCKADDR_IN = (* 16 octets !! *)
+		RECORD
+			sinFamily,
+			sinPort : Card16;
+			sinAddr : Card32;
+			sinZero : ARRAY[0..7] OF CHAR
+		END;
+
+(*
+	SOCK =
+	%IF WIN32 %THEN
+		%IF SB49 %THEN
+		WINSOCK2.SOCKET;
+		%ELSE
+		WINSOCK.SOCKET;
+		%END
+	%ELSE
+		Int32;
+	%END
+*)
+	SOCK = TypeConv.SOCK;
+	PTR_SOCK = POINTER TO SOCK;
+
+	SERVICE_UDP =
+		RECORD
+			taille : INTEGER16;
+			adr : CARDINAL16;
+			date : CARDINAL32;
+		END;
+
+CONST
+
+	INADDR_ANY = 0;
+	AF_INET = 2;				(* internetwork: UDP, TCP, etc. *)
+	SOCK_STREAM = 1;		(* stream socket *)
+	F_SETFL = 4;
+	FNDELAY = 00004;		(* non-blocking reads *)
+	EWOULDBLOCK = 35;
+	ENOMEM = 12;				(* Not enough core *)
+	ECONNREFUSED = 61;	(* Connection refused *)
+	EISCONN = 56;	 		(* Socket is already connected *)
+	EINPROGRESS = 115;
+	max_sock = 15;
+
+	sock_nulle = TypeConv.sock_nulle;
+
+	TAILLEMAXMSG = 550;
+
+VAR
+(*
+	errno [LONG '__errno'] : Int16;
+*)
+	errSock : Int32;
+	nom, numeroIP : ARRAY[0..20] OF CHAR;
+	carChaussette : CHAR;
+	Sortie : PROCEDURE(CHAR, VAR CHAR) : BOOLEAN
+		%IF DLL %THEN [EXPORT, PROPAGATEEXCEPTION] %END;
+
+	%IF GDOS %THEN
+
+		PROCEDURE GetPeerName ['_getpeername'] (
+			hsocket : Int16;
+			adrName : ADDRESS;
+			VAR nameLen : Card16) : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE GetSockName ['_getsockname'] (
+			hsocket : Int16;
+			adrName : ADDRESS;
+			VAR nameLen : Card16) : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE GetErrNo ['_get_errno'] () : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE SocketInit ['_socket_init'] () : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE GetHostName ['_gethostname'] (
+			adrNom : PTR_CHAINE; long : Int16)
+			[LEAVES,REVERSED];
+
+		PROCEDURE GetHostByName ['_gethostbyname'] (
+			adrNom : PTR_CHAINE) : PTR_HOST_ENT
+			[LEAVES,REVERSED];
+
+		PROCEDURE Socket ['_socket'] (af, type, protocol : Int16) : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE Fcntl ['_fcntl'] (hsocket, fct, val : Int16) : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE Htons ['_htons'] (hex : Card16) : Card16
+			[LEAVES,REVERSED];
+
+		PROCEDURE Htonl ['_htonl'] (hex : Card32) : Card32
+			[LEAVES,REVERSED];
+
+		PROCEDURE Connect ['_connect'] (
+			hsocket : Int16;
+			adrName : ADDRESS;
+			nameLen : Card16) : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE Bind ['_bind'] (
+			hsocket : Int16;
+			adrName : ADDRESS;
+			nameLen : Card16) : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE Select ['_select'] (
+			nb : Int16;
+			readFds, writeFds, exceptFds : ADDRESS;
+			VAR timeOut : TIME_VAL) : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE Accept ['_accept'] (
+			hsocket : Int16;
+			adrBuf : PTR_CHAINE;
+			adrLen : ADDRESS) : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE Recv ['_recv'] (
+			hsocket : Int16;
+			adrBuf : PTR_CHAINE;
+			lenBuf : Card16;
+			flag : Int16) : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE Send ['_send'] (
+			hsocket : Int16;
+			adrBuf : PTR_CHAINE;
+			lenBuf : Card16;
+			flag : Int16) : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE Listen ['_listen'] (
+			hsocket : Int16;
+			nbBackLog : Int16) : Int16
+			[LEAVES,REVERSED];
+
+		PROCEDURE SockClose ['_sock_close'] (
+			hsocket : Int16)
+			: Int16
+			[LEAVES,REVERSED];
+
+%ELSIF WIN32 %OR LINUX %THEN
+(*
+CONST
+%IF SB49 %THEN
+		GetPeerName = WINSOCK2.getpeername;
+		GetSockName = WINSOCK2.getsockname;
+		GetErrNo = WINSOCK2.h_errno;
+		GetHostName = WINSOCK2.gethostname;
+		GetHostByName = WINSOCK2.gethostbyname;
+		Socket = WINSOCK2.socket;
+(*
+		Htons = WINSOCK2.htons;
+		Htonl = WINSOCK2.htonl;
+*)
+		Connect = WINSOCK2.connect;
+		Bind = WINSOCK2.bind;
+		Select = WINSOCK2.select;
+		Accept = WINSOCK2.accept;
+		Recv = WINSOCK2.recv;
+		Send = WINSOCK2.send;
+		Listen = WINSOCK2.listen;
+		SockClose = WINSOCK2.closesocket;
+(*
+		SocketInit = WINSOCK2.socket_init;
+*)
+%ELSE
+		GetPeerName = WINSOCK.getpeername;
+		GetSockName = WINSOCK.getsockname;
+		GetErrNo = WINSOCK.h_errno;
+		GetHostName = WINSOCK.gethostname;
+		GetHostByName = WINSOCK.gethostbyname;
+		Socket = WINSOCK.socket;
+		Fcntl = WINSOCK.ioctlsocket; (* ?? *)
+		Htons = WINSOCK.htons;
+		Htonl = WINSOCK.htonl;
+		Connect = WINSOCK.connect;
+		Bind = WINSOCK.bind;
+		Select = WINSOCK.select;
+		Accept = WINSOCK.accept;
+		Recv = WINSOCK.recv;
+		Send = WINSOCK.send;
+		Listen = WINSOCK.listen;
+		SockClose = WINSOCK.closesocket;
+(*
+		SocketInit = WINSOCK.socket_init;
+*)
+%END
+*)
+%IF WIN32 %OR WIN16 %THEN
+CONST
+		GetPeerName = WINSOCK2.getpeername;
+		GetSockName = WINSOCK2.getsockname;
+		GetHostName = WINSOCK2.gethostname;
+		GetHostByName = WINSOCK2.gethostbyname;
+		Fcntl = WINSOCK2.ioctlsocket; (* ?? *)
+%ELSE
+CONST
+		GetPeerName = UnixSock.getpeername;
+		GetSockName = UnixSock.getsockname;
+		GetHostName = UNIX.gethostname;
+		GetHostByName = UnixSock.gethostbyname;
+		Fcntl = UNIX.fcntl;
+%END
+
+CONST
+		SockCreate = Socket.Create;
+		Connect = Socket.Connect;
+		Bind = Socket.Bind;
+		Select = Socket.Select;
+		Accept = Socket.Accept;
+		Recv = Socket.Receive;
+		RecvFrom = Socket.ReceiveFrom;
+		Send = Socket.Send;
+		SendTo = Socket.SendTo;
+		Listen = Socket.Listen;
+		SockClose = Socket.Close;
+%END
+
+PROCEDURE EstDsEtatS(s : SOCK; ee : ETATS) : BOOLEAN;
+
+PROCEDURE InitIP() : BOOLEAN;
+
+PROCEDURE FinIP();
+
+(*
+	le port est utilisé pour faire un "bind" sauf s'il est passé avec une valeur
+	MAX(Card16)
+	c'est le cas général car en client on n'a généralement pas à faire de "bind"
+*)
+PROCEDURE EtabliClientUDPouTCP(
+	VAR s : SOCK; port : Card16; enTCP : BOOLEAN)
+	: BOOLEAN;
+
+(*
+	le port est utilisé pour faire un "bind" sauf s'il est passé avec une valeur
+	MAX(Card16)
+	c'est le cas général car en client on n'a généralement pas à faire de "bind"
+*)
+PROCEDURE EtabliClient(
+	VAR s : SOCK; port : Card16)
+	: BOOLEAN;
+
+PROCEDURE ConnexionAuServeur(
+	s : SOCK; port : Card16;
+	VAR nom, numeroIP : ARRAY OF CHAR;
+	timeOutms : INTEGER; VAR fatale : BOOLEAN)
+	: BOOLEAN;
+
+PROCEDURE FermeServeur(
+	VAR s : SOCK);
+
+CONST
+
+	FermeConnexionAuServeur = FermeServeur;
+	FermeClient = FermeServeur;
+	FermeConnexionDunClient = FermeServeur;
+
+PROCEDURE EtabliServeurUDPouTCP(
+	VAR s : SOCK; port : Card16; enTCP : BOOLEAN)
+	: BOOLEAN;
+
+PROCEDURE EtabliServeur(
+	VAR s : SOCK; port : Card16)
+	: BOOLEAN;
+
+PROCEDURE AttenteConnexionDunClient(
+	s : SOCK; timeOutms : INTEGER; infinie : BOOLEAN;
+	VAR ss : SOCK)
+	: BOOLEAN;
+
+(*
+	ATTENTION !!
+	Les premiers octets de la trame sont obligatoirement de type SERVICE_UDP
+	ils sont remplis dans cette procédure ce qui veut dire que c'est à la charge de
+	l'utilisateur de cette procedure de définir un message qui débute par un champ de
+	type SERVICE_UDP
+
+*)
+PROCEDURE SendShortNetMessageUDP(
+	s : SOCK;
+	VAR msg : ARRAY OF BYTE; lSrvce, lTotal : Int16;
+	timeOutms : INTEGER; bloquant : BOOLEAN; port : CARDINAL16; ip : DWORD)
+	: BOOLEAN;
+
+(*
+	lTotal longueur totale du message
+*)
+PROCEDURE SendNetMessage(
+	s : SOCK;
+	VAR msg : ARRAY OF BYTE; lSrvce, lTotal : Int16;
+	timeOutms : INTEGER; bloquant : BOOLEAN)
+	: BOOLEAN;
+
+PROCEDURE BasicSendNetMessage(
+	s : SOCK;
+	VAR msg : ARRAY OF BYTE; lMsg : Int16;
+	timeOutms : INTEGER; bloquant : BOOLEAN) : BOOLEAN;
+
+(*
+	message <= à la trame ! (1450 octets)
+	la datation est à la charge de l'envoyeur
+
+	ip : ip où l'on veut envoyer le message.
+	port : port vers lequel on veut envoyer le message.
+	lMsg : taille du message
+
+	Si on veut faire du BROADCAST il faut se limiter à son sous réseau.
+	par exemple, si l'ip source est 137.121.2.175 il faudra envoyer au
+	maximum a 137.121.255.255 (toutes les ips commençant par "137.121.")
+	ou a 137.121.2.255 (toutes les ips commençant par "137.121.2.").
+*)
+PROCEDURE BasicSendFrameUDP(
+	s : SOCK;
+	VAR msg : ARRAY OF BYTE; lMsg : Int16;
+	timeOutms : INTEGER; bloquant : BOOLEAN; port : CARDINAL16; ip : DWORD) : BOOLEAN;
+
+PROCEDURE ReceiveShortNetMessageUDP(
+	s : SOCK;
+	VAR msg : ARRAY OF BYTE;
+	timeOutms : INTEGER; bloquant : BOOLEAN)
+	: BOOLEAN;
+
+(*
+	ajout de durée d'attente (en ms) au bout duquel
+	la reception ne devient plus bloquante.
+	Cela permet de ne pas bloquer Dr2 à cause de l'arrêt
+	du flux avec XPC Target
+*)
+PROCEDURE ReceiveShortNetMessageUDPTime(
+	s : SOCK;
+	VAR msg : ARRAY OF BYTE;
+	bloquant : BOOLEAN;
+	dureeAttente : Card32)
+	: BOOLEAN;
+
+(*
+	dans le 1ø mot de srvce, on trouve la longueur totale du message
+	srvce[0] = lg(msg) + lg(srvce)
+*)
+PROCEDURE ReceiveNetMessage(
+	s : SOCK;
+	VAR srvce : ARRAY OF WORD; VAR msg : ARRAY OF BYTE;
+	timeOutms : INTEGER; bloquant : BOOLEAN)
+	: BOOLEAN;
+
+(*
+	gère la réception par partie ...
+*)
+PROCEDURE BasicReceiveNetMessage(
+	s : SOCK;
+	VAR msg : ARRAY OF BYTE; long : CARDINAL;
+	timeOutms : INTEGER; bloquant : BOOLEAN)
+	: BOOLEAN;
+
+(*
+	message <= à la trame ! (1450 octets)
+	la gestion de la datation est à la charge du receveur
+	SORTIE
+		msg
+		portDEnvoi
+		ipEnvoi
+		Renvoie TRUE si lMsg = lReçue
+*)
+PROCEDURE BasicReceiveFrameUDP(
+	s : SOCK;
+	VAR msg : ARRAY OF BYTE; lMsg : INTEGER;
+	timeOutms : INTEGER; bloquant : BOOLEAN;
+	VAR portDEnvoi : CARDINAL16; VAR ipDEnvoi : DWORD) : BOOLEAN;
+
+PROCEDURE TestEtat(
+	s : SOCK; testR, testW, testE : BOOLEAN; VAR R, W, E : BOOLEAN; timeOutms : INTEGER);
+
+(*
+PROCEDURE NumeroIPMachineDistante(
+	VAR nIP : SOCKADDR; s : SOCK) : BOOLEAN;
+
+PROCEDURE NumeroIPMachineLocale(
+	VAR nIP : SOCKADDR; s : SOCK) : BOOLEAN;
+
+(*
+	rend l'adresse IP de la machine
+*)
+PROCEDURE NumeroIPMachine(
+	VAR numeroIP : ARRAY OF CHAR);
+*)
+
+(*
+	Rend vrai si nomRecherche n'est pas le nom de la machine locale
+*)
+PROCEDURE EstDistante(
+	nomRecherche : ARRAY OF CHAR) : BOOLEAN;
+
+(*
+	répond vrai si IP est présent et que le port n'est pas déjà utilisé
+*)
+PROCEDURE PortEstInutilise(
+	port : Card16) : BOOLEAN;
+
+(*
+	Cette fonction ne doit normalement pas être exportée !
+	Elle permet de forcer une socket à etre active.
+	En effet si celle-ci a été crée par un autre prog (zone mémoire #),
+	elle sera considérée comme innactive
+*)
+PROCEDURE MajEtatS(
+	s : SOCK;
+	nvelEtat : ETAT_SOCK);
+
+END Chaussette2.

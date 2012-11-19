@@ -1,0 +1,129 @@
+DEFINITION MODULE POSIXm2;
+
+(*
+ * module d'interface avec POSIXm2.dll qui fournit un certain nombre de fonctions
+ * POSIX et/ou ISO C9x.
+ *)
+
+FROM SYSTEM IMPORT
+%IF StonyBrook %THEN
+		SOURCEFILE, SOURCELINE,
+%END
+    ADDRESS, CAST, BYTE;
+
+TYPE
+	String1024		= ARRAY[0..1023] OF CHAR;
+	String1024Ptr	= POINTER TO String1024;
+	ArgString			= ARRAY[0..1023] OF CHAR;
+	ArgStringPtr	= POINTER TO ArgString;
+	ArgVector			= POINTER TO ARRAY[0..255] OF ArgStringPtr;
+
+	(* support pour la fonctionalité setjmp/longjmp de C. On obtient un "tampon de contexte" via
+	 * jmpEnv := POSIX.new_jmp_buf(); et puis on évoque POSIX.setjmp(jmpEnv^) (sic, '^'!) à l'endroit
+	 * où on veut pouvoir sauter si besoin (par exemple, le niveau supérieur d'un interprétateur). On
+	 * saute avec POSIX.longjmp(jmpEnv,val) où <val> est un entier non-zero. L'appel à setjmp retourne
+	 * alors <val> pour indiquer qu'un saut vient d'être fait, sinon, setjmp retourne 0 (cela indique donc
+	 * que l'exécution se continue de façon "normale").
+	 *)
+	jmp_buf = POINTER TO ARRAY OF CARDINAL;
+	setjmpProcedure = PROCEDURE( (*env*) ARRAY OF CARDINAL ) : INTEGER [CDECL];
+
+	(* tableau avec les fonctions exportées par POSIXm2.dll et nous-mêmes : *)
+	POSIXm2Exports			=
+		RECORD
+
+			argc : CARDINAL16;
+			argv : ArgVector;
+			Arg : PROCEDURE( (*arg*) CARDINAL16 ) : ArgString [CDECL];
+
+			(*
+				renseigne le nom de fichier et le numéro de ligne utilisés pour marquer
+				les messages SSLog
+			*)
+			LogLocation : PROCEDURE( (*fName*)ARRAY OF CHAR, (*lineNr*) INTEGER32 ) [CDECL];
+			LogMsg : PROCEDURE((*msg*) ARRAY OF CHAR):CARDINAL32 [CDECL];
+			(* pointe vers le dernier message enregistré dans le journal (même si la fonctionnalité
+			 * 'SS_Log' n'a pas été inclue dans POSIXm2.DLL). Concerne touts les messages, donc également
+			 * ceux générés dans POSIXm2.DLL . *)
+			lastSSLogMsg : POINTER TO ARRAY[0..2048] OF CHAR;
+
+			(*
+				allocation d'un jmp_buf
+			*)
+			new_jmp_buf : PROCEDURE() : jmp_buf [CDECL];
+			(*
+				desallocation d'un jmp_buf
+			*)
+			dispose_jmp_buf : PROCEDURE(VAR (*env*) jmp_buf ) [CDECL];
+			(*
+				fait un saut programmé (longjmp) vers l'endroit+etat stockés dans jmp_buf
+				avec le code <val> qui ne peut pas être 0.
+			*)
+			longjmp : PROCEDURE( (*env*) jmp_buf, (*val*) : INTEGER ) [CDECL];
+
+			(*
+				gestion mémoire via les routines C
+			*)
+			calloc : PROCEDURE( (*n*) CARDINAL32, (*elemSize*) CARDINAL32 ) : ADDRESS [CDECL];
+			realloc : PROCEDURE( (*ptr*) ADDRESS, (*memSize*) CARDINAL32 ) : ADDRESS [CDECL];
+			free : PROCEDURE( (*ptr*) ADDRESS ) [CDECL];
+			(*
+				rempli une zone de mémoire avec une constante
+			*)
+			memset : PROCEDURE( VAR (*mem*) NOHIGH ARRAY OF BYTE, (*val*) BYTE, (*size*) CARDINAL32 ) [CDECL];
+
+			strstr : PROCEDURE( (*str*) ARRAY OF CHAR, (*pattern*) ARRAY OF CHAR ) : String1024Ptr [CDECL];
+			strrstr : PROCEDURE( (*str*) ARRAY OF CHAR, (*pattern*) ARRAY OF CHAR ) : String1024Ptr [CDECL];
+
+			(* ================================================================
+				fin de la partie initialisée par POSIXm2.dll::initDMBasePOSIXm2();
+				les fonctions suivantes sont implémentées dans POSIXm2.mod
+			   ================================================================ *)
+
+			(*
+				marque un endroit+etat comme cible pour un longjmp. Retourne 0 pour le simple marquage,
+				ou le code <val> passé à longjmp (qui ne doit donc pas être 0).
+			*)
+			setjmp : setjmpProcedure;
+
+			LogMsgEx : PROCEDURE((*msg*) ARRAY OF CHAR):CARDINAL32 [RightToLeft, LEAVES, VARIABLE];
+			(*
+				Appelle la fonction sscanf() de la libraire standard C (a priori de MSVC)
+				sscanf( source, "flottant=%lf, uint16=%hu int32=%d hexcard=0x%lx",
+					ADR(flottant), ADR(uint16), ADR(int32), ADR(hexcard) );
+			*)
+			sscanf : PROCEDURE( (*source*) ARRAY OF CHAR, (*format*) ARRAY OF CHAR ):INTEGER32 [RightToLeft, LEAVES, VARIABLE];
+			(*
+				Imprime selon une chaine de format dans la chaine <dest> utilisant la fonction snprintf de la
+				libraire standard C.
+			*)
+			sprintf : PROCEDURE( VAR (*dest*) ARRAY OF CHAR, (*format*) ARRAY OF CHAR ):INTEGER32 [RightToLeft, LEAVES, VARIABLE];
+
+	END;
+
+VAR
+
+	POSIX : POSIXm2Exports;
+
+(* QT initialisation procedure: as of 20110112 this is no longer done at module initialisation time! *)
+PROCEDURE POSIXAvailable() : BOOLEAN;
+
+PROCEDURE pm2PostMessage( title, message : ARRAY OF CHAR ): CARDINAL;
+
+%IF StonyBrook %THEN
+
+PROCEDURE MarkLog; MACRO;
+BEGIN
+	POSIX.LogLocation(SOURCEFILE,SOURCELINE);
+END MarkLog;
+
+%ELSE
+
+PROCEDURE MarkLog;
+BEGIN
+	POSIX.LogLocation( "Modula-2", -1 );
+END MarkLog;
+
+%END
+
+END POSIXm2.

@@ -3551,6 +3551,7 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->MemoryDataRefFromString = MemoryDataRefFromString;
 		dmbase->OpenMovieFromMemoryDataRef = OpenMovieFromMemoryDataRef;
 		dmbase->OpenQTMovieFromMemoryDataRefInWindow = OpenQTMovieFromMemoryDataRefInWindow;
+		dmbase->OpenQTMovieWindowWithMovie = OpenQTMovieWindowWithMovie_Mod2;
 
 		dmbase->OpenMovieFromURL = OpenMovieFromURL;
 		dmbase->HasMovieChanged = HasMovieChanged_Mod2;

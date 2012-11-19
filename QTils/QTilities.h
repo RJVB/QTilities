@@ -1034,6 +1034,7 @@ typedef struct LibQTilsBase {
 //	ErrCode (*MemoryDataRefFromStringPtr)( const char *string, size_t len, MemoryDataRef *memRef );
 	ErrCode (*OpenMovieFromMemoryDataRef)( Movie *newMovie, MemoryDataRef *memRef, OSType contentType );
 	QTMovieWindowH (*OpenQTMovieFromMemoryDataRefInWindow)( MemoryDataRef *memRef, OSType contentType, int controllerVisible );
+	QTMovieWindowH (*OpenQTMovieWindowWithMovie)( Movie theMovie, char *theURL, int ulen, int visibleController );
 
 #if !defined(__QUICKTIME__) && !defined(__MOVIES__)
 	ErrCode (*OpenMovieFromURL)( Movie *newMovie, short flags, short *id, const char *URL, void *dum1, OSType *type );

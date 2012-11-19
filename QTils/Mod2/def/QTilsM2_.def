@@ -1,0 +1,145 @@
+DEFINITION MODULE QTilsM2_;
+
+<*/LIBNEEDED:QTils.lib*>
+
+(*
+<*/NOHIGH*>
+*)
+
+FROM SYSTEM IMPORT
+    ADDRESS, ADR, CAST;
+
+%IF WIN32 %THEN
+	IMPORT WIN32;
+	FROM WIN32 IMPORT
+%ELSE
+	IMPORT Windows;
+	FROM Windows IMPORT
+%END
+		HWND, DWORD, SetErrorMode;
+
+%IF SGI %OR GPLINUX %THEN
+	IMPORT Types;
+%END
+
+TYPE
+%IF SGI %OR GPLINUX %THEN
+	Int8 = Types.Int8;
+	UInt8 = Types.Card8;
+	Int16 = Types.Int16;
+	UInt16 = Types.Card16;
+	Int32 = Types.Int32;
+	UInt32 = Types.Card32;
+	Int64 = Types.LONGINT;
+	float = SHORTREAL;
+	double = LONGREAL;
+%END
+
+%IF StonyBrook %THEN
+	Int8 = INTEGER8;
+	UInt8 = CARDINAL8;
+	Int16 = INTEGER16; (*[-32768..32767]*)
+	UInt16 = CARDINAL16;
+	Int32 = INTEGER32;
+	UInt32 = CARDINAL32;
+	Int64 = INTEGER64;
+	float = REAL;
+	double = LONGREAL;
+%END
+
+	StringPtr			= POINTER TO CHAR;
+
+	OSErr			= Int16;
+	TimeValue			= Int32;
+	MovieFrameTime		= RECORD
+			hours, minutes, seconds, frames : UInt8;
+		END;
+	MovieFrameTimePtr	= POINTER TO MovieFrameTime;
+
+	NativeWindow		= HWND;
+	NativeWindowPtr	= POINTER TO NativeWindow;
+	NativeError		= DWORD;
+
+	QTMovieWindows		= RECORD
+			self : POINTER TO QTMovieWindows;
+			theView : NativeWindow;
+			theViewPtr : NativeWindowPtr;
+			theURL : POINTER TO CHAR;
+			idx : Int16;
+
+			isPlaying, isActive : Int16;
+			timeScale : TimeValue;
+			frameRate, duration, startTime : double;
+			wasStepped, wasScanned : Int16;
+			(* ATTENTION: ce type n'est pas complet, l'allocation d'instances
+				est faite par QTils.dll!
+			*)
+		END;
+
+	QTMovieWindowPtr	= POINTER TO QTMovieWindows;
+	QTMovieWindowH		= POINTER TO QTMovieWindowPtr;
+
+	MCActionCallback	= PROCEDURE(QTMovieWindowH,ADDRESS):Int32;
+	MCActions			= RECORD
+			Step, Play, Activate, Deactivate, GoToTime,
+			MouseDown, MovieClick, Suspend, Resume, Finished, Close : Int16;
+		END;
+	MCActionsPtr		= POINTER TO MCActions;
+
+CONST
+	noErr = 0;
+	%IF WIN32 %THEN
+		NULL			= WIN32.NULL;
+	%ELSE
+		NULL			= Windows.NULL;
+	%END
+	NULL_NativeWindow	=	CAST(NativeWindow, NULL);
+	NULL_QTMovieWindowH	=	CAST(QTMovieWindowH, NULL);
+
+(* procedures 'locales' *)
+(* PROCEDURE __cOpenQT__['_OpenQT']() : OSErr [StdCall]; *)
+PROCEDURE __cCloseQT__['_CloseQT']() [StdCall];
+PROCEDURE __cMCAction__['_MCAction']() : MCActionsPtr [StdCall];
+
+<*/CALLS:OSCall*>
+<*/EXPORTALL*>(* all procedures now get the EXPORT attribute *)
+<*/COPYATTRIBUTES*>(* this makes implementing the procedure *)
+                   (* simpler since you do not have to apply the export *)
+                   (* attribute since the attributes for the implementation *)
+                   (* will be copied from the declaration in the DEF *)
+
+PROCEDURE QTils_LogMsg['_QTils_LogMsg_Mod2'](msg : ARRAY OF CHAR) : Int32 [StdCall];
+(* PROCEDURE PumpMessages(force : Int32) : UInt32 [StdCall]; devrait fonctionner? *)
+PROCEDURE PumpMessages['_PumpMessages'](force : Int32) : UInt32 [StdCall];
+
+(* PROCEDURE OpenQT() : OSErr; *)
+(* PROCEDURE CloseQT; *)
+(* PROCEDURE LastQTError['_LastQTError']() : OSErr [StdCall]; *)
+
+PROCEDURE QTMovieWindowH_Check(wih : QTMovieWindowH) : BOOLEAN;
+PROCEDURE QTMovieWindowH_isOpen(wih : QTMovieWindowH) : BOOLEAN;
+
+PROCEDURE DisposeQTMovieWindow['_DisposeQTMovieWindow']( wih : QTMovieWindowH ) [StdCall];
+PROCEDURE CloseQTMovieWindow['_CloseQTMovieWindow']( wih : QTMovieWindowH ) : Int16 [StdCall];
+PROCEDURE OpenQTMovieInWindow['_OpenQTMovieInWindow_Mod2']( theURL : ARRAY OF CHAR; withController : Int32 ) : QTMovieWindowH [StdCall];
+
+PROCEDURE ActivateQTMovieWindow['_ActivateQTMovieWindow']( wih : QTMovieWindowH ) : OSErr [StdCall];
+PROCEDURE QTMovieWindowPlay['_QTMovieWindowPlay']( wih : QTMovieWindowH ) : OSErr [StdCall];
+PROCEDURE QTMovieWindowStop['_QTMovieWindowStop']( wih : QTMovieWindowH ) : OSErr [StdCall];
+
+PROCEDURE secondsToFrameTime['_secondsToFrameTime']( Time, MovieFrameRate : double; ft : MovieFrameTimePtr ) : MovieFrameTimePtr [StdCall];
+PROCEDURE QTMovieWindowGetTime['_QTMovieWindowGetTime']( wih : QTMovieWindowH; t : POINTER to double ) : OSErr [StdCall];
+PROCEDURE QTMovieWindowGetFrameTime['_QTMovieWindowGetFrameTime']( wih : QTMovieWindowH; ft : MovieFrameTimePtr ) : OSErr [StdCall];
+PROCEDURE QTMovieWindowSetTime['_QTMovieWindowSetTime']( wih : QTMovieWindowH; t : double ) : OSErr [StdCall];
+PROCEDURE QTMovieWindowSetFrameTime['_QTMovieWindowSetFrameTime']( wih : QTMovieWindowH; ft : MovieFrameTimePtr ) : OSErr [StdCall];
+
+PROCEDURE register_MCAction['_register_MCAction']( wih : QTMovieWindowH; action : Int16; callback : MCActionCallback ) [StdCall];
+PROCEDURE get_MCAction['_get_MCAction']( wih : QTMovieWindowH; action : Int16 ) : MCActionCallback [StdCall];
+PROCEDURE delete_MCAction( wih : QTMovieWindowH; action : Int16 ) [StdCall];
+
+VAR (* READONLY?! *)
+	QTOpened : BOOLEAN;
+	QTOpenError : OSErr;
+	MCAction : MCActions;
+
+END QTilsM2_.

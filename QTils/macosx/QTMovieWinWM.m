@@ -361,7 +361,12 @@ static QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *th
 	}
 
 	if( wih && *wih && (*wih)->self == *wih ){
-		wi->theURL = (const char*) strdup(theURL);
+		if( theURL && (!wi->theURL || strcmp(theURL, wi->theURL)) ){
+			wi->theURL = (const char*) strdup(theURL);
+		}
+		else{
+			theURL = wi->theURL;
+		}
 		wi->theMovie = theMovie;
 		GetMovieBox( wi->theMovie, &wi->theMovieRect );
 		MacOffsetRect( &wi->theMovieRect, -wi->theMovieRect.left, -wi->theMovieRect.top );
@@ -406,7 +411,7 @@ static QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *th
 						);
 					}
 				}
-				if( wi->dataRef != dataRef ){
+				if( dataRef && wi->dataRef != dataRef ){
 					InitQTMovieWindowHFromMovie( wih, NULL, theMovie, dataRef, dataRefType, NULL, resId, &err );
 				}
 				wi->theViewPtr = &wi->theView;
@@ -458,6 +463,17 @@ static QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *th
 			wi = NULL, wih = NULL;
 		}
 		PumpMessages(FALSE);
+	}
+	return wih;
+}
+
+QTMovieWindowH OpenQTMovieWindowWithMovie_Mod2( Movie theMovie, char *theURL, int ulen, int visibleController )
+{ QTMovieWindowH wih = NULL;
+	if( theMovie ){
+		if( theURL && !*theURL ){
+			theURL = NULL;
+		}
+		wih = OpenQTMovieWindowWithMovie( theMovie, theURL, 1, NULL, 0, visibleController );
 	}
 	return wih;
 }

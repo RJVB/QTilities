@@ -310,7 +310,7 @@
 		D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = QTMovieWinWM.m; sourceTree = "<group>"; };
 		D663BD331328DF96007DFF5C /* QTVOD2-installer.nsi */ = {isa = PBXFileReference; explicitFileType = text.script; fileEncoding = 12; path = "QTVOD2-installer.nsi"; sourceTree = SOURCE_ROOT; };
 		D663BD351328FFA5007DFF5C /* QTVOD2-dev-installer.nsi */ = {isa = PBXFileReference; explicitFileType = text.script; fileEncoding = 12; path = "QTVOD2-dev-installer.nsi"; sourceTree = SOURCE_ROOT; };
-		D665F1F3132BCCD300E0B732 /* QTilities-v1.2.pages */ = {isa = PBXFileReference; lastKnownFileType = file; path = "QTilities-v1.2.pages"; sourceTree = "<group>"; };
+		D665F1F3132BCCD300E0B732 /* QTilities-v1.3.pages */ = {isa = PBXFileReference; lastKnownFileType = file; path = "QTilities-v1.3.pages"; sourceTree = "<group>"; };
 		D6704EBF121AFDB6004B5459 /* winixdefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = winixdefs.h; path = ../../winixdefs.h; sourceTree = "<group>"; };
 		D67ACE641416129D00E99EA2 /* QTils-emb.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "QTils-emb.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D67ACE651416129D00E99EA2 /* QTils-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "QTils-Info copy.plist"; path = "../../QTils-Info copy.plist"; sourceTree = "<group>"; };
@@ -441,7 +441,7 @@
 			children = (
 				D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */,
 				D6912BA2132E3EDB00CD5E78 /* Inspiration */,
-				D665F1F3132BCCD300E0B732 /* QTilities-v1.2.pages */,
+				D665F1F3132BCCD300E0B732 /* QTilities-v1.3.pages */,
 				D6FC2AAD131E588B00583ACC /* make_archive.sh */,
 				D6B9CE0812A529BD00B99C73 /* Testing */,
 				D602C30611FE52A000D568BD /* QTMovieFile */,
