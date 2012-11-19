@@ -156,7 +156,7 @@ int vssprintf( char **buffer, const char *format, va_list ap )
 		if( !string ){
 			len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(sRef), enc ) + 1;
 			if( (string = calloc( len, sizeof(char) )) ){
-				if( !CFStringGetCString( sRef, string, len, enc ) ){
+				if( !CFStringGetCString( sRef, string, len - 1, enc ) ){
 					free(string);
 					string = NULL;
 				}
@@ -174,7 +174,7 @@ int vssprintf( char **buffer, const char *format, va_list ap )
 				*buffer = calloc( slen, sizeof(char) );
 			}
 			if( *buffer ){
-				strncpy( *buffer, string, slen );
+				strncpy( *buffer, string, slen - 1 );
 				(*buffer)[slen-1] = '\0';
 				ret = (int) strlen(*buffer);
 			}
@@ -216,7 +216,7 @@ int vssprintfAppend( char **buffer, const char *format, va_list ap )
 		if( !string ){
 			len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(sRef), enc ) + 1;
 			if( (string = calloc( len, sizeof(char) )) ){
-				if( !CFStringGetCString( sRef, string, len, enc ) ){
+				if( !CFStringGetCString( sRef, string, len - 1, enc ) ){
 					free(string);
 					string = NULL;
 				}
@@ -236,7 +236,7 @@ int vssprintfAppend( char **buffer, const char *format, va_list ap )
 				*buffer = calloc( slen, sizeof(char) );
 			}
 			if( *buffer ){
-				strncpy( *buffer, string, slen );
+				strncpy( *buffer, string, slen - 1 );
 				(*buffer)[slen-1] = '\0';
 				ret = (int) strlen(*buffer) - slen0;
 			}

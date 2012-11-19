@@ -419,6 +419,7 @@ static QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *th
 				[QTMovieWindowList addObject:wi->theNSQTMovieWindow];
 
 				ShowMoviePoster( wi->theMovie );
+				SetMovieActive( wi->theMovie, YES );
 				wi->theMC = [[wi->theNSQTMovieWindow theQTMovie] quickTimeMovieController];
 				if( (BOOL) controllerVisible != [wi->theMovieView isControllerVisible] ){
 					[wi->theNSQTMovieWindow ToggleMCController];

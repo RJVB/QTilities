@@ -66,7 +66,7 @@ TYPE
 			*)
 			calloc : PROCEDURE( (*n*) CARDINAL32, (*elemSize*) CARDINAL32 ) : ADDRESS [CDECL];
 			realloc : PROCEDURE( (*ptr*) ADDRESS, (*memSize*) CARDINAL32 ) : ADDRESS [CDECL];
-			free : PROCEDURE( (*ptr*) ADDRESS ) [CDECL];
+			free : PROCEDURE( VAR (*ptr*) ADDRESS ) [CDECL];
 			(*
 				rempli une zone de mémoire avec une constante
 			*)

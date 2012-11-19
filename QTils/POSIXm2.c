@@ -290,10 +290,11 @@ void *realloc_Mod2( void* mem, size_t size )
 	return (mem)? realloc( mem, size ) : calloc( 1, size );
 }
 
-void free_Mod2( char* mem )
+void free_Mod2( char **mem )
 {
-	if( mem ){
-		free(mem);
+	if( mem && *mem ){
+		free(*mem);
+		*mem = NULL;
 	}
 }
 

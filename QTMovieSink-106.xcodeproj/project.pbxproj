@@ -266,8 +266,6 @@
 		D61EEE4C14841C0400D479D9 /* CritSectEx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CritSectEx.cpp; sourceTree = "<group>"; };
 		D61EEE4D14841C0400D479D9 /* CritSectEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CritSectEx.h; sourceTree = "<group>"; };
 		D6267BE3165802CA008A7887 /* vsscanf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vsscanf.h; sourceTree = "<group>"; };
-		D6267BE616580A83008A7887 /* ssprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ssprintf.h; sourceTree = "<group>"; };
-		D6267BE716580A83008A7887 /* ssprintf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ssprintf.cpp; sourceTree = "<group>"; };
 		D6295FFC121BE77D00F66BA8 /* qtest2r */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = qtest2r; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6296008121BE7FE00F66BA8 /* qtest2r.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; name = qtest2r.cpp; path = inspiration/qtest2r.cpp; sourceTree = "<group>"; };
 		D629600A121BE82D00F66BA8 /* timing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = timing.c; sourceTree = "<group>"; };
@@ -692,8 +690,6 @@
 				D641371C13055B3C0013B201 /* vsscanf.cpp */,
 				D6EC1D3312EF03E400B53DBC /* AskFileName.c */,
 				D6B9CC5F12A5086E00B99C73 /* QTMovieWinWM.c */,
-				D6267BE616580A83008A7887 /* ssprintf.h */,
-				D6267BE716580A83008A7887 /* ssprintf.cpp */,
 			);
 			name = mswin;
 			path = QTils/mswin;
