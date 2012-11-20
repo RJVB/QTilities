@@ -285,6 +285,11 @@ int vssprintfAppend_Mod2( char **buffer, const char *format, int flen, va_list a
 	if( fmt != format ){
 		free(fmt);
 	}
+#ifdef DEBUG
+	if( qtLog_Initialised ){
+		Log( qtLogPtr, "vssprintfAppend_Mod2() buffer %p->%p='%s', returns %d", buffer, *buffer, *buffer, ret );
+	}
+#endif
 	return ret;
 }
 

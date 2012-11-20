@@ -66,7 +66,7 @@ PM2ext int vsnprintf_Mod2( char *dest, int slen, const char *format, int flen, v
 
 PM2ext void *calloc_Mod2( size_t n, size_t s );
 PM2ext void *realloc_Mod2( void* mem, size_t size );
-PM2ext void free_Mod2( void* mem );
+PM2ext void free_Mod2( char **mem );
 PM2ext void memset_Mod2( void *mem, char val, size_t len );
 
 #pragma mark ----LibPOSIXm2Base----
@@ -110,7 +110,7 @@ typedef struct LibPOSIXm2Base {
 
 	void* (*calloc)( size_t n, size_t s );
 	void* (*realloc)( void* mem, size_t size );
-	void (*free)( void* mem );
+	void (*free)( char **mem );
 	void (*memset)( void *mem, char val, size_t len );
 
 	char* (*strstr)( const char *a, int alen, const char *b, int blen );

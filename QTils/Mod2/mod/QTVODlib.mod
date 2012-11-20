@@ -957,16 +957,16 @@ BEGIN
 							err := QTils.OpenMovieFromMemoryDataRef( theMovie, memRef, FOUR_CHAR_CODE('QI2M') );
 							IF err = noErr
 								THEN
-									QTils.CloseMovie(theMovie);
+									(*QTils.CloseMovie(theMovie);*)
 									IF ( (channel = 5) OR (channel = 6) )
 										THEN
 											(* wih := QTils.OpenQTMovieFromMemoryDataRefInWindow( memRef, FOUR_CHAR_CODE('QI2M'), 1 ); *)
-											(*wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", 1 );*)
-											wih := QTils.OpenQTMovieInWindow( fName, 1 );
+											wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", 1 );
+											(*wih := QTils.OpenQTMovieInWindow( fName, 1 );*)
 										ELSE
 											(* wih := QTils.OpenQTMovieFromMemoryDataRefInWindow( memRef, FOUR_CHAR_CODE('QI2M'), vues_avec_controleur ); *)
-											(*wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", vues_avec_controleur );*)
-											wih := QTils.OpenQTMovieInWindow( fName, vues_avec_controleur );
+											wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", vues_avec_controleur );
+											(*wih := QTils.OpenQTMovieInWindow( fName, vues_avec_controleur );*)
 									END;
 							END;
 							IF ( wih = NULL_QTMovieWindowH )
