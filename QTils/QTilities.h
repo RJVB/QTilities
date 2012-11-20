@@ -570,6 +570,8 @@ QTLSext ErrCode CloseQTMovieWindow( QTMovieWindowH WI );
 QTLSext QTMovieWindowH OpenQTMovieInWindow( const char *theURL, int visibleController );
 QTLSext NativeWindowH NativeWindowHFromQTMovieWindowH( QTMovieWindowH wi );
 QTLSext QTMovieWindowH OpenQTMovieFromMemoryDataRefInWindow( MemoryDataRef *memRef, OSType contentType, int controllerVisible );
+QTLSext QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
+								    Handle dataRef, OSType dataRefType, int controllerVisible );
 
 QTLSext ErrCode ActivateQTMovieWindow( QTMovieWindowH wih );
 QTLSext ErrCode QTMovieWindowPlay( QTMovieWindowH wih );
@@ -1123,6 +1125,7 @@ typedef struct LibQTilsBase {
 	char *lastSSLogMsg;
 	UInt32 (*MacErrorString) ( ErrCode err, char *errString, int slen,
 						 char *errComment, int clen );
+	void (*free)( char **mem );
 
 	// NB!! Modula-2 defines several additional members in its interface that are not initialised in C!
 } LibQTilsBase;

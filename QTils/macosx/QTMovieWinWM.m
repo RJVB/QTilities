@@ -351,7 +351,7 @@ int DrainQTMovieWindowPool( QTMovieWindowH WI )
 
 QTMovieWindowH lastQTWMH = NULL;
 
-static QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
+QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
 									    Handle dataRef, OSType dataRefType, int controllerVisible )
 { QTMovieWindows *wi = NULL;
   QTMovieWindowH wih = NULL;

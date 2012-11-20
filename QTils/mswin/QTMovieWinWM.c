@@ -386,7 +386,7 @@ static Boolean nothing( DialogPtr dialog, EventRecord *event, DialogItemIndex *i
 	return 0;
 }
 
-static QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
+QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
 									    Handle dataRef, OSType dataRefType, int visibleController )
 { QTMovieWindows *wi = NULL;
   QTMovieWindowH wih = NULL;

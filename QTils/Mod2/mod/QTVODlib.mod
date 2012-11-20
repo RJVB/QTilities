@@ -1,6 +1,6 @@
 IMPLEMENTATION MODULE QTVODlib;
 
-<*/VALIDVERSION:USECHANNELVIEWIMPORTFILES*>
+<*/VALIDVERSION:USECHANNELVIEWIMPORTFILES,NOTOUTCOMMENTED*>
 (*<*/VERSION:USECHANNELVIEWIMPORTFILES*>*)
 
 FROM SYSTEM IMPORT
@@ -46,7 +46,7 @@ FROM Chaussette IMPORT
 (* importons tout de QTilsM2 et de QTVODcomm; on en aura besoin *)
 FROM QTilsM2 IMPORT *;
 FROM QTVODcomm IMPORT *;
-FROM POSIXm2 IMPORT POSIX;
+
 TYPE
 
 	VODDESIGN_PARSER = ARRAY[0..29] OF XML_RECORD;
@@ -986,7 +986,8 @@ BEGIN
 							QTils.LogMsgEx( "Echec de création de MemoryDataRef pour canal %s: %d", chanNum, err );
 							PostMessage( fName, QTils.lastSSLogMsg^ );
 					END;
-					POSIX.free(qi2mString);
+					(* NB NB on doit utiliser QTils.free() et non pas POSIX.free() pour éviter des soucis sous Win7 *)
+					QTils.free(qi2mString);
 				ELSE
 					QTils.LogMsgEx( "Echec de création de %s en mémoire", fName );
 					PostMessage( fName, QTils.lastSSLogMsg^ );

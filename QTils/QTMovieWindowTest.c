@@ -506,29 +506,35 @@ int main( int argc, char* argv[] )
 				}
 			}
 #endif
+			wi = NULL;
 			for( i = 1 ; i < argc ; i++ ){
 				wi = OpenQTMovieInWindow( argv[i], (i> 0 && i==argc-1)? 0 : 1 );
 				// register the window in our local list:
-				if( i == 1 && wi ){
-//				  size_t qlen = strlen(qi2mStringMask) + strlen(argv[i]) + 1;
+				if( i == 1 /*&& wi*/ ){
+				  Movie theMovie = NULL;
 					qi2mString = NULL;
 					ssprintf( &qi2mString, qi2mStringMask, argv[i] );
 					if( qi2mString ){
 					  MemoryDataRef memRef;
 					  ErrCode err;
+						fprintf( stderr, "Importing \"%s\"\n", qi2mString );
 						err = MemoryDataRefFromString( qi2mString, "inMemory.qi2m", &memRef );
 						QTils_LogMsgEx( "Importing movie from (qi2m) dataRef %p\n", memRef.dataRef );
-//						err = OpenMovieFromMemoryDataRef( &theMovie, &memRef, 'QI2M' );
+						err = OpenMovieFromMemoryDataRef( &theMovie, &memRef, 'QI2M' );
 //						QTils_LogMsgEx( "Imported movie with code %d\n", err );
 						if( err == noErr ){
 							CloseQTMovieWindow(wi);
-							wi = OpenQTMovieFromMemoryDataRefInWindow( &memRef, 'QI2M', 1 );
+//							wi = OpenQTMovieFromMemoryDataRefInWindow( &memRef, 'QI2M', 1 );
+							wi = OpenQTMovieWindowWithMovie( theMovie, memRef.virtURL, 1, NULL, 0, 1 );
 							if( wi ){
-								QTMovieWindowSetTime( wi, 0, 0 );
 								QTils_LogMsgEx( "Imported movie with wi=%p, code %d\n", wi, LastQTError() );
 							}
 						}
 						free(qi2mString);
+//						if( theMovie && !wi ){
+//							CloseMovie(&theMovie);
+//							DisposeMemoryDataRef(&memRef);
+//						}
 					}
 				}
 				register_wi(wi);

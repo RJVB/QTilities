@@ -161,22 +161,30 @@ int vssprintf( char **buffer, const char *format, va_list ap )
 					string = NULL;
 				}
 				else{
+//					QTils_LogMsgEx( "vssprintf(): CFStringRef is length %d, copied to string of length %lu\n",
+//								len-1, strlen(string) );
 					string[len-1] = '\0';
 				}
 			}
 		}
 		if( string ){
 		  size_t slen = strlen(string) + 1;
-			if( *buffer ){
-				*buffer = realloc( *buffer, slen * sizeof(char) );
+		  char *dest = *buffer;
+			if( dest ){
+				dest = realloc( dest, slen * sizeof(char) );
+//				QTils_LogMsgEx( "vssprintf(): resized destination string %p of length %lu to %lu\n",
+//							dest, strlen(dest), slen-1 );
 			}
 			else{
-				*buffer = calloc( slen, sizeof(char) );
+				dest = calloc( slen, sizeof(char) );
+//				QTils_LogMsgEx( "vssprintf(): created destination string %p of length %lu\n",
+//							dest, slen-1 );
 			}
-			if( *buffer ){
-				strncpy( *buffer, string, slen - 1 );
-				(*buffer)[slen-1] = '\0';
-				ret = (int) strlen(*buffer);
+			if( dest ){
+				strncpy( dest, string, slen - 1 );
+				dest[slen-1] = '\0';
+				ret = (int) strlen(dest);
+				*buffer = dest;
 			}
 			if( string && len >= 0 ){
 				free(string);
@@ -196,6 +204,21 @@ int ssprintf( char **buffer, const char *format, ... )
 	return ret;
 }
 	
+int vssprintf_Mod2( char **buffer, const char *format, int flen, va_list ap )
+{ char *fmt = (char*) format;
+  int ret = -1;
+	if( strchr( format, '\\' ) ){
+		if( !(fmt = parse_format_opcodes( strdup(format), format )) ){
+			fmt = (char*) format;
+		}
+	}
+	ret = vssprintf( buffer, fmt, ap );
+	if( fmt != format ){
+		free(fmt);
+	}
+	return ret;
+}
+
 int vssprintfAppend( char **buffer, const char *format, va_list ap )
 { CFMutableStringRef sRef;
   CFStringRef formatRef;
@@ -258,21 +281,6 @@ int ssprintfAppend( char **buffer, const char *format, ... )
 	return ret;
 }
 
-int vssprintf_Mod2( char **buffer, const char *format, int flen, va_list ap )
-{ char *fmt = (char*) format;
-  int ret = -1;
-	if( strchr( format, '\\' ) ){
-		if( !(fmt = parse_format_opcodes( strdup(format), format )) ){
-			fmt = (char*) format;
-		}
-	}
-	ret = vssprintf( buffer, fmt, ap );
-	if( fmt != format ){
-		free(fmt);
-	}
-	return ret;
-}
-
 int vssprintfAppend_Mod2( char **buffer, const char *format, int flen, va_list ap )
 { char *fmt = (char*) format;
   int ret = -1;
@@ -285,11 +293,6 @@ int vssprintfAppend_Mod2( char **buffer, const char *format, int flen, va_list a
 	if( fmt != format ){
 		free(fmt);
 	}
-#ifdef DEBUG
-	if( qtLog_Initialised ){
-		Log( qtLogPtr, "vssprintfAppend_Mod2() buffer %p->%p='%s', returns %d", buffer, *buffer, *buffer, ret );
-	}
-#endif
 	return ret;
 }
 
@@ -2116,9 +2119,13 @@ ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memRef, OSTy
 	}
 #ifndef QTMOVIESINK
 	if( err == noErr ){
-		InitQTMovieWindowHFromMovie( NewQTMovieWindowH(), memRef->virtURL, *newMovie,
+	  QTMovieWindowH wih = NULL;
+		wih = InitQTMovieWindowHFromMovie( NewQTMovieWindowH(), memRef->virtURL, *newMovie,
 							   memRef->dataRef, memRef->dataRefType, ldataHandler, 1, &wihErr
 		);
+		if( wih ){
+			(*wih)->memRef = memRef;
+		}
 	}
 #endif
 	return err;
@@ -3516,6 +3523,19 @@ ErrCode DisableTrack_Mod2( Movie theMovie, long trackNr )
 #include "QTMovieSink.h"
 
 /*!
+	a local free() function for export to M2. This seems to be necessary because apparently under Win7
+	memory has to be freed in the same dll as where it was allocated.
+ */
+static void free_Mod2( char **mem )
+{
+	if( mem && *mem ){
+		free(*mem);
+//		QTils_LogMsgEx( "free_Mod2(): freeing %p and setting it to NULL\n", *mem );
+		*mem = NULL;
+	}
+}
+
+/*!
  initDMBaseQTils() initialises a structure with the addresses of the most important exported functions.
  This makes it less tedious to load the DLL dynamically at runtime.
  */
@@ -3619,6 +3639,7 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->vsnprintf = vsnprintf_Mod2;
 		dmbase->vssprintf = vssprintf_Mod2;
 		dmbase->vssprintfAppend = vssprintfAppend_Mod2;
+		dmbase->free = free_Mod2;
 
 		return sizeof(*dmbase);
 	}

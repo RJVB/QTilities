@@ -694,6 +694,8 @@ QTCompressionQualities	=
 			lastSSLogMsg : POINTER TO ARRAY[0..2048] OF CHAR;
 			MacErrorString : PROCEDURE( (*err*) ErrCode, VAR (*errString*) ARRAY OF CHAR,
 									VAR (*errComment*) ARRAY OF CHAR) : UInt32 [CDECL];
+			(* free: pour libérer la mémoire allouée par ssprintf et ssprintfAppend *)
+			free : PROCEDURE( VAR (*mem*) ADDRESS ) [CDECL];
 
 			(* ================================================================
 				fin de la partie initialisée par QTils.dll::initDMBase_Mod2();
