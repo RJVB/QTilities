@@ -11,6 +11,7 @@
 #import <stdio.h>
 #import <stdlib.h>
 #import <stddef.h>
+#import <libgen.h>
 #import <string.h>
 #import <math.h>
 
@@ -1021,10 +1022,22 @@ BOOL addToRecentDocs = YES;
 	channel:(int)channel channelName:(const char*)chName scale:(double)scale
 	display:(BOOL)openNow ofType:(NSString *)typeName error:(NSError **)outError eMsg:(char*)eMsg
 { NSURL *cachedMovieFile = nil;
-  NSString *fn = [NSString stringWithFormat:@"%@%s.mov", [src path], chName ];
-  const char *fName = [fn UTF8String];
+  NSString *fn, *dn = [NSString stringWithFormat:@"%@vid", [src path] ];
+  const char *fName;
   Movie theMovie = NULL;
   ErrCode err;
+  NSError *derr = NULL;
+
+	if( [[[[NSFileManager alloc] init] autorelease]
+			createDirectoryAtPath:dn withIntermediateDirectories:YES attributes:nil error:&derr]
+	){
+		fn = [NSString stringWithFormat:@"%@vid/%s.mov", [src path], chName ];
+	}
+	else{
+		// fall back on the old approach of creating the cache files alongside the input
+		fn = [NSString stringWithFormat:@"%@-%s.mov", [src path], chName ];
+	}
+	fName = [fn UTF8String];
 	// create a cache movie for the requested view, and return an NSURL to its location
 
 	if( !recreateChannelViews ){
@@ -1144,7 +1157,7 @@ BOOL addToRecentDocs = YES;
 		}
 		[qi2mString appendString:@" />\n"
 				"</import>\n" ];
-		if( (err = MemoryDataRefFromString( [qi2mString cStringUsingEncoding:NSUTF8StringEncoding], [qi2mString length], &memRef )) == noErr ){
+		if( (err = MemoryDataRefFromString( [qi2mString cStringUsingEncoding:NSUTF8StringEncoding], [[src path] UTF8String], &memRef )) == noErr ){
 			@synchronized(self){
 				err = OpenMovieFromMemoryDataRef( &theMovie, &memRef, 'QI2M' );
 			}
@@ -1393,7 +1406,7 @@ BOOL addToRecentDocs = YES;
 				    (int) ft.hours, (int) ft.minutes, (int) ft.seconds, (int) ft.frames );
 		if( assocDataFile ){
 		  size_t len = strlen(header);
-			snprintf( &header[len], sizeof(header)-len, "%sassociated data file: %s\n\n",
+			snprintf( &header[len], sizeof(header)-len, "associated data file: %s\n\n",
 				    [[[NSURL fileURLWithPath:assocDataFile] relativeString] fileSystemRepresentation] );
 		}
 		MetaDataDisplayStr = [[[NSMutableString alloc] init] autorelease];
@@ -1677,10 +1690,21 @@ BOOL addToRecentDocs = YES;
   chLeTrans[5] = { {0,0}, /*ok*/{0.0,1.0}, {-1.0,1.0}, /*ok*/{0.0,0.0}, {-1.0,0.0} },
   chFwTrans[5] = { {0,0}, /*ok*/{1.0,1.0}, /*ok*/{0.0,1.0}, {1.0,0.0}, {-1.0,0.0} },
   chRiTrans[5] = { {0,0}, {2.0,1.0}, {1.0,1.0}, {2.0,0.0}, /*ok*/{1.0,0.0} };
-  NSString *fn = [NSString stringWithFormat:@"%@-design.qi2m", [theURL path] ];
+  NSString *fn, *dn = [NSString stringWithFormat:@"%@vid", [theURL path] ];
   NSString *vodsource = [NSString stringWithFormat:@"%@.VOD", [theURL path] ];
-  const char *fName = [fn UTF8String], *source = [vodsource UTF8String], *useVMGI;
+  NSError *derr = NULL;
+  const char *fName, *source = [vodsource UTF8String], *useVMGI;
   FILE *fp;
+	if( [[[[NSFileManager alloc] init] autorelease]
+			createDirectoryAtPath:dn withIntermediateDirectories:YES attributes:nil error:&derr]
+	){
+		fn = [NSString stringWithFormat:@"%@vid/design.qi2m", [theURL path] ];
+	}
+	else{
+		// fall back on the old approach of creating the cache files alongside the input
+		fn = [NSString stringWithFormat:@"%@-design.qi2m", [theURL path] ];
+	}
+	fName = [fn UTF8String];
 	if( (fp = fopen(fName, "w")) ){
 	  char *flipLaterals = (theDescription.flipLeftRight)? "True" : "False";
 		if( theDescription.useVMGI ){
@@ -1757,12 +1781,7 @@ BOOL addToRecentDocs = YES;
 
 	if( !theURL || ![[theURL path] length] ){
 		// present an open file dialog
-		if( OpenMovieFromURL( &fullMovie, 1, NULL, NULL, NULL, NULL ) == noErr ){
-		  extern char *lastMovieOpenedURL;
-			// retrieve the filename:
-			fName = lastMovieOpenedURL;
-			CloseMovie(&fullMovie);
-		}
+		fName = AskFileName( "Please choose a video or movie to open" );
 		if( fName && *fName ){
 			// store the filename
 			if( theURL ){
@@ -1875,33 +1894,33 @@ BOOL addToRecentDocs = YES;
 	if( doLogging ){
 		// sequential opening on the main thread
 		forward = [self CreateChannelView:theURL withDescription:&theDescription
-						  channel:theDescription.channels.forward channelName:"-forward"
+						  channel:theDescription.channels.forward channelName:"forward"
 						  scale:theDescription.scale display:YES ofType:typeName error:outError eMsg:NULL];
 		pilot = [self CreateChannelView:theURL withDescription:&theDescription
-						  channel:theDescription.channels.pilot channelName:"-pilot"
+						  channel:theDescription.channels.pilot channelName:"pilot"
 						  scale:theDescription.scale display:YES ofType:typeName error:outError eMsg:NULL];
 		left = [self CreateChannelView:theURL withDescription:&theDescription
-						  channel:theDescription.channels.left channelName:"-left"
+						  channel:theDescription.channels.left channelName:"left"
 						  scale:theDescription.scale display:YES ofType:typeName error:outError eMsg:NULL];
 		right = [self CreateChannelView:theURL withDescription:&theDescription
-						  channel:theDescription.channels.right channelName:"-right"
+						  channel:theDescription.channels.right channelName:"right"
 						  scale:theDescription.scale display:YES ofType:typeName error:outError eMsg:NULL];
 		TC = [self CreateChannelView:theURL withDescription:&theDescription
-						  channel:6 channelName:"-TC"
+						  channel:6 channelName:"TC"
 						  scale:1.0 display:YES ofType:typeName error:outError eMsg:NULL];
 	}
 	else{
 		// partially parallel opening using background threads:
 	  ChannelViewSpec *chSpec[5] = {
-			[[ChannelViewSpec createWithURL:theURL forChannel:fwWin withName:"-forward"
+			[[ChannelViewSpec createWithURL:theURL forChannel:fwWin withName:"forward"
 						 withDescription:NULL ofType:typeName error:outError ] retain],
-			[[ChannelViewSpec createWithURL:theURL forChannel:pilotWin withName:"-pilot"
+			[[ChannelViewSpec createWithURL:theURL forChannel:pilotWin withName:"pilot"
 						 withDescription:NULL ofType:typeName error:outError ] retain],
-			[[ChannelViewSpec createWithURL:theURL forChannel:leftWin withName:"-left"
+			[[ChannelViewSpec createWithURL:theURL forChannel:leftWin withName:"left"
 						 withDescription:NULL ofType:typeName error:outError ] retain],
-			[[ChannelViewSpec createWithURL:theURL forChannel:rightWin withName:"-right"
+			[[ChannelViewSpec createWithURL:theURL forChannel:rightWin withName:"right"
 						 withDescription:NULL ofType:typeName error:outError ] retain],
-			[[ChannelViewSpec createWithURL:theURL forChannel:tcWin withName:"-TC"
+			[[ChannelViewSpec createWithURL:theURL forChannel:tcWin withName:"TC"
 						 withDescription:NULL ofType:typeName error:outError ] retain] };
 	  const char *teMsg[] = { "Forward view", "Pilot view", "Left view", "Right view", "TC view" };
 		[NSThread detachNewThreadSelector:@selector(CreateChannelViewInBackground:) toTarget:self withObject:chSpec[0]];
