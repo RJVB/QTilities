@@ -193,7 +193,7 @@ Section "Documentation" SEC03
   SetOutPath "$INSTDIR\Documentation"
   SetOverwrite ifnewer
   File /nonfatal "S:\MacOSX\QTilities\QTVODm2.pdf"
-  File /nonfatal "S:\MacOSX\QTilities\QTilities-v1.2.pdf"
+  File /nonfatal "S:\MacOSX\QTilities\QTilities-v1.3.pdf"
   File /nonfatal "S:\MacOSX\QTImage2Mov\QTImage2Mov-v1.1.pdf"
   File /nonfatal "S:\MacOSX\QTilities\QTils.chm"
   File /nonfatal "S:\MacOSX\QTImage2Mov\QTImage2Mov.chm"

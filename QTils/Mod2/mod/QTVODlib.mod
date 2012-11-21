@@ -1,7 +1,8 @@
 IMPLEMENTATION MODULE QTVODlib;
 
+(* USECHANNELVIEWIMPORTFILES : correspond à l'ancien comportement où pour créer une vidéo cache
+	pour les 4+1 canaux on créait d'abord un fichier .qi2m d'importation *)
 <*/VALIDVERSION:USECHANNELVIEWIMPORTFILES,NOTOUTCOMMENTED*>
-(*<*/VERSION:USECHANNELVIEWIMPORTFILES*>*)
 
 FROM SYSTEM IMPORT
 	CAST, ADR, ADDRESS;
@@ -24,7 +25,7 @@ FROM StreamFile IMPORT
 FROM TextIO IMPORT
 	WriteString, WriteChar, WriteLn;
 FROM FileFunc IMPORT
-	DeleteFile, RenameFile;
+	DeleteFile, RenameFile, CreateDirTree;
 
 %IF WIN32 %THEN
 	FROM WIN32 IMPORT
@@ -35,6 +36,8 @@ FROM FileFunc IMPORT
 %END
 FROM WINUSER IMPORT
 	SetWindowPos, HWND_BOTTOM, HWND_TOP, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE;
+FROM COMMDLG IMPORT
+	OPENFILENAME, GetOpenFileName, OFN_FILEMUSTEXIST, OFN_NOCHANGEDIR;
 
 %IF CHAUSSETTE2 %THEN
 FROM Chaussette2 IMPORT
@@ -46,6 +49,7 @@ FROM Chaussette IMPORT
 (* importons tout de QTilsM2 et de QTVODcomm; on en aura besoin *)
 FROM QTilsM2 IMPORT *;
 FROM QTVODcomm IMPORT *;
+FROM POSIXm2 IMPORT POSIX;
 
 TYPE
 
@@ -621,8 +625,15 @@ VAR
 	fp : ChanId;
 	res : OpenResults;
 BEGIN
-	Concat( URL, "-design", fName );
-	Append( ".qi2m", fName );
+	(*Concat( URL, "-design", fName );
+	Append( ".qi2m", fName ); *)
+	(* 20121121: le fichier design.qi2m est également créé dans le répertoire cache *)
+	POSIX.sprintf( fName, "%svid\design.qi2m", URL );
+	IF NOT CreateDirTree(fName)
+		THEN
+			(* on retourne sur l'ancien comportement *)
+			POSIX.sprintf( fName, "%s-design.qi2m", URL );
+	END;
 	Concat( URL, ".VOD", source );
 
 	Open( fp, fName, write, res );
@@ -821,8 +832,16 @@ VAR
 	wih : QTMovieWindowH;
 BEGIN
 	IntToStr( channel, chanNum );
-	Concat( src, chName, fName );
-	Append( ".mov", fName );
+	(*Concat( src, chName, fName );
+	Append( ".mov", fName );*)
+	(* 20121121: c'est plus propre de stocker les fichiers cache dans un répertoire spécifique;
+		CreateDirTree() permet de faire ça facilement *)
+	POSIX.sprintf( fName, "%svid\%s.mov", src, chName );
+	IF NOT CreateDirTree(fName)
+		THEN
+			(* on retourne à l'ancien comportement *)
+			POSIX.sprintf( fName, "%s-%s.mov", src, chName );
+	END;
 	IF NOT recreateChannelViews
 		THEN
 			(* si la vue sur <channel> existe déjà en cache (fichier .mov), on l'ouvre directement dans
@@ -838,9 +857,9 @@ BEGIN
 	END;
 	IF ( wih = NULL_QTMovieWindowH )
 		THEN
+%IF USECHANNELVIEWIMPORTFILES %THEN
 			(* on va créer le fichier .qi2m pour ouvrir <channel> dans la vidéo <src> *)
 			Delete( fName, LENGTH(fName)-4, 4 );
-%IF USECHANNELVIEWIMPORTFILES %THEN
 			Append( ".qi2m", fName );
 			QTils.LogMsgEx( "création %s pour canal %d", fName, channel );
 			Open( fp, fName, write+old, res );
@@ -914,7 +933,6 @@ BEGIN
 					PostMessage( fName, "Echec de création/ouverture" );
 			END;
 %ELSE
-			Append( ".mov", fName );
 			qi2mString := NIL;
 			Concat( src, ".mov", source );
 			QTils.ssprintf( qi2mString,
@@ -1053,6 +1071,29 @@ BEGIN
 	END;
 END PrepareMainCacheMovie;
 
+PROCEDURE AskFileName( title : ARRAY OF CHAR; VAR fileName : ARRAY OF CHAR ) : BOOLEAN;
+VAR
+	lp : OPENFILENAME;
+BEGIN
+	POSIX.memset( lp, 0, SIZE(lp) );
+	lp.lStructSize := SIZE(OPENFILENAME);
+	lp.lpstrFilter := ADR("Fichier QuickTime" + CHR(0) + "*.mov" + CHR(0)
+			+ "Media Supportés" + CHR(0) + "*.mov;*.qi2m;*.VOD;*.jpgs;*.mpg;*.mp4;*.mpeg;*.avi;*.wmv;*.mp3;*.aif;*.wav;*.mid;*.jpg;*.jpeg" + CHR(0)
+			+ "All Files" + CHR(0) + "*.*" + CHR(0) + CHR(0));
+	lp.nFilterIndex := 1;
+	fileName[0] := CHR(0);
+	lp.lpstrFile := ADR(fileName);
+	lp.nMaxFile := SIZE(fileName);
+	lp.lpstrTitle := ADR(title);
+	lp.Flags := OFN_FILEMUSTEXIST BOR OFN_NOCHANGEDIR;
+	IF GetOpenFileName(lp)
+		THEN
+			RETURN TRUE;
+		ELSE
+			RETURN FALSE;
+	END;
+END AskFileName;
+
 PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription ) : ErrCode;
 VAR
 	fName : URLString;
@@ -1067,10 +1108,15 @@ BEGIN
 	IF ( LENGTH(URL) = 0 )
 		THEN
 			fName := "";
+(* 20121121: on n'appelle plus OpenMovieFromURL pour obtenir un nom de fichier car cela risque
+	de prendre beaucoup de temps si c'est un fichier VOD.
 			IF ( QTils.OpenMovieFromURL( fullMovie, 1, fName ) = noErr )
 				THEN
 					QTils.CloseMovie(fullMovie);
 			END;
+*)
+			(* on essaie d'obtenir un nom de fichier de l'utilisateur *)
+			AskFileName( "Merci de choisir un fichier vidéo", fName );
 			(* ce qui nous intéresse surtout est de savoir si on a reçu un nom de fichier *)
 			IF ( LENGTH(fName) > 0 )
 				THEN
@@ -1189,19 +1235,19 @@ BEGIN
 
 	(* maintenant on peut tenter d'ouvrir les 5 fenêtres *)
 	(* vue vers l'avant *)
-	qtwmH[fwWin] := CreateChannelView( URL, description, description.channels.forward, "-forward",
+	qtwmH[fwWin] := CreateChannelView( URL, description, description.channels.forward, "forward",
 			description.scale, fName );
 	(* vue conducteur *)
-	qtwmH[pilotWin] := CreateChannelView( URL, description, description.channels.pilot, "-pilot",
+	qtwmH[pilotWin] := CreateChannelView( URL, description, description.channels.pilot, "pilot",
 			description.scale, fName );
 	(* vue latérale-gauche *)
-	qtwmH[leftWin] := CreateChannelView( URL, description, description.channels.left, "-left",
+	qtwmH[leftWin] := CreateChannelView( URL, description, description.channels.left, "left",
 			description.scale, fName );
 	(* vue latérale-droite *)
-	qtwmH[rightWin] := CreateChannelView( URL, description, description.channels.right, "-right",
+	qtwmH[rightWin] := CreateChannelView( URL, description, description.channels.right, "right",
 			description.scale, fName );
 	(* la piste TimeCode qui donne le temps pour les 4 vues *)
-	qtwmH[tcWin] := CreateChannelView( URL, description, TimeCodeChannel, "-TC", 1.0, fName );
+	qtwmH[tcWin] := CreateChannelView( URL, description, TimeCodeChannel, "TC", 1.0, fName );
 
 	(*
 		test!
