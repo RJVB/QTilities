@@ -154,6 +154,7 @@ int vssprintf( char **buffer, const char *format, va_list ap )
 		CFAllocatorDeallocate( kCFAllocatorDefault, (void*) formatRef );
 		string = (char*) CFStringGetCStringPtr( sRef, enc );
 		if( !string ){
+			// couldn't get a 'direct' string pointer; use the 'get a copy' approach:
 			len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(sRef), enc ) + 1;
 			if( (string = calloc( len, sizeof(char) )) ){
 				if( !CFStringGetCString( sRef, string, len - 1, enc ) ){
@@ -169,24 +170,23 @@ int vssprintf( char **buffer, const char *format, va_list ap )
 		}
 		if( string ){
 		  size_t slen = strlen(string) + 1;
-		  char *dest = *buffer;
-			if( dest ){
-				dest = realloc( dest, slen * sizeof(char) );
+			if( *buffer ){
+				*buffer = realloc( *buffer, slen * sizeof(char) );
 //				QTils_LogMsgEx( "vssprintf(): resized destination string %p of length %lu to %lu\n",
-//							dest, strlen(dest), slen-1 );
+//							*buffer, strlen(*buffer), slen-1 );
 			}
 			else{
-				dest = calloc( slen, sizeof(char) );
+				*buffer = calloc( slen, sizeof(char) );
 //				QTils_LogMsgEx( "vssprintf(): created destination string %p of length %lu\n",
-//							dest, slen-1 );
+//							*buffer, slen-1 );
 			}
-			if( dest ){
-				strncpy( dest, string, slen - 1 );
-				dest[slen-1] = '\0';
-				ret = (int) strlen(dest);
-				*buffer = dest;
+			if( *buffer ){
+				strncpy( *buffer, string, slen - 1 );
+				(*buffer)[slen-1] = '\0';
+				ret = (int) strlen(*buffer);
 			}
 			if( string && len >= 0 ){
+				// string is a copy and not the result of CFStringGetCStringPtr(); free it now.
 				free(string);
 			}
 		}
@@ -203,7 +203,7 @@ int ssprintf( char **buffer, const char *format, ... )
 	va_end(ap);
 	return ret;
 }
-	
+
 int vssprintf_Mod2( char **buffer, const char *format, int flen, va_list ap )
 { char *fmt = (char*) format;
   int ret = -1;

@@ -518,19 +518,28 @@ int main( int argc, char* argv[] )
 					  MemoryDataRef memRef;
 					  ErrCode err;
 						fprintf( stderr, "Importing \"%s\"\n", qi2mString );
+#if 0
 						err = MemoryDataRefFromString( qi2mString, "inMemory.qi2m", &memRef );
 						QTils_LogMsgEx( "Importing movie from (qi2m) dataRef %p\n", memRef.dataRef );
 						err = OpenMovieFromMemoryDataRef( &theMovie, &memRef, 'QI2M' );
+						fprintf( stderr, "Imported movie %p='%s' with err=%d\n", theMovie, memRef.virtURL, err );
 //						QTils_LogMsgEx( "Imported movie with code %d\n", err );
 						if( err == noErr ){
 							CloseQTMovieWindow(wi);
+							fprintf( stderr, "Closed the original window\n" );
 //							wi = OpenQTMovieFromMemoryDataRefInWindow( &memRef, 'QI2M', 1 );
 							wi = OpenQTMovieWindowWithMovie( theMovie, memRef.virtURL, 1, NULL, 0, 1 );
 							if( wi ){
-								QTils_LogMsgEx( "Imported movie with wi=%p, code %d\n", wi, LastQTError() );
+								fprintf( stderr, "Imported/displayed movie %p with wi=%p, code %d\n", theMovie, wi, LastQTError() );
+							}
+							else{
+								fprintf( stderr, "Error importin/displaying movie %p with wi=%p, code %d\n", theMovie, wi, LastQTError() );
 							}
 						}
-						free(qi2mString);
+#endif
+						fprintf( stderr, "Freeing qi2mString ..." ); fflush(stderr);
+						QTils.free(&qi2mString);
+						fprintf( stderr, " done\n" ); fflush(stderr);
 //						if( theMovie && !wi ){
 //							CloseMovie(&theMovie);
 //							DisposeMemoryDataRef(&memRef);
