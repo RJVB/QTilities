@@ -3529,8 +3529,8 @@ ErrCode DisableTrack_Mod2( Movie theMovie, long trackNr )
 static void free_Mod2( char **mem )
 {
 	if( mem && *mem ){
+		QTils_LogMsgEx( "free_Mod2(): freeing %p and setting it to NULL; free()=%p\n", *mem, free );
 		free(*mem);
-//		QTils_LogMsgEx( "free_Mod2(): freeing %p and setting it to NULL\n", *mem );
 		*mem = NULL;
 	}
 }
