@@ -909,13 +909,27 @@ BEGIN
 					WriteString( fp, ' />' ); WriteLn(fp);
 					WriteString( fp, '</import>' ); WriteLn(fp);
 					Close(fp);
-					(* fichier .qi2m créé, on l'ouvre maintenant dans une fenêtre *)
+					(* fichier .qi2m créé, on l'ouvre maintenant, d'abord sans fenêtre *)
+					err := QTils.OpenMovieFromURL( theMovie, 1, fName );
+					IF err = noErr
+						THEN
+							(* on prépare le movie pour être affiché *)
+							PrepareChannelCacheMovie( theMovie, channel );
+							IF ( (channel = 5) OR (channel = 6) )
+								THEN
+									wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", 1 );
+								ELSE
+									wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", vues_avec_controleur );
+							END;
+					END;
+%IF NOTOUTCOMMENTED %THEN
 					IF ( (channel = 5) OR (channel = 6) )
 						THEN
 							wih := QTils.OpenQTMovieInWindow( fName, 1 );
 						ELSE
 							wih := QTils.OpenQTMovieInWindow( fName, vues_avec_controleur );
 					END;
+%END
 					IF ( wih = NULL_QTMovieWindowH )
 						THEN
 							IF QTils.MacErrorString( QTils.LastQTError(), errString, errComment ) <> 0
@@ -975,16 +989,12 @@ BEGIN
 							err := QTils.OpenMovieFromMemoryDataRef( theMovie, memRef, FOUR_CHAR_CODE('QI2M') );
 							IF err = noErr
 								THEN
-									(*QTils.CloseMovie(theMovie);*)
+									PrepareChannelCacheMovie( theMovie, channel );
 									IF ( (channel = 5) OR (channel = 6) )
 										THEN
-											(* wih := QTils.OpenQTMovieFromMemoryDataRefInWindow( memRef, FOUR_CHAR_CODE('QI2M'), 1 ); *)
 											wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", 1 );
-											(*wih := QTils.OpenQTMovieInWindow( fName, 1 );*)
 										ELSE
-											(* wih := QTils.OpenQTMovieFromMemoryDataRefInWindow( memRef, FOUR_CHAR_CODE('QI2M'), vues_avec_controleur ); *)
 											wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", vues_avec_controleur );
-											(*wih := QTils.OpenQTMovieInWindow( fName, vues_avec_controleur );*)
 									END;
 							END;
 							IF ( wih = NULL_QTMovieWindowH )
@@ -1049,27 +1059,26 @@ END PruneExtensions;
 VAR
 	inOpenVideo : BOOLEAN;
 
-PROCEDURE PrepareMainCacheMovie;
+PROCEDURE PrepareChannelCacheMovie( theMovie : Movie; chanNum : INTEGER );
 VAR
 	trackNr : Int32;
 BEGIN
-	trackNr := -1;
-	IF (QTils.GetTrackWithName( fullMovie, "timeStamp Track", trackNr ) = noErr) AND (trackNr >= 0)
+	IF chanNum <> 5 AND chanNum <> 6
 		THEN
-			QTils.LogMsgEx( "Desactivation de la piste %ld, timeStamp Track", trackNr );
-			QTils.DisableTrack( fullMovie, trackNr );
+			trackNr := -1;
+			IF (QTils.GetTrackWithName( theMovie, "timeStamp Track", trackNr ) = noErr) AND (trackNr >= 0)
+				THEN
+					QTils.LogMsgEx( "Desactivation de la piste %ld, timeStamp Track", trackNr );
+					QTils.DisableTrack( theMovie, trackNr );
+			END;
 	END;
 	trackNr := -1;
-	IF (QTils.GetTrackWithName( fullMovie, "Timecode Track", trackNr ) = noErr) AND (trackNr >= 0)
+	IF (QTils.GetTrackWithName( theMovie, "Timecode Track", trackNr ) = noErr) AND (trackNr >= 0)
 		THEN
 			QTils.LogMsgEx( "Activation de la piste %ld, Timecode Track", trackNr );
-			QTils.EnableTrack( fullMovie, trackNr );
+			QTils.EnableTrack( theMovie, trackNr );
 	END;
-	IF CAST(BOOLEAN,QTils.HasMovieChanged(fullMovie))
-		THEN
-			FlushCaches();
-	END;
-END PrepareMainCacheMovie;
+END PrepareChannelCacheMovie;
 
 PROCEDURE AskFileName( title : ARRAY OF CHAR; VAR fileName : ARRAY OF CHAR ) : BOOLEAN;
 VAR
@@ -1156,12 +1165,6 @@ BEGIN
 		THEN
 			(* le "cache" existe déjà; on le garde ouvert! *)
 			QTils.LogMsg( "all-channel cache movie opened" );
-			(* 20121113: cette vidéo peut aussi être un .mov que l'utilisateur nous a donné
-			 * directement. Dans ce cas, ce serait bien de desactiver la piste d'horodatage/GPS
-			 * ("timeStamp Track") et d'activer la piste TimeCode ("Timecode Track"). Il faudrait
-			 * alors une fonction GetTrackWithName.
-			 *)
-			 PrepareMainCacheMovie();
 		ELSE
 			(* il faudra construire le cache à partir du fichier .VOD d'origine
 			 * Pour cela, il suffit d'importer le fichier VOD avec les paramètres par défaut

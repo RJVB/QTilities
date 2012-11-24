@@ -1027,15 +1027,18 @@ BOOL addToRecentDocs = YES;
   Movie theMovie = NULL;
   ErrCode err;
   NSError *derr = NULL;
+  BOOL usingCacheDir;
 
 	if( [[[[NSFileManager alloc] init] autorelease]
 			createDirectoryAtPath:dn withIntermediateDirectories:YES attributes:nil error:&derr]
 	){
 		fn = [NSString stringWithFormat:@"%@vid/%s.mov", [src path], chName ];
+		usingCacheDir = YES;
 	}
 	else{
 		// fall back on the old approach of creating the cache files alongside the input
 		fn = [NSString stringWithFormat:@"%@-%s.mov", [src path], chName ];
+		usingCacheDir = NO;
 	}
 	fName = [fn UTF8String];
 	// create a cache movie for the requested view, and return an NSURL to its location
@@ -1046,7 +1049,13 @@ BOOL addToRecentDocs = YES;
 	if( !theMovie ){
 #ifdef USECHANNELVIEWIMPORTFILES
 	  FILE *fp;
-	  NSString *importFile = [NSString stringWithFormat:@"%@%s.qi2m", [src path], chName ];
+	  NSString *importFile;
+		if( usingCacheDir ){
+			importFile = [NSString stringWithFormat:@"%@vid/%s.qi2m", [src path], chName ];
+		}
+		else{
+			importFile = [NSString stringWithFormat:@"%@-%s.qi2m", [src path], chName ];
+		}
 		fName = [importFile UTF8String];
 		if( doLogging ){
 			// LogMsgEx uses a static buffer (lastSSLogMsg) to construct the formatted message, so we
@@ -1059,7 +1068,7 @@ BOOL addToRecentDocs = YES;
 			fputs( "<?xml version=\"1.0\"?>\n", fp );
 			fputs( "<?quicktime type=\"video/x-qt-img2mov\"?>\n", fp );
 			// autosave will take care of generating the cache movie:
-			fputs( "<import autoSave=True >\n", fp );
+			fputs( "<import autoSave=False askSave=False >\n", fp );
 			if( assocDataFile ){
 				fprintf( fp, "\t<description txt=\"UTC timeZone=%g, DST=%hd, assoc.data:%s\" />\n",
 					description->timeZone, (short) description->DST, [assocDataFile UTF8String]
@@ -1108,9 +1117,27 @@ BOOL addToRecentDocs = YES;
 				}
 			}
 			else{
+			  Track track;
 				unlink(fName);
 				if( doLogging ){
 					QTils_LogMsgEx( "'%s' imported and unlinked", fName );
+				}
+				if( channel != 5 && channel != 6 ){
+					if( GetTrackWithName( theMovie, "timeStamp Track", TextMediaType, 0, &track, NULL ) == noErr ){
+						SetTrackEnabled( track, NO );
+					}
+				}
+				if( GetTrackWithName( theMovie, "TimeCode Track", TimeCodeMediaType, 0, &track, NULL ) == noErr ){
+					SetTrackEnabled( track, YES );
+				}
+				cachedMovieFile = [NSURL fileURLWithPath:fn];
+				fName = [[cachedMovieFile path] cStringUsingEncoding:NSUTF8StringEncoding];
+				err = SaveMovieAsRefMov( fName, theMovie );
+				if( err != noErr ){
+					QTils_LogMsgEx( "Channel view creation failure saving '%s': %d", fName, err );
+				}
+				else if( doLogging ){
+					QTils_LogMsgEx( "channel view '%s' created", fName );
 				}
 			}
 		}
@@ -1124,9 +1151,13 @@ BOOL addToRecentDocs = YES;
 		}
 #else
 	  MemoryDataRef memRef;
-	  NSMutableString *qi2mString = [NSMutableString stringWithCString:"<?xml version=\"1.0\"?>\n"
+	  NSMutableString *qi2mString;
+	  const char *fName;
+		cachedMovieFile = [NSURL fileURLWithPath:fn];
+		fName = [[cachedMovieFile path] cStringUsingEncoding:NSUTF8StringEncoding];
+		qi2mString = [NSMutableString stringWithFormat:@"<?xml version=\"1.0\"?>\n"
 							   "<?quicktime type=\"video/x-qt-img2mov\"?>\n"
-							   "<import autoSave=False askSave=False >\n" encoding:NSUTF8StringEncoding];
+							   "<import autoSave=True autoSaveName=\"%s\" >\n", fName];
 		if( doLogging ){
 			QTils_LogMsgEx( "Creating in-memory view for channel %d", channel );
 		}
@@ -1163,12 +1194,13 @@ BOOL addToRecentDocs = YES;
 			}
 			if( !theMovie ){
 			  const char *es, *ec;
-				es = MacErrorString( LastQTError(), &ec );
+			  ErrCode last = LastQTError();
+				es = MacErrorString( last, &ec );
 				if( es ){
 					QTils_LogMsgEx( "Channel view creation failure: %s (%s)", es, ec );
 				}
 				else{
-					QTils_LogMsgEx( "Channel view creation failure: %d (%d)", LastQTError(), err );
+					QTils_LogMsgEx( "Channel view creation failure: %d (%d)", last, err );
 				}
 				if( openNow ){
 					PostMessage( fName, lastSSLogMsg );
@@ -1178,10 +1210,15 @@ BOOL addToRecentDocs = YES;
 				}
 			}
 			else{
-			  const char *fName;
-				cachedMovieFile = [NSURL fileURLWithPath:fn];
-				fName = [[cachedMovieFile path] cStringUsingEncoding:NSUTF8StringEncoding];
-				err = SaveMovieAsRefMov( fName, theMovie );
+			  Track track;
+				if( channel != 5 && channel != 6 ){
+					if( GetTrackWithName( theMovie, "timeStamp Track", TextMediaType, 0, &track, NULL ) == noErr ){
+						SetTrackEnabled( track, NO );
+					}
+				}
+				if( GetTrackWithName( theMovie, "TimeCode Track", TimeCodeMediaType, 0, &track, NULL ) == noErr ){
+					SetTrackEnabled( track, YES );
+				}
 				if( err != noErr ){
 					QTils_LogMsgEx( "Channel view creation failure saving '%s': %d", fName, err );
 				}

@@ -537,7 +537,7 @@ int main( int argc, char* argv[] )
 							}
 						}
 #endif
-						fprintf( stderr, "Freeing qi2mString ..." ); fflush(stderr);
+						fprintf( stderr, "Freeing qi2mString ... free()=%p", free ); fflush(stderr);
 						QTils.free(&qi2mString);
 						fprintf( stderr, " done\n" ); fflush(stderr);
 //						if( theMovie && !wi ){
