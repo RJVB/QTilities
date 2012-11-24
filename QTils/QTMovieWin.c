@@ -74,7 +74,7 @@ QTMovieWindowH NewQTMovieWindowH()
 #else
 	// a simple approach to create a handle: a pointer to a member of the structure that
 	// points to the structure itself (self).
-	wi = (QTMovieWindows*) calloc(1, sizeof(QTMovieWindows));
+	wi = (QTMovieWindows*) QTils_calloc(1, sizeof(QTMovieWindows));
 	if( wi ){
 		wi->self = wi;
 		wih = &wi->self;
@@ -147,7 +147,7 @@ QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theU
 					if( strcmp( trackName, "timeStamp Track" ) == 0 ){
 						wi->theTimeStampTrack = tTrack;
 					}
-					free(trackName);
+					QTils_free(&trackName);
 				}
 				i += 1;
 			}
@@ -169,9 +169,9 @@ QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theU
 		}
 		if( theURL ){
 			if( wi->theURL ){
-				free(wi->theURL);
+				QTils_free(&wi->theURL);
 			}
-			wi->theURL = (const char*) strdup(theURL);
+			wi->theURL = (const char*) QTils_strdup(theURL);
 		}
 		register_QTMovieWindowH_for_Movie( wi->theMovie, wih );
 		// set theChapterTrack to NULL to be sure GetMovieChapterTrack won't return its value
@@ -221,7 +221,7 @@ void DisposeQTMovieWindow( QTMovieWindowH WI )
 #ifdef USE_QTHANDLES
 		DisposeHandle( (Handle) WI );
 #else
-		free(wi);
+		QTils_free(&wi);
 #endif
 	}
 }

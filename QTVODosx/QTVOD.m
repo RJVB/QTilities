@@ -1117,17 +1117,18 @@ BOOL addToRecentDocs = YES;
 				}
 			}
 			else{
-			  Track track;
+			  Track track = NULL;
 				unlink(fName);
 				if( doLogging ){
 					QTils_LogMsgEx( "'%s' imported and unlinked", fName );
 				}
 				if( channel != 5 && channel != 6 ){
-					if( GetTrackWithName( theMovie, "timeStamp Track", TextMediaType, 0, &track, NULL ) == noErr ){
+					if( GetTrackWithName( theMovie, "timeStamp Track", TextMediaType, 0, &track, NULL ) == noErr && track ){
 						SetTrackEnabled( track, NO );
 					}
 				}
-				if( GetTrackWithName( theMovie, "TimeCode Track", TimeCodeMediaType, 0, &track, NULL ) == noErr ){
+				track = NULL;
+				if( GetTrackWithName( theMovie, "TimeCode Track", TimeCodeMediaType, 0, &track, NULL ) == noErr && track ){
 					SetTrackEnabled( track, YES );
 				}
 				cachedMovieFile = [NSURL fileURLWithPath:fn];
@@ -1210,17 +1211,26 @@ BOOL addToRecentDocs = YES;
 				}
 			}
 			else{
-			  Track track;
+			  Track track = NULL;
 				if( channel != 5 && channel != 6 ){
-					if( GetTrackWithName( theMovie, "timeStamp Track", TextMediaType, 0, &track, NULL ) == noErr ){
+					if( GetTrackWithName( theMovie, "timeStamp Track", TextMediaType, 0, &track, NULL ) == noErr && track ){
 						SetTrackEnabled( track, NO );
 					}
 				}
-				if( GetTrackWithName( theMovie, "TimeCode Track", TimeCodeMediaType, 0, &track, NULL ) == noErr ){
+				track = NULL;
+				if( GetTrackWithName( theMovie, "TimeCode Track", TimeCodeMediaType, 0, &track, NULL ) == noErr && track ){
 					SetTrackEnabled( track, YES );
 				}
-				if( err != noErr ){
-					QTils_LogMsgEx( "Channel view creation failure saving '%s': %d", fName, err );
+				if( HasMovieChanged(theMovie) ){
+					cachedMovieFile = [NSURL fileURLWithPath:fn];
+					fName = [[cachedMovieFile path] cStringUsingEncoding:NSUTF8StringEncoding];
+					err = SaveMovieAsRefMov( fName, theMovie );
+					if( err != noErr ){
+						QTils_LogMsgEx( "Channel view creation failure saving '%s': %d", fName, err );
+					}
+					else if( doLogging ){
+						QTils_LogMsgEx( "channel view '%s' created", fName );
+					}
 				}
 				else if( doLogging ){
 					QTils_LogMsgEx( "channel view '%s' created", fName );

@@ -91,6 +91,12 @@ static int set_priority(int priority)
 
 #ifndef LOCAL_METADATA_HANDLER
 #	include "QTils/QTilities.h"
+#	define strdup(s)			QTils_strdup((s))
+#else
+#	define QTils_malloc(s)		malloc((s))
+#	define QTils_calloc(n,s)		calloc((n),(s))
+#	define QTils_realloc(p,s)	realloc((p),(s))
+#	define QTils_free(p)		free(*(p))
 #endif
 #include "QTMovieSink.h"
 
@@ -227,7 +233,7 @@ OSErr CreateMovieStorageFromURL( const char **URL, OSType creator, ScriptCode sc
 		c = getwd( cwd );
 #endif
 		if( c ){
-			if( (c = (char*) malloc( (strlen(cwd) + strlen(theURL) + 2) * sizeof(char) )) ){
+			if( (c = (char*) QTils_malloc( (strlen(cwd) + strlen(theURL) + 2) * sizeof(char) )) ){
 				strcpy( c, cwd );
 #if TARGET_OS_WIN32
 				strcat( c, "\\" );
@@ -238,7 +244,7 @@ OSErr CreateMovieStorageFromURL( const char **URL, OSType creator, ScriptCode sc
 				if( fullURL ){
 					*fullURL = theURL;
 				}
-				free(theURL);
+				QTils_free(&theURL);
 				theURL = c;
 				*URL = theURL;
 			}
@@ -276,7 +282,7 @@ OSErr CreateMovieStorageFromURL( const char **URL, OSType creator, ScriptCode sc
 	}
 bail:
 	if( !fullURL ){
-		free(theURL);
+		QTils_free(&theURL);
 	}
 	return err;
 }
@@ -312,7 +318,7 @@ static OSErr CreateMovieStorageFromURL( const char **URL, OSType creator, Script
 		);
 		if( err == noErr ){
 			if( !fullURL && URL && *URL != orgURL ){
-				free( (void*) *URL);
+				QTils_free( (void**) URL);
 				*URL = orgURL;
 			}
 		}
@@ -387,7 +393,7 @@ static QTMovieSinks *_open_QTMovieSink_( QTMovieSinks *qms, const char *theURL,
 	}
 	if( theURL && *theURL ){
 		if( !qms ){
-			qms = (QTMovieSinks*) calloc( 1, sizeof(QTMovieSinks) );
+			qms = (QTMovieSinks*) QTils_calloc( 1, sizeof(QTMovieSinks) );
 			if( qms ){
 				qms->dealloc_qms = 1;
 			}
@@ -399,7 +405,7 @@ static QTMovieSinks *_open_QTMovieSink_( QTMovieSinks *qms, const char *theURL,
 	if( qms && theURL && *theURL ){
 	  static QTMovieSinkQTStuff *qtPriv;
 	  int i;
-		qtPriv = (QTMovieSinkQTStuff*) malloc( sizeof(QTMovieSinkQTStuff) );
+		qtPriv = (QTMovieSinkQTStuff*) QTils_malloc( sizeof(QTMovieSinkQTStuff) );
 		if( qtPriv ){
 			memset( qtPriv, 0, sizeof(QTMovieSinkQTStuff) );
 			if( openQT ){
@@ -428,7 +434,7 @@ static QTMovieSinks *_open_QTMovieSink_( QTMovieSinks *qms, const char *theURL,
 			if( !(qms->imageFrame = imageFrame) ){
 				qms->imageFrame = (QTAPixel**) NewPtrClear( frameBuffers * sizeof(QTAPixel*) );
 				for( i =  0 ; i< frameBuffers && err == noErr && qms->imageFrame ; i++ ){
-//					qms->imageFrame = (QTAPixel*) calloc( qtPriv->numPixels, sizeof(QTAPixel) );
+//					qms->imageFrame = (QTAPixel*) QTils_calloc( qtPriv->numPixels, sizeof(QTAPixel) );
 					qms->imageFrame[i] = (QTAPixel*) NewPtrClear( qtPriv->numPixels * sizeof(QTAPixel) );
 					err = errno = MemError();
 				}
@@ -720,14 +726,14 @@ ErrCode close_QTMovieSink( QTMovieSinks **QMS, int addTCTrack, QTMSEncodingStats
 				qms->imageFrame = NULL;
 			}
 			if( qtPriv->saved_theURL ){
-				free((void*)qms->theURL);
+				QTils_free((void**)&qms->theURL);
 				qms->theURL = qtPriv->saved_theURL;
 			}
 			if( qtPriv->dataRef ){
 				DisposeHandle( (Handle) qtPriv->dataRef );
 				qtPriv->dataRef = NULL;
 			}
-			free(qtPriv);
+			QTils_free(&qtPriv);
 			qms->privQT = NULL;
 			if( closeQT ){
 				ExitMovies();
@@ -738,7 +744,7 @@ ErrCode close_QTMovieSink( QTMovieSinks **QMS, int addTCTrack, QTMSEncodingStats
 		}
 		qms->lastErr = err;
 		if( qms->dealloc_qms ){
-			free(qms);
+			QTils_free(&qms);
 			*QMS = NULL;
 		}
 	}
@@ -899,7 +905,7 @@ static QTMovieSinks *_open_QTMovieSinkICM_( QTMovieSinks *qms, const char *theUR
 	}
 	if( theURL && *theURL ){
 		if( !qms ){
-			qms = (QTMovieSinks*) calloc( 1, sizeof(QTMovieSinks) );
+			qms = (QTMovieSinks*) QTils_calloc( 1, sizeof(QTMovieSinks) );
 			if( qms ){
 				qms->dealloc_qms = 1;
 			}
@@ -912,7 +918,7 @@ static QTMovieSinks *_open_QTMovieSinkICM_( QTMovieSinks *qms, const char *theUR
 	  static QTMovieSinkQTStuff *qtPriv;
 	  ICMCompressionSessionOptionsRef options_ref;
 	  Boolean enable = TRUE;
-		qtPriv = (QTMovieSinkQTStuff*) malloc( sizeof(QTMovieSinkQTStuff) );
+		qtPriv = (QTMovieSinkQTStuff*) QTils_malloc( sizeof(QTMovieSinkQTStuff) );
 		if( qtPriv ){
 			memset( qtPriv, 0, sizeof(QTMovieSinkQTStuff) );
 			if( openQT ){
@@ -1324,14 +1330,14 @@ static ErrCode close_QTMovieSinkICM( QTMovieSinks **QMS, int addTCTrack, QTMSEnc
 				qms->imageFrame = NULL;
 			}
 			if( qtPriv->saved_theURL ){
-				free((void*)qms->theURL);
+				QTils_free((void**)&qms->theURL);
 				qms->theURL = qtPriv->saved_theURL;
 			}
 			if( qtPriv->dataRef ){
 				DisposeHandle( (Handle) qtPriv->dataRef );
 				qtPriv->dataRef = NULL;
 			}
-			free(qtPriv);
+			QTils_free(&qtPriv);
 			qms->privQT = NULL;
 			if( closeQT ){
 				ExitMovies();
@@ -1342,7 +1348,7 @@ static ErrCode close_QTMovieSinkICM( QTMovieSinks **QMS, int addTCTrack, QTMSEnc
 		}
 		qms->lastErr = err;
 		if( qms->dealloc_qms ){
-			free(qms);
+			QTils_free(&qms);
 			*QMS = NULL;
 		}
 	}
@@ -1550,13 +1556,13 @@ static ErrCode AddMetaDataString( QTMovieSinks *qms, int toTrack,
 				  ByteCount size=0, nvlen;
 					qmdErr = QTMetaDataGetItemValue( theMetaData, item, NULL, 0, &size );
 					nvlen=size+strlen(value)+2;
-					if( qmdErr == noErr && (newvalue = calloc( nvlen, sizeof(char) )) ){
+					if( qmdErr == noErr && (newvalue = QTils_calloc( nvlen, sizeof(char) )) ){
 						// get the <size> bytes of the value:
 						if( (qmdErr = QTMetaDataGetItemValue( theMetaData, item,
 										(UInt8*) newvalue, size, 0 )) == noErr
 						){ size_t len = strlen(newvalue);
 							snprintf( &newvalue[len], nvlen-len, "\n%s", value );
-							free((void*)value);
+							QTils_free((void**)&value);
 							value = newvalue;
 							newvalue = NULL;
 							 // set the item to the new value:
@@ -1591,11 +1597,11 @@ static ErrCode AddMetaDataString( QTMovieSinks *qms, int toTrack,
 				if( err != noErr ){
 					// failure, in this case we're sure we can release the allocated memory.
 					if( value != newvalue ){
-						free((void*)value);
+						QTils_free((void**)&value);
 						value = NULL;
 					}
 					if( newvalue ){
-						free((void*)newvalue);
+						QTils_free((void**)&newvalue);
 						newvalue = NULL;
 					}
 				}

@@ -1063,7 +1063,7 @@ PROCEDURE PrepareChannelCacheMovie( theMovie : Movie; chanNum : INTEGER );
 VAR
 	trackNr : Int32;
 BEGIN
-	IF chanNum <> 5 AND chanNum <> 6
+	IF (chanNum <> 5) AND (chanNum <> 6)
 		THEN
 			trackNr := -1;
 			IF (QTils.GetTrackWithName( theMovie, "timeStamp Track", trackNr ) = noErr) AND (trackNr >= 0)

@@ -561,6 +561,10 @@ BEGIN
 		THEN
 			HALT;
 	END;
+	QTils.QTils_Allocator^.malloc := POSIX.malloc;
+	QTils.QTils_Allocator^.calloc := POSIX.calloc;
+	QTils.QTils_Allocator^.realloc := POSIX.realloc;
+	QTils.QTils_Allocator^.free := POSIX.free;
 
 	FOR n := 0 TO INT(POSIX.argc) - 1 DO
 		Capitalize( POSIX.argv^[n]^ );
@@ -569,6 +573,7 @@ BEGIN
 
 	stringPtr := NIL;
 	n := QTils.ssprintfAppend( stringPtr, "Ceci %s un test", "est" );
+	PostMessage( "1e retour de ssprintfAppend", stringPtr^);
 	n := n + QTils.ssprintfAppend( stringPtr, " Et ceci %s un test\n", "n'est pas" );
 	IF stringPtr <> NIL
 		THEN

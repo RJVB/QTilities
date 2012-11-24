@@ -71,7 +71,7 @@
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Precise</FloatingPointModel>
       <PrecompiledHeader>
@@ -149,7 +149,7 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
       <AdditionalIncludeDirectories>C:\Program Files\QuickTime SDK\CIncludes;c:\Program Files\QuickTime SDK\RIncludes;C:\Libs\SS_Log_bin;..;.;.\gmsvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SS_LOG_ACTIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -240,7 +240,6 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
     <ClInclude Include="copyright.h" />
     <ClInclude Include="CritSectEx\CritSectEx.h" />
     <ClInclude Include="gmsvc\google\sparsehash\densehashtable.h" />
-    <ClInclude Include="google\sparsehash\libc_allocator_with_realloc.h" />
     <ClInclude Include="Lists.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Logging.h" />

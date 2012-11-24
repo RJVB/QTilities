@@ -38,6 +38,22 @@ extern "C"
 #	define QTLSext /**/
 #endif
 
+typedef struct QTils_Allocators {
+	void* (*malloc)( size_t s );
+	void* (*calloc)( size_t n, size_t s );
+	void* (*realloc)( void* mem, size_t size );
+	void (*free)( void **mem );
+} QTils_Allocators;
+
+QTLSext QTils_Allocators *init_QTils_Allocator( void* (*mallocPtr)(size_t), void* (*callocPtr)(size_t,size_t),
+							    void* (*reallocPtr)(void*, size_t), void (*free)(void *) );
+QTLSext extern QTils_Allocators *QTils_Allocator;
+QTLSext void *QTils_malloc( size_t s );
+QTLSext void *QTils_calloc( size_t n, size_t s );
+QTLSext void *QTils_realloc( void* mem, size_t size );
+QTLSext void QTils_free( char **mem );
+QTLSext char *QTils_strdup( const char *txt );
+
 /*!
 	When USE_QTHANDLES is set, the QTMovieWindows structures are allocated through QuickTime's NewHandleClear,
 	otherwise, through the default calloc() routine (and in that case, a handle is created from the the address
@@ -1126,6 +1142,7 @@ typedef struct LibQTilsBase {
 	UInt32 (*MacErrorString) ( ErrCode err, char *errString, int slen,
 						 char *errComment, int clen );
 	void (*free)( char **mem );
+	QTils_Allocators *QTils_Allocator;
 
 	// NB!! Modula-2 defines several additional members in its interface that are not initialised in C!
 } LibQTilsBase;

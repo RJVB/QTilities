@@ -5,6 +5,7 @@ IDENTIFY("Unit tests for QTils (QTMovieWindows) and QTMovieSink");
 #include <stdarg.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 
 #ifndef _MSC_VER
 #	include <unistd.h>
@@ -359,6 +360,14 @@ void ReadXMLDoc( char *fName, XMLDoc xmldoc, VODDescription *descr )
 	}
 }
 
+void freep( void **p )
+{
+	if( p && *p ){
+		free(*p);
+		*p = NULL;
+	}
+}
+
 int main( int argc, char* argv[] )
 { int i, n;
   QTMovieWindowH wi;
@@ -384,6 +393,7 @@ int main( int argc, char* argv[] )
 	  int n, nTracks = -1;
 	  char buf[256];
 		n = vsprintfM2( buf, sizeof(buf), "double=%g\\nhex=0x%lx", 0, t, nTracks );
+		fprintf( stderr, "buf=\"%s\"\n", buf ); fflush(stderr);
 		n = vsscanfM2( buf, sizeof(buf), "double=%lf\\nhex=0x%lx", 0, &t, &nTracks );
 		fprintf( stderr, "double=%g hex=0x%lx\n", t, nTracks );
 	}
@@ -397,6 +407,10 @@ int main( int argc, char* argv[] )
 		}
 		OpenQT();
 		initDMBaseQTils( &QTils );
+
+		// make sure the QTils library uses the same allocator/free routines as we do
+		init_QTils_Allocator( malloc, calloc, realloc, freep );
+
 		{ ComponentInstance xmlParser = NULL;
 		  XMLDoc xmldoc = NULL;
 		  enum xmlElements { element_root=1, element_el1=2, element_el2 };
@@ -512,6 +526,9 @@ int main( int argc, char* argv[] )
 				// register the window in our local list:
 				if( i == 1 /*&& wi*/ ){
 				  Movie theMovie = NULL;
+#if TARGET_OS_MAC || defined(__APPLE_CC__) || defined(__MACH__)
+					QTils_LogSetActive(TRUE);
+#endif
 					qi2mString = NULL;
 					ssprintf( &qi2mString, qi2mStringMask, argv[i] );
 					if( qi2mString ){
@@ -538,7 +555,7 @@ int main( int argc, char* argv[] )
 						}
 #endif
 						fprintf( stderr, "Freeing qi2mString ... free()=%p", free ); fflush(stderr);
-						QTils.free(&qi2mString);
+						free(qi2mString);
 						fprintf( stderr, " done\n" ); fflush(stderr);
 //						if( theMovie && !wi ){
 //							CloseMovie(&theMovie);

@@ -68,9 +68,6 @@
     <ClInclude Include="gmsvc\google\sparsehash\densehashtable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="google\sparsehash\libc_allocator_with_realloc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Lists.h">
       <Filter>Header Files</Filter>
     </ClInclude>

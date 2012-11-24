@@ -280,6 +280,11 @@ size_t PM2_LogMsgEx_Mod2( const char *msg, int mlen, va_list ap )
 #endif
 }
 
+void *malloc_Mod2( size_t s )
+{
+	return malloc( s );
+}
+
 void *calloc_Mod2( size_t n, size_t s )
 {
 	return calloc( n, s );
@@ -290,7 +295,7 @@ void *realloc_Mod2( void* mem, size_t size )
 	return (mem)? realloc( mem, size ) : calloc( 1, size );
 }
 
-void free_Mod2( char **mem )
+void POSIXm2_free_Mod2( char **mem )
 {
 	if( mem && *mem ){
 		free(*mem);
@@ -410,9 +415,10 @@ size_t initDMBasePOSIXm2( LibPOSIXm2Base *dmbase )
 		dmbase->PM2_LogMsg = PM2_LogMsg_Mod2;
 		dmbase->lastSSLogMsg = &lastSSLogMsg[0];
 
+		dmbase->malloc = malloc_Mod2;
 		dmbase->calloc = calloc_Mod2;
 		dmbase->realloc = realloc_Mod2;
-		dmbase->free = free_Mod2;
+		dmbase->free = POSIXm2_free_Mod2;
 		dmbase->memset = memset_Mod2;
 
 		dmbase->strstr = strstr_Mod2;

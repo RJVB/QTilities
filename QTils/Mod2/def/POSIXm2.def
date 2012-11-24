@@ -64,6 +64,7 @@ TYPE
 			(*
 				gestion mémoire via les routines C
 			*)
+			malloc : PROCEDURE( (*size*) CARDINAL32 ) : ADDRESS [CDECL];
 			calloc : PROCEDURE( (*n*) CARDINAL32, (*elemSize*) CARDINAL32 ) : ADDRESS [CDECL];
 			realloc : PROCEDURE( (*ptr*) ADDRESS, (*memSize*) CARDINAL32 ) : ADDRESS [CDECL];
 			free : PROCEDURE( VAR (*ptr*) ADDRESS ) [CDECL];

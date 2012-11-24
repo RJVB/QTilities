@@ -272,7 +272,7 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 			wi->theMC = nil;
 		}
 		if( wi->theURL ){
-			free( (void*) wi->theURL);
+			QTils_free( &(void*) wi->theURL);
 			wi->theURL = NULL;
 		}
 		if( wi->dataRef ){
@@ -362,7 +362,7 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 
 	if( wih && *wih && (*wih)->self == *wih ){
 		if( theURL && (!wi->theURL || strcmp(theURL, wi->theURL)) ){
-			wi->theURL = (const char*) strdup(theURL);
+			wi->theURL = (const char*) QTils_strdup(theURL);
 		}
 		else{
 			theURL = wi->theURL;
@@ -525,10 +525,10 @@ QTMovieWindowH OpenQTMovieInWindow_Mod2( const char *theURL, int ulen, int contr
 		// the Modula-2 definition of QTMovieWindows calls theURL a POINTER TO ARRAY[0..1024] OF CHAR
 		// ... make it one!
 		if( strlen( (*wih)->theURL ) < 1024 ){
-			URL = (char*) calloc( 1024, sizeof(char*) );
+			URL = (char*) QTils_calloc( 1024, sizeof(char*) );
 			if( URL ){
 				strcpy( URL, (*wih)->theURL );
-				free( (*wih)->theURL );
+				QTils_free( &(*wih)->theURL );
 				(*wih)->theURL = URL;
 			}
 		}

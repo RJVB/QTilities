@@ -346,7 +346,7 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 			wi->dataHandler = nil;
 		}
 		if( wi->theURL ){
-			free( (void*) wi->theURL);
+			QTils_free( (void**) &wi->theURL);
 			wi->theURL = NULL;
 		}
 		if( wi->dataRef ){
@@ -573,10 +573,10 @@ QTMovieWindowH OpenQTMovieInWindow_Mod2( const char *theURL, int ulen, int visib
 		// the Modula-2 definition of QTMovieWindows calls theURL a POINTER TO ARRAY[0..1024] OF CHAR
 		// ... make it one!
 		if( strlen( (*wih)->theURL ) < 1024 ){
-			URL = (char*) calloc( 1024, sizeof(char*) );
+			URL = (char*) QTils_calloc( 1024, sizeof(char*) );
 			if( URL ){
 				strcpy( URL, (*wih)->theURL );
-				free( (*wih)->theURL );
+				QTils_free( &(*wih)->theURL );
 				(*wih)->theURL = URL;
 			}
 		}
@@ -879,7 +879,7 @@ static ErrCode lOpenQT()
   int envLen = 0;
   char *envVal = NULL;
 	getenv_s( &envLen, NULL, 0, "QTMW_DoubleBuffering" );
-	if( envLen > 0 && (envVal = calloc( envLen, sizeof(char) )) ){
+	if( envLen > 0 && (envVal = QTils_calloc( envLen, sizeof(char) )) ){
 		getenv_s( &envLen, envVal, envLen, "QTMW_DoubleBuffering" );
 		UseQTMLDoubleBuffering = 0;
 		if( *envVal ){
@@ -890,7 +890,7 @@ static ErrCode lOpenQT()
 				UseQTMLDoubleBuffering = 1;
 			}
 		}
-		free(envVal);
+		QTils_free(&envVal);
 	}
 	// If calling InitializeQML() gives an unhandled exception while debugging mentioning
 	// "NtClose a été appelé sur un handle qui était protégé contre la fermeture via NtSetInformationObject."
@@ -1035,8 +1035,8 @@ short InitQTMovieWindows( void *hInst )
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInst;
-	iconXBits = calloc( gimp_image.width * gimp_image.height, sizeof(struct BGRA) );
-//	maskBits = calloc( ICONMASK_H * ICONMASK_W / 8, sizeof(BYTE) );
+	iconXBits = QTils_calloc( gimp_image.width * gimp_image.height, sizeof(struct BGRA) );
+//	maskBits = QTils_calloc( ICONMASK_H * ICONMASK_W / 8, sizeof(BYTE) );
 	if( !iconXBits /* || !maskBits */ ){
 		wc.hIcon = LoadIcon( NULL, IDI_WINLOGO ); // Load default icon
 	}
@@ -1086,10 +1086,10 @@ short InitQTMovieWindows( void *hInst )
 	}
 	QTWMcounter = -1;
 	if( iconXBits ){
-		free(iconXBits);
+		QTils_free(&iconXBits);
 	}
 	if( maskBits ){
-		free(maskBits);
+		QTils_free(&maskBits);
 	}
 	return ret;
 }

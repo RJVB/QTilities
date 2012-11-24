@@ -108,6 +108,7 @@ typedef struct LibPOSIXm2Base {
 	void (*dispose_jmp_buf)( jmp_buf **env );
 	void (*longjmp)( jmp_buf *env, int val );
 
+	void* (*malloc)( size_t s );
 	void* (*calloc)( size_t n, size_t s );
 	void* (*realloc)( void* mem, size_t size );
 	void (*free)( char **mem );

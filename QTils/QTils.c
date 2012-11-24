@@ -26,6 +26,7 @@ IDENTIFY("QTils: Track clip/flip, add metadata, add TimeCode track, ..." );
 #if ! defined(_WINDOWS) && !defined(WIN32) && !defined(_MSC_VER)
 #	include <unistd.h>
 #endif
+#include <assert.h>
 
 #ifdef _MSC_VER
 #	include "mswin/vsscanf.h"
@@ -61,6 +62,91 @@ IDENTIFY("QTils: Track clip/flip, add metadata, add TimeCode track, ..." );
 #endif // not on MSWin
 
 CSEHandle *cseLogLock = NULL;
+
+QTils_Allocators *QTils_Allocator = NULL;
+
+static QTils_Allocators *__init_QTils_Allocator__( QTils_Allocators *qa,
+							    void* (*mallocPtr)(size_t), void* (*callocPtr)(size_t,size_t),
+							    void* (*reallocPtr)(void*, size_t), void (*freePtr)(void **) )
+{
+	assert(malloc);
+	if( !qa ){
+		qa = (*mallocPtr)( sizeof(QTils_Allocators) );
+	}
+	assert(qa);
+	QTils_Allocator = qa;
+	return init_QTils_Allocator( mallocPtr, callocPtr, reallocPtr, freePtr );
+}
+
+QTils_Allocators *init_QTils_Allocator( void* (*mallocPtr)(size_t), void* (*callocPtr)(size_t,size_t),
+							    void* (*reallocPtr)(void*, size_t), void (*freePtr)(void *) )
+{
+	if( !QTils_Allocator ){
+		return __init_QTils_Allocator__( NULL, mallocPtr, callocPtr, reallocPtr, freePtr );
+	}
+	else{
+		QTils_LogMsgEx( "QTils_Allocator=%p { malloc=%p calloc=%p realloc=%p free=%p }\n",
+				QTils_Allocator, mallocPtr, callocPtr, reallocPtr, freePtr );
+		QTils_Allocator->malloc = mallocPtr;
+		QTils_Allocator->calloc = callocPtr;
+		QTils_Allocator->realloc = reallocPtr;
+		QTils_Allocator->free = freePtr;
+		return QTils_Allocator;
+	}
+}
+
+static void __QTils_free__( void **mem )
+{
+	if( mem && *mem ){
+		free(*mem);
+		*mem = NULL;
+	}
+}
+
+void *QTils_malloc( size_t s )
+{
+	if( !QTils_Allocator ){
+		__init_QTils_Allocator__( NULL, malloc, calloc, realloc, __QTils_free__ );
+	}
+	return QTils_Allocator->malloc( s );
+}
+
+void *QTils_calloc( size_t n, size_t s )
+{
+	if( !QTils_Allocator ){
+		__init_QTils_Allocator__( NULL, malloc, calloc, realloc, __QTils_free__ );
+	}
+	return QTils_Allocator->calloc( n, s );
+}
+
+void *QTils_realloc( void* mem, size_t size )
+{
+	if( !QTils_Allocator ){
+		__init_QTils_Allocator__( NULL, malloc, calloc, realloc, __QTils_free__ );
+	}
+	return (mem)? QTils_Allocator->realloc( mem, size ) : QTils_Allocator->calloc( 1, size );
+}
+
+void QTils_free( char **mem )
+{
+	if( !QTils_Allocator ){
+		__init_QTils_Allocator__( NULL, malloc, calloc, realloc, __QTils_free__ );
+	}
+	if( mem ){
+		QTils_Allocator->free(mem);
+		*mem = NULL;
+	}
+}
+
+char *QTils_strdup( const char *txt )
+{ char *dup = NULL;
+	if( txt ){
+		if( (dup = QTils_malloc( (strlen(txt) + 1) * sizeof(char) )) ){
+			strcpy( dup, txt );
+		}
+	}
+	return dup;
+}
 
 static char *parse_format_opcodes( char *Dest, const char *Src )
 {
@@ -114,9 +200,9 @@ int vsscanf_Mod2( const char *source, int slen, const char *format, int flen, va
 { char *fmt;
   int ret = -1;
 	if( strchr( format, '\\' ) ){
-		if( (fmt = parse_format_opcodes( strdup(format), format )) ){
+		if( (fmt = parse_format_opcodes( QTils_strdup(format), format )) ){
 			ret = vsscanf( source, fmt, ap );
-			free(fmt);
+			QTils_free(&fmt);
 		}
 	}
 	else{
@@ -129,9 +215,9 @@ int vsnprintf_Mod2( char *dest, int dlen, const char *format, int flen, va_list 
 { char *fmt;
   int ret = -1;
 	if( strchr( format, '\\' ) ){
-		if( (fmt = parse_format_opcodes( strdup(format), format )) ){
+		if( (fmt = parse_format_opcodes( QTils_strdup(format), format )) ){
 			ret = vsnprintf( dest, dlen, fmt, ap );
-			free(fmt);
+			QTils_free(&fmt);
 		}
 	}
 	else{
@@ -156,9 +242,9 @@ int vssprintf( char **buffer, const char *format, va_list ap )
 		if( !string ){
 			// couldn't get a 'direct' string pointer; use the 'get a copy' approach:
 			len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(sRef), enc ) + 1;
-			if( (string = calloc( len, sizeof(char) )) ){
+			if( (string = QTils_calloc( len, sizeof(char) )) ){
 				if( !CFStringGetCString( sRef, string, len - 1, enc ) ){
-					free(string);
+					QTils_free(&string);
 					string = NULL;
 				}
 				else{
@@ -171,12 +257,12 @@ int vssprintf( char **buffer, const char *format, va_list ap )
 		if( string ){
 		  size_t slen = strlen(string) + 1;
 			if( *buffer ){
-				*buffer = realloc( *buffer, slen * sizeof(char) );
+				*buffer = QTils_realloc( *buffer, slen * sizeof(char) );
 //				QTils_LogMsgEx( "vssprintf(): resized destination string %p of length %lu to %lu\n",
 //							*buffer, strlen(*buffer), slen-1 );
 			}
 			else{
-				*buffer = calloc( slen, sizeof(char) );
+				*buffer = QTils_calloc( slen, sizeof(char) );
 //				QTils_LogMsgEx( "vssprintf(): created destination string %p of length %lu\n",
 //							*buffer, slen-1 );
 			}
@@ -187,7 +273,7 @@ int vssprintf( char **buffer, const char *format, va_list ap )
 			}
 			if( string && len >= 0 ){
 				// string is a copy and not the result of CFStringGetCStringPtr(); free it now.
-				free(string);
+				QTils_free(&string);
 			}
 		}
 		CFAllocatorDeallocate( kCFAllocatorDefault, (void*) sRef );
@@ -208,13 +294,13 @@ int vssprintf_Mod2( char **buffer, const char *format, int flen, va_list ap )
 { char *fmt = (char*) format;
   int ret = -1;
 	if( strchr( format, '\\' ) ){
-		if( !(fmt = parse_format_opcodes( strdup(format), format )) ){
+		if( !(fmt = parse_format_opcodes( QTils_strdup(format), format )) ){
 			fmt = (char*) format;
 		}
 	}
 	ret = vssprintf( buffer, fmt, ap );
 	if( fmt != format ){
-		free(fmt);
+		QTils_free(&fmt);
 	}
 	return ret;
 }
@@ -238,9 +324,9 @@ int vssprintfAppend( char **buffer, const char *format, va_list ap )
 		string = (char*) CFStringGetCStringPtr( sRef, enc );
 		if( !string ){
 			len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(sRef), enc ) + 1;
-			if( (string = calloc( len, sizeof(char) )) ){
+			if( (string = QTils_calloc( len, sizeof(char) )) ){
 				if( !CFStringGetCString( sRef, string, len - 1, enc ) ){
-					free(string);
+					QTils_free(&string);
 					string = NULL;
 				}
 				else{
@@ -252,11 +338,11 @@ int vssprintfAppend( char **buffer, const char *format, va_list ap )
 		  size_t slen = strlen(string) + 1, slen0;
 			if( *buffer ){
 				slen0 = strlen(*buffer);
-				*buffer = realloc( *buffer, slen * sizeof(char) );
+				*buffer = QTils_realloc( *buffer, slen * sizeof(char) );
 			}
 			else{
 				slen0 = 0;
-				*buffer = calloc( slen, sizeof(char) );
+				*buffer = QTils_calloc( slen, sizeof(char) );
 			}
 			if( *buffer ){
 				strncpy( *buffer, string, slen - 1 );
@@ -264,7 +350,7 @@ int vssprintfAppend( char **buffer, const char *format, va_list ap )
 				ret = (int) strlen(*buffer) - slen0;
 			}
 			if( string && len >= 0 ){
-				free(string);
+				QTils_free(&string);
 			}
 		}
 		CFAllocatorDeallocate( kCFAllocatorDefault, (void*) sRef );
@@ -285,13 +371,13 @@ int vssprintfAppend_Mod2( char **buffer, const char *format, int flen, va_list a
 { char *fmt = (char*) format;
   int ret = -1;
 	if( strchr( format, '\\' ) ){
-		if( !(fmt = parse_format_opcodes( strdup(format), format )) ){
+		if( !(fmt = parse_format_opcodes( QTils_strdup(format), format )) ){
 			fmt = (char*) format;
 		}
 	}
 	ret = vssprintfAppend( buffer, fmt, ap );
 	if( fmt != format ){
-		free(fmt);
+		QTils_free(&fmt);
 	}
 	return ret;
 }
@@ -346,7 +432,7 @@ size_t QTils_LogMsg_Mod2( const char *msg, int mlen )
   size_t ret;
   unsigned char unlockFlag;
 	if( strchr( msg, '\\' ) ){
-		if( !(fmt = parse_format_opcodes( strdup(msg), msg )) ){
+		if( !(fmt = parse_format_opcodes( QTils_strdup(msg), msg )) ){
 			fmt = (char*) msg;
 		}
 	}
@@ -360,7 +446,7 @@ size_t QTils_LogMsg_Mod2( const char *msg, int mlen )
 		lastSSLogMsg[sizeof(lastSSLogMsg)-1] = '\0';
 #	endif // _SS_LOG_ACTIVE
 		if( fmt != msg ){
-			free(fmt);
+			QTils_free(&fmt);
 		}
 		UnlockCSEHandle(cseLogLock, unlockFlag);
 		return strlen(lastSSLogMsg);
@@ -369,7 +455,7 @@ size_t QTils_LogMsg_Mod2( const char *msg, int mlen )
 		strncpy( lastSSLogMsg, fmt, sizeof(lastSSLogMsg) );
 		lastSSLogMsg[sizeof(lastSSLogMsg)-1] = '\0';
 		if( fmt != msg ){
-			free(fmt);
+			QTils_free(&fmt);
 		}
 		UnlockCSEHandle(cseLogLock, unlockFlag);
 		return 0;
@@ -379,7 +465,7 @@ size_t QTils_LogMsg_Mod2( const char *msg, int mlen )
 	lastSSLogMsg[sizeof(lastSSLogMsg)-1] = '\0';
 	ret = Log( qtLogPtr, fmt );
 	if( fmt != msg ){
-		free(fmt);
+		QTils_free(&fmt);
 	}
 	UnlockCSEHandle(cseLogLock, unlockFlag);
 	return ret;
@@ -423,7 +509,7 @@ size_t QTils_LogMsgEx_Mod2( const char *msg, int mlen, va_list ap )
 { char *fmt = (char*) msg;
   unsigned char unlockFlag;
 	if( strchr( msg, '\\' ) ){
-		if( !(fmt = parse_format_opcodes( strdup(msg), msg )) ){
+		if( !(fmt = parse_format_opcodes( QTils_strdup(msg), msg )) ){
 			fmt = (char*) msg;
 		}
 	}
@@ -436,7 +522,7 @@ size_t QTils_LogMsgEx_Mod2( const char *msg, int mlen, va_list ap )
 		vsnprintf( lastSSLogMsg, sizeof(lastSSLogMsg), fmt, ap );
 #	endif // _SS_LOG_ACTIVE
 		if( fmt != msg ){
-			free(fmt);
+			QTils_free(&fmt);
 		}
 		UnlockCSEHandle(cseLogLock, unlockFlag);
 		return strlen(lastSSLogMsg);
@@ -444,7 +530,7 @@ size_t QTils_LogMsgEx_Mod2( const char *msg, int mlen, va_list ap )
 	else{
 		vsnprintf( lastSSLogMsg, sizeof(lastSSLogMsg), fmt, ap );
 		if( fmt != msg ){
-			free(fmt);
+			QTils_free(&fmt);
 		}
 		UnlockCSEHandle(cseLogLock, unlockFlag);
 		return 0;
@@ -452,7 +538,7 @@ size_t QTils_LogMsgEx_Mod2( const char *msg, int mlen, va_list ap )
 #else
 	vsnprintf( lastSSLogMsg, sizeof(lastSSLogMsg), fmt, ap );
 	if( fmt != msg ){
-		free(fmt);
+		QTils_free(&fmt);
 	}
 	UnlockCSEHandle(cseLogLock, unlockFlag);
 	return Log( qtLogPtr, lastSSLogMsg );
@@ -810,7 +896,7 @@ ErrCode MetaDataHandler( Movie theMovie, Track toTrack,
 					}
 					// if no error occurred, get a new buffer of the correct size in which to
 					// return the current metadata value or construct the new value.
-					if( qmdErr == noErr && (newvalue = calloc( nvlen, sizeof(char) )) ){
+					if( qmdErr == noErr && (newvalue = QTils_calloc( nvlen, sizeof(char) )) ){
 						// get the <size> bytes of the value:
 						if( (qmdErr = QTMetaDataGetItemValue( theMetaData, item,
 										(UInt8*) newvalue, size, 0 )
@@ -821,7 +907,7 @@ ErrCode MetaDataHandler( Movie theMovie, Track toTrack,
 							  ByteCount n = 0;
 								// we're only reading the metadata value
 								*Value = newvalue;
-								if( Lang && (lng = calloc(17, sizeof(char))) ){
+								if( Lang && (lng = QTils_calloc(17, sizeof(char))) ){
 									// user also requested the language property, and we obtained
 									// some memory to return it in:
 									err = (ErrCode) QTMetaDataGetItemProperty( theMetaData, item,
@@ -833,7 +919,7 @@ ErrCode MetaDataHandler( Movie theMovie, Track toTrack,
 										*Lang = lng;
 									}
 									else{
-										free(lng);
+										QTils_free(&lng);
 										*Lang = NULL;
 									}
 								}
@@ -882,7 +968,7 @@ ErrCode MetaDataHandler( Movie theMovie, Track toTrack,
 						if( *Value == newvalue ){
 							*Value = NULL;
 						}
-						free((void*)newvalue);
+						QTils_free((void**)&newvalue);
 						newvalue = NULL;
 					}
 				}
@@ -907,7 +993,7 @@ bail:
 				if( *Value == newvalue ){
 					*Value = (value == newvalue)? NULL : value;
 				}
-				free((void*)newvalue);
+				QTils_free((void**)&newvalue);
 				newvalue = NULL;
 			}
 			QTMetaDataRelease( theMetaData );
@@ -930,10 +1016,10 @@ ErrCode AddMetaDataStringToTrack( Movie theMovie, Track theTrack,
 	  ErrCode ret;
 		ret = MetaDataHandler( theMovie, theTrack, key, (char**) &value, (char**) &lang, NULL );
 		if( value && value != Value ){
-			free(value);
+			QTils_free(&value);
 		}
 		if( lang && lang != Lang ){
-			free(lang);
+			QTils_free(&lang);
 		}
 		return ret;
 	}
@@ -949,10 +1035,10 @@ ErrCode AddMetaDataStringToMovie( Movie theMovie, AnnotationKeys key, const char
 	  ErrCode ret;
 		ret = MetaDataHandler( theMovie, NULL, key, (char**) &value, (char**) &lang, NULL );
 		if( value && value != Value ){
-			free(value);
+			QTils_free(&value);
 		}
 		if( lang && lang != Lang ){
-			free(lang);
+			QTils_free(&lang);
 		}
 		return ret;
 	}
@@ -999,10 +1085,10 @@ ErrCode AddMetaDataStringToTrack_Mod2( Movie theMovie, long trackNr,
 		ret = MetaDataHandler( theMovie, GetMovieIndTrack(theMovie,trackNr), key,
 								 (char**) &value, (lang && *lang)? (char**) &lang : NULL, NULL );
 		if( value && value != Value ){
-			free(value);
+			QTils_free(&value);
 		}
 		if( lang && lang != Lang ){
-			free(lang);
+			QTils_free(&lang);
 		}
 		return ret;
 	}
@@ -1020,10 +1106,10 @@ ErrCode AddMetaDataStringToMovie_Mod2( Movie theMovie, AnnotationKeys key,
 		ret = MetaDataHandler( theMovie, NULL, key,
 								 (char**) &value, (lang && *lang)? (char**) &lang : NULL, NULL );
 		if( value && value != Value ){
-			free(value);
+			QTils_free(&value);
 		}
 		if( lang && lang != Lang ){
-			free(lang);
+			QTils_free(&lang);
 		}
 		return ret;
 	}
@@ -1041,7 +1127,7 @@ ErrCode GetMetaDataStringLengthFromTrack_Mod2( Movie theMovie, long trackNr,
 		err = MetaDataHandler( theMovie, GetMovieIndTrack(theMovie,trackNr), key, &value, NULL, NULL );
 		if( err == noErr && value ){
 			*len = strlen(value)+1;
-			free(value);
+			QTils_free(&value);
 		}
 		else{
 			*len = 0;
@@ -1063,7 +1149,7 @@ ErrCode GetMetaDataStringLengthFromMovie_Mod2( Movie theMovie, AnnotationKeys ke
 		err = MetaDataHandler( theMovie, NULL, key, &value, NULL, NULL );
 		if( err == noErr && value ){
 			*len = strlen(value)+1;
-			free(value);
+			QTils_free(&value);
 		}
 		else{
 			*len = 0;
@@ -1101,7 +1187,7 @@ ErrCode GetMetaDataStringFromTrack_Mod2( Movie theMovie, long trackNr,
 				}
 				strncpy( rvalue, value, len );
 				rvalue[len] = '\0';
-				free(value);
+				QTils_free(&value);
 			}
 			else{
 				rvalue[0] = '\0';
@@ -1115,7 +1201,7 @@ ErrCode GetMetaDataStringFromTrack_Mod2( Movie theMovie, long trackNr,
 				}
 				strncpy( rlang, lang, len );
 				rlang[len] = '\0';
-				free(lang);
+				QTils_free(&lang);
 			}
 			else{
 				rlang[0] = '\0';
@@ -1146,7 +1232,7 @@ ErrCode GetMetaDataStringFromMovie_Mod2( Movie theMovie, AnnotationKeys key,
 				}
 				strncpy( rvalue, value, len );
 				rvalue[len] = '\0';
-				free(value);
+				QTils_free(&value);
 			}
 			else{
 				rvalue[0] = '\0';
@@ -1160,7 +1246,7 @@ ErrCode GetMetaDataStringFromMovie_Mod2( Movie theMovie, AnnotationKeys key,
 				}
 				strncpy( rlang, lang, len );
 				rlang[len] = '\0';
-				free(lang);
+				QTils_free(&lang);
 			}
 			else{
 				rlang[0] = '\0';
@@ -1185,12 +1271,12 @@ int CopyMovieMetaData( Movie dstMovie, Movie srcMovie )
 		if( err == noErr ){
 			if( mdstr ){
 				MetaDataHandler( dstMovie, NULL, key[i], &mdstr, &lang, NULL );
-				free(mdstr); free(lang);
+				QTils_free(&mdstr); QTils_free(&lang);
 				mdstr = NULL, lang = NULL;
 				n += 1;
 			}
 			else if( lang ){
-				free(lang);
+				QTils_free(&lang);
 				lang = NULL;
 			}
 		}
@@ -1216,12 +1302,12 @@ int CopyTrackMetaData( Movie dstMovie, Track dstTrack, Movie srcMovie, Track src
 		if( err == noErr ){
 			if( mdstr ){
 				MetaDataHandler( dstMovie, dstTrack, key[i], &mdstr, &lang, NULL );
-				free(mdstr); free(lang);
+				QTils_free(&mdstr); QTils_free(&lang);
 				mdstr = NULL, lang = NULL;
 				n += 1;
 			}
 			else if( lang ){
-				free(lang);
+				QTils_free(&lang);
 				lang = NULL;
 			}
 		}
@@ -1591,7 +1677,7 @@ void DisposeMemoryDataRef(MemoryDataRef *memRef)
 			memRef->memory = NULL;
 		}
 		if( memRef->virtURL ){
-			free(memRef->virtURL);
+			QTils_free(&memRef->virtURL);
 			memRef->virtURL = NULL;
 		}
 	}
@@ -1638,7 +1724,7 @@ ErrCode DataRefFromURL( const char **URL, Handle *dataRef, OSType *dataRefType )
 	}
 #endif
 	// we make a local working copy as we will be modifying the string
-	theURL = strdup(*URL);
+	theURL = QTils_strdup(*URL);
 	if( !theURL ){
 		return MemError();
 	}
@@ -1681,7 +1767,7 @@ ErrCode DataRefFromURL( const char **URL, Handle *dataRef, OSType *dataRefType )
 		c = getwd( cwd );
 #endif
 		if( c ){
-			if( (c = (char*) malloc( (strlen(cwd) + strlen(theURL) + 2) * sizeof(char) )) ){
+			if( (c = (char*) QTils_malloc( (strlen(cwd) + strlen(theURL) + 2) * sizeof(char) )) ){
 				strcpy( c, cwd );
 #if TARGET_OS_WIN32
 				strcat( c, "\\" );
@@ -1778,10 +1864,10 @@ getURLReference:
 
 bail:
 	if( freeAnchor ){
-		free(theURL_anchor);
+		QTils_free(&theURL_anchor);
 	}
 	if( *URL != theURL && theURL ){
-		free(theURL);
+		QTils_free(&theURL);
 	}
 	return err;
 }
@@ -1810,7 +1896,7 @@ ErrCode MemoryDataRefFromMemory( const char *string, size_t len, const char *vir
 			memRef->dataRefType = HandleDataHandlerSubType;
 		}
 		if( virtURL ){
-			memRef->virtURL = strdup( (virtURL)? virtURL : "<in-memory>" );
+			memRef->virtURL = QTils_strdup( (virtURL)? virtURL : "<in-memory>" );
 		}
 	}
 	return err;
@@ -1855,7 +1941,7 @@ ErrCode NewImageMediaForURL( Movie theMovie, Track theTrack, OSType mediaType, c
 		// how QuickTime knows where to look for the sample references in the sample table.
 		err = DataRefFromURL( (const char**) &theURL, &cDataRef, &cDataRefType );
 		if( theURL && theURL != orgURL ){
-			free(theURL);
+			QTils_free(&theURL);
 			theURL = orgURL;
 		}
 	}
@@ -2022,7 +2108,7 @@ ErrCode CreateMovieStorageFromURL( const char *URL, OSType creator, ScriptCode s
 		}
 	}
 	if( URL && URL != orgURL ){
-		free( (void*) URL);
+		QTils_free( (void**) &URL);
 		URL = orgURL;
 	}
 	return err;
@@ -2078,7 +2164,7 @@ ErrCode OpenMovieFromURL( Movie *newMovie, short flags, short *id,
 		);
 #endif
 		if( URL && URL != orgURL && !noFree ){
-			free( (void*) URL);
+			QTils_free( (void**) &URL);
 			URL = orgURL;
 		}
 	}
@@ -2168,7 +2254,7 @@ ErrCode SaveMovieAs( char **fname, Movie theMovie, int noDialog )
 		urlRef = CFURLCreateFromFileSystemRepresentation( NULL, (const UInt8*) URL, strlen(URL), false );
 #endif
 		if( URL && URL != orgURL ){
-			free( (void*) URL);
+			QTils_free( (void**) &URL);
 		}
 	}
 	else{
@@ -2221,7 +2307,7 @@ ErrCode SaveMovieAs( char **fname, Movie theMovie, int noDialog )
 		Log( qtLogPtr, "SaveMovieAs(%p->\"%s\") returned %d\n", theMovie, oname, (int) err );
 	}
 	if( err == noErr && fname ){
-		*fname = strdup(oname);
+		*fname = QTils_strdup(oname);
 	}
 	if( odataRef == nil && err == paramErr ){
 		// ConvertMovieToDataRef() accepts a nil odataRef handle and will save to whatever file
@@ -2248,7 +2334,7 @@ ErrCode SaveMovieAs_Mod2( char *fname, int flen, Movie theMovie, int noDialog )
 			strncpy( fname, URL, len );
 			fname[len] = '\0';
 #endif
-			free(URL);
+			QTils_free(&URL);
 		}
 	}
 	return err;
@@ -2437,7 +2523,7 @@ ErrCode FlattenMovieToURL( const char *dstURL, Movie theMovie, Movie *theNewMovi
 	}
 #endif
 	if( dstURL && dstURL != orgURL ){
-		free( (void*) dstURL);
+		QTils_free( (void**) &dstURL);
 	}
 	return err2;
 }
@@ -2515,7 +2601,8 @@ double GetMovieTimeResolution( Movie theMovie )
 // a TimeCode track can have multiple segments, each of its own duration and with its own playback
 // rate. the TCTrackInfo functions below provide an easy/simple interface to this feature.
 
-#define xfree(x)	if((x)){ free((x)); (x)=NULL; }
+//#define xfree(x)	if((x)){ free((x)); (x)=NULL; }
+#define xfree(x)	QTils_free(&(x))
 
 static void *dispose_TCTrackInfo( void *ptr )
 { TCTrackInfo *info = (TCTrackInfo*) ptr, *ret = NULL;
@@ -2526,7 +2613,7 @@ static void *dispose_TCTrackInfo( void *ptr )
 		xfree( info->theURL );
 		info->theTCTrack = nil;
 		ret = info->cdr;
-		free( info );
+		QTils_free( &info );
 	}
 	return (void*) ret;
 }
@@ -2543,11 +2630,11 @@ static TCTrackInfo *new_TCTrackInfo( Track TCTrack, int N, double *StartTimes, d
 { TCTrackInfo *info = NULL;
   int i;
 	if( N > 0 && theURL ){
-		if( (info = (TCTrackInfo*) calloc( 1, sizeof(TCTrackInfo) ) ) ){
-			if( (info->theURL = strdup(theURL))
-			   && (info->StartTimes = (double*) malloc( N * sizeof(double) ))
-			   && (info->durations = (double*) malloc( N * sizeof(double) ))
-			   && (info->frames = (size_t*) malloc( N * sizeof(size_t) ))
+		if( (info = (TCTrackInfo*) QTils_calloc( 1, sizeof(TCTrackInfo) ) ) ){
+			if( (info->theURL = QTils_strdup(theURL))
+			   && (info->StartTimes = (double*) QTils_malloc( N * sizeof(double) ))
+			   && (info->durations = (double*) QTils_malloc( N * sizeof(double) ))
+			   && (info->frames = (size_t*) QTils_malloc( N * sizeof(size_t) ))
 			){
 				for( i = 0 ; i < N ; i++ ){
 					info->StartTimes[i] = StartTimes[i];
@@ -2925,9 +3012,9 @@ ErrCode GetTrackTextAtTime( Track _fTrack, TimeValue _fTime, char **foundText,
 			// so allocating 1 byte extra we're safe.
 			text = &text[sizeof(short)];
 			if( foundText && *foundText == NULL ){
-				if( (*foundText = calloc( textHSize + 1, sizeof(char) )) ){
+				if( (*foundText = QTils_calloc( textHSize + 1, sizeof(char) )) ){
 					strncpy( *foundText, text, textHSize-sizeof(short) );
-					// no need for the terminating nullbyte as we used calloc()
+					// no need for the terminating nullbyte as we used QTils_calloc()
 				}
 				else{
 					textErr = errno;
@@ -3027,7 +3114,7 @@ ErrCode FindTextInMovie_Mod2( Movie theMovie, char *text, int tlen, int displayR
 			if( foundText && ftext ){
 				strncpy( foundText, ftext, flen );
 				foundText[flen-1] = '\0';
-				free(ftext);
+				QTils_free(&ftext);
 			}
 		}
 	}
@@ -3065,7 +3152,7 @@ ErrCode FindTimeStampInMovieAtTime_Mod2( Movie theMovie, double Time, char *foun
 				strncpy( foundText, ftext, flen );
 				foundText[flen-1] = '\0';
 			}
-			free(ftext);
+			QTils_free(&ftext);
 		}
 	}
 	return err;
@@ -3165,7 +3252,7 @@ ErrCode GetMovieIndChapter_Mod2( Movie theMovie, long ind, double *time, char *t
 	if( err == noErr && _text ){
 		strncpy( text, _text, tlen );
 		text[tlen-1] = '\0';
-		free(_text);
+		QTils_free(&_text);
 	}
 	return err;
 }
@@ -3428,7 +3515,7 @@ ErrCode GetTrackName( Movie theMovie, Track theTrack, char **trackName )
 		  long len;
 			if( (err = GetUserData( uData, h, kUserDataName, 1 )) == noErr ){
 				len = GetHandleSize(h);
-				if( len > 0 && (*trackName = calloc( len + 1, sizeof(char) )) ){
+				if( len > 0 && (*trackName = QTils_calloc( len + 1, sizeof(char) )) ){
 					memcpy( *trackName, *h, len );
 					(*trackName)[len] = '\0';
 				}
@@ -3456,7 +3543,7 @@ ErrCode GetTrackName_Mod2( Movie theMovie, long trackNr, char *trackName, int tl
 		else{
 			trackName[0] = '\0';
 		}
-		free(tn);
+		QTils_free(&tn);
 	}
 	return err;
 }
@@ -3481,7 +3568,7 @@ ErrCode GetTrackWithName( Movie theMovie, char *trackName, OSType type, long fla
 						*trackNr = i;
 					}
 				}
-				free(tn);
+				QTils_free(&tn);
 			}
 			i += 1;
 		}
@@ -3523,14 +3610,14 @@ ErrCode DisableTrack_Mod2( Movie theMovie, long trackNr )
 #include "QTMovieSink.h"
 
 /*!
-	a local free() function for export to M2. This seems to be necessary because apparently under Win7
+	a local free() function. This seems to be necessary because apparently under Win7
 	memory has to be freed in the same dll as where it was allocated.
  */
-static void free_Mod2( char **mem )
+static void QTils_free_Mod2( char **mem )
 {
 	if( mem && *mem ){
-		QTils_LogMsgEx( "free_Mod2(): freeing %p and setting it to NULL; free()=%p\n", *mem, free );
-		free(*mem);
+		QTils_LogMsgEx( "free_Mod2(): freeing %p and setting it to NULL; free()=%p\n", *mem, QTils_Allocator->free );
+		QTils_free(mem);
 		*mem = NULL;
 	}
 }
@@ -3542,6 +3629,12 @@ static void free_Mod2( char **mem )
 size_t initDMBaseQTils( LibQTilsBase *dmbase )
 { extern char lastSSLogMsg[2048];
 	if( dmbase ){
+
+		if( !QTils_Allocator ){
+			__init_QTils_Allocator__( NULL, malloc, calloc, realloc, __QTils_free__ );
+		}
+		dmbase->QTils_Allocator = QTils_Allocator;
+
 		dmbase->OpenQT = OpenQT;
 		dmbase->CloseQT = CloseQT;
 
@@ -3639,7 +3732,7 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->vsnprintf = vsnprintf_Mod2;
 		dmbase->vssprintf = vssprintf_Mod2;
 		dmbase->vssprintfAppend = vssprintfAppend_Mod2;
-		dmbase->free = free_Mod2;
+		dmbase->free = QTils_free_Mod2;
 
 		return sizeof(*dmbase);
 	}

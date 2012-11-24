@@ -549,6 +549,10 @@ BEGIN
 	AttachDebugger(AttachAll);
 %END
 
+	QTils.QTils_Allocator^.malloc := POSIX.malloc;
+	QTils.QTils_Allocator^.calloc := POSIX.calloc;
+	QTils.QTils_Allocator^.realloc := POSIX.realloc;
+	QTils.QTils_Allocator^.free := POSIX.free;
 	IF NOT POSIXAvailable()
 		THEN
 			PostMessage( "QTVODm2", "Pas de gestion d'arguments de commande sans POSIXm2.dll !" );

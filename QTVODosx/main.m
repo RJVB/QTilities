@@ -109,10 +109,19 @@ bail:
 	return err;
 }
 
+static void freep( void **p)
+{
+	if( p && *p ){
+		free(*p);
+		*p = NULL;
+	}
+}
+
 int main(int argc, char *argv[])
 { extern Boolean QTMWInitialised;
 	QTils_MessagePumpIsInActive = TRUE;
 	if( !QTMWInitialised ){
+		init_QTils_Allocator( malloc, calloc, realloc, freep );
 		InitQTMovieWindows();
 	}
 	RegisterMyHelpBook();

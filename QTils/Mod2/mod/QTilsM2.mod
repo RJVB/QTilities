@@ -178,7 +178,8 @@ PROCEDURE PostMessage(title, message : ARRAY OF CHAR) : CARDINAL;
 BEGIN
 	IF NOT ligneDeCmde
 		THEN
-			RETURN MessageBox(NIL, message, title, MB_OK BOR MB_ICONEXCLAMATION)
+			(* 20121124: besoin de MB_APPLMODAL pour que la fenêtre apparaisse sous Win7 ?! *)
+			RETURN MessageBox(NIL, message, title, MB_APPLMODAL BOR MB_OK BOR MB_ICONEXCLAMATION)
 		ELSE
 			RETURN 1
 	END;

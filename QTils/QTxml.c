@@ -114,7 +114,7 @@ ErrCode ParseXMLFile( const char *theURL, ComponentInstance xmlParser, long flag
 		Check4XMLError( xmlParser, err, theURL, errdescr );
 	}
 	if( orgURL && theURL != orgURL ){
-		free(orgURL);
+		QTils_free(&orgURL);
 	}
 	return err;
 }
@@ -517,7 +517,7 @@ ErrCode GetStringAttribute( XMLElement *element, UInt32 attributeID, char **theS
 	if( attributeIndex != attributeNotFound && (attributes[attributeIndex].valueKind == attributeValueKindCharString) ){
 		// allocate the string
 		stringLength = strlen((Ptr)(attributes[attributeIndex].valueStr));
-		*theString = (char*)malloc(stringLength + 1);
+		*theString = (char*)QTils_malloc(stringLength + 1);
 		if( !*theString ){
 			err = (errno)? errno : ENOMEM;
 		}
@@ -541,7 +541,7 @@ ErrCode GetStringAttribute_Mod2( XMLElement *element, UInt32 attributeID, char *
 	if( str ){
 		strncpy( theString, str, slen );
 		theString[slen-1] = '\0';
-		free(str);
+		QTils_free(&str);
 	}
 	return err;
 }

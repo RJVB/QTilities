@@ -448,6 +448,19 @@ QTCompressionQualities	=
 			END;
 	END;
 
+	(* adresses des routines standard C d'allocation et désallocation de mémoire,
+		utilisées par QTils.dll . Remplacez ces adresses par d'autres DE LA MEME famille
+		pour s'assurer que QTils utilise bien les bonnes fonctions, ou appelez les fonctions
+		par défaut pour allouer/libérer de la mémoire dynamique à utiliser/libérer dans QTils.
+	*)
+	QTILS_ALLOCATORS =
+		RECORD
+			malloc : PROCEDURE( (*size*) CARDINAL32 ) : ADDRESS [CDECL];
+			calloc : PROCEDURE( (*n*) CARDINAL32, (*elemSize*) CARDINAL32 ) : ADDRESS [CDECL];
+			realloc : PROCEDURE( (*ptr*) ADDRESS, (*memSize*) CARDINAL32 ) : ADDRESS [CDECL];
+			free : PROCEDURE( VAR (*ptr*) ADDRESS ) [CDECL];
+	END;
+
 	(* tableau avec les fonctions exportées par QTils.dll et nous-mêmes : *)
 	(* NB: il semble qu'il vaut mieux déclarer tout [CDECL] et non [StdCall]! *)
 	QTilsExports			=
@@ -694,8 +707,10 @@ QTCompressionQualities	=
 			lastSSLogMsg : POINTER TO ARRAY[0..2048] OF CHAR;
 			MacErrorString : PROCEDURE( (*err*) ErrCode, VAR (*errString*) ARRAY OF CHAR,
 									VAR (*errComment*) ARRAY OF CHAR) : UInt32 [CDECL];
-			(* free: pour libérer la mémoire allouée par ssprintf et ssprintfAppend *)
+			(* free: pour libérer la mémoire allouée par ssprintf et ssprintfAppend ou d'autres
+				fonctions de QTils.dll . Alternativement, utilisez QTils_Allocator.free *)
 			free : PROCEDURE( VAR (*mem*) ADDRESS ) [CDECL];
+			QTils_Allocator : POINTER TO QTILS_ALLOCATORS;
 
 			(* ================================================================
 				fin de la partie initialisée par QTils.dll::initDMBase_Mod2();
