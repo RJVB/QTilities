@@ -1191,9 +1191,10 @@ BOOL addToRecentDocs = YES;
 				"</import>\n" ];
 		if( (err = MemoryDataRefFromString( [qi2mString cStringUsingEncoding:NSUTF8StringEncoding], [[src path] UTF8String], &memRef )) == noErr ){
 			@synchronized(self){
+				theMovie = NULL;
 				err = OpenMovieFromMemoryDataRef( &theMovie, &memRef, 'QI2M' );
 			}
-			if( !theMovie ){
+			if( err != noErr || !theMovie ){
 			  const char *es, *ec;
 			  ErrCode last = LastQTError();
 				es = MacErrorString( last, &ec );

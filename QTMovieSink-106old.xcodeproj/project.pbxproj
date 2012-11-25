@@ -232,13 +232,6 @@
 			remoteGlobalIDString = D696D5681414C06700E2F416;
 			remoteInfo = LogControllerGC_framework;
 		};
-		D6D41FA4149FBEFA000A47D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D6D41E6B149F535F000A47D7;
-			remoteInfo = cseTest;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -527,7 +520,6 @@
 				D6169C61134CF7D7004A2A56 /* pipeLogger */,
 				D696D57C1414C08500E2F416 /* LogControllerGCFW.framework */,
 				D67AD139141624B100E99EA2 /* pipeLogger-emb.app */,
-				D6D41FA5149FBEFA000A47D7 /* cseTest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -964,7 +956,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 			};
-			buildConfigurationList = 1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "QTMovieSink-106" */;
+			buildConfigurationList = 1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "QTMovieSink-106old" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -1038,13 +1030,6 @@
 			fileType = wrapper.framework;
 			path = LogControllerGCFW.framework;
 			remoteRef = D696D57B1414C08500E2F416 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D6D41FA5149FBEFA000A47D7 /* cseTest */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = cseTest;
-			remoteRef = D6D41FA4149FBEFA000A47D7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1795,7 +1780,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "QTMovieSink-106" */ = {
+		1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "QTMovieSink-106old" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB923608733DC60010E9CD /* Debug */,

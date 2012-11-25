@@ -91,7 +91,7 @@ const char *qi2mStringMask =
 "<?quicktime type=\"video/x-qt-img2mov\"?>\n"
 "<import autoSave=False askSave=False >\n"
 "	<description txt=\"UTC timeZone=1, DST=0, assoc.data:*FromVODFile*\" />\n"
-"	<sequence src=\"%s\" channel=-1 freq=-1 hidetc=False timepad=False hflip=False vmgi=True newchapter=False log=False />\n"
+"	<sequence src=\"%s\" channel=%d freq=%g hidetc=False timepad=False hflip=False vmgi=True newchapter=False log=False />\n"
 "</import>\n";
 
 QTMovieWindowH *winlist = NULL;
@@ -345,6 +345,36 @@ int vsscanfM2( char *src, int slen, const char *format, int flen, ... )
 	return n;
 }
 
+int vasprintf( char **str, const char *fmt, va_list ap )
+{ va_list original_ap = ap;
+  char tbuf[8];
+  int n = -1;
+
+	// [v]snprintf into any kind of buffer will return the number of characters
+	// that would be printed for an unlimited size buffer:
+	n = vsnprintf( tbuf, sizeof(tbuf), fmt, ap );
+	va_end(ap);
+		
+	if( n > -1 ){
+		// we now know the required string length; (re)allocate
+		*str = realloc( *str, n + 1 );
+		ap = original_ap;
+		n = vsnprintf( *str, n + 1, fmt, ap );
+		va_end(ap);
+	}
+	return n;
+}
+
+int asprintf( char **str, const char *fmt, ... )
+{ va_list ap;
+  int ret;
+	
+	va_start(ap, fmt);
+	ret = vasprintf( str, fmt, ap );
+	va_end(ap);
+	return ret;
+}
+
 #define ClipInt(x,min,max)	if((x)<(min)){ (x)=(min); } else if((x)>(max)){ (x)=(max); }
 
 void ReadXMLDoc( char *fName, XMLDoc xmldoc, VODDescription *descr )
@@ -530,7 +560,7 @@ int main( int argc, char* argv[] )
 					QTils_LogSetActive(TRUE);
 #endif
 					qi2mString = NULL;
-					ssprintf( &qi2mString, qi2mStringMask, argv[i] );
+					ssprintf( &qi2mString, qi2mStringMask, argv[i], -1, -1.0 );
 					if( qi2mString ){
 					  MemoryDataRef memRef;
 					  ErrCode err;

@@ -723,10 +723,12 @@ BEGIN
 					SendNetCommandOrNotification( sServeur, qtvod_Quit, qtvod_Notification );
 					Sleep(1000);
 			END;
+(*
 			IF (m = 0) AND (sServeur = sock_nulle)
 				THEN
 					PostMessage( "QTVODm2", "La Fin!" );
 			END;
+*)
 			CloseCommClient(sServeur);
 		ELSE
 			QTils.LogMsgEx( "Echec d'initialisation de QuickTime et/ou QTilsM2... (%d)", QTOpenError() );

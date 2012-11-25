@@ -174,15 +174,21 @@ BEGIN
 END StringTerminate;
 *)
 
+(*
 PROCEDURE PostMessage(title, message : ARRAY OF CHAR) : CARDINAL;
 BEGIN
 	IF NOT ligneDeCmde
 		THEN
-			(* 20121124: besoin de MB_APPLMODAL pour que la fenêtre apparaisse sous Win7 ?! *)
 			RETURN MessageBox(NIL, message, title, MB_APPLMODAL BOR MB_OK BOR MB_ICONEXCLAMATION)
 		ELSE
 			RETURN 1
 	END;
+END PostMessage;
+*)
+
+PROCEDURE PostMessage(title, message : ARRAY OF CHAR) : CARDINAL;
+BEGIN
+	RETURN MessageBox(NIL, message, title, MB_APPLMODAL BOR MB_OK BOR MB_ICONEXCLAMATION)
 END PostMessage;
 
 PROCEDURE PostYesNoDialog(title, message : ARRAY OF CHAR) : BOOLEAN;

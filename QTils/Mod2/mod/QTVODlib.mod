@@ -914,7 +914,10 @@ BEGIN
 					IF err = noErr
 						THEN
 							(* on prépare le movie pour être affiché *)
-							PrepareChannelCacheMovie( theMovie, channel );
+							IF PrepareChannelCacheMovie( theMovie, channel )
+								THEN
+									QTils.SaveMovie(theMovie);
+							END;
 							IF ( (channel = 5) OR (channel = 6) )
 								THEN
 									wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", 1 );
@@ -989,7 +992,10 @@ BEGIN
 							err := QTils.OpenMovieFromMemoryDataRef( theMovie, memRef, FOUR_CHAR_CODE('QI2M') );
 							IF err = noErr
 								THEN
-									PrepareChannelCacheMovie( theMovie, channel );
+									IF PrepareChannelCacheMovie( theMovie, channel )
+										THEN
+											QTils.SaveMovieAsRefMov( fName, theMovie );
+									END;
 									IF ( (channel = 5) OR (channel = 6) )
 										THEN
 											wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", 1 );
@@ -1014,7 +1020,6 @@ BEGIN
 							QTils.LogMsgEx( "Echec de création de MemoryDataRef pour canal %s: %d", chanNum, err );
 							PostMessage( fName, QTils.lastSSLogMsg^ );
 					END;
-					(* NB NB on doit utiliser QTils.free() et non pas POSIX.free() pour éviter des soucis sous Win7 *)
 					QTils.free(qi2mString);
 				ELSE
 					QTils.LogMsgEx( "Echec de création de %s en mémoire", fName );
@@ -1059,7 +1064,7 @@ END PruneExtensions;
 VAR
 	inOpenVideo : BOOLEAN;
 
-PROCEDURE PrepareChannelCacheMovie( theMovie : Movie; chanNum : INTEGER );
+PROCEDURE PrepareChannelCacheMovie( theMovie : Movie; chanNum : INTEGER ) : BOOLEAN;
 VAR
 	trackNr : Int32;
 BEGIN
@@ -1078,6 +1083,7 @@ BEGIN
 			QTils.LogMsgEx( "Activation de la piste %ld, Timecode Track", trackNr );
 			QTils.EnableTrack( theMovie, trackNr );
 	END;
+	RETURN (QTils.HasMovieChanged(theMovie) <> 0);
 END PrepareChannelCacheMovie;
 
 PROCEDURE AskFileName( title : ARRAY OF CHAR; VAR fileName : ARRAY OF CHAR ) : BOOLEAN;
@@ -1086,9 +1092,9 @@ VAR
 BEGIN
 	POSIX.memset( lp, 0, SIZE(lp) );
 	lp.lStructSize := SIZE(OPENFILENAME);
-	lp.lpstrFilter := ADR("Fichier QuickTime" + CHR(0) + "*.mov" + CHR(0)
-			+ "Media Supportés" + CHR(0) + "*.mov;*.qi2m;*.VOD;*.jpgs;*.mpg;*.mp4;*.mpeg;*.avi;*.wmv;*.mp3;*.aif;*.wav;*.mid;*.jpg;*.jpeg" + CHR(0)
-			+ "All Files" + CHR(0) + "*.*" + CHR(0) + CHR(0));
+	lp.lpstrFilter := ADR("Fichiers QuickTime" + CHR(0) + "*.mov" + CHR(0)
+			+ "Media supportés" + CHR(0) + "*.mov;*.qi2m;*.VOD;*.jpgs;*.mpg;*.mp4;*.mpeg;*.avi;*.wmv;*.mp3;*.aif;*.wav;*.mid;*.jpg;*.jpeg" + CHR(0)
+			+ "Tous les fichiers" + CHR(0) + "*.*" + CHR(0) + CHR(0));
 	lp.nFilterIndex := 1;
 	fileName[0] := CHR(0);
 	lp.lpstrFile := ADR(fileName);
@@ -1282,7 +1288,6 @@ VAR
 	err : ErrCode;
 	tfName, fName : URLString;
 BEGIN
-		Concat( baseFileName, "-tmpXX.mov", tfName );
 		Concat( baseFileName, ".mov", fName );
 		err := QTils.SaveMovie( fullMovie );
 		QTils.LogMsgEx( 'Sauvegarde du fichier "%s" : err=%d\n', fName, err );
@@ -1290,16 +1295,31 @@ BEGIN
 			THEN
 				PostMessage( "QTVODm2 - erreur", QTils.lastSSLogMsg^ );
 			ELSE
-				Concat( baseFileName, "-forward.mov", tfName );
-				DeleteFile(tfName);
-				Concat( baseFileName, "-pilot.mov", tfName );
-				DeleteFile(tfName);
-				Concat( baseFileName, "-left.mov", tfName );
-				DeleteFile(tfName);
-				Concat( baseFileName, "-right.mov", tfName );
-				DeleteFile(tfName);
-				Concat( baseFileName, "-TC.mov", tfName );
-				DeleteFile(tfName);
+				POSIX.sprintf( tfName, "%svid\forward.mov", baseFileName );
+				IF CreateDirTree(tfName)
+					THEN
+						DeleteFile(tfName);
+						POSIX.sprintf( tfName, "%svid\pilot.mov", baseFileName );
+						DeleteFile(tfName);
+						POSIX.sprintf( tfName, "%svid\left.mov", baseFileName );
+						DeleteFile(tfName);
+						POSIX.sprintf( tfName, "%svid\right.mov", baseFileName );
+						DeleteFile(tfName);
+						POSIX.sprintf( tfName, "%svid\TC.mov", baseFileName );
+						DeleteFile(tfName);
+					ELSE
+						(* on retourne à l'ancien comportement *)
+						Concat( baseFileName, "-forward.mov", tfName );
+						DeleteFile(tfName);
+						Concat( baseFileName, "-pilot.mov", tfName );
+						DeleteFile(tfName);
+						Concat( baseFileName, "-left.mov", tfName );
+						DeleteFile(tfName);
+						Concat( baseFileName, "-right.mov", tfName );
+						DeleteFile(tfName);
+						Concat( baseFileName, "-TC.mov", tfName );
+						DeleteFile(tfName);
+				END;
 		END;
 END FlushCaches;
 
