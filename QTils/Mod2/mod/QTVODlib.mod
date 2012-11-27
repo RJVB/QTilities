@@ -682,14 +682,14 @@ BEGIN
 			WriteString( fp, xmlStr );
 
 			QTils.sprintf( xmlStr,
-				'\t<sequence src="%s" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False\n'
+				'\t<sequence src="%s" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False hidets=True\n'
 				+ '\t\trelTransH=%g relTransV=%g description="%s" />\n',
 				source, descr.frequency, descr.channels.pilot, "False", useVMGI,
 				chPiTrans[descr.channels.pilot].dx, chPiTrans[descr.channels.pilot].dy, "pilot" );
 			WriteString( fp, xmlStr );
 
 			QTils.sprintf( xmlStr,
-				'\t<sequence src="%s" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False\n'
+				'\t<sequence src="%s" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False hidets=True\n'
 				+ '\t\trelTransH=%g relTransV=%g description="%s" />\n',
 				source, descr.frequency, descr.channels.left, flLR, useVMGI,
 				chGaTrans[descr.channels.left].dx, chGaTrans[descr.channels.left].dy, "left" );
@@ -697,14 +697,14 @@ BEGIN
 
 
 			QTils.sprintf( xmlStr,
-				'\t<sequence src="%s" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False\n'
+				'\t<sequence src="%s" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False hidets=True\n'
 				+ '\t\trelTransH=%g relTransV=%g description="%s" />\n',
 				source, descr.frequency, descr.channels.right, flLR, useVMGI,
 				chDrTrans[descr.channels.right].dx, chDrTrans[descr.channels.right].dy, "right" );
 			WriteString( fp, xmlStr );
 
 			QTils.sprintf( xmlStr,
-				'\t<sequence src="%s" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False\n'
+				'\t<sequence src="%s" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False hidets=True\n'
 				+ '\t\trelTransH=%g relTransV=%g description="%s" />\n',
 				source, descr.frequency, descr.channels.forward, "False", useVMGI,
 				chAvTrans[descr.channels.forward].dx, chAvTrans[descr.channels.forward].dy, "forward" );

@@ -1782,25 +1782,25 @@ BOOL addToRecentDocs = YES;
 			source, theDescription.frequency, 6, "False", useVMGI, 0.5, 0.0, "timeStamps"
 		);
 		fprintf( fp,
-			"\t<sequence src=\"%s\" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False\n"
+			"\t<sequence src=\"%s\" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False hidets=True\n"
 			"\t\trelTransH=%g relTransV=%g description=\"%s\" />\n",
 			source, theDescription.frequency, theDescription.channels.pilot, "False", useVMGI,
 			chPiTrans[theDescription.channels.pilot].dx, chPiTrans[theDescription.channels.pilot].dy, "pilot"
 		);
 		fprintf( fp,
-			"\t<sequence src=\"%s\" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False\n"
+			"\t<sequence src=\"%s\" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False hidets=True\n"
 			"\t\trelTransH=%g relTransV=%g description=\"%s\" />\n",
 			source, theDescription.frequency, theDescription.channels.left, flipLaterals, useVMGI,
 			chLeTrans[theDescription.channels.left].dx, chLeTrans[theDescription.channels.left].dy, "left"
 		);
 		fprintf( fp,
-			"\t<sequence src=\"%s\" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False\n"
+			"\t<sequence src=\"%s\" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False hidets=True\n"
 			"\t\trelTransH=%g relTransV=%g description=\"%s\" />\n",
 			source, theDescription.frequency, theDescription.channels.right, flipLaterals, useVMGI,
 			chRiTrans[theDescription.channels.right].dx, chRiTrans[theDescription.channels.right].dy, "right"
 		);
 		fprintf( fp,
-			"\t<sequence src=\"%s\" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False\n"
+			"\t<sequence src=\"%s\" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False hidets=True\n"
 			"\t\trelTransH=%g relTransV=%g description=\"%s\" />\n",
 			source, theDescription.frequency, theDescription.channels.forward, "False", useVMGI,
 			chFwTrans[theDescription.channels.forward].dx, chFwTrans[theDescription.channels.forward].dy, "forward"
