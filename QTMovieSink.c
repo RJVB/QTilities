@@ -318,7 +318,7 @@ static OSErr CreateMovieStorageFromURL( const char **URL, OSType creator, Script
 		);
 		if( err == noErr ){
 			if( !fullURL && URL && *URL != orgURL ){
-				QTils_free( (void**) URL);
+				QTils_free( (char**) URL);
 				*URL = orgURL;
 			}
 		}
@@ -726,14 +726,14 @@ ErrCode close_QTMovieSink( QTMovieSinks **QMS, int addTCTrack, QTMSEncodingStats
 				qms->imageFrame = NULL;
 			}
 			if( qtPriv->saved_theURL ){
-				QTils_free((void**)&qms->theURL);
+				QTils_free((char**)&qms->theURL);
 				qms->theURL = qtPriv->saved_theURL;
 			}
 			if( qtPriv->dataRef ){
 				DisposeHandle( (Handle) qtPriv->dataRef );
 				qtPriv->dataRef = NULL;
 			}
-			QTils_free(&qtPriv);
+			QTils_free( (char**)&qtPriv);
 			qms->privQT = NULL;
 			if( closeQT ){
 				ExitMovies();
@@ -744,7 +744,7 @@ ErrCode close_QTMovieSink( QTMovieSinks **QMS, int addTCTrack, QTMSEncodingStats
 		}
 		qms->lastErr = err;
 		if( qms->dealloc_qms ){
-			QTils_free(&qms);
+			QTils_free( (char**)&qms);
 			*QMS = NULL;
 		}
 	}
@@ -1330,14 +1330,14 @@ static ErrCode close_QTMovieSinkICM( QTMovieSinks **QMS, int addTCTrack, QTMSEnc
 				qms->imageFrame = NULL;
 			}
 			if( qtPriv->saved_theURL ){
-				QTils_free((void**)&qms->theURL);
+				QTils_free((char**)&qms->theURL);
 				qms->theURL = qtPriv->saved_theURL;
 			}
 			if( qtPriv->dataRef ){
 				DisposeHandle( (Handle) qtPriv->dataRef );
 				qtPriv->dataRef = NULL;
 			}
-			QTils_free(&qtPriv);
+			QTils_free( (char**)&qtPriv);
 			qms->privQT = NULL;
 			if( closeQT ){
 				ExitMovies();
@@ -1348,7 +1348,7 @@ static ErrCode close_QTMovieSinkICM( QTMovieSinks **QMS, int addTCTrack, QTMSEnc
 		}
 		qms->lastErr = err;
 		if( qms->dealloc_qms ){
-			QTils_free(&qms);
+			QTils_free( (char**)&qms);
 			*QMS = NULL;
 		}
 	}
@@ -1562,7 +1562,7 @@ static ErrCode AddMetaDataString( QTMovieSinks *qms, int toTrack,
 										(UInt8*) newvalue, size, 0 )) == noErr
 						){ size_t len = strlen(newvalue);
 							snprintf( &newvalue[len], nvlen-len, "\n%s", value );
-							QTils_free((void**)&value);
+							QTils_free((char**)&value);
 							value = newvalue;
 							newvalue = NULL;
 							 // set the item to the new value:
@@ -1597,7 +1597,7 @@ static ErrCode AddMetaDataString( QTMovieSinks *qms, int toTrack,
 				if( err != noErr ){
 					// failure, in this case we're sure we can release the allocated memory.
 					if( value != newvalue ){
-						QTils_free((void**)&value);
+						QTils_free((char**)&value);
 						value = NULL;
 					}
 					if( newvalue ){

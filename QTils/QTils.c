@@ -968,7 +968,7 @@ ErrCode MetaDataHandler( Movie theMovie, Track toTrack,
 						if( *Value == newvalue ){
 							*Value = NULL;
 						}
-						QTils_free((void**)&newvalue);
+						QTils_free(&newvalue);
 						newvalue = NULL;
 					}
 				}
@@ -993,7 +993,7 @@ bail:
 				if( *Value == newvalue ){
 					*Value = (value == newvalue)? NULL : value;
 				}
-				QTils_free((void**)&newvalue);
+				QTils_free(&newvalue);
 				newvalue = NULL;
 			}
 			QTMetaDataRelease( theMetaData );
@@ -1572,6 +1572,20 @@ OSErr MaybeShowMoviePoster( Movie theMovie )
 	return err;
 }
 
+ErrCode SlaveMovieToMasterMovie( Movie slave, Movie master )
+{ TimeRecord slaveZero;
+	if( slave && master ){
+		GetTimeBaseStartTime( GetMovieTimeBase(master), GetMovieTimeScale(master), &slaveZero );
+		SetTimeBaseMasterTimeBase( GetMovieTimeBase(slave),
+							 GetMovieTimeBase(master),
+							 &slaveZero );
+		return GetMoviesError();
+	}
+	else{
+		return paramErr;
+	}
+}
+
 // 20101017: kudos to Jan Schotsman for giving the solution on how to create a "dref atom" that allows to
 // store all the TimeCode information in theFile->theMovie. The second approach using PtrToHand comes from
 // http://developer.apple.com/library/mac/#qa/qa1539/_index.html
@@ -2108,7 +2122,7 @@ ErrCode CreateMovieStorageFromURL( const char *URL, OSType creator, ScriptCode s
 		}
 	}
 	if( URL && URL != orgURL ){
-		QTils_free( (void**) &URL);
+		QTils_free( (char**) &URL);
 		URL = orgURL;
 	}
 	return err;
@@ -2164,7 +2178,7 @@ ErrCode OpenMovieFromURL( Movie *newMovie, short flags, short *id,
 		);
 #endif
 		if( URL && URL != orgURL && !noFree ){
-			QTils_free( (void**) &URL);
+			QTils_free( (char**) &URL);
 			URL = orgURL;
 		}
 	}
@@ -2254,7 +2268,7 @@ ErrCode SaveMovieAs( char **fname, Movie theMovie, int noDialog )
 		urlRef = CFURLCreateFromFileSystemRepresentation( NULL, (const UInt8*) URL, strlen(URL), false );
 #endif
 		if( URL && URL != orgURL ){
-			QTils_free( (void**) &URL);
+			QTils_free( (char**) &URL);
 		}
 	}
 	else{
@@ -2523,7 +2537,7 @@ ErrCode FlattenMovieToURL( const char *dstURL, Movie theMovie, Movie *theNewMovi
 	}
 #endif
 	if( dstURL && dstURL != orgURL ){
-		QTils_free( (void**) &dstURL);
+		QTils_free( (char**) &dstURL);
 	}
 	return err2;
 }
@@ -2607,13 +2621,13 @@ double GetMovieTimeResolution( Movie theMovie )
 static void *dispose_TCTrackInfo( void *ptr )
 { TCTrackInfo *info = (TCTrackInfo*) ptr, *ret = NULL;
 	if( info ){
-		xfree( info->StartTimes );
-		xfree( info->durations );
-		xfree( info->frames );
+		xfree( (char*)info->StartTimes );
+		xfree( (char*)info->durations );
+		xfree( (char*)info->frames );
 		xfree( info->theURL );
 		info->theTCTrack = nil;
 		ret = info->cdr;
-		QTils_free( &info );
+		QTils_free( (char**)&info );
 	}
 	return (void*) ret;
 }
@@ -3697,6 +3711,7 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->GetTrackWithName = GetTrackWithName;
 		dmbase->EnableTrackNr = EnableTrack_Mod2;
 		dmbase->DisableTrackNr = DisableTrack_Mod2;
+		dmbase->SlaveMovieToMasterMovie = SlaveMovieToMasterMovie;
 
 		dmbase->Check4XMLError = Check4XMLError;
 		dmbase->ParseXMLFile = ParseXMLFile;

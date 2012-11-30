@@ -602,6 +602,7 @@ QTCompressionQualities	=
 			GetTrackWithName : PROCEDURE( (*theMovie*) Movie, (*trackName*) ARRAY OF CHAR, (*trackNr*) VAR Int32 ):ErrCode [CDECL];
 			EnableTrack : PROCEDURE( (*theMovie*) Movie, (*trackNr*) Int32 ):ErrCode [CDECL];
 			DisableTrack : PROCEDURE( (*theMovie*) Movie, (*trackNr*) Int32 ):ErrCode [CDECL];
+			SlaveMovieToMasterMovie : PROCEDURE( (*slave*) Movie, (*master*) Movie ):ErrCode [CDECL];
 
 			Check4XMLError : PROCEDURE( (*xmlParser*) ComponentInstance, (*err*) ErrCode,
 									(*theURL*) ARRAY OF CHAR, VAR (*descr*) Str255 ):ErrCode [CDECL];

@@ -885,6 +885,7 @@ BOOL addToRecentDocs = YES;
 
 - (void) register_windows
 { int i;
+  QTMovieWindowH tcWih = (TC)? TC.qtmwH : NULL;
 	for( i = 0 ; i < maxQTWM ; i++ ){
 		if( QTMWH(i) ){
 //			register_window( QTMWH(i), i, &Wpos[i], &Wsize[i] );
@@ -897,6 +898,13 @@ BOOL addToRecentDocs = YES;
 			}
 		}
 	}
+//	if( tcWih ){
+//		timeBaseMaster = tcWih;
+//		[self SlaveWindowsToMovie:(*tcWih)->theMovie storeCurrent:YES];
+//	}
+//	if( sysOwned ){
+//		[self SlaveWindowsToMovie:[[sysOwned getMovie] quickTimeMovie] storeCurrent:YES];
+//	}
 }
 
 - (ErrCode) ImportMovie:(NSURL*)src withDescription:(VODDescription*)description;
@@ -2095,6 +2103,36 @@ BOOL addToRecentDocs = YES;
 		if( sysOwned ){
 			[sysOwned setQTVOD:nil];
 			sysOwned = nil;
+		}
+	}
+}
+
+- (void) SlaveWindowsToMovie:(Movie)theMasterMovie storeCurrent:(Boolean)store;
+{ int i;
+  Movie theMovie;
+  QTMovieWindowH wih;
+  ErrCode err;
+	if( theMasterMovie ){
+		for( i = 0 ; i < maxQTWM ; i++ ){
+			wih = QTMWH(i);
+			if( wih && (theMovie = (*wih)->theMovie) && (*wih)->theMovie != theMasterMovie ){
+				if( store ){
+					initialClock[i] = GetTimeBaseMasterClock(GetMovieTimeBase(theMovie));
+				}
+//				SetTimeBaseMasterTimeBase( GetMovieTimeBase(theMovie),
+//										 GetMovieTimeBase(theMasterMovie), nil );
+				err = SlaveMovieToMasterMovie( theMovie, theMasterMovie );
+			}
+		}
+	}
+	else{
+		for( i = 0 ; i < maxQTWM ; i++ ){
+			wih = QTMWH(i);
+			if( wih && (theMovie = (*wih)->theMovie) && sysOwned ){
+//				SetTimeBaseMasterClock(GetMovieTimeBase(theMovie), (Component)initialClock[i], nil);
+				SetTimeBaseMasterTimeBase( GetMovieTimeBase(theMovie),
+									 GetMovieTimeBase([[sysOwned getMovie] quickTimeMovie]), nil );
+			}
 		}
 	}
 }

@@ -35,7 +35,8 @@ FROM FileFunc IMPORT
 		HWND;
 %END
 FROM WINUSER IMPORT
-	SetWindowPos, HWND_BOTTOM, HWND_TOP, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE;
+	SetWindowPos, HWND_BOTTOM, HWND_TOP, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE,
+	ShowWindow, SW_HIDE, SW_MINIMIZE;
 FROM COMMDLG IMPORT
 	OPENFILENAME, GetOpenFileName, OFN_FILEMUSTEXIST, OFN_NOCHANGEDIR;
 
@@ -161,7 +162,10 @@ BEGIN
 	IF ss <> sock_nulle
 		THEN
 			replyCurrentTime( msg, class, ref, VAL(BOOLEAN,absolute) );
-			SendMessageToNet( ss, msg, SENDTIMEOUT, FALSE, "QTVODm2::SetTimesAndNotify" );
+			IF ( ss <> sock_nulle )
+				THEN
+					SendMessageToNet( ss, msg, SENDTIMEOUT, FALSE, "QTVODm2::SetTimesAndNotify" );
+			END;
 	END;
 END SetTimesAndNotify;
 
@@ -373,7 +377,10 @@ BEGIN
 	replyCurrentTime( msg, qtvod_Notification, wih, FALSE );
 	(* on le converti en message qtvod_Start *)
 	msg.flags.type := qtvod_Start;
-	SendMessageToNet( sServeur, msg, SENDTIMEOUT, FALSE, "QTVODm2::movieStart" );
+	IF ( sServeur <> sock_nulle )
+		THEN
+			SendMessageToNet( sServeur, msg, SENDTIMEOUT, FALSE, "QTVODm2::movieStart" );
+	END;
 	handlingPlayAction := FALSE;
 	RETURN 0;
 END movieStart;
@@ -405,7 +412,10 @@ BEGIN
  *)
 	replyCurrentTime( msg, qtvod_Notification, wih, FALSE );
 	msg.flags.type := qtvod_Stop;
-	SendMessageToNet( sServeur, msg, SENDTIMEOUT, FALSE, "QTVODm2::movieStop" );
+	IF ( sServeur <> sock_nulle )
+		THEN
+			SendMessageToNet( sServeur, msg, SENDTIMEOUT, FALSE, "QTVODm2::movieStop" );
+	END;
 	handlingPlayAction := FALSE;
 	RETURN 0;
 END movieStop;
@@ -541,6 +551,10 @@ BEGIN
 			QTils.register_MCAction( qtwmH, MCAction.Close, movieClose );
 			QTils.register_MCAction( qtwmH, MCAction.KeyUp, movieKeyUp );
 			err := QTils.QTMovieWindowGetGeometry( qtwmH, ADR(Wpos[w]), ADR(Wsize[w]), 1 );
+			IF (AqtwmH[fwWin] <> NULL_QTMovieWindowH) AND (w <> fwWin)
+				THEN
+					QTils.SlaveMovieToMasterMovie( qtwmH^^.theMovie, AqtwmH[fwWin]^^.theMovie );
+			END;
 			numQTWM := numQTWM + 1;
 	END;
 END register_window;
@@ -1242,6 +1256,15 @@ BEGIN
 			END;
 	END;
 
+	IF fullMovie <> NIL
+		THEN
+			fullMovieWMH := QTils.OpenQTMovieWindowWithMovie( fullMovie, fName, 1 );
+			IF fullMovieWMH <> NULL_QTMovieWindowH
+				THEN
+					ShowWindow( fullMovieWMH^^.theView, SW_MINIMIZE );
+			END;
+	END;
+
 	(* maintenant on peut tenter d'ouvrir les 5 fenêtres *)
 	(* vue vers l'avant *)
 	qtwmH[fwWin] := CreateChannelView( URL, description, description.channels.forward, "forward",
@@ -1351,7 +1374,13 @@ BEGIN
 		THEN
 			FlushCaches();
 	END;
-	QTils.CloseMovie(fullMovie);
+	IF fullMovieWMH <> NULL_QTMovieWindowH
+		THEN
+			QTils.CloseQTMovieWindow(fullMovieWMH);
+			fullMovie := NIL;
+		ELSE
+			QTils.CloseMovie(fullMovie);
+	END;
 END CloseVideo;
 
 PROCEDURE ResetVideo(complete : BOOLEAN) : ErrCode;
@@ -1783,6 +1812,7 @@ BEGIN
 	theTimeInterVal.dt := 0.0;
 	baseDescription.useVMGI := TRUE;
 	baseDescription.log := FALSE;
+	fullMovieWMH := NULL_QTMovieWindowH;
 
 FINALLY
 

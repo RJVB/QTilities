@@ -32,10 +32,12 @@ typedef struct TimeInterval {
 @public
 	QTVODWindow *forward, *pilot, *left, *right, *TC;
 	QTVODWindow **winlist[maxQTWM];
+	ComponentInstance initialClock[maxQTWM];
 	// typically, one of our windows will have been openened by the OS, and thus "owned"
 	// by the system. This ought to be the only window which does not have the isProgrammatic
 	// flag set.
 	QTVODWindow *sysOwned;
+	QTMovieWindowH timeBaseMaster;
 	Cartesian Wpos[maxQTWM], Wsize[maxQTWM];
 	short numQTMW;
 	Movie fullMovie;
@@ -76,6 +78,7 @@ typedef struct TimeInterval {
 - (void) CreateQI2MFromDesign;
 - (ErrCode) OpenVideo:(NSString *)typeName error:(NSError **)outError;
 - (void) CloseVideo:(BOOL)final;
+- (void) SlaveWindowsToMovie:(Movie)theMasterMovie storeCurrent:(Boolean)store;
 - (ErrCode) ResetVideo:(BOOL)complete;
 - (ErrCode) ResetVideo:(BOOL)complete closeSysWin:(BOOL)closeSysWin;
 - (ErrCode) ReadDefaultVODDescription:(const char*)fName toDescription:(VODDescription*)descr;

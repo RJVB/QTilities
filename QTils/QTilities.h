@@ -310,6 +310,7 @@ QTLSext ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memR
 	QTLSext ErrCode GetMovieStaticFrameRate( Movie theMovie, double *outFPS, double *fpsTC, double *fpsMedia );
 	QTLSext ErrCode GetMovieStartTime( Movie theMovie, Track TCTrack, TimeRecord *tr, long *startFrameNr );
 	QTLSext void SetMovieStartTime( Movie theMovie, TimeValue startTime, int changeTimeBase );
+	QTLSext ErrCode SlaveMovieToMasterMovie( Movie slave, Movie master );
 	QTLSext void qtSetMoviePlayHints( Movie theMovie, unsigned long hints, int exclusive );
 
 	typedef struct MediaRefs {
@@ -1092,6 +1093,7 @@ typedef struct LibQTilsBase {
 	ErrCode (*GetTrackWithName)( Movie theMovie, char *trackName, OSType type, long flags, Track *track, long *trackNr );
 	ErrCode (*EnableTrackNr)( Movie theMovie, long trackNr );
 	ErrCode (*DisableTrackNr)( Movie theMovie, long trackNr );
+	ErrCode (*SlaveMovieToMasterMovie)( Movie slave, Movie master );
 
 	// QTXML functions:
 

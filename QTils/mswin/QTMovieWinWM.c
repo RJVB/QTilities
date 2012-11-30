@@ -346,7 +346,7 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 			wi->dataHandler = nil;
 		}
 		if( wi->theURL ){
-			QTils_free( (void**) &wi->theURL);
+			QTils_free( (char**) &wi->theURL);
 			wi->theURL = NULL;
 		}
 		if( wi->dataRef ){
@@ -1086,7 +1086,7 @@ short InitQTMovieWindows( void *hInst )
 	}
 	QTWMcounter = -1;
 	if( iconXBits ){
-		QTils_free(&iconXBits);
+		QTils_free( (char**)&iconXBits);
 	}
 	if( maskBits ){
 		QTils_free(&maskBits);

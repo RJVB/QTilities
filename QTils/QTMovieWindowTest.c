@@ -593,6 +593,11 @@ int main( int argc, char* argv[] )
 //						}
 					}
 				}
+				else{
+					if( (*(winlist[0])) ){
+						SlaveMovieToMasterMovie( (*wi)->theMovie, (*(winlist[0]))->theMovie );
+					}
+				}
 				register_wi(wi);
 			}
 		}

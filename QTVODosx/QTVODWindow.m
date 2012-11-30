@@ -2273,6 +2273,9 @@ static unsigned int fullScreenViews= 0;
 		// qtmwH is a class variable and can thus have been changed ...
 		if( qtmwH ){
 			(*qtmwH)->performingClose = FALSE;
+			if( QTVDOC(qtmwH) && qtmwH == QTVDOC(qtmwH)->timeBaseMaster ){
+				[QTVDOC(qtmwH) SlaveWindowsToMovie:NULL storeCurrent:NO];
+			}
 		}
 	}
 	[self removeMovieCallBack];

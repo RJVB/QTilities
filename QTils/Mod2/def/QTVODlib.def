@@ -57,5 +57,6 @@ VAR
 	baseDescription : VODDescription;
 	fullMovie : Movie;
 	fullMovieChanged : BOOLEAN;
+	fullMovieWMH : QTMovieWindowH;
 
 END QTVODlib.
