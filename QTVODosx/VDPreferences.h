@@ -18,6 +18,7 @@ typedef struct VODDescription {
 	BOOL DST, useVMGI, log, flipLeftRight;
 	VODChannels channels;
 	BOOL changed;
+	char *codec, *bitRate;
 } VODDescription;
 
 extern VODDescription globalVDPreferences;

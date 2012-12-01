@@ -11,7 +11,7 @@ FROM WholeStr IMPORT
 	IntToStr;
 
 FROM Strings IMPORT
-	Concat, Append, Delete, FindPrev, Assign, Equal;
+	Concat, Append, Delete, FindPrev, Assign, Equal, Length;
 
 FROM Storage IMPORT
 	ALLOCATE, DEALLOCATE;
@@ -54,7 +54,7 @@ FROM POSIXm2 IMPORT POSIX;
 
 TYPE
 
-	VODDESIGN_PARSER = ARRAY[0..29] OF XML_RECORD;
+	VODDESIGN_PARSER = ARRAY[0..35] OF XML_RECORD;
 
 VAR
 
@@ -75,6 +75,8 @@ CONST
 	element_canaux = 8;
 	element_parsing = 9;
 	element_lecture = 10;
+	element_transcoding = 11;
+	element_transcodage = 12;
 	attr_freq = 1;
 	attr_scale = 2;
 	attr_forward = 4;
@@ -84,19 +86,20 @@ CONST
 	attr_zone = 11;
 	attr_dst = 12;
 	attr_flLR = 13;
-	attr_usevmgi = 13;
-	attr_log = 14;
+	attr_usevmgi = 14;
+	attr_log = 15;
+	attr_codec = 16;
+	attr_bitrate = 17;
 
 	_d = FALSE;
+	_fn = TRUE;
 
 	xml_design_parser = VODDESIGN_PARSER{
 			{xml_element, "vod.design", element_vodDesign},
 			{xml_element, "frequency", element_frequency},
 				{xml_attribute, "fps", attr_freq, recordAttributeValueTypeDouble, _d, ADR(xmlVD.frequency) },
-(*				{xml_attribute, "fps", attr_freq, recordAttributeValueTypeDouble, TRUE, FrequencyFromXMLElementAttributes }, *)
 			{xml_element, "frequence", element_frequence},
 				{xml_attribute, "tps", attr_freq, recordAttributeValueTypeDouble, _d, ADR(xmlVD.frequency)},
-(*				{xml_attribute, "tps", attr_freq, recordAttributeValueTypeDouble, TRUE, FrequencyFromXMLElementAttributes}, *)
 			{xml_element, "utc", element_utc},
 				{xml_attribute, "zone", attr_zone, recordAttributeValueTypeDouble, _d, ADR(xmlVD.timeZone)},
 				{xml_attribute, "dst", attr_dst, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.DST)},
@@ -121,7 +124,14 @@ CONST
 				{xml_attribute, "log", attr_log, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.log)},
 			{xml_element, "lecture", element_lecture},
 				{xml_attribute, "avecvmgi", attr_usevmgi, attributeValueKindBoolean, _d, ADR(xmlVD.useVMGI)},
-				{xml_attribute, "journal", attr_log, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.log)}
+				{xml_attribute, "journal", attr_log, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.log)},
+			{xml_element, "transcoding.mp4", element_transcoding},
+				(* on doit utiliser un XMLAttributeParseCallback pour lire des chaines de caractères *)
+				{xml_attribute, "codec", attr_codec, recordAttributeValueTypeCharString, _fn, GetCodecString },
+				{xml_attribute, "bitrate", attr_bitrate, recordAttributeValueTypeCharString, _fn, GetBitRateString},
+			{xml_element, "transcodage.mp4", element_transcodage},
+				{xml_attribute, "codec", attr_codec, recordAttributeValueTypeCharString, _fn, GetCodecString},
+				{xml_attribute, "taux", attr_bitrate, recordAttributeValueTypeCharString, _fn, GetBitRateString}
 	};
 
 
@@ -783,6 +793,17 @@ BEGIN
 			WriteString( fp, useVMGI );
 			WriteString( fp, ' newchapter=True log=' );
 			WriteString( fp, doLog );
+			IF Length(description.codec) > 0
+				THEN
+					WriteLn(fp); WriteChar( fp, tabChar );
+					WriteString( fp, "fcodec=" );
+					WriteString( fp, description.codec );
+					IF Length(description.bitRate) > 0
+						THEN
+							WriteString( fp, "fbitrate=" );
+							WriteString( fp, description.bitRate );
+					END;
+			END;
 			WriteString( fp, ' />' ); WriteLn(fp);
 			WriteString( fp, '</import>' ); WriteLn(fp);
 			Close(fp);
@@ -1580,6 +1601,18 @@ VAR
 								ClipInt( descr.channels.right, 1, 4 );
 								QTils.LogMsgEx( "attr #%d chRight=%d (%d)", VAL(INTEGER,attr_right), descr.channels.right, xmlErr );
 						END;
+			| element_transcoding,
+			element_transcodage :
+					xmlErr := QTils.GetStringAttribute( theElement, attr_codec, descr.codec );
+						IF (xmlErr <> attributeNotFound )
+							THEN
+								QTils.LogMsgEx( "attr #%d codec=%s (%d)", VAL(INTEGER,attr_codec), descr.codec, xmlErr );
+						END;
+					xmlErr := QTils.GetStringAttribute( theElement, attr_bitrate, descr.bitRate );
+						IF (xmlErr <> attributeNotFound )
+							THEN
+								QTils.LogMsgEx( "attr #%d bitRate=%s (%d)", VAL(INTEGER,attr_bitrate), descr.bitRate, xmlErr );
+						END;
 
 			| element_vodDesign :
 					(*
@@ -1655,6 +1688,34 @@ BEGIN
 	RETURN xmlErr;
 END FrequencyFromXMLElementAttributes;
 *)
+
+PROCEDURE GetCodecString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
+	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
+BEGIN
+	IF theElement.attributes^.identifier = attr_codec
+		THEN
+			Assign( theElement.attributes^.valueStr^, xmlVD.codec );
+			QTils.LogMsgEx( "> attr #%d %s=%s", VAL(INTEGER, attr_codec), designTable[designEntry].attributeTag,
+				xmlVD.codec );
+			RETURN noErr;
+		ELSE
+			RETURN paramErr;
+	END;
+END GetCodecString;
+
+PROCEDURE GetBitRateString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
+	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
+BEGIN
+	IF theElement.attributes^.identifier = attr_bitrate
+		THEN
+			Assign( theElement.attributes^.valueStr^, xmlVD.bitRate );
+			QTils.LogMsgEx( "> attr #%d %s=%s", VAL(INTEGER, attr_bitrate), designTable[designEntry].attributeTag,
+				xmlVD.bitRate );
+			RETURN noErr;
+		ELSE
+			RETURN paramErr;
+	END;
+END GetBitRateString;
 
 PROCEDURE ReadXMLDoc( fName : URLString; xmldoc : XMLDoc; VAR descr : VODDescription );
 VAR

@@ -72,7 +72,8 @@ typedef enum QTVODwinIDs {
 
 	ComponentResult callbackResult;
 
-	struct QTVOD *theQTVOD;
+//	struct QTVOD *theQTVOD;
+	id theQTVOD;
 
 @public
 	NSURL *theURL;
@@ -153,8 +154,8 @@ typedef enum QTVODwinIDs {
 - (void) removeMovieCallBack;
 - (void) installMovieCallBack;
 
-- (struct QTVOD*) getQTVOD;
-- (void) setQTVOD:(struct QTVOD*)it;
+- (id) getQTVOD;
+- (void) setQTVOD:(id)it;
 
 - (void) performClose:(id)sender;
 - (void) performCloseAll:(id)sender;
@@ -187,7 +188,8 @@ typedef enum QTVODwinIDs {
 @property QTMovieWindowH qtmwH;
 @property unsigned long ACSCcount;
 @property (retain) QTAMovieView *movieView;
-@property (getter=getQTVOD,setter=setQTVOD:) struct QTVOD *theQTVOD;
+//@property (getter=getQTVOD,setter=setQTVOD:) struct QTVOD *theQTVOD;
+@property (retain,getter=getQTVOD,setter=setQTVOD:) id theQTVOD;
 @property short addToRecentMenu;
 @end
 

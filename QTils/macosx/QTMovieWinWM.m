@@ -272,7 +272,7 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 			wi->theMC = nil;
 		}
 		if( wi->theURL ){
-			QTils_free( &(void*) wi->theURL);
+			QTils_free( (void**)&wi->theURL);
 			wi->theURL = NULL;
 		}
 		if( wi->dataRef ){

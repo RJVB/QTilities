@@ -79,7 +79,7 @@ static QTils_Allocators *__init_QTils_Allocator__( QTils_Allocators *qa,
 }
 
 QTils_Allocators *init_QTils_Allocator( void* (*mallocPtr)(size_t), void* (*callocPtr)(size_t,size_t),
-							    void* (*reallocPtr)(void*, size_t), void (*freePtr)(void *) )
+							    void* (*reallocPtr)(void*, size_t), void (*freePtr)(void **) )
 {
 	if( !QTils_Allocator ){
 		return __init_QTils_Allocator__( NULL, mallocPtr, callocPtr, reallocPtr, freePtr );
@@ -133,7 +133,7 @@ void QTils_free( char **mem )
 		__init_QTils_Allocator__( NULL, malloc, calloc, realloc, __QTils_free__ );
 	}
 	if( mem ){
-		QTils_Allocator->free(mem);
+		QTils_Allocator->free((void**)mem);
 		*mem = NULL;
 	}
 }
@@ -2616,14 +2616,14 @@ double GetMovieTimeResolution( Movie theMovie )
 // rate. the TCTrackInfo functions below provide an easy/simple interface to this feature.
 
 //#define xfree(x)	if((x)){ free((x)); (x)=NULL; }
-#define xfree(x)	QTils_free(&(x))
+#define xfree(x)	QTils_free((char**)&(x))
 
 static void *dispose_TCTrackInfo( void *ptr )
 { TCTrackInfo *info = (TCTrackInfo*) ptr, *ret = NULL;
 	if( info ){
-		xfree( (char*)info->StartTimes );
-		xfree( (char*)info->durations );
-		xfree( (char*)info->frames );
+		xfree( info->StartTimes );
+		xfree( info->durations );
+		xfree( info->frames );
 		xfree( info->theURL );
 		info->theTCTrack = nil;
 		ret = info->cdr;

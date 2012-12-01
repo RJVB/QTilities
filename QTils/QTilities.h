@@ -46,7 +46,7 @@ typedef struct QTils_Allocators {
 } QTils_Allocators;
 
 QTLSext QTils_Allocators *init_QTils_Allocator( void* (*mallocPtr)(size_t), void* (*callocPtr)(size_t,size_t),
-							    void* (*reallocPtr)(void*, size_t), void (*free)(void *) );
+							    void* (*reallocPtr)(void*, size_t), void (*free)(void **) );
 QTLSext extern QTils_Allocators *QTils_Allocator;
 QTLSext void *QTils_malloc( size_t s );
 QTLSext void *QTils_calloc( size_t n, size_t s );

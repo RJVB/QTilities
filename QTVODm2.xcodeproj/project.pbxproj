@@ -31,6 +31,7 @@
 		D65129FA12DDFACA00C0D5F8 /* TstSockS.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; lineEnding = 2; name = TstSockS.mod; path = ../../MSWin/Archisim/mod/TstSockS.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		D65129FB12DDFACA00C0D5F8 /* TstSockC.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; lineEnding = 2; name = TstSockC.mod; path = ../../MSWin/Archisim/mod/TstSockC.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		D65129FE12DDFC3700C0D5F8 /* TstQTVDSrv.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = TstQTVDSrv.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D66E547716696AB7007B45C1 /* VODdesign.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = VODdesign.xml; path = QTils/Mod2/VODdesign.xml; sourceTree = "<group>"; };
 		D68DAD9112DB66070035CCA9 /* QTVODcomm.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = QTVODcomm.mod; sourceTree = "<group>"; tabWidth = 2; };
 		D68DAD9212DB66070035CCA9 /* QTVODcomm.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = QTVODcomm.def; sourceTree = "<group>"; tabWidth = 2; };
 		D699F80A12BA189800E0C3D0 /* QTVODlib.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = QTVODlib.def; sourceTree = "<group>"; tabWidth = 2; };
@@ -48,6 +49,7 @@
 		08FB7794FE84155DC02AAC07 /* QTVODm2 */ = {
 			isa = PBXGroup;
 			children = (
+				D66E547716696AB7007B45C1 /* VODdesign.xml */,
 				D6FC74F613E1CC9E0042C46F /* make_archive.sh */,
 				D65129F812DDFA9C00C0D5F8 /* refs */,
 				D699F80912BA189800E0C3D0 /* def */,

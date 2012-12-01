@@ -1407,12 +1407,12 @@ static unsigned int fullScreenViews= 0;
 
 #include <unistd.h>
 
-- (void) setQTVOD:(struct QTVOD*)it
+- (void) setQTVOD:(id)it
 {
 	theQTVOD = it;
 }
 
-- (struct QTVOD*) getQTVOD
+- (id) getQTVOD
 {
 	return theQTVOD;
 }
@@ -1878,12 +1878,12 @@ static unsigned int fullScreenViews= 0;
 			}
 			else{
 				// createWithAbsoluteURL retains the assocDataFile for us
-				aDFile = [NSString stringWithString:@"*FromVODFile*"];
+				aDFile = @"*FromVODFile*";
 			}
 			qtVOD = [QTVOD createWithAbsoluteURL:absoluteURL ofType:typeName forDocument:self withAssocDataFile:aDFile error:outError];
 			if( qtVOD && !*outError ){
 				[qtVOD retain];
-				[self setQTVOD:(struct QTVOD*)qtVOD];
+				[self setQTVOD:qtVOD];
 				shouldBeInvisible = YES;
 			}
 		}

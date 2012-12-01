@@ -541,6 +541,7 @@ ErrCode GetStringAttribute_Mod2( XMLElement *element, UInt32 attributeID, char *
 	if( str ){
 		strncpy( theString, str, slen );
 		theString[slen-1] = '\0';
+//		Log( qtLogPtr, "GetStringAttribute_Mod2(): got \"%s\" -> '%s'[%d]\n", str, theString, slen );
 		QTils_free(&str);
 	}
 	return err;

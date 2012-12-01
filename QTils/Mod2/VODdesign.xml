@@ -22,4 +22,6 @@
 		pilote=2
 		gauche=3
 		droite=4 />
+	<transcoding.mp4
+		codec=copy />
 </vod.design>

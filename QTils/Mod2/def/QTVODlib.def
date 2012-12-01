@@ -8,7 +8,7 @@ FROM Chaussette IMPORT
 	sock_nulle, SOCK;
 
 FROM QTilsM2 IMPORT
-	QTMovieWindowH, Movie, Int32, Real64, ErrCode;
+	QTMovieWindowH, Movie, Int32, UInt32, Real64, ErrCode, XMLElement, XML_RECORD;
 
 FROM QTVODcomm IMPORT
 	(* ces types sont définis dans QTVODcomm.def pour ne pas obliger d'inclure QTVODlib
@@ -34,6 +34,11 @@ PROCEDURE ClipInt( VAR val : INTEGER; min, max : INTEGER );
 PROCEDURE ReadDefaultVODDescription( fName : URLString; VAR descr : VODDescription ) : ErrCode;
 PROCEDURE ScanForDefaultVODDescription( movie, fName : URLString; VAR descr : VODDescription ) : ErrCode;
 PROCEDURE CalcTimeInterval(reset, display : BOOLEAN);
+
+PROCEDURE GetCodecString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
+	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
+PROCEDURE GetBitRateString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
+	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
 
 (* test
 PROCEDURE FrequencyFromXMLElementAttributes( theElement : XMLElement; elm : UInt32;

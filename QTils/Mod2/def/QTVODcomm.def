@@ -21,16 +21,18 @@ TYPE
 			forward, pilot, left, right : INTEGER;
 		END;
 
+	URLString = ARRAY[0..1024] OF CHAR;
+
 	VODDescription	=
 		RECORD
 			frequency, scale : Real64;
 			timeZone : Real64;
 			DST, useVMGI, log, flipLeftRight : BOOLEAN;
 			channels : VODChannels;
+			codec, bitRate : URLString;
 		END;
 	VODDescriptionPtr = POINTER TO VODDescription;
 
-	URLString = ARRAY[0..1024] OF CHAR;
 	String256 = ARRAY[0..255] OF CHAR;
 	NetMessageClass =
 		(

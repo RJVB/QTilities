@@ -63,6 +63,8 @@ enum xmlItems { element_vodDesign = 1,
 	element_canaux = 8,
 	element_parsing = 9,
 	element_lecture = 10,
+	element_transcoding = 11,
+	element_transcodage = 12,
 	attr_freq = 1,
 	attr_scale = 2,
 	attr_forward = 4,
@@ -73,7 +75,10 @@ enum xmlItems { element_vodDesign = 1,
 	attr_dst = 12,
 	attr_flLR = 13,
 	attr_usevmgi = 14,
-	attr_log = 15 };
+	attr_log = 15,
+	attr_codec = 16,
+	attr_bitrate = 17
+ };
 
 VODDescription xmlVD;
 
@@ -107,7 +112,7 @@ VODDescription xmlVD;
 
 NSVODDescription *nsXMLVD = NULL;
 
-XML_Record xml_design_parser[30] = {
+XML_Record xml_design_parser[36] = {
 		{xml_element, "vod.design", element_vodDesign},
 		{xml_element, "frequency", element_frequency},
 			{xml_attribute, "fps", attr_freq, recordAttributeValueTypeDouble, &xmlVD.frequency},
@@ -137,7 +142,13 @@ XML_Record xml_design_parser[30] = {
 			{xml_attribute, "log", attr_log, recordAttributeValueTypeBoolean, &xmlVD.log},
 		{xml_element, "lecture", element_lecture},
 			{xml_attribute, "avecvmgi", attr_usevmgi, recordAttributeValueTypeBoolean, &xmlVD.useVMGI},
-			{xml_attribute, "journal", attr_log, recordAttributeValueTypeBoolean, &xmlVD.log}
+			{xml_attribute, "journal", attr_log, recordAttributeValueTypeBoolean, &xmlVD.log},
+		{xml_element, "transcoding.mp4", element_transcoding},
+			{xml_attribute, "codec", attr_codec, recordAttributeValueTypeCharString, &xmlVD.codec},
+			{xml_attribute, "bitrate", attr_bitrate, recordAttributeValueTypeCharString, &xmlVD.bitRate},
+		{xml_element, "transcodage.mp4", element_transcodage},
+			{xml_attribute, "codec", attr_codec, recordAttributeValueTypeCharString, &xmlVD.codec},
+			{xml_attribute, "taux", attr_bitrate, recordAttributeValueTypeCharString, &xmlVD.bitRate},
 };
 
 static BOOL recreateChannelViews;
@@ -885,7 +896,7 @@ BOOL addToRecentDocs = YES;
 
 - (void) register_windows
 { int i;
-  QTMovieWindowH tcWih = (TC)? TC.qtmwH : NULL;
+//  QTMovieWindowH tcWih = (TC)? TC.qtmwH : NULL;
 	for( i = 0 ; i < maxQTWM ; i++ ){
 		if( QTMWH(i) ){
 //			register_window( QTMWH(i), i, &Wpos[i], &Wsize[i] );
