@@ -43,7 +43,8 @@ Function .onInit
   SetAutoClose false
   SetRegView 32
   ReadRegStr $0 HKLM "SOFTWARE\Apple Computer, Inc.\QuickTime" "InstallDir"
-  IfErrors 0 +2
+  IfErrors 0 +3
+           MessageBox MB_ICONEXCLAMATION|MB_OK "QuickTime is required. http://www.apple.com/quicktime/download"
            Abort "QuickTime is required. http://www.apple.com/quicktime/download "
   StrCpy $QTDIR $0
   DetailPrint "QuickTime is installed in $QTDIR"
@@ -182,7 +183,7 @@ Section "Documentation" SEC03
   SetOutPath "$INSTDIR\Documentation"
   SetOverwrite ifnewer
   File /nonfatal "S:\MacOSX\QTilities\QTVODm2.pdf"
-  File /nonfatal "S:\MacOSX\QTImage2Mov\QTImage2Mov-v1.1.pdf"
+  File /nonfatal "S:\MacOSX\QTImage2Mov\QTImage2Mov-v1.2.pdf"
 SectionEnd
 
 Section "Monaco.ttf" SEC04

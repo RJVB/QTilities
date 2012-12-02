@@ -530,6 +530,16 @@ BEGIN
 					StrToInt( POSIX.Arg(arg), movieDescription.channels.right, convResult );
 					ClipInt( movieDescription.channels.right, 1, 4 );
 					QTils.LogMsgEx( "-chRight=%s -> %d", POSIX.Arg(arg), movieDescription.channels.right );
+			ELSIF ( Equal(POSIX.Arg(arg), "-fcodec") AND (arg < POSIX.argc-1) )
+				THEN
+					INC(arg);
+					Assign( POSIX.Arg(arg), movieDescription.codec );
+					QTils.LogMsgEx( "-fcodec=%s", movieDescription.codec );
+			ELSIF ( Equal(POSIX.Arg(arg), "-fbitrate") AND (arg < POSIX.argc-1) )
+				THEN
+					INC(arg);
+					Assign( POSIX.Arg(arg), movieDescription.bitRate );
+					QTils.LogMsgEx( "-fbitrate=%s", movieDescription.bitRate );
 			ELSE
 				Assign( POSIX.Arg(arg), movie );
 		END;
