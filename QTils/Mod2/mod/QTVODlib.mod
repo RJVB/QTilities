@@ -13,6 +13,9 @@ FROM WholeStr IMPORT
 FROM Strings IMPORT
 	Concat, Append, Delete, FindPrev, Assign, Equal, Length;
 
+FROM ExStrings IMPORT
+	Utf8ToAnsi;
+
 FROM Storage IMPORT
 	ALLOCATE, DEALLOCATE;
 
@@ -127,11 +130,11 @@ CONST
 				{xml_attribute, "journal", attr_log, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.log)},
 			{xml_element, "transcoding.mp4", element_transcoding},
 				(* on doit utiliser un XMLAttributeParseCallback pour lire des chaines de caractères *)
-				{xml_attribute, "codec", attr_codec, recordAttributeValueTypeCharString, _fn, GetCodecString },
-				{xml_attribute, "bitrate", attr_bitrate, recordAttributeValueTypeCharString, _fn, GetBitRateString},
+				{xml_attribute, "codec", attr_codec, recordAttributeValueTypeCharString, _fn, GetXMLParamString },
+				{xml_attribute, "bitrate", attr_bitrate, recordAttributeValueTypeCharString, _fn, GetXMLParamString},
 			{xml_element, "transcodage.mp4", element_transcodage},
-				{xml_attribute, "codec", attr_codec, recordAttributeValueTypeCharString, _fn, GetCodecString},
-				{xml_attribute, "taux", attr_bitrate, recordAttributeValueTypeCharString, _fn, GetBitRateString}
+				{xml_attribute, "codec", attr_codec, recordAttributeValueTypeCharString, _fn, GetXMLParamString},
+				{xml_attribute, "taux", attr_bitrate, recordAttributeValueTypeCharString, _fn, GetXMLParamString}
 	};
 
 
@@ -240,6 +243,8 @@ BEGIN
 					END;
 					IF err = noErr
 						THEN
+							(* QuickTime MetaData est en format UTF8 *)
+							Utf8ToAnsi( theMD^, theMD^, '*' );
 							QTils.LogMsgEx( "appendMetaData(): %s%s", keyDescr, theMD^ );
 							allStrPtr := appendString2StringPtr( allStrPtr, keyDescr );
 							allStrPtr := appendString2StringPtr( allStrPtr, theMD^ );
@@ -1277,6 +1282,7 @@ BEGIN
 			END;
 	END;
 
+(*
 	IF fullMovie <> NIL
 		THEN
 			fullMovieWMH := QTils.OpenQTMovieWindowWithMovie( fullMovie, fName, 1 );
@@ -1285,6 +1291,7 @@ BEGIN
 					ShowWindow( fullMovieWMH^^.theView, SW_MINIMIZE );
 			END;
 	END;
+*)
 
 	(* maintenant on peut tenter d'ouvrir les 5 fenêtres *)
 	(* vue vers l'avant *)
@@ -1301,11 +1308,6 @@ BEGIN
 			description.scale, fName );
 	(* la piste TimeCode qui donne le temps pour les 4 vues *)
 	qtwmH[tcWin] := CreateChannelView( URL, description, TimeCodeChannel, "TC", 1.0, fName );
-
-	(*
-		test!
-	QTils.MovieAddChapter( fullMovie, 0, "voici la moitié", qtwmH[tcWin]^^.info^.duration/2.0, 0.0 );
-	*)
 
 	(* enregistrement des fonctions de gestion d'actions et MAJ de numQTMW *)
 	FOR w := 0 TO maxQTWM	DO
@@ -1689,20 +1691,24 @@ BEGIN
 END FrequencyFromXMLElementAttributes;
 *)
 
-PROCEDURE GetCodecString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
+PROCEDURE GetXMLParamString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
 	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
 BEGIN
-	IF theElement.attributes^.identifier = attr_codec
-		THEN
-			Assign( theElement.attributes^.valueStr^, xmlVD.codec );
-			QTils.LogMsgEx( "> attr #%d %s=%s", VAL(INTEGER, attr_codec), designTable[designEntry].attributeTag,
-				xmlVD.codec );
-			RETURN noErr;
+	CASE theElement.attributes^.identifier OF
+		attr_codec :
+				Assign( theElement.attributes^.valueStr^, xmlVD.codec );
+		| attr_bitrate :
+				Assign( theElement.attributes^.valueStr^, xmlVD.bitRate );
 		ELSE
 			RETURN paramErr;
 	END;
-END GetCodecString;
+	QTils.LogMsgEx( "> attr #%d %s=%s",
+		VAL(INTEGER, theElement.attributes^.identifier), designTable[designEntry].attributeTag,
+		theElement.attributes^.valueStr^ );
+	RETURN noErr;
+END GetXMLParamString;
 
+(*
 PROCEDURE GetBitRateString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
 	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
 BEGIN
@@ -1716,6 +1722,7 @@ BEGIN
 			RETURN paramErr;
 	END;
 END GetBitRateString;
+*)
 
 PROCEDURE ReadXMLDoc( fName : URLString; xmldoc : XMLDoc; VAR descr : VODDescription );
 VAR

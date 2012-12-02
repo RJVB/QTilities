@@ -35,9 +35,7 @@ PROCEDURE ReadDefaultVODDescription( fName : URLString; VAR descr : VODDescripti
 PROCEDURE ScanForDefaultVODDescription( movie, fName : URLString; VAR descr : VODDescription ) : ErrCode;
 PROCEDURE CalcTimeInterval(reset, display : BOOLEAN);
 
-PROCEDURE GetCodecString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
-	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
-PROCEDURE GetBitRateString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
+PROCEDURE GetXMLParamString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
 	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
 
 (* test
