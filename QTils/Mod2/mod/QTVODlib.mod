@@ -41,7 +41,10 @@ FROM WINUSER IMPORT
 	SetWindowPos, HWND_BOTTOM, HWND_TOP, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE,
 	ShowWindow, SW_HIDE, SW_MINIMIZE;
 FROM COMMDLG IMPORT
-	OPENFILENAME, GetOpenFileName, OFN_FILEMUSTEXIST, OFN_NOCHANGEDIR;
+	OPENFILENAME, GetOpenFileName, OFN_FILEMUSTEXIST, OFN_NOCHANGEDIR, OFN_EXPLORER, OFN_ENABLETEMPLATE;
+
+FROM WIN32 IMPORT
+	LARGE_INTEGER, QueryPerformanceFrequency, QueryPerformanceCounter;
 
 %IF CHAUSSETTE2 %THEN
 FROM Chaussette2 IMPORT
@@ -152,8 +155,33 @@ VAR
 	xmlParser : ComponentInstance;
 	xmldoc : XMLDoc;
 	sqrt2 : Real64;
+	HPCcalibrator : Real64;
 	TCwindowNr : Int32;
 	recreateChannelViews : BOOLEAN;
+
+PROCEDURE InitHRTime();
+VAR
+	HPCval : LARGE_INTEGER;
+BEGIN
+	IF QueryPerformanceFrequency(HPCval)
+		THEN
+			HPCcalibrator := 1.0 / VAL(Real64, HPCval);
+		ELSE
+			HPCcalibrator := 0.0;
+	END;
+END InitHRTime;
+
+PROCEDURE HRTime() : Real64;
+VAR
+	HPCval : LARGE_INTEGER;
+BEGIN
+	IF QueryPerformanceCounter(HPCval)
+		THEN
+			RETURN VAL(Real64,HPCval) * HPCcalibrator;
+		ELSE
+			RETURN -1.0;
+	END;
+END HRTime;
 
 PROCEDURE SetTimes( t : Real64; ref : QTMovieWindowH; absolute : Int32 );
 VAR
@@ -375,6 +403,18 @@ BEGIN
 	END;
 END StartVideo;
 
+PROCEDURE StepVideo(excl : QTMovieWindowH ; steps : Int32);
+VAR
+	w : CARDINAL;
+BEGIN
+	FOR w := 0 TO maxQTWM DO
+		IF qtwmH[w] <> excl
+			THEN
+				QTils.QTMovieWindowStepNext(qtwmH[w], steps);
+		END;
+	END;
+END StepVideo;
+
 PROCEDURE movieStart(wih : QTMovieWindowH; params : ADDRESS ) : Int32 [CDECL];
 VAR
 	msg : NetMessage;
@@ -460,41 +500,112 @@ BEGIN
 	END;
 END SetWindowLayer;
 
+PROCEDURE BenchmarkPlaybackRate;
+BEGIN
+	WITH theTimeInterVal DO
+		IF (NOT benchMarking) AND (NOT wasBenchMarking)
+			THEN
+				StopVideo(NULL_QTMovieWindowH);
+				benchMarking := TRUE;
+				CalcTimeInterval( TRUE, FALSE );
+				wallTimeLapse := HRTime();
+			ELSIF (benchMarking) OR (wasBenchMarking)
+				THEN
+					wallTimeLapse := HRTime() - wallTimeLapse;
+					benchMarking := TRUE;
+					CalcTimeInterval( FALSE, TRUE );
+					benchMarking := FALSE;
+					wasBenchMarking := FALSE;
+		END;
+	END;
+END BenchmarkPlaybackRate;
+
 PROCEDURE CalcTimeInterval(reset, display : BOOLEAN);
 VAR
 	t : Real64;
-	msgStr : ARRAY[0..2047] OF CHAR;
+	msgStr : String1kPtr;
+	err : ErrCode;
+	startSample, endSample : Int32;
+	w : CARDINAL;
 BEGIN
 	IF QTils.QTMovieWindowH_isOpen(qtwmH[tcWin]) AND (QTils.QTMovieWindowGetTime(qtwmH[tcWin], t, 0) = noErr)
 		THEN
-			WITH theTimeInterVal DO
-				IF (timeA < 0.0) OR reset
-					THEN
-						timeA := t;
-						Assign("",timeStampA);
-						QTils.FindTimeStampInMovieAtTime( qtwmH[tcWin]^^.theMovie, t, timeStampA );
-						timeB := -1.0;
-					ELSIF timeB < 0.0
+			w := tcWin;
+		ELSIF QTils.QTMovieWindowH_isOpen(qtwmH[fwWin]) AND (QTils.QTMovieWindowGetTime(qtwmH[fwWin], t, 0) = noErr)
+			THEN
+				w := fwWin;
+		ELSE
+			PostMessage( "Erreur", "la fenêtre 'TC' ou la fenêtre 'forward' doit être ouverte pour cette fonction!" );
+			RETURN;
+	END;
+	WITH theTimeInterVal DO
+		IF (timeA < 0.0) OR reset
+			THEN
+				timeA := t;
+				Assign("",timeStampA);
+				QTils.FindTimeStampInMovieAtTime( qtwmH[w]^^.theMovie, t, timeStampA );
+				timeB := -1.0;
+			ELSIF timeB < 0.0
+				THEN
+					timeB := t;
+					Assign("",timeStampB);
+					QTils.FindTimeStampInMovieAtTime( qtwmH[w]^^.theMovie, t, timeStampB );
+					dt := timeB - timeA;
+					IF display
 						THEN
-							timeB := t;
-							Assign("",timeStampB);
-							QTils.FindTimeStampInMovieAtTime( qtwmH[tcWin]^^.theMovie, t, timeStampB );
-							dt := timeB - timeA;
-							IF display
+							msgStr := NIL;
+							IF benchMarking
 								THEN
-									QTils.sprintf( msgStr,
+									IF fullMovie <> NIL
+										THEN
+											err := QTils.SampleNumberAtMovieTime( fullMovie, 0, timeA, startSample );
+											IF err <> noErr
+												THEN
+													QTils.LogMsgEx( "Erreur %d pour obtenir l'échantillon @ t=%gs",
+														err, timeA );
+													startSample := 0;
+											END;
+											err := QTils.SampleNumberAtMovieTime( fullMovie, 0, timeB, endSample );
+											IF err <> noErr
+												THEN
+													QTils.LogMsgEx( "Erreur %d pour obtenir l'échantillon @ t=%gs",
+														err, timeB );
+													endSample := 0;
+											END;
+										ELSE
+											startSample := 0; endSample := 0;
+									END;
+									QTils.ssprintf( msgStr, "Test de lecture à vitesse maximale:\n"+
+											"début: t=%gs (vidéo), '%s'\n"+
+											"fin: t=%gs (vidéo), '%s'\n"+
+											"intervalle = %gs\n"+
+											"durée réelle = %gs\n"+
+											"\n%g fois temps réel\n",
+												timeA, timeStampA,
+												timeB, timeStampB,
+												dt, wallTimeLapse, dt / wallTimeLapse
+									);
+									IF startSample < endSample
+										THEN
+											QTils.ssprintfAppend( msgStr, "taux observé = %gHz\n",
+												VAL(Real64, (endSample - startSample)) / wallTimeLapse );
+									END;
+									PostMessage( "Résultat benchmark", msgStr^ );
+								ELSE
+									QTils.ssprintf( msgStr,
 										"A: t=%gs, '%s'\n"+
 										"B: t=%gs, '%s'\n"+
 										"\nB-A = %gs\n",
 											timeA, timeStampA, timeB, timeStampB, dt
 									);
-									PostMessage( "Intervalle temporel", msgStr );
+									PostMessage( "Intervalle temporel", msgStr^ );
 							END;
-							timeA := timeB;
-							Assign( timeStampB, timeStampA );
-							timeB := -1.0;
-				END;
-			END;
+							QTils.free(msgStr);
+					END;
+					timeA := timeB;
+					Assign( timeStampB, timeStampA );
+					timeB := -1.0;
+		END;
 	END;
 END CalcTimeInterval;
 
@@ -530,6 +641,8 @@ BEGIN
 				PlaceWindows( ULCorner, sqrt2 );
 		| 't', 'T':
 				CalcTimeInterval(FALSE, TRUE);
+		| '0':
+				BenchmarkPlaybackRate();
 		| 'p', 'P':
 				IF QTils.QTMovieWindowH_isOpen(qtwmH[pilotWin])
 					THEN
@@ -546,7 +659,7 @@ END movieKeyUp;
 PROCEDURE register_window( AqtwmH : ARRAY OF QTMovieWindowH; w : CARDINAL );
 VAR
 	qtwmH : QTMovieWindowH;
-	err : ErrCode;
+	err, err2 : ErrCode;
 BEGIN
 	qtwmH := AqtwmH[w];
 	IF QTils.QTMovieWindowH_Check(qtwmH)
@@ -568,7 +681,12 @@ BEGIN
 			err := QTils.QTMovieWindowGetGeometry( qtwmH, ADR(Wpos[w]), ADR(Wsize[w]), 1 );
 			IF (AqtwmH[fwWin] <> NULL_QTMovieWindowH) AND (w <> fwWin)
 				THEN
-					QTils.SlaveMovieToMasterMovie( qtwmH^^.theMovie, AqtwmH[fwWin]^^.theMovie );
+					err2 := QTils.SlaveMovieToMasterMovie( qtwmH^^.theMovie, AqtwmH[fwWin]^^.theMovie );
+					IF err2 <> noErr
+						THEN
+							QTils.LogMsgEx( "register_window(%d): SlaveMovieToMasterMovie(fwWin) a retourné erreur %d",
+								w, err2 );
+					END;
 			END;
 			numQTWM := numQTWM + 1;
 	END;
@@ -801,11 +919,11 @@ BEGIN
 			IF Length(description.codec) > 0
 				THEN
 					WriteLn(fp); WriteChar( fp, tabChar );
-					WriteString( fp, "fcodec=" );
+					WriteString( fp, " fcodec=" );
 					WriteString( fp, description.codec );
 					IF Length(description.bitRate) > 0
 						THEN
-							WriteString( fp, "fbitrate=" );
+							WriteString( fp, " fbitrate=" );
 							WriteString( fp, description.bitRate );
 					END;
 			END;
@@ -1049,7 +1167,7 @@ BEGIN
 										THEN
 											QTils.LogMsgEx( "Echec d'importation: %s (%s)\n%s\n", errString, errComment, qi2mString^ );
 										ELSE
-											QTils.LogMsgEx( "Echec d'importation %d\n%s\n", QTils.LastQTError(), qi2mString );
+											QTils.LogMsgEx( "Echec d'importation %d\n%s\n", QTils.LastQTError(), qi2mString^ );
 									END;
 									PostMessage( fName, QTils.lastSSLogMsg^ );
 									QTils.DisposeMemoryDataRef(memRef);
@@ -1126,7 +1244,7 @@ BEGIN
 	RETURN (QTils.HasMovieChanged(theMovie) <> 0);
 END PrepareChannelCacheMovie;
 
-PROCEDURE AskFileName( title : ARRAY OF CHAR; VAR fileName : ARRAY OF CHAR ) : BOOLEAN;
+PROCEDURE GetFileName( title : ARRAY OF CHAR; VAR fileName : ARRAY OF CHAR ) : BOOLEAN;
 VAR
 	lp : OPENFILENAME;
 BEGIN
@@ -1140,14 +1258,15 @@ BEGIN
 	lp.lpstrFile := ADR(fileName);
 	lp.nMaxFile := SIZE(fileName);
 	lp.lpstrTitle := ADR(title);
-	lp.Flags := OFN_FILEMUSTEXIST BOR OFN_NOCHANGEDIR;
+	lp.lpTemplateName := ADR("VODdesign");
+	lp.Flags := OFN_FILEMUSTEXIST BOR OFN_NOCHANGEDIR BOR OFN_EXPLORER;
 	IF GetOpenFileName(lp)
 		THEN
 			RETURN TRUE;
 		ELSE
 			RETURN FALSE;
 	END;
-END AskFileName;
+END GetFileName;
 
 PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription ) : ErrCode;
 VAR
@@ -1171,7 +1290,7 @@ BEGIN
 			END;
 *)
 			(* on essaie d'obtenir un nom de fichier de l'utilisateur *)
-			AskFileName( "Merci de choisir un fichier vidéo", fName );
+			GetFileName( "Merci de choisir un fichier vidéo", fName );
 			(* ce qui nous intéresse surtout est de savoir si on a reçu un nom de fichier *)
 			IF ( LENGTH(fName) > 0 )
 				THEN
@@ -1881,6 +2000,7 @@ BEGIN
 	baseDescription.useVMGI := TRUE;
 	baseDescription.log := FALSE;
 	fullMovieWMH := NULL_QTMovieWindowH;
+	InitHRTime();
 
 FINALLY
 

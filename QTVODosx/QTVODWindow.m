@@ -830,6 +830,13 @@ BOOL doingAll = NO;
 	}
 }
 
+- (void)setPBAllToState:(BOOL)state
+{ QTMovie *m= (inFullscreen)? [fullscreenMovieView movie] : [movieView movie];
+	playAllFrames= (state)? NSOnState : NSOffState;
+	[m setAttribute:[NSNumber numberWithBool:state] forKey:QTMoviePlaysAllFramesAttribute];
+	[self updateMenus];
+}
+
 - (void)setPBAll:sender
 { QTMovie *m= (inFullscreen)? [fullscreenMovieView movie] : [movieView movie];
 	playAllFrames= ( [[m attributeForKey:QTMoviePlaysAllFramesAttribute] boolValue] )? NSOnState : NSOffState;
@@ -2511,6 +2518,7 @@ static pascal Boolean QTActionCallBack( MovieController mc, short action, void* 
 				mydoc->wasScanned = TRUE;
 			}
 			mcFeedBack( mydoc, "GoToTime" );
+			[mydoc UpdateDrawer];
 			if( mydoc->wasStepped < 0 ){
 				mydoc->wasStepped = FALSE;
 			}

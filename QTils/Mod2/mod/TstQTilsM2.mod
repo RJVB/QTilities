@@ -55,7 +55,7 @@ VAR
 	qtwmPtr : QTMovieWindowPtr;
 	qtwmH, qtwmH2, qtwmH3 : QTMovieWindowH;
 	err : ErrCode;
-	n, ljumps : Int32;
+	n, ljumps, dumInt : Int32;
 	theMovie : Movie;
 	nTracks : Int32;
 	t : Real64;
@@ -757,7 +757,9 @@ BEGIN
 				END;
 				IF isPlayable(qtwmH2)
 					THEN
-						SetMoviePlayHints( qtwmH2^^.theMovie, hintsPlayingEveryFrame, 1 );
+						(*SetMoviePlayHints( qtwmH2^^.theMovie, hintsPlayingEveryFrame, 1 );*)
+						QTMovieWindowSetPlayAllFrames( qtwmH2, 1, dumInt );
+						QTMovieWindowSetPreferredRate( qtwmH2, 1000, dumInt );
 						QTMovieWindowPlay(qtwmH2);
 				END;
 				IF isPlayable(qtwmH3)

@@ -1,6 +1,7 @@
 MODULE QTVODm2;
 
 <*/resource:QTVODm2.res*>
+<*/VALIDVERSION:QTVOD_TESTING*>
 
 %IF StonyBrook %AND %NOT(LINUX) %THEN
 	FROM SYSTEM IMPORT
@@ -553,6 +554,42 @@ BEGIN
 *)
 END ParseArgs;
 
+%IF QTVOD_TESTING %THEN
+PROCEDURE test23();
+VAR
+	t : Real64;
+BEGIN
+	IF (qtwmH[fwWin] <> NULL_QTMovieWindowH)
+		THEN
+			WHILE( QTils.QTMovieWindowStepNext( qtwmH[fwWin], 1 ) = noErr ) DO
+				IF QTils.QTMovieWindowGetTime(qtwmH[fwWin], t, 0) = noErr
+					THEN
+						SetTimes( t, qtwmH[fwWin], 0 );
+				END;
+				QTils.PumpMessages(0);
+			END;
+			SetTimes( 0.0, NULL_QTMovieWindowH, 0 );
+	END;
+END test23;
+%END
+
+PROCEDURE BenchmarkStep;
+VAR
+	t : Real64;
+BEGIN
+	IF QTils.QTMovieWindowStepNext( qtwmH[fwWin], 1 ) = noErr
+		THEN
+			IF QTils.QTMovieWindowGetTime(qtwmH[fwWin], t, 0) = noErr
+				THEN
+					SetTimes( t, qtwmH[fwWin], 0 );
+			END;
+		QTils.PumpMessages(0);
+	ELSE
+		(* probably reached end of movie, but we stop benchmarking on any other error too *)
+		BenchmarkPlaybackRate;
+	END;
+END BenchmarkStep;
+
 (* ==================================== BEGIN ==================================== *)
 BEGIN
 %IF StonyBrook %AND %NOT(LINUX) %THEN
@@ -667,12 +704,20 @@ BEGIN
 					numQTWM := -1;
 			END;
 
+%IF QTVOD_TESTING %THEN
+			(* test *)
+			test23();
+%END
+
 			(* on traite les évenements tant qu'au moins 1 des fenêtres reste ouverte: *)
 			QTils.LogMsg( "entrée de la boucle principale" );
 			n := 0; l:= 0; m := 0;
 			msgTimer := StartTimeEx();
 			WHILE ( (numQTWM <> 0) AND (NOT quitRequest) ) DO
-				IF ( sServeur <> sock_nulle )
+				IF (theTimeInterVal.benchMarking) AND (qtwmH[fwWin] <> NULL_QTMovieWindowH)
+					THEN
+						BenchmarkStep();
+				ELSIF ( sServeur <> sock_nulle )
 					THEN
 
 						(* le callback pour l'action Idle n'est installée qu'une seule fois, pour la vu 'forward',

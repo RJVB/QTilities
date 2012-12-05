@@ -774,6 +774,70 @@ NativeWindowH NativeWindowHFromQTMovieWindowH( QTMovieWindowH wi )
 	}
 }
 
+ErrCode QTMovieWindowSetPlayAllFrames( QTMovieWindowH WI, int onoff, int *curState )
+{ QTMovieWindowPtr wi;
+  ErrCode err = paramErr;
+  unsigned char AllF;
+	if( QTMovieWindowH_Check(WI) ){
+		wi = *WI;
+		if( curState ){
+		  char *allf = NULL;
+		  size_t allfSize = 0;
+			if( (err = GetUserDataFromMovie( wi->theMovie, (void**) &allf, &allfSize, 'AllF' )) == noErr ){
+				*curState = *allf;
+				QTils_free(&allf);
+			}
+			else{
+				QTils_free(&allf);
+				if( err != userDataItemNotFound ){
+					goto bail;
+				}
+				else{
+					*curState = -1;
+				}
+			}
+		}
+		AllF = (onoff)? 1 : 0;
+		err = AddUserDataToMovie( wi->theMovie, &AllF, 1, 'AllF', 1 );
+		{ Track theTrack;
+		  long tracks = GetMovieTrackCount(wi->theMovie), idx;
+		  long trackHints;
+		  long ignore1, ignore2, ignore3;
+			for( idx = 0 ; idx < tracks ; idx++ ){
+				if( (theTrack = GetMovieIndTrack( wi->theMovie, idx )) ){
+					GetTrackLoadSettings( theTrack, &ignore1, &ignore2, &ignore3, &trackHints );
+					if( onoff ){
+						trackHints |= hintsPlayingEveryFrame;
+					}
+					else{
+						trackHints &= ~hintsPlayingEveryFrame;
+					}
+					SetTrackLoadSettings( theTrack, ignore1, ignore2, ignore3, trackHints );
+					SetMediaPlayHints( GetTrackMedia(theTrack), trackHints, hintsPlayingEveryFrame );
+				}
+			}
+		}
+		UpdateMovie(wi->theMovie);
+	}
+bail:
+	return err;
+}
+
+ErrCode QTMovieWindowSetPreferredRate( QTMovieWindowH WI, int rate, int *curRate )
+{ QTMovieWindowPtr wi;
+  ErrCode err = paramErr;
+	if( QTMovieWindowH_Check(WI) ){
+		wi = *WI;
+		if( curRate ){
+			*curRate = Fix2Long( GetMoviePreferredRate(wi->theMovie) );
+		}
+		SetMoviePreferredRate( wi->theMovie, Long2Fix(rate) );
+		err = GetMoviesError();
+	}
+bail:
+	return err;
+}
+
 /*!
 	returns the current time (in seconds) for the given open movie window
 	in either relative mode (since movie start) or in absolute units (wall clock time).
@@ -841,67 +905,90 @@ ErrCode QTMovieWindowGetFrameTime( QTMovieWindowH wih, MovieFrameTime *ft, int a
 /*!
 	set the time: displaces the cursor to the specified moment.
  */
-ErrCode QTMovieWindowSetTime( QTMovieWindowH wih, double t, int absolute )
+static ErrCode QTMovieWindowSetTimeChecked( QTMovieWindowH wih, double t, int absolute, TimeValue *useThisTime )
 { QTMovieWindowPtr wi;
   ErrCode err;
-	if( QTMovieWindowH_Check(wih) ){
-	  TimeRecord trec;
-		wi = *wih;
-		if( absolute && (*wih)->theTCTrack ){
-		  // there's a TimeCode Track of the proper format:
-		  long frame;
-		  TimeCodeRecord tcrec;
+  TimeRecord trec;
+	wi = *wih;
+	if( absolute && (*wih)->theTCTrack ){
+	  // there's a TimeCode Track of the proper format:
+	  long frame;
+	  TimeCodeRecord tcrec;
 #ifdef DEBUG
-			secondsToFrameTime( wi->info->duration, wi->info->TCframeRate, &tcrec.t );
-			err = (ErrCode) TCTimeCodeToFrameNumber( wi->theTCMediaH, &(wi->tcdef), &tcrec, &frame );
+		secondsToFrameTime( wi->info->duration, wi->info->TCframeRate, &tcrec.t );
+		err = (ErrCode) TCTimeCodeToFrameNumber( wi->theTCMediaH, &(wi->tcdef), &tcrec, &frame );
 #endif
-			secondsToFrameTime( t, wi->theInfo.TCframeRate, &tcrec.t );
-			err = (ErrCode) TCTimeCodeToFrameNumber( wi->theTCMediaH, &(wi->tcdef), &tcrec, &frame );
-			if( err == noErr ){
+		secondsToFrameTime( t, wi->theInfo.TCframeRate, &tcrec.t );
+		err = (ErrCode) TCTimeCodeToFrameNumber( wi->theTCMediaH, &(wi->tcdef), &tcrec, &frame );
+		if( err == noErr ){
 #ifdef DEBUG
-			  double t2;
-				frame -= wi->info->startFrameNr;
-				// 20110107: should we use TCframeRate or frameRate?!
-				wi->theInfo.TCframeRate = ((double)wi->tcdef.fTimeScale) / ((double)wi->tcdef.frameDuration);
-				t2 = ((double) frame) / wi->theInfo.TCframeRate;
-				t -= wi->info->startTime;
-				t = t2;
+		  double t2;
+			frame -= wi->info->startFrameNr;
+			// 20110107: should we use TCframeRate or frameRate?!
+			wi->theInfo.TCframeRate = ((double)wi->tcdef.fTimeScale) / ((double)wi->tcdef.frameDuration);
+			t2 = ((double) frame) / wi->theInfo.TCframeRate;
+			t -= wi->info->startTime;
+			t = t2;
 #else
-				wi->theInfo.TCframeRate = ((double)wi->tcdef.fTimeScale) / ((double)wi->tcdef.frameDuration);
-				t = (double)(frame - wi->info->startFrameNr) / wi->theInfo.TCframeRate;
+			wi->theInfo.TCframeRate = ((double)wi->tcdef.fTimeScale) / ((double)wi->tcdef.frameDuration);
+			t = (double)(frame - wi->info->startFrameNr) / wi->theInfo.TCframeRate;
 #endif
-			}
 		}
-		// call GetMovieTime() to initialise the trec structure
+	}
+	// call GetMovieTime() to initialise the trec structure
+	if( useThisTime ){
+		err = noErr;
+	}
+	else{
 		GetMovieTime( wi->theMovie, &trec );
 		err = GetMoviesError();
-		if( err == noErr ){
-			// trec.value is a 'wide', a structure containing a lo and a high int32 variable.
-			// set it by casting to an int64 because that's the underlying intention ...
-			// NB: we could use SetMovieTimeValue here and pass the time as a 32bit TimeValue
-			// using a 64bit interface might have advantages.
-			*( (SInt64*)&(trec.value) ) = (SInt64)( t * wi->theInfo.timeScale + 0.5 );
+	}
+	if( err == noErr ){
+		// trec.value is a 'wide', a structure containing a lo and a high int32 variable.
+		// set it by casting to an int64 because that's the underlying intention ...
+		// NB: we could use SetMovieTimeValue here and pass the time as a 32bit TimeValue
+		// using a 64bit interface might have advantages.
 #if TARGET_OS_WIN32
-			SetMovieTime( wi->theMovie, &trec );
-			err = GetMoviesError();
-			UpdateMovie( wi->theMovie );
-			PortChanged( (GrafPtr) GetNativeWindowPort(wi->theView) );
-			if( wi->theMC ){
-				MCMovieChanged( wi->theMC, wi->theMovie );
-				if( !MCIdle(wi->theMC) ){
-					MCDraw(wi->theMC, (WindowRef) GetNativeWindowPort(wi->theView) );
-				}
-			}
-#else
-			{ extern void SetQTMovieTime( struct NSQTMovieWindow *theNSQTMovieWindow, TimeRecord *trec );
-				SetQTMovieTime( wi->theNSQTMovieWindow, &trec );
-				err = GetMoviesError();
-				UpdateMovie(wi->theMovie);
-			}
-#endif
-			MoviesTask( wi->theMovie, 0L );
-			QTWMflush();
+		if( useThisTime ){
+			SetMovieTimeValue( wi->theMovie, *useThisTime );
 		}
+		else{
+			*( (SInt64*)&(trec.value) ) = (SInt64)( t * wi->theInfo.timeScale + 0.5 );
+			SetMovieTime( wi->theMovie, &trec );
+		}
+		err = GetMoviesError();
+		UpdateMovie( wi->theMovie );
+		PortChanged( (GrafPtr) GetNativeWindowPort(wi->theView) );
+		if( wi->theMC ){
+			MCMovieChanged( wi->theMC, wi->theMovie );
+			if( !MCIdle(wi->theMC) ){
+				MCDraw(wi->theMC, (WindowRef) GetNativeWindowPort(wi->theView) );
+			}
+		}
+#else
+		{ extern void SetQTMovieTime( struct NSQTMovieWindow *theNSQTMovieWindow, TimeRecord *trec );
+		  extern void SetQTMovieTimeValue( struct NSQTMovieWindow *theNSQTMovieWindow, TimeValue tVal, TimeValue tScale );
+			if( useThisTime ){
+				SetQTMovieTimeValue( wi->theNSQTMovieWindow, *useThisTime, wi->theInfo.timeScale );
+			}
+			else{
+				*( (SInt64*)&(trec.value) ) = (SInt64)( t * wi->theInfo.timeScale + 0.5 );
+				SetQTMovieTime( wi->theNSQTMovieWindow, &trec );
+			}
+			err = GetMoviesError();
+			UpdateMovie(wi->theMovie);
+		}
+#endif
+		MoviesTask( wi->theMovie, 0L );
+		QTWMflush();
+	}
+	return err;
+}
+
+ErrCode QTMovieWindowSetTime( QTMovieWindowH wih, double t, int absolute )
+{ ErrCode err;
+	if( QTMovieWindowH_Check(wih) ){
+		err = QTMovieWindowSetTimeChecked( wih, t, absolute, NULL );
 	}
 	else{
 		err = paramErr;
@@ -931,16 +1018,39 @@ ErrCode QTMovieWindowSetFrameTime( QTMovieWindowH wih, MovieFrameTime *ft, int a
 #ifdef DEBUG
 				t = FTTS(ft, wi->info->TCframeRate) - wi->info->startTime;
 #endif
-				err = QTMovieWindowSetTime( wih, t2, FALSE );
+				err = QTMovieWindowSetTimeChecked( wih, t2, FALSE, NULL );
 			}
 		}
 		else{
 			t = FTTS(ft, (*wih)->theInfo.frameRate);
-			err = QTMovieWindowSetTime( wih, t, absolute );
+			err = QTMovieWindowSetTimeChecked( wih, t, absolute, NULL );
 		}
 	}
 	return err;
 }
 
+ErrCode QTMovieWindowStepNext( QTMovieWindowH wih, int steps )
+{ QTMovieWindowPtr wi;
+  ErrCode err;
+	if( QTMovieWindowH_Check(wih) ){
+	  TimeValue nextTime;
+	  static OSType types[1] = {VisualMediaCharacteristic};
+		wi = *wih;
+		GetMovieNextInterestingTime( wi->theMovie, nextTimeStep, 1, types,
+							   GetMovieTime(wi->theMovie, NULL), Long2Fix(steps), &nextTime, NULL );
+		if( (err = GetMoviesError()) == noErr ){
+			if( nextTime >= 0 ){
+				err = QTMovieWindowSetTimeChecked( wih, 0, 0, &nextTime );
+			}
+			else{
+				err = invalidTime;
+			}
+		}
+	}
+	else{
+		err = paramErr;
+	}
+	return err;
+}
 
 #endif // !QTMOVIESINK

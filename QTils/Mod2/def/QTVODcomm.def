@@ -80,8 +80,10 @@ TYPE
 
 	TIME_INTERVAL =
 		RECORD
-			timeA, timeB, dt : Real64;
+			timeA, timeB, dt,
+				fps, wallTimeLapse : Real64;
 			timeStampA, timeStampB : ARRAY[0..255] OF CHAR;
+			benchMarking, wasBenchMarking : BOOLEAN;
 	END;
 
 PROCEDURE InitCommClient(

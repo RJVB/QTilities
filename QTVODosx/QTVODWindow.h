@@ -132,6 +132,7 @@ typedef enum QTVODwinIDs {
 - (void)goPosterFrameAll:sender;
 - (void)goBeginningAll:sender;
 
+- (void)setPBAllToState:(BOOL)state;
 - (void)setPBAll:sender;
 - (void)setAllPBAll:sender;
 - (void)setLoop:sender;

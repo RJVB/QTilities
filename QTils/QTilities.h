@@ -51,7 +51,8 @@ QTLSext extern QTils_Allocators *QTils_Allocator;
 QTLSext void *QTils_malloc( size_t s );
 QTLSext void *QTils_calloc( size_t n, size_t s );
 QTLSext void *QTils_realloc( void* mem, size_t size );
-QTLSext void QTils_free( char **mem );
+QTLSext void QTils_freep( void **mem );
+#define QTils_free(x)	QTils_freep((void**)(x))
 QTLSext char *QTils_strdup( const char *txt );
 
 /*!
@@ -297,6 +298,8 @@ QTLSext ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memR
 	QTLSext void ClipFlipCurrentTrackToQuadrant( Movie theMovie, Track theTrack,
 								 short quadrant, short hflip, short withMetaData
 	);
+	QTLSext ErrCode GetUserDataFromMovie( Movie theMovie, void **data, size_t *dataSize, OSType udType );
+	QTLSext ErrCode AddUserDataToMovie( Movie theMovie, void *data, size_t dataSize, OSType udType, int replace );
 	QTLSext ErrCode AddMetaDataStringToTrack( Movie theMovie, Track theTrack,
 							    AnnotationKeys key, const char *value, const char *lang );
 	QTLSext ErrCode AddMetaDataStringToMovie( Movie theMovie, AnnotationKeys key, const char *value, const char *lang );
@@ -591,6 +594,16 @@ QTLSext QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *t
 								    Handle dataRef, OSType dataRefType, int controllerVisible );
 
 QTLSext ErrCode ActivateQTMovieWindow( QTMovieWindowH wih );
+/*!
+	sets the flags that signal that the movie should play all frames, regardless of whether the
+	hardware can keep up. Note that these appear to be just hints, QTMovieWindowPlay and other
+	start-playing calls do not seem to heed this setting.
+ */
+QTLSext ErrCode QTMovieWindowSetPlayAllFrames( QTMovieWindowH WI, int onoff, int *curState );
+/*!
+	requests a playback speed rate: 1 is normal speed
+ */
+QTLSext ErrCode QTMovieWindowSetPreferredRate( QTMovieWindowH WI, int rate, int *curRate );
 QTLSext ErrCode QTMovieWindowPlay( QTMovieWindowH wih );
 QTLSext ErrCode QTMovieWindowStop( QTMovieWindowH wih );
 QTLSext ErrCode QTMovieWindowToggleMCController( QTMovieWindowH wih );
@@ -602,6 +615,10 @@ QTLSext ErrCode QTMovieWindowGetTime( QTMovieWindowH wih, double *t, int absolut
 QTLSext ErrCode QTMovieWindowGetFrameTime( QTMovieWindowH wih, MovieFrameTime *ft, int absolute );
 QTLSext ErrCode QTMovieWindowSetTime( QTMovieWindowH wih, double t, int absolute );
 QTLSext ErrCode QTMovieWindowSetFrameTime( QTMovieWindowH wih, MovieFrameTime *ft, int absolute );
+/*!
+	Step the movie <steps> over frames; negative values mean backward stepping.
+ */
+QTLSext ErrCode QTMovieWindowStepNext( QTMovieWindowH wih, int steps );
 
 /*!
 	attempts to find the specified text in the movie's text track called 'timeStamp Track'
@@ -609,6 +626,8 @@ QTLSext ErrCode QTMovieWindowSetFrameTime( QTMovieWindowH wih, MovieFrameTime *f
 	On success, foundText will point to a new string that will have to be freed by the user.
  */
 QTLSext ErrCode FindTimeStampInMovieAtTime( Movie theMovie, double Time, char **foundText, double *foundTime );
+
+QTLSext ErrCode SampleNumberAtMovieTime( Movie theMovie, Track theTrack, double t, long *sampleNum );
 
 /*!
 	returns a movie's associated chapter track, or NULL if there's none. If the movie has an
@@ -1033,6 +1052,8 @@ typedef struct LibQTilsBase {
 
 	ErrCode (*ActivateQTMovieWindow)( QTMovieWindowH wih );
 	ErrCode (*QTMovieWindowToggleMCController)( QTMovieWindowH wih );
+	ErrCode (*QTMovieWindowSetPlayAllFrames)( QTMovieWindowH WI, int onoff, int *curState );
+	ErrCode (*QTMovieWindowSetPreferredRate)( QTMovieWindowH WI, int rate, int *curRate );
 	ErrCode (*QTMovieWindowPlay)( QTMovieWindowH wih );
 	ErrCode (*QTMovieWindowStop)( QTMovieWindowH wih );
 
@@ -1040,6 +1061,7 @@ typedef struct LibQTilsBase {
 	ErrCode (*QTMovieWindowGetFrameTime)( QTMovieWindowH wih, MovieFrameTime *ft, int absolute );
 	ErrCode (*QTMovieWindowSetTime)( QTMovieWindowH wih, double t, int absolute );
 	ErrCode (*QTMovieWindowSetFrameTime)( QTMovieWindowH wih, MovieFrameTime *ft, int absolute );
+	ErrCode (*QTMovieWindowStepNext)( QTMovieWindowH wih, int steps );
 	MovieFrameTime* (*secondsToFrameTime)( double Time, double MovieFrameRate, MovieFrameTime *ft );
 	ErrCode (*QTMovieWindowSetGeometry)( QTMovieWindowH wih, Cartesian *pos, Cartesian *size, double sizeScale, int setEnvelope );
 	ErrCode (*QTMovieWindowGetGeometry)( QTMovieWindowH wih, Cartesian *pos, Cartesian *size, int getEnvelope );
@@ -1094,6 +1116,7 @@ typedef struct LibQTilsBase {
 	ErrCode (*EnableTrackNr)( Movie theMovie, long trackNr );
 	ErrCode (*DisableTrackNr)( Movie theMovie, long trackNr );
 	ErrCode (*SlaveMovieToMasterMovie)( Movie slave, Movie master );
+	ErrCode (*SampleNumberAtMovieTime)( Movie theMovie, Track theTrack, double t, long *sampleNum );
 
 	// QTXML functions:
 

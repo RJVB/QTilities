@@ -18,8 +18,10 @@
 extern BOOL addToRecentDocs;
 
 typedef struct TimeInterval {
-	double timeA, timeB, dt;
+	double timeA, timeB, dt,
+		fps, wallTimeLapse;
 	char timeStampA[256], timeStampB[256];
+	BOOL benchMarking, wasBenchMarking, AllF[maxQTWM];
 } TimeInterval;
 
 #define WINLIST(idx)	((winlist[(idx)])?(*winlist[(idx)]):NULL)
@@ -72,6 +74,7 @@ typedef struct TimeInterval {
 - (void) StopVideoExceptFor:(QTVODWindow*)excl;
 - (void) StepForwardExceptFor:(QTMovieWindowH)excl;
 - (void) StepBackwardExceptFor:(QTMovieWindowH)excl;
+- (BOOL) BenchmarkPlaybackRate;
 - (BOOL) CalcTimeInterval:(BOOL)display reset:(BOOL)reset;
 - (void) PlaceWindows:(Cartesian*)ulCorner withScale:(double)scale;
 - (void) PlaceWindows:(Cartesian*)ulCorner withScale:(double)scale withNSSize:(NSSize)nsSize;

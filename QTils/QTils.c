@@ -127,13 +127,13 @@ void *QTils_realloc( void* mem, size_t size )
 	return (mem)? QTils_Allocator->realloc( mem, size ) : QTils_Allocator->calloc( 1, size );
 }
 
-void QTils_free( char **mem )
+void QTils_freep( void **mem )
 {
 	if( !QTils_Allocator ){
 		__init_QTils_Allocator__( NULL, malloc, calloc, realloc, __QTils_free__ );
 	}
 	if( mem ){
-		QTils_Allocator->free((void**)mem);
+		QTils_Allocator->free(mem);
 		*mem = NULL;
 	}
 }
@@ -744,6 +744,66 @@ void ClipFlipCurrentTrackToQuadrant( Movie theMovie, Track theTrack, short quadr
 		AddMetaDataStringToTrack( theMovie, theTrack, akInfo, mdInfo, NULL );
 	}
 }
+
+ErrCode AddUserDataToMovie( Movie theMovie, void *data, size_t dataSize, OSType udType, int replace )
+{ ErrCode err = paramErr;		
+  UserData userData;
+
+	if( theMovie && data ){
+	  Handle hData = NewHandle(dataSize);
+		if( !hData ){
+			return MemError();
+		}
+		memcpy( *hData, data, dataSize );
+		userData = GetMovieUserData(theMovie);
+
+		if( replace ){
+			err = noErr;
+			while( err == noErr && CountUserDataType( userData, udType ) ){
+				err = RemoveUserData( userData, udType, 1 );
+			}
+		}
+		err = AddUserData( userData, hData, udType );
+		DisposeHandle(hData);
+	}
+	return err;
+}	
+
+ErrCode GetUserDataFromMovie( Movie theMovie, void **data, size_t *dataSize, OSType udType )
+{ ErrCode err = paramErr;		
+  UserData userData;
+  long len;
+
+	if( theMovie && data && dataSize ){
+	  Handle hData = NewHandle(0);
+		if( !hData ){
+			return MemError();
+		}
+		userData = GetMovieUserData(theMovie);
+
+		if( CountUserDataType( userData, udType ) ){
+			if( (err = GetUserData( userData, hData, udType, 1 )) == noErr ){
+				len = GetHandleSize(hData);
+				if( len > 0 && (*data = QTils_calloc( len, 1 )) ){
+					memcpy( *data, *hData, len );
+					*dataSize = (size_t) len;
+				}
+				else if( len == 0 ){
+					*data = NULL;
+					*dataSize = 0;
+				}
+				else{
+					err = MemError();
+				}
+			}
+		}
+		else{
+			err = userDataItemNotFound;
+		}
+		DisposeHandle(hData);
+	}
+	return err;
+}	
 
 // for code interfacing to us from a non-C language that doesn't support FOURCHARCODEs
 size_t ExportAnnotationKeys( AnnotationKeyList *list )
@@ -2616,7 +2676,7 @@ double GetMovieTimeResolution( Movie theMovie )
 // rate. the TCTrackInfo functions below provide an easy/simple interface to this feature.
 
 //#define xfree(x)	if((x)){ free((x)); (x)=NULL; }
-#define xfree(x)	QTils_free((char**)&(x))
+#define xfree(x)	QTils_free(&(x))
 
 static void *dispose_TCTrackInfo( void *ptr )
 { TCTrackInfo *info = (TCTrackInfo*) ptr, *ret = NULL;
@@ -3172,6 +3232,42 @@ ErrCode FindTimeStampInMovieAtTime_Mod2( Movie theMovie, double Time, char *foun
 	return err;
 }
 
+ErrCode SampleNumberAtMovieTime( Movie theMovie, Track theTrack, double t, long *sampleNum )
+{ TimeValue st;
+  ErrCode err;
+  TimeValue sampleTime, obtainedTime;
+
+	if( sampleNum ){
+		st = (TimeValue) (t * GetMovieTimeScale(theMovie) + 0.5);
+		if( !theTrack ){
+			theTrack = GetMovieIndTrackType( theMovie, 1, VideoMediaType, movieTrackMediaType|movieTrackEnabledOnly );
+		}
+		if( theTrack ){
+			sampleTime = TrackTimeToMediaTime( st, theTrack);
+			MediaTimeToSampleNum( GetTrackMedia(theTrack), sampleTime, sampleNum, &obtainedTime, NULL );
+		}
+		err = GetMoviesError();
+	}
+	else{
+		err = paramErr;
+	}
+	return err;
+}
+
+ErrCode SampleNumberAtMovieTime_Mod2( Movie theMovie, long trackNr, double t, long *sampleNum )
+{ ErrCode err = paramErr;
+	if( !theMovie || trackNr < 0 || trackNr > GetMovieTrackCount(theMovie) ){
+		return paramErr;
+	}
+	if( trackNr ){
+		err = SampleNumberAtMovieTime( theMovie, GetMovieIndTrack( theMovie, trackNr ), t, sampleNum );
+	}
+	else{
+		err = SampleNumberAtMovieTime( theMovie, NULL, t, sampleNum );
+	}
+	return err;
+}
+
 Track GetMovieChapterTrack( Movie theMovie, QTMovieWindows ***rwih )
 { QTMovieWindowH wih;
   QTMovieWindows *wi = NULL;
@@ -3619,6 +3715,32 @@ ErrCode DisableTrack_Mod2( Movie theMovie, long trackNr )
 	return GetMoviesError();
 }
 
+#if TARGET_OS_MAC
+ErrCode testing( Movie theMovie )
+{ ErrCode err = paramErr;
+  UserData uData = NULL;
+
+	if( theMovie ){
+		if( (uData = GetMovieUserData(theMovie)) ){
+		  Handle h = NewHandle(0);
+		  long len;
+			err = GetUserData( uData, h, '@inf', 1 );
+			err = GetUserData( uData, h, '@wrt', 1 );
+			err = GetUserData( uData, h, '@day', 1 );
+			err = GetUserData( uData, h, '@swr', 1 );
+			if( (err = GetUserData( uData, h, 'AllF', 1 )) == noErr ){
+				len = GetHandleSize(h);
+			}
+			DisposeHandle(h);
+		}
+		else{
+			err = GetMoviesError();
+		}
+	}
+	return err;
+}
+#endif
+
 #ifndef QTMOVIESINK
 
 #include "QTMovieSink.h"
@@ -3663,6 +3785,8 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 
 		dmbase->QTMovieWindowToggleMCController = QTMovieWindowToggleMCController;
 		dmbase->ActivateQTMovieWindow = ActivateQTMovieWindow;
+		dmbase->QTMovieWindowSetPlayAllFrames = QTMovieWindowSetPlayAllFrames;
+		dmbase->QTMovieWindowSetPreferredRate = QTMovieWindowSetPreferredRate;
 		dmbase->QTMovieWindowPlay = QTMovieWindowPlay;
 		dmbase->QTMovieWindowStop = QTMovieWindowStop;
 
@@ -3670,6 +3794,7 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->QTMovieWindowGetFrameTime = QTMovieWindowGetFrameTime;
 		dmbase->QTMovieWindowSetTime = QTMovieWindowSetTime;
 		dmbase->QTMovieWindowSetFrameTime = QTMovieWindowSetFrameTime;
+		dmbase->QTMovieWindowStepNext = QTMovieWindowStepNext;
 		dmbase->secondsToFrameTime = secondsToFrameTime;
 		dmbase->QTMovieWindowSetGeometry = QTMovieWindowSetGeometry;
 		dmbase->QTMovieWindowGetGeometry = QTMovieWindowGetGeometry;
@@ -3712,6 +3837,7 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->EnableTrackNr = EnableTrack_Mod2;
 		dmbase->DisableTrackNr = DisableTrack_Mod2;
 		dmbase->SlaveMovieToMasterMovie = SlaveMovieToMasterMovie;
+		dmbase->SampleNumberAtMovieTime = SampleNumberAtMovieTime;
 
 		dmbase->Check4XMLError = Check4XMLError;
 		dmbase->ParseXMLFile = ParseXMLFile;
@@ -3788,6 +3914,7 @@ size_t initDMBaseQTils_Mod2( LibQTilsBase *dmbase )
 		dmbase->GetTrackWithName = (void*) GetTrackWithName_Mod2;
 		dmbase->EnableTrackNr = (void*) EnableTrack_Mod2;
 		dmbase->DisableTrackNr = (void*) DisableTrack_Mod2;
+		dmbase->SampleNumberAtMovieTime = (void*) SampleNumberAtMovieTime_Mod2;
 		dmbase->QTils_LogMsg = (void*) QTils_LogMsg_Mod2;
 		dmbase->QTils_LogMsgEx = (void*) QTils_LogMsgEx_Mod2;
 		dmbase->Check4XMLError = (void*) Check4XMLError_Mod2;

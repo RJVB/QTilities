@@ -294,7 +294,7 @@ static NSString *metaDataNSStr( Movie theMovie, int trackNr, AnnotationKeys key,
 		GetMetaDataStringFromMovie( theMovie, key, &value, NULL );
 	}
 	if( value ){
-		ret = [NSString stringWithFormat:@"%s%s\n", keyDescr, value];
+		ret = [NSString stringWithFormat:@"%s%@\n", keyDescr, [NSString stringWithUTF8String:value]];
 		free(value);
 	}
 	else{
@@ -764,6 +764,18 @@ BOOL addToRecentDocs = YES;
 	return 0;
 }
 
+- (int) movieFinished:(QTMovieWindowH)wih withParams:(void*) params
+{
+	if( !handlingPlayAction ){
+		handlingPlayAction = YES;
+		if( theTimeInterval.benchMarking || theTimeInterval.wasBenchMarking ){
+			[self BenchmarkPlaybackRate];
+		}
+		handlingPlayAction = NO;
+	}
+	return 0;
+}
+
 - (int) movieClose:(QTMovieWindowH)wih withParams:(void*)params
 { int i;
 	if( sysOwned && sysOwned.qtmwH == wih ){
@@ -847,7 +859,12 @@ BOOL addToRecentDocs = YES;
 			break;
 		case 't':
 		case 'T':
-			[self CalcTimeInterval:YES reset:NO];
+			if( !theTimeInterval.benchMarking ){
+				[self CalcTimeInterval:YES reset:NO];
+			}
+			break;
+		case '0':
+			[self BenchmarkPlaybackRate];
 			break;
 		case 'p':
 		case 'P':
@@ -890,6 +907,7 @@ BOOL addToRecentDocs = YES;
 		REGISTER_NSMCACTION( wih, MCAction()->Stop, movieStop );
 		REGISTER_NSMCACTION( wih, MCAction()->Close, movieClose );
 		REGISTER_NSMCACTION( wih, MCAction()->KeyUp, movieKeyUp );
+		REGISTER_NSMCACTION( wih, MCAction()->Finished, movieFinished );
 		QTMovieWindowGetGeometry( wih, &Wpos[idx], &Wsize[idx], 1 );
 	}
 }
@@ -1606,8 +1624,15 @@ BOOL addToRecentDocs = YES;
 			WINLIST(w)->Playing = NO;
 			[WINLIST(w) UpdateDrawer];
 			[WINLIST(w) updateMenus];
+			if( theTimeInterval.benchMarking ){
+				[WINLIST(w) setPBAllToState:theTimeInterval.AllF[w]];
+//				QTMovieWindowSetPlayAllFrames( QTMWH(w), theTimeInterval.AllF[w], NULL );
+//				QTMovieWindowSetPreferredRate( QTMWH(w), 1, NULL );
+			}
 		}
 	}
+	theTimeInterval.wasBenchMarking = theTimeInterval.benchMarking;
+	theTimeInterval.benchMarking = NO;
 }
 
 - (void) StepForwardExceptFor:(QTMovieWindowH)excl
@@ -1630,11 +1655,49 @@ BOOL addToRecentDocs = YES;
 	}
 }
 
+- (BOOL) BenchmarkPlaybackRate
+{ int w;
+  BOOL ret = NO;
+  extern double HRTime_Time();
+	if( !theTimeInterval.benchMarking && !theTimeInterval.wasBenchMarking ){
+		[self StopVideoExceptFor:NULL];
+		for( w = 0 ; w < maxQTWM ; w++ ){
+			if( WINLIST(w) ){
+			  QTMovie *m = [WINLIST(w) getMovie];
+			  int AllF;
+				theTimeInterval.AllF[w] = [[m attributeForKey:QTMoviePlaysAllFramesAttribute] boolValue];
+//				QTMovieWindowSetPreferredRate( QTMWH(w), 1000, NULL );
+//				QTMovieWindowSetPlayAllFrames( QTMWH(w), 1, &AllF );
+				[WINLIST(w) setPBAllToState:YES];
+			}
+		}
+		theTimeInterval.benchMarking = YES;
+		[self CalcTimeInterval:NO reset:YES];
+		theTimeInterval.wallTimeLapse = HRTime_Time();
+		[self StartVideoExceptFor:NULL];
+	}
+	else if( theTimeInterval.benchMarking || theTimeInterval.wasBenchMarking ){
+		theTimeInterval.wallTimeLapse = HRTime_Time() - theTimeInterval.wallTimeLapse;
+		if( theTimeInterval.benchMarking ){
+			[self StopVideoExceptFor:NULL];
+		}
+		// reset this one:
+		theTimeInterval.benchMarking = YES;
+		[self CalcTimeInterval:YES reset:NO];
+		theTimeInterval.benchMarking = NO;
+		theTimeInterval.wasBenchMarking = NO;
+	}
+	return ret;
+}
+
 - (BOOL) CalcTimeInterval:(BOOL)display reset:(BOOL)reset
 { BOOL ret = NO;
   QTMovieWindowH wih = (TC)? TC.qtmwH : NULL;
   double t;
   char *foundText = NULL;
+	if( !wih && sysOwned ){
+		wih = sysOwned.qtmwH;
+	}
 	if( wih && (*wih)->self == *wih && (*wih)->theView && QTMovieWindowGetTime(wih, &t, 0) == noErr ){
 		if( theTimeInterval.timeA < 0.0 || reset ){
 			theTimeInterval.timeA = t;
@@ -1661,14 +1724,45 @@ BOOL addToRecentDocs = YES;
 			theTimeInterval.dt = theTimeInterval.timeB - theTimeInterval.timeA;
 			if( display ){
 			  NSAlert* alert = [[[NSAlert alloc] init] autorelease];
-			  NSString *msg = [NSString stringWithFormat:
-						    @"A: t=%gs, '%s'\n"
-						    "B: t=%gs, '%s'\n"
-						    "\nB-A = %gs\n",
-						    theTimeInterval.timeA, theTimeInterval.timeStampA,
-						    theTimeInterval.timeB, theTimeInterval.timeStampB,
-						    theTimeInterval.dt
-				];
+			  NSString *msg;
+				if( theTimeInterval.benchMarking ){
+				  long startSample = 0, endSample = 0;
+				  ErrCode err;
+					if( fullMovie ){
+						if( (err = SampleNumberAtMovieTime( fullMovie, NULL, theTimeInterval.timeA, &startSample )) != noErr ){
+							QTils_LogMsgEx( "%s error %d getting startSample @ t=%gs", __FUNCTION__, err, theTimeInterval.timeA );
+						}
+						if( (err = SampleNumberAtMovieTime( fullMovie, NULL, theTimeInterval.timeB, &endSample )) != noErr ){
+							QTils_LogMsgEx( "%s error %d getting endSample @ t=%gs", __FUNCTION__, err, theTimeInterval.timeB );
+						}
+					}
+					msg = [NSString stringWithFormat:
+						  @"Maximum rate playback test:\n"
+						  "start: t=%gs, '%s'\n"
+						  "end: t=%gs, '%s'\n"
+						  "interval = %gs\n"
+						  "real duration = %gs\n"
+						  "\n%g times faster than realtime\n"
+						  , theTimeInterval.timeA, theTimeInterval.timeStampA,
+						  theTimeInterval.timeB, theTimeInterval.timeStampB,
+						  theTimeInterval.dt,
+						  theTimeInterval.wallTimeLapse, theTimeInterval.dt / theTimeInterval.wallTimeLapse
+					];
+					if( startSample < endSample ){
+						msg = [NSString stringWithFormat:@"%@observed framerate = %gHz\n", msg,
+							  (endSample - startSample) / theTimeInterval.wallTimeLapse ];
+					}
+				}
+				else{
+					msg = [NSString stringWithFormat:
+							    @"A: t=%gs, '%s'\n"
+							    "B: t=%gs, '%s'\n"
+							    "\nB-A = %gs\n",
+							    theTimeInterval.timeA, theTimeInterval.timeStampA,
+							    theTimeInterval.timeB, theTimeInterval.timeStampB,
+							    theTimeInterval.dt
+					];
+				}
 				[alert setAlertStyle:NSInformationalAlertStyle];
 				[alert setMessageText:@""];
 				[alert setInformativeText:msg];

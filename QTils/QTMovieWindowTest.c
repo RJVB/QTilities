@@ -554,7 +554,7 @@ int main( int argc, char* argv[] )
 			for( i = 1 ; i < argc ; i++ ){
 				wi = OpenQTMovieInWindow( argv[i], (i> 0 && i==argc-1)? 0 : 1 );
 				// register the window in our local list:
-				if( i == 1 /*&& wi*/ ){
+				if( wi ){
 				  Movie theMovie = NULL;
 #if TARGET_OS_MAC || defined(__APPLE_CC__) || defined(__MACH__)
 					QTils_LogSetActive(TRUE);
@@ -593,11 +593,6 @@ int main( int argc, char* argv[] )
 //						}
 					}
 				}
-				else{
-					if( (*(winlist[0])) ){
-						SlaveMovieToMasterMovie( (*wi)->theMovie, (*(winlist[0]))->theMovie );
-					}
-				}
 				register_wi(wi);
 			}
 		}
@@ -615,6 +610,14 @@ int main( int argc, char* argv[] )
 #endif
 			if( (err = OpenMovieFromURL( &theMovie, 1, NULL, (*(winlist[0]))->theURL, NULL, NULL )) == noErr ){
 			  char *dst = "c:/TEMP/kk.mov", *odst;
+			  char *ALLF = NULL, *ALLFlng = NULL;
+				err = GetMetaDataStringFromMovie( theMovie, 'AllF', &ALLF, &ALLFlng );
+				if( ALLF ){
+					xfree(ALLF);
+				}
+				if( ALLFlng ){
+					xfree(ALLFlng);
+				}
 				err = AddMetaDataStringToMovie( theMovie, akComment, xg_id_string_stub(), NULL );
 				fprintf( stderr, "Saving %s... ", argv[1] ); fflush(stderr);
 				if( (err = SaveMovie( theMovie )) == noErr ){
@@ -642,9 +645,21 @@ int main( int argc, char* argv[] )
 			}
 		}
 
+		if( winlist[0] && (*(winlist[0])) && winlist[1] && (*(winlist[1])) ){
+			SlaveMovieToMasterMovie( (*(winlist[1]))->theMovie, (*(winlist[0]))->theMovie );
+		}
 		for( i = 0 ; i < numQTMW ; i++ ){
 			// play the movie
 			//QTMovieWindowPlay( winlist[i] );
+		}
+		if( winlist[0] ){
+		  double t;
+		  ErrCode err;
+			while( (err = QTMovieWindowStepNext( winlist[0], 1 )) == noErr ){
+				QTMovieWindowGetTime( winlist[0], &t, 0 );
+				PumpMessages(0);
+			}
+			QTMovieWindowSetTime( winlist[0], 0, 0 );
 		}
 
 		if( numQTMW > 1 ){

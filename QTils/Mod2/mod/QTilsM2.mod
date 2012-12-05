@@ -25,7 +25,7 @@ FROM WINUSER IMPORT
 	MessageBox, MB_OK, MB_ICONEXCLAMATION, MB_APPLMODAL, MB_ICONQUESTION, MB_YESNO, IDOK, IDYES;
 
 FROM Strings IMPORT
-	Assign, Length, FindNext, Equal;
+	Assign, Length, FindNext, Equal, Concat;
 
 (*
 FROM FormatString IMPORT
@@ -106,6 +106,7 @@ VAR
 	QTilsC : LibQTilsBase;
 	DevMode : BOOLEAN;
 	ligneDeCmde : BOOLEAN;
+	QTilsDLL : Str255;
 
 PROCEDURE QTilsAvailable() : BOOLEAN;
 BEGIN
@@ -705,21 +706,11 @@ VAR
 	ii : CARDINAL;
 	pCh : P_CH_CMDE;
 
+PROCEDURE LoadQTilsDLL() : BOOLEAN;
+VAR
+	name : Str255;
+	msg : ARRAY[0..1024] OF CHAR;
 BEGIN
-	GetCommandLine(ch);
-	IF NOT Equal(ch, "")
-		THEN
-(*
-			pCh := ADR(ch[ii + 4]);
-			WHILE (pCh^[0] # 0C) AND ((pCh^[0] = " ") OR (ORD(pCh^[0]) = 09H)) DO
-				pCh := ADDADR(pCh, 1)
-			END;
-			ligneDeCmde := (LENGTH(pCh^) > 0)
-*)
-			ligneDeCmde := TRUE
-		ELSE
-			ligneDeCmde := FALSE
-	END;
 %IF WIN32 %THEN
 	(* on charge la dll QTils *)
 %IF QTILS_DEBUG %THEN
@@ -727,11 +718,15 @@ BEGIN
 	IF (QTilsHandle = NULL_HANDLE)
 		THEN
 			QTilsHandle := LoadLibrary("QTils-dev.dll");
+			Assign( "QTils-dev.dll", name );
+		ELSE
+			Assign( "QTils-debug.dll", name );
 	END;
 	DevMode := TRUE;
 %ELSIF QTILS_DEV %THEN
 	(* mode "developer": on charge la version de QTils.dll qui génère des messages dans une fenêtre journal *)
 	QTilsHandle := LoadLibrary("QTils-dev.dll");
+	Assign( "QTils-dev.dll", name );
 	DevMode := TRUE;
 %ELSE
 	(* on charge QTils-dev.dll si elle est présente *)
@@ -740,8 +735,10 @@ BEGIN
 		THEN
 			(* mode "release": on charge la version de QTils.dll qui ignore les messages journal *)
 			QTilsHandle := LoadLibrary("QTils.dll");
+			Assign( "QTils.dll", name );
 			DevMode := FALSE;
 		ELSE
+			Assign( "QTils-dev.dll", name );
 			DevMode := TRUE;
 	END;
 %END
@@ -750,6 +747,7 @@ BEGIN
 			(* on obtient l'adresse de la fonction initDMBaseQTils() qui va nous donner les adresses
 				des fonctions d'intérêt dans le record QTilsC :
 			*)
+			Assign( name, QTilsDLL );
 			getQTilsC := CAST(LibBaseGetter, dlsym(QTilsHandle, "initDMBaseQTils_Mod2", valid));
 			IF valid
 				THEN
@@ -769,51 +767,19 @@ BEGIN
 					*)
 					IF QTilsCSize <> QTilsCObtained
 						THEN
-							PostMessage("Pb d'initialisation de QTilsM2", "Incompatibilité de version de QTils.dll");
+							Concat( "Incompatibilité de version de ", QTilsDLL, msg );
+							PostMessage("Pb d'initialisation de QTilsM2", msg);
 							FreeLibrary(QTilsHandle);
 							QTilsHandle := NULL_HANDLE;
+							RETURN FALSE;
 						ELSE
-							(* the MetaData codes: *)
-							getAnnotationKeys(MetaData);
-							WITH QTilsC DO
-								cQTils.QTMovieWindowH_BasicCheck := QTMovieWindowH_BasicCheck;
-								cQTils.QTMovieWindowH_Check := QTMovieWindowH_Check;
-								cQTils.QTMovieWindowH_isOpen := QTMovieWindowH_isOpen;
-								cQTils.OpenQTMovieInWindow := OpenQTMovieInWindow;
-								cQTils.CloseQTMovieWindow := CloseQTMovieWindow;
-								cQTils.FTTS := FTTS;
-								cQTils.LogMsgEx := LogMsgEx;
-								cQTils.XMLRootElementID := XMLRootElementID;
-								cQTils.XMLContentKind := XMLContentKind;
-								cQTils.XMLRootElementContentKind := XMLRootElementContentKind;
-								cQTils.XMLContentOfElementOfRootElement := XMLContentOfElementOfRootElement;
-								cQTils.XMLContentOfElement := XMLContentOfElement;
-								cQTils.XMLElementOfContent := XMLElementOfContent;
-								cQTils.CreateXMLParser := CreateXMLParser;
-								cQTils.ReadXMLContent := ReadXMLContent;
-								cQTils.sscanf := vsscanf;
-								cQTils.sprintf := vsprintf;
-								cQTils.ssprintf := vssprintf;
-								cQTils.ssprintfAppend := vssprintfAppend;
-							END;
-							(* on exporte la partie publique de QTilsC: *)
-							QTils := QTilsC.cQTils;
-							(* on obtient les valeurs correspondant aux actions des controlleurs QuickTime;
-								ces valeurs sont celles définies par QuickTime
-							*)
-							mca := QTilsC.cMCActionListProc();
-							MCAction := mca^;
-							(* idem pour les codecs et niveaux de qualité de compression *)
-							qcod := QTilsC.QTCompressionCodec();
-							qqual := QTilsC.QTCompressionQuality();
-							QTCompressionCodec := qcod^;
-							QTCompressionQuality := qqual^;
-							QTils.LogMsg("initialisation QTilsM2 OK");
-						END;
+							RETURN TRUE;
+					END;
 				ELSE
 					PostMessage("Alerte", "Échec d'initialisation de QTilsM2");
 					FreeLibrary(QTilsHandle);
 					QTilsHandle := NULL_HANDLE;
+					RETURN FALSE;
 				END;
 		ELSE
 %IF QTILS_DEV %THEN
@@ -821,6 +787,64 @@ BEGIN
 %ELSE
 			PostMessage("Alerte", "Échec charge QTils.dll (et/ou de QTils-dev.dll)");
 %END
+			RETURN FALSE;
+	END;
+END LoadQTilsDLL;
+
+
+BEGIN
+	GetCommandLine(ch);
+	IF NOT Equal(ch, "")
+		THEN
+(*
+			pCh := ADR(ch[ii + 4]);
+			WHILE (pCh^[0] # 0C) AND ((pCh^[0] = " ") OR (ORD(pCh^[0]) = 09H)) DO
+				pCh := ADDADR(pCh, 1)
+			END;
+			ligneDeCmde := (LENGTH(pCh^) > 0)
+*)
+			ligneDeCmde := TRUE
+		ELSE
+			ligneDeCmde := FALSE
+	END;
+	IF LoadQTilsDLL()
+		THEN
+			(* the MetaData codes: *)
+			getAnnotationKeys(MetaData);
+			WITH QTilsC DO
+				cQTils.QTMovieWindowH_BasicCheck := QTMovieWindowH_BasicCheck;
+				cQTils.QTMovieWindowH_Check := QTMovieWindowH_Check;
+				cQTils.QTMovieWindowH_isOpen := QTMovieWindowH_isOpen;
+				cQTils.OpenQTMovieInWindow := OpenQTMovieInWindow;
+				cQTils.CloseQTMovieWindow := CloseQTMovieWindow;
+				cQTils.FTTS := FTTS;
+				cQTils.LogMsgEx := LogMsgEx;
+				cQTils.XMLRootElementID := XMLRootElementID;
+				cQTils.XMLContentKind := XMLContentKind;
+				cQTils.XMLRootElementContentKind := XMLRootElementContentKind;
+				cQTils.XMLContentOfElementOfRootElement := XMLContentOfElementOfRootElement;
+				cQTils.XMLContentOfElement := XMLContentOfElement;
+				cQTils.XMLElementOfContent := XMLElementOfContent;
+				cQTils.CreateXMLParser := CreateXMLParser;
+				cQTils.ReadXMLContent := ReadXMLContent;
+				cQTils.sscanf := vsscanf;
+				cQTils.sprintf := vsprintf;
+				cQTils.ssprintf := vssprintf;
+				cQTils.ssprintfAppend := vssprintfAppend;
+			END;
+			(* on exporte la partie publique de QTilsC: *)
+			QTils := QTilsC.cQTils;
+			(* on obtient les valeurs correspondant aux actions des controlleurs QuickTime;
+				ces valeurs sont celles définies par QuickTime
+			*)
+			mca := QTilsC.cMCActionListProc();
+			MCAction := mca^;
+			(* idem pour les codecs et niveaux de qualité de compression *)
+			qcod := QTilsC.QTCompressionCodec();
+			qqual := QTilsC.QTCompressionQuality();
+			QTCompressionCodec := qcod^;
+			QTCompressionQuality := qqual^;
+			QTils.LogMsg("initialisation QTilsM2 OK");
 	END;
 	IF (QTilsHandle = NULL_HANDLE)
 		THEN

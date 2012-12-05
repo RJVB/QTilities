@@ -822,6 +822,13 @@ void SetQTMovieTime( NSQTMovieWindow *theNSQTMovieWindow, TimeRecord *trec )
 	}
 }
 
+void SetQTMovieTimeValue( NSQTMovieWindow *theNSQTMovieWindow, TimeValue tVal, TimeValue tScale )
+{
+	if( theNSQTMovieWindow ){
+		[[theNSQTMovieWindow theQTMovie] setCurrentTime:QTMakeTime((long long)tVal, tScale)];
+	}
+}
+
 ErrCode QTMovieWindowPlay( QTMovieWindowH wih )
 { ErrCode err;
  	if( !QTMovieWindowH_Check(wih) ){

@@ -476,6 +476,10 @@ QTCompressionQualities	=
 
 			ActivateQTMovieWindow : PROCEDURE(QTMovieWindowH):ErrCode [CDECL];
 			QTMovieWindowToggleMCController : PROCEDURE(QTMovieWindowH):ErrCode [CDECL];
+			(* signale que cette Movie devrait jouer toutes les trames - une suggestion seulement il paraitrait *)
+			QTMovieWindowSetPlayAllFrames : PROCEDURE( QTMovieWindowH, (*onoff*) Int32, VAR (*curState*) Int32 ):ErrCode [CDECL];
+			(* demande une vitesse de lecture: 1 = vitesse normale *)
+			QTMovieWindowSetPreferredRate : PROCEDURE( QTMovieWindowH, (*rate*) Int32, VAR (*curRate*) Int32 ):ErrCode [CDECL];
 			QTMovieWindowPlay : PROCEDURE(QTMovieWindowH):ErrCode [CDECL];
 			QTMovieWindowStop : PROCEDURE(QTMovieWindowH):ErrCode [CDECL];
 
@@ -492,6 +496,7 @@ QTCompressionQualities	=
 			(* envoie le movie vers un nouveau temps dans le format heures/minutes/secondes/trames *)
 			QTMovieWindowSetFrameTime : PROCEDURE(QTMovieWindowH, (*ft*) VAR MovieFrameTime,
 				(*absolute*) Int32):ErrCode [CDECL];
+			QTMovieWindowStepNext : PROCEDURE( QTMovieWindowH, (*steps*) Int32 ):ErrCode [CDECL];
 			(* conversion; NB: utiliser TCframeRate pour convertir un temps absolut! *)
 			secondsToFrameTime : PROCEDURE((*t*) Real64, (*freq*) Real64,
 									(*ft*) VAR MovieFrameTime ):MovieFrameTimePtr [CDECL];
@@ -603,6 +608,7 @@ QTCompressionQualities	=
 			EnableTrack : PROCEDURE( (*theMovie*) Movie, (*trackNr*) Int32 ):ErrCode [CDECL];
 			DisableTrack : PROCEDURE( (*theMovie*) Movie, (*trackNr*) Int32 ):ErrCode [CDECL];
 			SlaveMovieToMasterMovie : PROCEDURE( (*slave*) Movie, (*master*) Movie ):ErrCode [CDECL];
+			SampleNumberAtMovieTime : PROCEDURE( (*theMovie*) Movie, (*trackNr|0*)Int32, (*t*)Real64, VAR (*sampleNum*) Int32 ):ErrCode [CDECL];
 
 			Check4XMLError : PROCEDURE( (*xmlParser*) ComponentInstance, (*err*) ErrCode,
 									(*theURL*) ARRAY OF CHAR, VAR (*descr*) Str255 ):ErrCode [CDECL];

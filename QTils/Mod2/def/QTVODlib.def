@@ -23,6 +23,7 @@ FROM QTilsM2 IMPORT
 
 PROCEDURE SetTimes( t : Real64; ref : QTMovieWindowH; absolute : Int32 );
 PROCEDURE StartVideo(excl : QTMovieWindowH);
+PROCEDURE StepVideo(excl : QTMovieWindowH ; steps : Int32);
 PROCEDURE StopVideo(excl : QTMovieWindowH);
 PROCEDURE register_window( AqtwmH : ARRAY OF QTMovieWindowH; idx : CARDINAL );
 PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription ) : ErrCode;
@@ -33,6 +34,7 @@ PROCEDURE isPlayable(wih : QTMovieWindowH) : BOOLEAN;
 PROCEDURE ClipInt( VAR val : INTEGER; min, max : INTEGER );
 PROCEDURE ReadDefaultVODDescription( fName : URLString; VAR descr : VODDescription ) : ErrCode;
 PROCEDURE ScanForDefaultVODDescription( movie, fName : URLString; VAR descr : VODDescription ) : ErrCode;
+PROCEDURE BenchmarkPlaybackRate;
 PROCEDURE CalcTimeInterval(reset, display : BOOLEAN);
 
 PROCEDURE GetXMLParamString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
