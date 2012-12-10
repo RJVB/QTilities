@@ -189,7 +189,7 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 #endif
 		case WM_PAINT:{
 #ifdef AllowQTMLDoubleBuffering
-		  HRGN winUpdateRgn = CreateRectRgn(0,0,0,0);
+		  HRGN winUpdateRgn;
 #endif //AllowQTMLDoubleBuffering
 			if( !wi && (wi = QTMovieWindowHFromNativeWindow(hWnd)) ){
 				(*wi)->handlingEvent += 1;
@@ -200,15 +200,18 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 #endif
 			}
 #ifdef AllowQTMLDoubleBuffering
-			// Get the Windows update region
-			GetUpdateRgn( hWnd, winUpdateRgn, FALSE );
+			if( UseQTMLDoubleBuffering ){
+				winUpdateRgn = CreateRectRgn(0,0,0,0);
+				// Get the Windows update region
+				GetUpdateRgn( hWnd, winUpdateRgn, FALSE );
+			}
 #endif // AllowQTMLDoubleBuffering
 			// Call BeginPaint/EndPaint to clear the update region
 			hdc = BeginPaint( hWnd, &ps );
 			EndPaint( hWnd, &ps );
 
 #ifdef AllowQTMLDoubleBuffering
-			if( wi ){
+			if( wi && UseQTMLDoubleBuffering ){
 				// Add to the dirty region of the port any region
 				// that Windows says needs updating. This allows the
 				// union of the two to be copied from the back buffer
@@ -305,7 +308,9 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 void QTWMflush()
 {
 #ifdef AllowQTMLDoubleBuffering
-	QTMLFlushDirtyPorts();
+	if( UseQTMLDoubleBuffering ){
+		QTMLFlushDirtyPorts();
+	}
 #endif // AllowQTMLDoubleBuffering
 }
 
@@ -883,6 +888,7 @@ static ErrCode lOpenQT()
 		getenv_s( &envLen, envVal, envLen, "QTMW_DoubleBuffering" );
 		UseQTMLDoubleBuffering = 0;
 		if( *envVal ){
+			Log( qtLogPtr, "%%QTMW_DoubleBuffering%%=\"%s\"", envVal );
 			if( atoi(envVal) != 0 ){
 				UseQTMLDoubleBuffering = 1;
 			}

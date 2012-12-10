@@ -11,7 +11,7 @@ FROM WholeStr IMPORT
 	IntToStr;
 
 FROM Strings IMPORT
-	Concat, Append, Delete, FindPrev, Assign, Equal, Length;
+	Concat, Append, Delete, FindPrev, Assign, Equal, Length, FindNext;
 
 FROM ExStrings IMPORT
 	Utf8ToAnsi;
@@ -60,7 +60,7 @@ FROM POSIXm2 IMPORT POSIX;
 
 TYPE
 
-	VODDESIGN_PARSER = ARRAY[0..35] OF XML_RECORD;
+	VODDESIGN_PARSER = ARRAY[0..37] OF XML_RECORD;
 
 VAR
 
@@ -96,6 +96,7 @@ CONST
 	attr_log = 15;
 	attr_codec = 16;
 	attr_bitrate = 17;
+	attr_split = 18;
 
 	_d = FALSE;
 	_fn = TRUE;
@@ -135,9 +136,11 @@ CONST
 				(* on doit utiliser un XMLAttributeParseCallback pour lire des chaines de caractères *)
 				{xml_attribute, "codec", attr_codec, recordAttributeValueTypeCharString, _fn, GetXMLParamString },
 				{xml_attribute, "bitrate", attr_bitrate, recordAttributeValueTypeCharString, _fn, GetXMLParamString},
+				{xml_attribute, "split", attr_split, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.splitQuad)},
 			{xml_element, "transcodage.mp4", element_transcodage},
 				{xml_attribute, "codec", attr_codec, recordAttributeValueTypeCharString, _fn, GetXMLParamString},
-				{xml_attribute, "taux", attr_bitrate, recordAttributeValueTypeCharString, _fn, GetXMLParamString}
+				{xml_attribute, "taux", attr_bitrate, recordAttributeValueTypeCharString, _fn, GetXMLParamString},
+				{xml_attribute, "split", attr_split, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.splitQuad)}
 	};
 
 
@@ -158,6 +161,7 @@ VAR
 	HPCcalibrator : Real64;
 	TCwindowNr : Int32;
 	recreateChannelViews : BOOLEAN;
+	splitCamTrack : VODChannels;
 
 PROCEDURE InitHRTime();
 VAR
@@ -771,6 +775,7 @@ VAR
 	useVMGI, flLR : ARRAY[0..7] OF CHAR;
 	fp : ChanId;
 	res : OpenResults;
+	channels : VODChannels;
 BEGIN
 	(*Concat( URL, "-design", fName );
 	Append( ".qi2m", fName ); *)
@@ -822,6 +827,20 @@ BEGIN
 			END;
 			WriteString( fp, xmlStr ); WriteLn(fp);
 
+(* on importe le fichier VOD d'origine, sans transcodage, donc pas besoin d'adapter l'algorithme
+	si oui ou non l'importation se fait en pistes distinctes ...
+			IF fullMovieIsSplit
+				THEN
+					(* une vidéo avec les vues des 4 caméras dans 4 pistes distinctes *)
+					channels.forward := -1;
+					channels.pilot := -1;
+					channels.left := -1;
+					channels.right := -1;
+				ELSE
+					channels := descr.channels;
+			END;
+*)
+			channels := descr.channels;
 			QTils.sprintf( xmlStr,
 				'\t<sequence src="%s" freq=%g channel=%hd timepad=False hflip=%s vmgi=%s\n'
 				+ '\t\trelTransH=%g relTransV=%g newchapter=True description="%s" />\n',
@@ -831,14 +850,14 @@ BEGIN
 			QTils.sprintf( xmlStr,
 				'\t<sequence src="%s" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False hidets=True\n'
 				+ '\t\trelTransH=%g relTransV=%g description="%s" />\n',
-				source, descr.frequency, descr.channels.pilot, "False", useVMGI,
+				source, descr.frequency, channels.pilot, "False", useVMGI,
 				chPiTrans[descr.channels.pilot].dx, chPiTrans[descr.channels.pilot].dy, "pilot" );
 			WriteString( fp, xmlStr );
 
 			QTils.sprintf( xmlStr,
 				'\t<sequence src="%s" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False hidets=True\n'
 				+ '\t\trelTransH=%g relTransV=%g description="%s" />\n',
-				source, descr.frequency, descr.channels.left, flLR, useVMGI,
+				source, descr.frequency, channels.left, flLR, useVMGI,
 				chGaTrans[descr.channels.left].dx, chGaTrans[descr.channels.left].dy, "left" );
 			WriteString( fp, xmlStr );
 
@@ -846,14 +865,14 @@ BEGIN
 			QTils.sprintf( xmlStr,
 				'\t<sequence src="%s" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False hidets=True\n'
 				+ '\t\trelTransH=%g relTransV=%g description="%s" />\n',
-				source, descr.frequency, descr.channels.right, flLR, useVMGI,
+				source, descr.frequency, channels.right, flLR, useVMGI,
 				chDrTrans[descr.channels.right].dx, chDrTrans[descr.channels.right].dy, "right" );
 			WriteString( fp, xmlStr );
 
 			QTils.sprintf( xmlStr,
 				'\t<sequence src="%s" freq=%g channel=%d timepad=False hflip=%s vmgi=%s addtc=False hidets=True\n'
 				+ '\t\trelTransH=%g relTransV=%g description="%s" />\n',
-				source, descr.frequency, descr.channels.forward, "False", useVMGI,
+				source, descr.frequency, channels.forward, "False", useVMGI,
 				chAvTrans[descr.channels.forward].dx, chAvTrans[descr.channels.forward].dy, "forward" );
 			WriteString( fp, xmlStr );
 
@@ -926,6 +945,13 @@ BEGIN
 							WriteString( fp, " fbitrate=" );
 							WriteString( fp, description.bitRate );
 					END;
+			END;
+			WriteString( fp, " fsplit=" );
+			IF description.splitQuad
+				THEN
+					WriteString( fp, "True" );
+				ELSE
+					WriteString( fp, "False" );
 			END;
 			WriteString( fp, ' />' ); WriteLn(fp);
 			WriteString( fp, '</import>' ); WriteLn(fp);
@@ -1046,8 +1072,11 @@ BEGIN
 					(* début de la définition d'une séquence: *)
 					WriteString( fp, '<sequence src="' );
 					WriteString( fp, source );
-					WriteString( fp, '" channel=' );
-					WriteString( fp, chanNum );
+					IF NOT fullMovieIsSplit
+						THEN
+							WriteString( fp, '" channel=' );
+							WriteString( fp, chanNum );
+					END;
 					IF ( (channel <> 5) AND (channel <> 6) )
 						THEN
 							(* on cache la piste TimeCode des vues des 4 caméras (hidetc=True)
@@ -1072,7 +1101,7 @@ BEGIN
 					IF err = noErr
 						THEN
 							(* on prépare le movie pour être affiché *)
-							IF PrepareChannelCacheMovie( theMovie, channel )
+							IF PrepareChannelCacheMovie( theMovie, description.channels, channel )
 								THEN
 									QTils.SaveMovie(theMovie);
 							END;
@@ -1107,7 +1136,7 @@ BEGIN
 				ELSE
 					PostMessage( fName, "Echec de création/ouverture" );
 			END;
-%ELSE
+%ELSE (* NOT USECHANNELVIEWIMPORTFILES *)
 			qi2mString := NIL;
 			Concat( src, ".mov", source );
 			QTils.ssprintf( qi2mString,
@@ -1123,7 +1152,12 @@ BEGIN
 						description.timeZone, VAL(Int16,description.DST), assocDataFileName );
 			END;
 			(* début de la définition d'une séquence: *)
-			QTils.ssprintfAppend( qi2mString, '\t<sequence src="%s" channel=%s', source, chanNum );
+			IF fullMovieIsSplit
+				THEN
+					QTils.ssprintfAppend( qi2mString, '\t<sequence src="%s"', source );
+				ELSE
+					QTils.ssprintfAppend( qi2mString, '\t<sequence src="%s" channel=%s', source, chanNum );
+			END;
 			IF ( (channel <> 5) AND (channel <> 6) )
 				THEN
 					(* on cache la piste TimeCode des vues des 4 caméras (hidetc=True)
@@ -1150,7 +1184,7 @@ BEGIN
 							err := QTils.OpenMovieFromMemoryDataRef( theMovie, memRef, FOUR_CHAR_CODE('QI2M') );
 							IF err = noErr
 								THEN
-									IF PrepareChannelCacheMovie( theMovie, channel )
+									IF PrepareChannelCacheMovie( theMovie, description.channels, channel )
 										THEN
 											QTils.SaveMovieAsRefMov( fName, theMovie );
 									END;
@@ -1222,9 +1256,15 @@ END PruneExtensions;
 VAR
 	inOpenVideo : BOOLEAN;
 
-PROCEDURE PrepareChannelCacheMovie( theMovie : Movie; chanNum : INTEGER ) : BOOLEAN;
+PROCEDURE PrepareChannelCacheMovie( theMovie : Movie; channels : VODChannels; chanNum : INTEGER ) : BOOLEAN;
+CONST
+	camMask = "Camera ";
 VAR
-	trackNr : Int32;
+	trackNr, trackCount : Int32;
+	camString, camTrackString : ARRAY[0..127] OF CHAR;
+	lang : ARRAY[0..15] OF CHAR;
+	found : BOOLEAN;
+	pos : CARDINAL;
 BEGIN
 	IF (chanNum <> 5) AND (chanNum <> 6)
 		THEN
@@ -1240,6 +1280,49 @@ BEGIN
 		THEN
 			QTils.LogMsgEx( "Activation de la piste %ld, Timecode Track", trackNr );
 			QTils.EnableTrack( theMovie, trackNr );
+	END;
+	(* si on a une fullMovie avec 4 pistes distinctes pour les 4 caméras ET on prépare la vue
+		d'une de ces caméras (et non pas la vue TimeCode), on désactive toutes les pistes caméra
+		qui ne correspondent pas à la caméra demandée *)
+	IF fullMovieIsSplit AND (chanNum > 0)
+		THEN
+			trackCount := QTils.GetMovieTrackCount(theMovie) + 1;
+			(* la caméra qu'on traite ici: *)
+			QTils.sprintf( camString, "Camera %d", chanNum );
+			FOR trackNr := 0 TO trackCount DO;
+				(* le numéro de la caméra est associé à la méta-donnée 'cam#' de la piste: *)
+				IF QTils.GetMetaDataStringFromTrack( theMovie, trackNr, FOUR_CHAR_CODE("cam#"), camTrackString, lang ) = noErr
+					THEN
+						(* on a une chaine issue des méta-données, mais elle peut être vide ou correspondre à autre chose: *)
+						FindNext( camMask, camTrackString, 0, found, pos );
+						IF found
+							THEN
+								(* c'est bien une chaine de forme "Camera "... maintenant faisons la comparaison: *)
+								IF Equal( camString, camTrackString )
+									THEN
+										(* c'est la bonne piste *)
+										QTils.EnableTrack( theMovie, trackNr );
+										(* on sauvegarde le numéro de la piste pour référence future *)
+										IF channels.forward = chanNum
+											THEN
+												splitCamTrack.forward := trackNr;
+											ELSIF channels.pilot = chanNum
+												THEN
+													splitCamTrack.pilot := trackNr;
+											ELSIF channels.left = chanNum
+												THEN
+													splitCamTrack.left := trackNr;
+											ELSIF channels.right = chanNum
+												THEN
+													splitCamTrack.right := trackNr;
+										END;
+									ELSE
+										(* c'est la piste d'une autre caméra: on désactive *)
+										QTils.DisableTrack( theMovie, trackNr );
+								END;
+						END;
+				END;
+			END;
 	END;
 	RETURN (QTils.HasMovieChanged(theMovie) <> 0);
 END PrepareChannelCacheMovie;
@@ -1258,6 +1341,7 @@ BEGIN
 	lp.lpstrFile := ADR(fileName);
 	lp.nMaxFile := SIZE(fileName);
 	lp.lpstrTitle := ADR(title);
+	(* un jour je l'aurai ... la customisation de la fenêtre OpenFile! *)
 	lp.lpTemplateName := ADR("VODdesign");
 	lp.Flags := OFN_FILEMUSTEXIST BOR OFN_NOCHANGEDIR BOR OFN_EXPLORER;
 	IF GetOpenFileName(lp)
@@ -1271,7 +1355,8 @@ END GetFileName;
 PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription ) : ErrCode;
 VAR
 	fName : URLString;
-	errString, errComment : ARRAY[0..127] OF CHAR;
+	errString, errComment, quadString : ARRAY[0..127] OF CHAR;
+	lang : ARRAY[0..15] OF CHAR;
 	w : CARDINAL;
 	err : ErrCode;
 	isVODFile : BOOLEAN;
@@ -1401,16 +1486,25 @@ BEGIN
 			END;
 	END;
 
-(*
 	IF fullMovie <> NIL
 		THEN
+			IF QTils.GetMetaDataStringFromMovie( fullMovie, FOUR_CHAR_CODE("quad"), quadString, lang ) = noErr
+				THEN
+					IF Equal(quadString, "MPG4 VOD imported as 4 tracks" )
+						THEN
+							fullMovieIsSplit := TRUE;
+						ELSE
+							fullMovieIsSplit := FALSE;
+					END;
+			END;
+(*
 			fullMovieWMH := QTils.OpenQTMovieWindowWithMovie( fullMovie, fName, 1 );
 			IF fullMovieWMH <> NULL_QTMovieWindowH
 				THEN
 					ShowWindow( fullMovieWMH^^.theView, SW_MINIMIZE );
 			END;
-	END;
 *)
+	END;
 
 	(* maintenant on peut tenter d'ouvrir les 5 fenêtres *)
 	(* vue vers l'avant *)
@@ -1734,6 +1828,12 @@ VAR
 							THEN
 								QTils.LogMsgEx( "attr #%d bitRate=%s (%d)", VAL(INTEGER,attr_bitrate), descr.bitRate, xmlErr );
 						END;
+					xmlErr := QTils.GetBooleanAttribute( theElement, attr_split, bool );
+						IF (xmlErr <> attributeNotFound )
+							THEN
+								descr.splitQuad := (bool <> 0);
+								QTils.LogMsgEx( "attr #%d split=%hd (%d)", VAL(INTEGER,attr_log), VAL(Int16,bool), xmlErr );
+						END;
 
 			| element_vodDesign :
 					(*
@@ -2000,7 +2100,12 @@ BEGIN
 	baseDescription.useVMGI := TRUE;
 	baseDescription.log := FALSE;
 	fullMovieWMH := NULL_QTMovieWindowH;
+	fullMovieIsSplit := FALSE;
 	InitHRTime();
+	splitCamTrack.forward := -1;
+	splitCamTrack.pilot := -1;
+	splitCamTrack.left := -1;
+	splitCamTrack.right := -1;
 
 FINALLY
 

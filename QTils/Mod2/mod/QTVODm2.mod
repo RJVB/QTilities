@@ -541,6 +541,12 @@ BEGIN
 					INC(arg);
 					Assign( POSIX.Arg(arg), movieDescription.bitRate );
 					QTils.LogMsgEx( "-fbitrate=%s", movieDescription.bitRate );
+			ELSIF ( Equal(POSIX.Arg(arg), "-fsplit") AND (arg < POSIX.argc-1) )
+				THEN
+					INC(arg);
+					Capitalize(POSIX.argv^[arg]^);
+					movieDescription.splitQuad := Equal(POSIX.Arg(arg), "TRUE");
+					QTils.LogMsgEx( "-fsplit=%s -> %d", POSIX.Arg(arg), VAL(INTEGER,movieDescription.splitQuad) );
 			ELSE
 				Assign( POSIX.Arg(arg), movie );
 		END;

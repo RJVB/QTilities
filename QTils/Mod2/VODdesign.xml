@@ -23,5 +23,5 @@
 		gauche=3
 		droite=4 />
 	<transcoding.mp4
-		codec=mjpeg />
+		codec=mjpeg fbitrate=2000k split=True />
 </vod.design>

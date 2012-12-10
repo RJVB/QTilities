@@ -61,7 +61,7 @@ VAR
 	baseFileName, assocDataFileName : URLString;
 	baseDescription : VODDescription;
 	fullMovie : Movie;
-	fullMovieChanged : BOOLEAN;
+	fullMovieChanged, fullMovieIsSplit : BOOLEAN;
 	fullMovieWMH : QTMovieWindowH;
 
 END QTVODlib.

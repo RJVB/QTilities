@@ -646,7 +646,9 @@ int main( int argc, char* argv[] )
 		}
 
 		if( winlist[0] && (*(winlist[0])) && winlist[1] && (*(winlist[1])) ){
-			SlaveMovieToMasterMovie( (*(winlist[1]))->theMovie, (*(winlist[0]))->theMovie );
+			fprintf( stderr, "Slaving movie 1 (%s) to movie 0 (%s) returns %d\n",
+				   (*(winlist[1]))->theURL, (*(winlist[0]))->theURL,
+				   SlaveMovieToMasterMovie( (*(winlist[1]))->theMovie, (*(winlist[0]))->theMovie ) );
 		}
 		for( i = 0 ; i < numQTMW ; i++ ){
 			// play the movie

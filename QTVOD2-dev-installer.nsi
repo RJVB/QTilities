@@ -17,6 +17,7 @@ ShowInstDetails show
 !include "MUI.nsh"
 !include "FontRegAdv.nsh"
 !include "FontName.nsh"
+!include "winmessages.nsh"
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -33,6 +34,9 @@ ShowInstDetails show
 !define MUI_LANGDLL_REGISTRY_ROOT "${PRODUCT_UNINST_ROOT_KEY}"
 !define MUI_LANGDLL_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
 !define MUI_LANGDLL_REGISTRY_VALUENAME "NSIS:Language"
+
+; setting env.vars:
+!define env_hklm 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 
 ;Request application privileges for Windows Vista
 RequestExecutionLevel admin
@@ -185,7 +189,11 @@ Section !$(Sec2Name) SEC02
   File "S:\MacOSX\QTilities\QTils\POSIXm2.dll"
   File "S:\MacOSX\QTilities\QTils\QTils-dev.dll"
   File "S:\MacOSX\QTilities\QTils\POSIXm2-dev.dll"
-
+  CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k"
+  CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M-fsplit.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k -fsplit"
+  WriteRegExpandStr ${env_hklm} "QTMW_DoubleBuffering" "true"
+  ; make sure windows knows about the change
+  SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 ; Shortcuts
 ;  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 ;  !insertmacro MUI_STARTMENU_WRITE_END

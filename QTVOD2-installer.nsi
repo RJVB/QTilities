@@ -17,6 +17,7 @@ ShowInstDetails show
 !include "MUI.nsh"
 !include "FontRegAdv.nsh"
 !include "FontName.nsh"
+!include "winmessages.nsh"
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -37,6 +38,10 @@ ShowInstDetails show
 ; Welcome page
 ;Request application privileges for Windows Vista
 RequestExecutionLevel user
+
+; setting env.vars:
+!define env_hklm 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
+
 
 var QTDIR
 
@@ -122,8 +127,10 @@ LangString Sec3Descr ${LANG_ENGLISH} "Documentation for QTVODm2 and QTImage2Mov 
 LangString Sec1Descr ${LANG_FRENCH} "Le 'QuickTime Importer' QTImage2Mov qui permet d'importer les fichiers VOD et QI2M dans QuickTime.  s'Installe dans $QTDIR\QTComponents"
 LangString Sec2Descr ${LANG_FRENCH} "Le Lecteur QTVODm2 ainsi qu'un exemple de script de lancement et de fichier de configuration"
 LangString Sec3Descr ${LANG_FRENCH} "Documentation pour QTVODm2 et QTImage2Mov (le moteur utilisé par QTVODm2)"
-LangString Sec4Descr  ${LANG_ENGLISH} "Font used for the time and GPS info track in imported videos"
-LangString Sec4Descr  ${LANG_FRENCH} "La police utilisée pour la piste d'horodatage et GPS dans les vidéos importées"
+LangString Sec4Descr  ${LANG_ENGLISH} "Interface/API for client/server remote control"
+LangString Sec4Descr  ${LANG_FRENCH} "Interface (API) pour contrôle distant client/serveur"
+LangString Sec5Descr  ${LANG_ENGLISH} "Font used for the time and GPS info track in imported videos"
+LangString Sec5Descr  ${LANG_FRENCH} "La police utilisée pour la piste d'horodatage et GPS dans les vidéos importées"
 LangString QI2Mfail  ${LANG_ENGLISH} "could not be installed; to be copied manually into"
 LangString QI2Mfail  ${LANG_FRENCH} "echec d'installation, à copier à la main dans"
 LangString DirSelectSText  ${LANG_ENGLISH} "Install dir (QTImage2Mov will go into $QTDIR\QTComponents!)"
@@ -164,11 +171,15 @@ Section !$(Sec2Name) SEC02
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "S:\MacOSX\QTilities\QTils\Mod2\QTVODm2.exe"
+  CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k"
+  CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M-fsplit.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k -fsplit"
   File "S:\MacOSX\QTilities\QTils\Mod2\LanceQTVODm2.bat"
   File "S:\MacOSX\QTilities\QTils\Mod2\VODdesign.xml"
   File "S:\MacOSX\QTilities\QTils\QTils.dll"
   File "S:\MacOSX\QTilities\QTils\POSIXm2.dll"
-
+  WriteRegExpandStr ${env_hklm} "QTMW_DoubleBuffering" "true"
+  ; make sure windows knows about the change
+  SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 ; Shortcuts
 ;  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 ;  !insertmacro MUI_STARTMENU_WRITE_END
@@ -181,7 +192,14 @@ Section "Documentation" SEC03
   File /nonfatal "S:\MacOSX\QTImage2Mov\QTImage2Mov-v1.2.pdf"
 SectionEnd
 
-Section "Monaco font" SEC04
+Section /o "Interface" SEC04
+  SetOutPath "$INSTDIR\API"
+  SetOverwrite ifnewer
+  File /nonfatal "S:\MacOSX\QTilities\QTils\Mod2\mod\QTVODcomm.mod"
+  File /nonfatal "S:\MacOSX\QTilities\QTils\Mod2\def\QTVODcomm.def"
+SectionEnd
+
+Section "Monaco font" SEC05
   StrCpy $FONT_DIR $FONTS
   !insertmacro InstallTTF "S:\MacOSX\QTImage2Mov\Monaco.ttf"
   SendMessage ${HWND_BROADCAST} ${WM_FONTCHANGE} 0 0 /TIMEOUT=5000
@@ -211,6 +229,7 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} $(Sec2Descr)
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} $(Sec3Descr)
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} $(Sec4Descr)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} $(Sec5Descr)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 

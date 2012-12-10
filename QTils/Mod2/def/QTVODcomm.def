@@ -30,6 +30,7 @@ TYPE
 			DST, useVMGI, log, flipLeftRight : BOOLEAN;
 			channels : VODChannels;
 			codec, bitRate : URLString;
+			splitQuad : BOOLEAN;
 		END;
 	VODDescriptionPtr = POINTER TO VODDescription;
 

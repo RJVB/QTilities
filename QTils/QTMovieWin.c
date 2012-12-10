@@ -951,6 +951,7 @@ static ErrCode QTMovieWindowSetTimeChecked( QTMovieWindowH wih, double t, int ab
 #if TARGET_OS_WIN32
 		if( useThisTime ){
 			SetMovieTimeValue( wi->theMovie, *useThisTime );
+//			SetTimeBaseValue( GetMovieTimeBase(wi->theMovie), *useThisTime, wi->theInfo.timeScale );
 		}
 		else{
 			*( (SInt64*)&(trec.value) ) = (SInt64)( t * wi->theInfo.timeScale + 0.5 );
@@ -959,12 +960,12 @@ static ErrCode QTMovieWindowSetTimeChecked( QTMovieWindowH wih, double t, int ab
 		err = GetMoviesError();
 		UpdateMovie( wi->theMovie );
 		PortChanged( (GrafPtr) GetNativeWindowPort(wi->theView) );
-		if( wi->theMC ){
-			MCMovieChanged( wi->theMC, wi->theMovie );
-			if( !MCIdle(wi->theMC) ){
-				MCDraw(wi->theMC, (WindowRef) GetNativeWindowPort(wi->theView) );
-			}
-		}
+//		if( wi->theMC ){
+//			MCMovieChanged( wi->theMC, wi->theMovie );
+//			if( !MCIdle(wi->theMC) ){
+//				MCDraw(wi->theMC, (WindowRef) GetNativeWindowPort(wi->theView) );
+//			}
+//		}
 #else
 		{ extern void SetQTMovieTime( struct NSQTMovieWindow *theNSQTMovieWindow, TimeRecord *trec );
 		  extern void SetQTMovieTimeValue( struct NSQTMovieWindow *theNSQTMovieWindow, TimeValue tVal, TimeValue tScale );

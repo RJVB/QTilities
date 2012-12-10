@@ -925,7 +925,10 @@ ErrCode MetaDataHandler( Movie theMovie, Track toTrack,
 				inkeyF = kQTMetaDataKeyFormatUserData;
 				break;
 			default:
-				return kQTMetaDataInvalidKeyFormatErr;
+//				return kQTMetaDataInvalidKeyFormatErr;
+				inkey = key;
+				storageF = kQTMetaDataStorageFormatUserData;
+				inkeyF = kQTMetaDataKeyFormatUserData;
 				break;
 		}
 		// get a handle to the metadata storage (which can be empty, of course)
@@ -1634,12 +1637,21 @@ OSErr MaybeShowMoviePoster( Movie theMovie )
 
 ErrCode SlaveMovieToMasterMovie( Movie slave, Movie master )
 { TimeRecord slaveZero;
+  ErrCode err;
 	if( slave && master ){
 		GetTimeBaseStartTime( GetMovieTimeBase(master), GetMovieTimeScale(master), &slaveZero );
 		SetTimeBaseMasterTimeBase( GetMovieTimeBase(slave),
 							 GetMovieTimeBase(master),
 							 &slaveZero );
-		return GetMoviesError();
+		if( (err = GetMoviesError()) == noErr ){
+			SetMovieMasterTimeBase( slave,
+								 GetMovieTimeBase(master),
+								 &slaveZero );
+			return GetMoviesError();
+		}
+		else{
+			return err;
+		}
 	}
 	else{
 		return paramErr;
