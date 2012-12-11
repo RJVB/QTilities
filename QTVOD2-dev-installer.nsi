@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "QTVODm2"
-!define PRODUCT_VERSION "1.3 (devel)"
+!define PRODUCT_VERSION "1.3RC-devel"
 !define PRODUCT_PUBLISHER "IFSTTAR"
 !define PRODUCT_WEB_SITE "http://www.inrets.fr"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\QTVODm2.exe"
@@ -138,6 +138,8 @@ LangString Sec5Descr ${LANG_FRENCH} "SS_Log: fonctions journal (pour $WINDIR)"
 LangString Sec6Descr ${LANG_FRENCH} "libraires pour les fonctions journal SS_Log (pour c:\Libs\SS_Log_Bin)"
 LangString Sec7Descr ${LANG_ENGLISH} "Font used for the time and GPS info track in imported videos"
 LangString Sec7Descr ${LANG_FRENCH} "La police utilisée pour la piste d'horodatage et GPS dans les vidéos importées"
+LangString Sec8Descr ${LANG_ENGLISH} "FFmpeg and FFprobe, used by the QTImage2Mov Importer. Installs in $QTDIR\QTSystem"
+LangString Sec8Descr ${LANG_FRENCH} "FFmpeg et FFprobe, utilisés par le plugin QTImage2Mov. s'Installent dans $QTDIR\QTSystem"
 LangString QI2Mfail  ${LANG_ENGLISH} "could not be installed; to be copied manually into"
 LangString QI2Mfail  ${LANG_FRENCH} "echec d'installation, à copier à la main dans"
 LangString DirSelectSText  ${LANG_ENGLISH} "Install dir (QTImage2Mov will go into $QTDIR\QTComponents!)"
@@ -179,6 +181,18 @@ Section "QuickTime VOD & Qi2M Importer Component" SEC01
 
 SectionEnd
 
+Section "FFmpeg" SEC08
+  SetRegView 32
+  KillProcDLL::KillProc "ffmpeg.exe"
+  DetailPrint "KillProc ffmpeg returned $R0"
+  KillProcDLL::KillProc "ffprobe.exe"
+  DetailPrint "KillProc ffprobe returned $R0"
+  SetOutPath "$QTDIR\QTSystem"
+  SetOverwrite ifnewer
+  File "d:\Cygwin\bin\ffmpeg.exe"
+  File "d:\Cygwin\bin\ffprobe.exe"
+SectionEnd
+
 Section !$(Sec2Name) SEC02
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
@@ -190,7 +204,7 @@ Section !$(Sec2Name) SEC02
   File "S:\MacOSX\QTilities\QTils\QTils-dev.dll"
   File "S:\MacOSX\QTilities\QTils\POSIXm2-dev.dll"
   CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k"
-  CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M-fsplit.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k -fsplit"
+  CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M-fsplit.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k -fsplit TRUE"
   WriteRegExpandStr ${env_hklm} "QTMW_DoubleBuffering" "true"
   ; make sure windows knows about the change
   SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
@@ -204,6 +218,8 @@ Section "Documentation" SEC03
   SetOverwrite ifnewer
   File /nonfatal "S:\MacOSX\QTilities\QTVODm2.pdf"
   File /nonfatal "S:\MacOSX\QTilities\QTilities-v1.3.pdf"
+  File /nonfatal /r "S:\MacOSX\QTilities\FFmpeg-licenses"
+  File /nonfatal "S:\MacOSX\QTilities\ffmpeg-20121125-git-26c531c-win64-static-readme.txt"
   File /nonfatal "S:\MacOSX\QTImage2Mov\QTImage2Mov-v1.2.pdf"
   File /nonfatal "S:\MacOSX\QTilities\QTils.chm"
   File /nonfatal "S:\MacOSX\QTImage2Mov\QTImage2Mov.chm"
@@ -272,6 +288,7 @@ SectionEnd
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} $(Sec1Descr)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC08} $(Sec8Descr)
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} $(Sec2Descr)
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} $(Sec3Descr)
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} $(Sec4Descr)

@@ -110,8 +110,6 @@ CONST
 			{xml_element, "utc", element_utc},
 				{xml_attribute, "zone", attr_zone, recordAttributeValueTypeDouble, _d, ADR(xmlVD.timeZone)},
 				{xml_attribute, "dst", attr_dst, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.DST)},
-				{xml_attribute, "flipleftright", attr_flLR, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.flipLeftRight)},
-				{xml_attribute, "flipgauchedroite", attr_flLR, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.flipLeftRight)},
 			{xml_element, "scale", element_scale},
 				{xml_attribute, "factor", attr_scale, recordAttributeValueTypeDouble, _d, ADR(xmlVD.scale)},
 			{xml_element, "echelle", element_echelle},
@@ -121,11 +119,13 @@ CONST
 				{xml_attribute, "pilot", attr_pilot, recordAttributeValueTypeInteger, _d, ADR(xmlVD.channels.pilot)},
 				{xml_attribute, "left", attr_left, recordAttributeValueTypeInteger, _d, ADR(xmlVD.channels.left)},
 				{xml_attribute, "right", attr_right, recordAttributeValueTypeInteger, _d, ADR(xmlVD.channels.right)},
+				{xml_attribute, "flipleftright", attr_flLR, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.flipLeftRight)},
 			{xml_element, "canaux", element_canaux},
 				{xml_attribute, "avant", attr_forward, recordAttributeValueTypeInteger, _d, ADR(xmlVD.channels.forward)},
 				{xml_attribute, "pilote", attr_pilot, recordAttributeValueTypeInteger, _d, ADR(xmlVD.channels.pilot)},
 				{xml_attribute, "gauche", attr_left, recordAttributeValueTypeInteger, _d, ADR(xmlVD.channels.left)},
 				{xml_attribute, "droite", attr_right, recordAttributeValueTypeInteger, _d, ADR(xmlVD.channels.right)},
+				{xml_attribute, "flipgauchedroite", attr_flLR, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.flipLeftRight)},
 			{xml_element, "parsing", element_parsing},
 				{xml_attribute, "usevmgi", attr_usevmgi, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.useVMGI)},
 				{xml_attribute, "log", attr_log, recordAttributeValueTypeBoolean, _d, ADR(xmlVD.log)},
@@ -1910,25 +1910,28 @@ BEGIN
 END FrequencyFromXMLElementAttributes;
 *)
 
-PROCEDURE GetXMLParamString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
+PROCEDURE GetXMLParamString( theElement : XMLElement; idx : CARDINAL; elm : UInt32; designTable : ARRAY OF XML_RECORD;
 	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
+VAR
+	attrs : XMLAttributeArrayPtr;
 BEGIN
-	CASE theElement.attributes^.identifier OF
+	attrs := CAST(XMLAttributeArrayPtr, theElement.attributes);
+	CASE attrs^[idx].identifier OF
 		attr_codec :
-				Assign( theElement.attributes^.valueStr^, xmlVD.codec );
+				Assign( attrs^[idx].valueStr^, xmlVD.codec );
 		| attr_bitrate :
-				Assign( theElement.attributes^.valueStr^, xmlVD.bitRate );
+				Assign( attrs^[idx].valueStr^, xmlVD.bitRate );
 		ELSE
 			RETURN paramErr;
 	END;
 	QTils.LogMsgEx( "> attr #%d %s=%s",
-		VAL(INTEGER, theElement.attributes^.identifier), designTable[designEntry].attributeTag,
-		theElement.attributes^.valueStr^ );
+		VAL(INTEGER, attrs^[idx].identifier), designTable[designEntry].attributeTag,
+		attrs^[idx].valueStr^ );
 	RETURN noErr;
 END GetXMLParamString;
 
 (*
-PROCEDURE GetBitRateString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
+PROCEDURE GetBitRateString( theElement : XMLElement; idx : CARDINAL; elm : UInt32; designTable : ARRAY OF XML_RECORD;
 	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
 BEGIN
 	IF theElement.attributes^.identifier = attr_bitrate

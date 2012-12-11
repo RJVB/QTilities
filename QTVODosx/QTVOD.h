@@ -50,7 +50,8 @@ typedef struct TimeInterval {
 	VODDescription theDescription;
 	Cartesian ULCorner;
 	TimeInterval theTimeInterval;
-	BOOL fullMovieChanged, finalCloseVideo, shouldBeClosed;
+	BOOL fullMovieChanged, finalCloseVideo, shouldBeClosed, fullMovieIsSplit;
+	VODChannels splitCamTrack;
 }
 
 + (QTVOD*) createWithAbsoluteURL:(NSURL*)aURL ofType:(NSString*)typeName

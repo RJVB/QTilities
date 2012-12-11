@@ -566,8 +566,6 @@ VAR
 		la procédure qui lit chaque élément individuel; les attributs, ou les (sous) éléments.
 	*)
 	PROCEDURE ReadXMLElementAttributes( theElement : XMLElement ) : ErrCode;
-	TYPE
-		XMLAttributeArrayPtr = POINTER TO ARRAY[0..0] OF XMLAttribute;
 	VAR
 		idx, idx2, elem : CARDINAL;
 		attrs : XMLAttributeArrayPtr;
@@ -624,7 +622,7 @@ VAR
 										END;
 										IF design[idx].useHandler
 											THEN
-												xmlErr := design[idx].handler( theElement, elm, design, idx, fName );
+												xmlErr := design[idx].handler( theElement, elem, elm, design, idx, fName );
 											ELSE
 												val.integerValue := design[idx].parsed;
 												CASE design[idx].attributeType OF

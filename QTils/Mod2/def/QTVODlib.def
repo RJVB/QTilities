@@ -37,7 +37,7 @@ PROCEDURE ScanForDefaultVODDescription( movie, fName : URLString; VAR descr : VO
 PROCEDURE BenchmarkPlaybackRate;
 PROCEDURE CalcTimeInterval(reset, display : BOOLEAN);
 
-PROCEDURE GetXMLParamString( theElement : XMLElement; elementEntry : UInt32; designTable : ARRAY OF XML_RECORD;
+PROCEDURE GetXMLParamString( theElement : XMLElement; idx : CARDINAL; elm : UInt32; designTable : ARRAY OF XML_RECORD;
 	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
 
 (* test

@@ -390,6 +390,7 @@ QTCompressionQualities	=
 			valueStr : String1kPtr;
 		END;
 	XMLAttributePtr	= POINTER TO XMLAttribute;
+	XMLAttributeArrayPtr = POINTER TO ARRAY[0..0] OF XMLAttribute;
 	XMLContentPtr		= POINTER TO XMLContent;
 	XMLElement			=
 		RECORD
@@ -427,7 +428,7 @@ QTCompressionQualities	=
 	(* 20111003: interprétation "automatisée" *)
 	XML_ITEM_TYPES = ( xml_element, xml_attribute );
 
-	XMLAttributeParseCallback = PROCEDURE(XMLElement, UInt32, ARRAY OF XML_RECORD,
+	XMLAttributeParseCallback = PROCEDURE(XMLElement, CARDINAL, UInt32, ARRAY OF XML_RECORD,
 									UInt32, ARRAY OF CHAR) : ErrCode;
 
 	XML_RECORD =

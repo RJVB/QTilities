@@ -434,6 +434,26 @@ VAR
 	arg : UInt16;
 	convResult : ConvResults;
 	realVal : LONGREAL;
+	argError : BOOLEAN;
+
+		PROCEDURE CheckOptArg( arg : UInt16 ; value : ARRAY OF CHAR ) : BOOLEAN;
+		BEGIN
+			IF Equal(POSIX.Arg(arg), value )
+				THEN
+					IF arg < POSIX.argc - 1
+						THEN
+							RETURN TRUE;
+						ELSE
+							argError := TRUE;
+							PostMessage( value, "Erreur: argument requiert une option" );
+							RETURN FALSE;
+					END;
+				ELSE
+					argError := FALSE;
+					RETURN FALSE;
+			END;
+		END CheckOptArg;
+
 BEGIN
 	arg := 1;
 	WHILE arg < POSIX.argc  DO
@@ -447,7 +467,7 @@ BEGIN
 						Assign( "127.0.0.1", ipAddress );
 				END;
 				InitCommClient( sServeur, ipAddress, ServerPortNr, ClientPortNr, 50 );
-			ELSIF Equal(POSIX.Arg(arg), "-assocData") AND (arg < POSIX.argc-1)
+			ELSIF CheckOptArg( arg, "-assocData" )
 				THEN
 					IF LENGTH(POSIX.Arg(arg+1)) > 0
 						THEN
@@ -465,90 +485,93 @@ BEGIN
 							Assign( POSIX.Arg(arg), movie );
 					END;
 					RETURN;
-			ELSIF ( Equal(POSIX.Arg(arg), "-freq") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-freq" )
 				THEN
 					INC(arg);
 					StrToReal( POSIX.Arg(arg), realVal, convResult );
 					movieDescription.frequency := VAL(Real64,realVal);
 					QTils.LogMsgEx( "-freq=%s -> %g", POSIX.Arg(arg), movieDescription.frequency );
-			ELSIF ( Equal(POSIX.Arg(arg), "-timeZone") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-timeZone" )
 				THEN
 					INC(arg);
 					StrToReal( POSIX.Arg(arg), realVal, convResult );
 					movieDescription.timeZone := VAL(Real64,realVal);
 					QTils.LogMsgEx( "-timeZone=%s -> %g", POSIX.Arg(arg), movieDescription.timeZone );
-			ELSIF ( Equal(POSIX.Arg(arg), "-DST") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-DST" )
 				THEN
 					INC(arg);
 					Capitalize(POSIX.argv^[arg]^);
 					movieDescription.DST := Equal(POSIX.Arg(arg), "TRUE");
 					QTils.LogMsgEx( "-DST=%s -> %d", POSIX.Arg(arg), VAL(INTEGER,movieDescription.DST) );
-			ELSIF ( Equal(POSIX.Arg(arg), "-hFlip") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-hFlip" )
 				THEN
 					INC(arg);
 					Capitalize(POSIX.argv^[arg]^);
 					movieDescription.flipLeftRight := Equal(POSIX.Arg(arg), "TRUE");
 					QTils.LogMsgEx( "-hFlip=%s -> %d", POSIX.Arg(arg), VAL(INTEGER,movieDescription.flipLeftRight) );
-			ELSIF ( Equal(POSIX.Arg(arg), "-VMGI") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-VMGI" )
 				THEN
 					INC(arg);
 					Capitalize(POSIX.argv^[arg]^);
 					movieDescription.useVMGI := Equal(POSIX.Arg(arg), "TRUE");
 					QTils.LogMsgEx( "-VMGI=%s -> %d", POSIX.Arg(arg), VAL(INTEGER,movieDescription.useVMGI) );
-			ELSIF ( Equal(POSIX.Arg(arg), "-log") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-log" )
 				THEN
 					INC(arg);
 					Capitalize(POSIX.argv^[arg]^);
 					movieDescription.log := Equal(POSIX.Arg(arg), "TRUE");
 					QTils.LogMsgEx( "-log=%s -> %d", POSIX.Arg(arg), VAL(INTEGER,movieDescription.log) );
-			ELSIF ( Equal(POSIX.Arg(arg), "-scale") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-scale" )
 				THEN
 					INC(arg);
 					StrToReal( POSIX.Arg(arg), realVal, convResult );
 					movieDescription.scale := VAL(Real64,realVal);
 					QTils.LogMsgEx( "-scale=%s -> %g", POSIX.Arg(arg), movieDescription.scale );
-			ELSIF ( Equal(POSIX.Arg(arg), "-chForward") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-chForward" )
 				THEN
 					INC(arg);
 					StrToInt( POSIX.Arg(arg), movieDescription.channels.forward, convResult );
 					ClipInt( movieDescription.channels.forward, 1, 4 );
 					QTils.LogMsgEx( "-chForward=%s -> %d", POSIX.Arg(arg), movieDescription.channels.forward );
-			ELSIF ( Equal(POSIX.Arg(arg), "-chPilot") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-chPilot" )
 				THEN
 					INC(arg);
 					StrToInt( POSIX.Arg(arg), movieDescription.channels.pilot, convResult );
 					ClipInt( movieDescription.channels.pilot, 1, 4 );
 					QTils.LogMsgEx( "-chPilot=%s -> %d", POSIX.Arg(arg), movieDescription.channels.pilot );
-			ELSIF ( Equal(POSIX.Arg(arg), "-chLeft") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-chLeft" )
 				THEN
 					INC(arg);
 					StrToInt( POSIX.Arg(arg), movieDescription.channels.left, convResult );
 					ClipInt( movieDescription.channels.left, 1, 4 );
 					QTils.LogMsgEx( "-chLeft=%s -> %d", POSIX.Arg(arg), movieDescription.channels.left );
-			ELSIF ( Equal(POSIX.Arg(arg), "-chRight") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-chRight" )
 				THEN
 					INC(arg);
 					StrToInt( POSIX.Arg(arg), movieDescription.channels.right, convResult );
 					ClipInt( movieDescription.channels.right, 1, 4 );
 					QTils.LogMsgEx( "-chRight=%s -> %d", POSIX.Arg(arg), movieDescription.channels.right );
-			ELSIF ( Equal(POSIX.Arg(arg), "-fcodec") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-fcodec" )
 				THEN
 					INC(arg);
 					Assign( POSIX.Arg(arg), movieDescription.codec );
 					QTils.LogMsgEx( "-fcodec=%s", movieDescription.codec );
-			ELSIF ( Equal(POSIX.Arg(arg), "-fbitrate") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-fbitrate" )
 				THEN
 					INC(arg);
 					Assign( POSIX.Arg(arg), movieDescription.bitRate );
 					QTils.LogMsgEx( "-fbitrate=%s", movieDescription.bitRate );
-			ELSIF ( Equal(POSIX.Arg(arg), "-fsplit") AND (arg < POSIX.argc-1) )
+			ELSIF CheckOptArg( arg, "-fsplit" )
 				THEN
 					INC(arg);
 					Capitalize(POSIX.argv^[arg]^);
 					movieDescription.splitQuad := Equal(POSIX.Arg(arg), "TRUE");
 					QTils.LogMsgEx( "-fsplit=%s -> %d", POSIX.Arg(arg), VAL(INTEGER,movieDescription.splitQuad) );
 			ELSE
-				Assign( POSIX.Arg(arg), movie );
+				IF NOT argError
+					THEN
+						Assign( POSIX.Arg(arg), movie );
+				END;
 		END;
 		INC(arg);
 	END;

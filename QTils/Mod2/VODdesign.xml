@@ -2,26 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <vod.design>
 	<!-- commentaire -->
-	<frequency fps=50 />
-	<vod.design>
-		<scale factor=10 />
-		<UTC zone=2 DST=True />
-	</vod.design>
-	<frequence tps=29,97 />
 	<frequency fps=12.5 />
-	<echelle facteur=2 />
 	<scale factor=1 />
 	<UTC zone=1 DST=False />
 	<channels
-		forward=4
-		pilot=3
-		left=2
-		right=1 />
-	<canaux
-		avant=1
-		pilote=2
-		gauche=3
-		droite=4 />
+		forward=1
+		pilot=2
+		left=3
+		right=4
+		flipLeftRight=False />
 	<transcoding.mp4
-		codec=mjpeg fbitrate=2000k split=True />
+		codec=mjpeg bitrate=1100k split=True />
 </vod.design>

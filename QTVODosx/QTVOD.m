@@ -77,7 +77,8 @@ enum xmlItems { element_vodDesign = 1,
 	attr_usevmgi = 14,
 	attr_log = 15,
 	attr_codec = 16,
-	attr_bitrate = 17
+	attr_bitrate = 17,
+	attr_split = 18,
  };
 
 VODDescription xmlVD;
@@ -112,7 +113,7 @@ VODDescription xmlVD;
 
 NSVODDescription *nsXMLVD = NULL;
 
-XML_Record xml_design_parser[36] = {
+XML_Record xml_design_parser[] = {
 		{xml_element, "vod.design", element_vodDesign},
 		{xml_element, "frequency", element_frequency},
 			{xml_attribute, "fps", attr_freq, recordAttributeValueTypeDouble, &xmlVD.frequency},
@@ -121,8 +122,6 @@ XML_Record xml_design_parser[36] = {
 		{xml_element, "utc", element_utc},
 			{xml_attribute, "zone", attr_zone, recordAttributeValueTypeDouble, &xmlVD.timeZone},
 			{xml_attribute, "dst", attr_dst, recordAttributeValueTypeBoolean, &xmlVD.DST},
-			{xml_attribute, "flipleftright", attr_flLR, recordAttributeValueTypeBoolean, &xmlVD.flipLeftRight},
-			{xml_attribute, "flipgauchedroite", attr_flLR, recordAttributeValueTypeBoolean, &xmlVD.flipLeftRight},
 		{xml_element, "scale", element_scale},
 			{xml_attribute, "factor", attr_scale, recordAttributeValueTypeDouble, &xmlVD.scale},
 		{xml_element, "echelle", element_echelle},
@@ -132,11 +131,13 @@ XML_Record xml_design_parser[36] = {
 			{xml_attribute, "pilot", attr_pilot, recordAttributeValueTypeInteger, &xmlVD.channels.pilot},
 			{xml_attribute, "left", attr_left, recordAttributeValueTypeInteger, &xmlVD.channels.left},
 			{xml_attribute, "right", attr_right, recordAttributeValueTypeInteger, &xmlVD.channels.right},
+			{xml_attribute, "flipleftright", attr_flLR, recordAttributeValueTypeBoolean, &xmlVD.flipLeftRight},
 		{xml_element, "canaux", element_canaux},
 			{xml_attribute, "avant", attr_forward, recordAttributeValueTypeInteger, &xmlVD.channels.forward},
 			{xml_attribute, "pilote", attr_pilot, recordAttributeValueTypeInteger, &xmlVD.channels.pilot},
 			{xml_attribute, "gauche", attr_left, recordAttributeValueTypeInteger, &xmlVD.channels.left},
 			{xml_attribute, "droite", attr_right, recordAttributeValueTypeInteger, &xmlVD.channels.right},
+			{xml_attribute, "flipgauchedroite", attr_flLR, recordAttributeValueTypeBoolean, &xmlVD.flipLeftRight},
 		{xml_element, "parsing", element_parsing},
 			{xml_attribute, "usevmgi", attr_usevmgi, recordAttributeValueTypeBoolean, &xmlVD.useVMGI},
 			{xml_attribute, "log", attr_log, recordAttributeValueTypeBoolean, &xmlVD.log},
@@ -146,9 +147,11 @@ XML_Record xml_design_parser[36] = {
 		{xml_element, "transcoding.mp4", element_transcoding},
 			{xml_attribute, "codec", attr_codec, recordAttributeValueTypeCharString, &xmlVD.codec},
 			{xml_attribute, "bitrate", attr_bitrate, recordAttributeValueTypeCharString, &xmlVD.bitRate},
+			{xml_attribute, "split", attr_split, recordAttributeValueTypeBoolean, &xmlVD.splitQuad},
 		{xml_element, "transcodage.mp4", element_transcodage},
 			{xml_attribute, "codec", attr_codec, recordAttributeValueTypeCharString, &xmlVD.codec},
 			{xml_attribute, "taux", attr_bitrate, recordAttributeValueTypeCharString, &xmlVD.bitRate},
+			{xml_attribute, "split", attr_split, recordAttributeValueTypeBoolean, &xmlVD.splitQuad},
 };
 
 static BOOL recreateChannelViews;
@@ -694,6 +697,7 @@ BOOL addToRecentDocs = YES;
 - (void) register_windows;
 - (ErrCode) ImportMovie:(NSURL*)src withDescription:(VODDescription*)description;
 - (QTVODWindow*) OpenChannelView:(NSURL*)cachedMovieFile forChannelNr:(int)channel withName:(const char*) chName;
+- (BOOL) PrepareChannelCacheMovie:(Movie)theMovie withChannels:(VODChannels*)channels forChannel:(int)channel;
 - (id) CreateChannelView:(NSURL*)src withDescription:(VODDescription*)description
 	channel:(int)channel channelName:(const char*)chName scale:(double)scale
 	display:(BOOL)openNow ofType:(NSString *)typeName error:(NSError **)outError eMsg:(char*)eMsg;
@@ -961,6 +965,13 @@ BOOL addToRecentDocs = YES;
 		fprintf( fp, "\t<sequence src=\"%s\" channel=-1 freq=%g", [vodsource UTF8String], description->frequency );
 		fprintf( fp, " hidetc=False timepad=False hflip=False vmgi=%s", (description->useVMGI)? "True" : "False" );
 		fprintf( fp, " newchapter=True log=%s", (description->log)? "True" : "False" );
+		if( description->codec && *description->codec ){
+			fprintf( fp, "\n\tfcodec=%s", description->codec );
+			if( description->bitRate && *description->bitRate ){
+				fprintf( fp, " fbitrate=%s", description->bitRate );
+			}
+		}
+		fprintf( fp, " fsplit=%s", (description->splitQuad)? "True" : "False" );
 		fputs( " />\n", fp );
 		fputs( "</import>\n", fp );
 		fclose(fp);
@@ -1053,6 +1064,65 @@ BOOL addToRecentDocs = YES;
 	return wi;
 }
 
+- (BOOL) PrepareChannelCacheMovie:(Movie)theMovie withChannels:(VODChannels*)channels forChannel:(int)channel
+{ Track track = NULL;
+  long trackNr, trackCount;
+  char camString[128], *camTrackString;
+	if( channel != 5 && channel != 6 ){
+		if( GetTrackWithName( theMovie, "timeStamp Track", TextMediaType, 0, &track, NULL ) == noErr && track ){
+			SetTrackEnabled( track, NO );
+		}
+	}
+	track = NULL;
+	if( GetTrackWithName( theMovie, "TimeCode Track", TimeCodeMediaType, 0, &track, NULL ) == noErr && track ){
+		SetTrackEnabled( track, YES );
+	}
+	/* si on a une fullMovie avec 4 pistes distinctes pour les 4 caméras ET on prépare la vue
+		d'une de ces caméras (et non pas la vue TimeCode), on désactive toutes les pistes caméra
+		qui ne correspondent pas à la caméra demandée */
+	if( fullMovieIsSplit && channel > 0 ){
+		trackCount = GetMovieTrackCount(theMovie) + 1;
+		/* la caméra qu'on traite ici: */
+		snprintf( camString, sizeof(camString), "Camera %d", channel );
+		for( trackNr = 0 ; trackNr < trackCount ; trackNr++ ){
+			// le numéro de la caméra est associé à la méta-donnée 'cam#' de la piste:
+			camTrackString = NULL;
+			if( GetMetaDataStringFromTrack( theMovie, (track = GetMovieIndTrack(theMovie,trackNr)),
+									 'cam#', &camTrackString, NULL ) == noErr
+				&& camTrackString
+			){
+				// on a une chaine issue des méta-données, mais elle peut être vide ou correspondre à autre chose:
+				if( strncmp( camTrackString, "Camera ", 7 ) == 0 ){
+					// c'est bien une chaine de forme "Camera "... maintenant faisons la comparaison:
+					if( strcmp( camString, camTrackString ) == 0 ){
+						// c'est la bonne piste
+						SetTrackEnabled( track, YES );
+						// on sauvegarde le numéro de la piste pour référence future
+						if( channels->forward == channel ){
+							splitCamTrack.forward = trackNr;
+						}
+						else if( channels->pilot == channel ){
+							splitCamTrack.pilot = trackNr;
+						}
+						else if( channels->left == channel ){
+							splitCamTrack.left = trackNr;
+						}
+						else if( channels->right == channel ){
+							splitCamTrack.right = trackNr;
+						}
+					}
+					else{
+						// c'est la piste d'une autre caméra: on désactive 
+						SetTrackEnabled( track, NO );
+					}
+				}
+				free(camTrackString);
+			}
+		}
+	}
+	return HasMovieChanged(theMovie);
+}
+
 // creates a channel view for the VOD video in <src> based on the other arguments. Returns either
 // a pointer to the opened window (display:YES) or the URL containing the channel view cache movie.
 - (id) CreateChannelView:(NSURL*)src withDescription:(VODDescription*)description
@@ -1116,7 +1186,12 @@ BOOL addToRecentDocs = YES;
 					description->timeZone, (short) description->DST
 				);
 			}
-			fprintf( fp, "\t<sequence src=\"%s.mov\" channel=%d", [[src path] UTF8String], channel );
+			if( fullMovieIsSplit ){
+				fprintf( fp, "\t<sequence src=\"%s.mov\"", [[src path] UTF8String] );
+			}
+			else{
+				fprintf( fp, "\t<sequence src=\"%s.mov\" channel=%d", [[src path] UTF8String], channel );
+			}
 			if( channel == 5 || channel == 6 ){
 				// ch.5: TimeCode track; ch.6: extended/text timecode track
 				fputs( " hidetc=False timepad=False asmovie=True newchapter=False", fp );
@@ -1154,20 +1229,11 @@ BOOL addToRecentDocs = YES;
 				}
 			}
 			else{
-			  Track track = NULL;
 				unlink(fName);
 				if( doLogging ){
 					QTils_LogMsgEx( "'%s' imported and unlinked", fName );
 				}
-				if( channel != 5 && channel != 6 ){
-					if( GetTrackWithName( theMovie, "timeStamp Track", TextMediaType, 0, &track, NULL ) == noErr && track ){
-						SetTrackEnabled( track, NO );
-					}
-				}
-				track = NULL;
-				if( GetTrackWithName( theMovie, "TimeCode Track", TimeCodeMediaType, 0, &track, NULL ) == noErr && track ){
-					SetTrackEnabled( track, YES );
-				}
+				[self PrepareChannelCacheMovie:theMovie withChannels:&description->channels forChannel:channel];
 				cachedMovieFile = [NSURL fileURLWithPath:fn];
 				fName = [[cachedMovieFile path] cStringUsingEncoding:NSUTF8StringEncoding];
 				err = SaveMovieAsRefMov( fName, theMovie );
@@ -1207,7 +1273,12 @@ BOOL addToRecentDocs = YES;
 			[qi2mString appendFormat:@"\t<description txt=\"UTC timeZone=%g, DST=%hd\" />\n",
 				   description->timeZone, (short) description->DST ];
 		}
-		[qi2mString appendFormat:@"\t<sequence src=\"%s.mov\" channel=%d", [[src path] UTF8String], channel ];
+		if( fullMovieIsSplit ){
+			[qi2mString appendFormat:@"\t<sequence src=\"%s.mov\"", [[src path] UTF8String] ];
+		}
+		else{
+			[qi2mString appendFormat:@"\t<sequence src=\"%s.mov\" channel=%d", [[src path] UTF8String], channel ];
+		}
 		if( channel == 5 || channel == 6 ){
 			// ch.5: TimeCode track; ch.6: extended/text timecode track
 			[qi2mString appendString:@" hidetc=False timepad=False asmovie=True newchapter=False" ];
@@ -1249,17 +1320,7 @@ BOOL addToRecentDocs = YES;
 				}
 			}
 			else{
-			  Track track = NULL;
-				if( channel != 5 && channel != 6 ){
-					if( GetTrackWithName( theMovie, "timeStamp Track", TextMediaType, 0, &track, NULL ) == noErr && track ){
-						SetTrackEnabled( track, NO );
-					}
-				}
-				track = NULL;
-				if( GetTrackWithName( theMovie, "TimeCode Track", TimeCodeMediaType, 0, &track, NULL ) == noErr && track ){
-					SetTrackEnabled( track, YES );
-				}
-				if( HasMovieChanged(theMovie) ){
+				if( [self PrepareChannelCacheMovie:theMovie withChannels:&description->channels forChannel:channel] ){
 					cachedMovieFile = [NSURL fileURLWithPath:fn];
 					fName = [[cachedMovieFile path] cStringUsingEncoding:NSUTF8StringEncoding];
 					err = SaveMovieAsRefMov( fName, theMovie );
@@ -2051,6 +2112,19 @@ BOOL addToRecentDocs = YES;
 		}
 	}
 
+	if( fullMovie ){
+	  char *quadString = NULL;
+		if( GetMetaDataStringFromMovie( fullMovie, 'quad', &quadString, NULL ) == noErr && quadString ){
+			if( strcmp( quadString, "MPG4 VOD imported as 4 tracks" ) == 0 ){
+				fullMovieIsSplit = YES;
+			}
+			else{
+				fullMovieIsSplit = NO;
+			}
+			free(quadString);
+		}
+	}
+	
 	// now, try to open the 5 views:
 	if( doLogging ){
 		// sequential opening on the main thread

@@ -19,6 +19,7 @@ typedef struct VODDescription {
 	VODChannels channels;
 	BOOL changed;
 	char *codec, *bitRate;
+	BOOL splitQuad;
 } VODDescription;
 
 extern VODDescription globalVDPreferences;

@@ -393,6 +393,14 @@ static char *channelName(int channel)
 			[contents appendFormat:@"\t\tpilot=%d\n", globalVDPreferences.channels.pilot];
 			[contents appendFormat:@"\t\tleft=%d\n", globalVDPreferences.channels.left];
 			[contents appendFormat:@"\t\tright=%d />\n", globalVDPreferences.channels.right];
+			[contents appendString:@"\t<transcoding.mp4\n"];
+			if( globalVDPreferences.codec && *globalVDPreferences.codec ){
+				[contents appendFormat:@"\t\tcodec=%s\n", globalVDPreferences.codec ];
+			}
+			if( globalVDPreferences.bitRate && *globalVDPreferences.bitRate ){
+				[contents appendFormat:@"\t\tbitrate=%s\n", globalVDPreferences.bitRate ];
+			}
+			[contents appendFormat:@"\t\tsplit=%s />\n", (globalVDPreferences.splitQuad)? "True" : "False" ];
 			[contents appendString:@"</vod.design>\n"];
 			// write the contents to the requested file, creating/replacing it as necessary:
 			ret = [contents writeToFile:fName atomically:NO encoding:NSUTF8StringEncoding error:NULL];

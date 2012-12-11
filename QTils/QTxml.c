@@ -295,7 +295,7 @@ ErrCode ReadXMLElementAttributes( XMLElement *theElement, size_t elm, XML_Record
 							return paramErr;
 						}
 						if( useHandler ){
-							xmlErr = (*design[idx].reading.handler)( theElement, elm, design, idx, fName );
+							xmlErr = (*design[idx].reading.handler)( theElement, elem, elm, design, idx, fName );
 						}
 						else{
 							val.integerValue = design[idx].reading.parsed;

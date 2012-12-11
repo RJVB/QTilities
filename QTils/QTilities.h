@@ -882,12 +882,13 @@ struct XML_Record;
 /*!
 	Callback to handle the occurrence of a specific element/attribute in XML file fName
 	@param	theElement	the XML element being considered
-	@param	elementEntry	the element's number (largely informational)
+	@param	idx			the index of the element's attribute under consideration
+	@param	elm			the element's number (largely informational)
 	@param	designTable	the design table describing the XML file
 	@param	designEntry	the index into the design table that matches the current element/attribute pair
 	@param	fName		the XML file name
  */
-typedef ErrCode (*XMLAttributeParseCallback)(XMLElement *theElement, size_t elementEntry, struct XML_Record *designTable,
+typedef ErrCode (*XMLAttributeParseCallback)(XMLElement *theElement, SInt32 idx, size_t elm, struct XML_Record *designTable,
 									size_t designEntry, const char *fName);
 
 /*!
