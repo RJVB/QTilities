@@ -31,14 +31,14 @@ extern VODDescription globalVDPreferences;
 @end
 
 @interface VDPreferencesController : NSWindowController {
-	IBOutlet NSComboBox		*freqPopup,
-						*tzPopup;
-	IBOutlet NSButton		*dstButton, *flLRButton;
-	IBOutlet NSTextField	*scaleTextField;
+	IBOutlet NSComboBox			*freqPopup,
+							*tzPopup;
+	IBOutlet NSButton			*dstButton, *flLRButton, *splitButton;
+	IBOutlet NSTextField		*scaleTextField, *codecTextField, *bitRateTextField;
 	IBOutlet NSNumberFormatter	*scaleNFormatter;
-	IBOutlet NSStepperCell	*scaleStepperCell;
+	IBOutlet NSStepperCell		*scaleStepperCell;
 
-	IBOutlet NSAMatrix		*ch1Matrix, *ch2Matrix, *ch3Matrix, *ch4Matrix;
+	IBOutlet NSAMatrix			*ch1Matrix, *ch2Matrix, *ch3Matrix, *ch4Matrix;
 }
 
 - (void)update:(BOOL)updateChannelDisplay;
@@ -47,7 +47,10 @@ extern VODDescription globalVDPreferences;
 - (void)tzPopupChanged:sender;
 - (void)dstButtonChanged:sender;
 - (void)flLRButtonChanged:sender;
+- (void)splitButtonChanged:sender;
 - (void)scaleTextFieldChanged:sender;
+- (void)codecTextFieldChanged:sender;
+- (void)bitRateTextFieldChanged:sender;
 - (void)scaleNFormatterChanged:sender;
 - (void)scaleStepperCellChanged:sender;
 
@@ -60,7 +63,10 @@ extern VODDescription globalVDPreferences;
 
 @property (retain) NSButton		*dstButton;
 @property (retain) NSButton		*flLRButton;
+@property (retain) NSButton		*splitButton;
 @property (retain) NSTextField	*scaleTextField;
+@property (retain) NSTextField	*codecTextField;
+@property (retain) NSTextField	*bitRateTextField;
 @property (retain) NSNumberFormatter	*scaleNFormatter;
 @property (retain) NSStepperCell	*scaleStepperCell;
 @end

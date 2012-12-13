@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="81"/>
+			<integer value="106"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1450,6 +1450,14 @@
 					</object>
 					<int key="connectionID">324</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">showHelp:</string>
+						<reference key="source" ref="696809421"/>
+						<reference key="destination" ref="910515599"/>
+					</object>
+					<int key="connectionID">325</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -2365,7 +2373,7 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<boolean value="YES"/>
-					<string>{{595, 800}, {156, 25}}</string>
+					<string>{{366, 649}, {156, 25}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -2510,7 +2518,7 @@
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<boolean value="YES"/>
-					<string>{{325, 499}, {326, 20}}</string>
+					<string>{{100, 674}, {326, 20}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -2596,7 +2604,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">324</int>
+			<int key="maxID">325</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3250,6 +3258,7 @@
 							<string>mTimeDisplay</string>
 							<string>movieShadowView</string>
 							<string>movieView</string>
+							<string>theQTVOD</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -3267,6 +3276,7 @@
 							<string>NSATextField</string>
 							<string>QTAMovieView</string>
 							<string>QTAMovieView</string>
+							<string>id</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -3287,6 +3297,7 @@
 							<string>mTimeDisplay</string>
 							<string>movieShadowView</string>
 							<string>movieView</string>
+							<string>theQTVOD</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -3345,6 +3356,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">movieView</string>
 								<string key="candidateClassName">QTAMovieView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">theQTVOD</string>
+								<string key="candidateClassName">id</string>
 							</object>
 						</object>
 					</object>

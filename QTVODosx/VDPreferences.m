@@ -174,9 +174,22 @@ static char *channelName(int channel)
 { NSNumber *scale = [NSNumber numberWithDouble:globalVDPreferences.scale];
 	[dstButton setState:(globalVDPreferences.DST)? NSOnState : NSOffState];
 	[flLRButton setState:(globalVDPreferences.flipLeftRight)? NSOnState : NSOffState];
+	[splitButton setState:(globalVDPreferences.splitQuad)? NSOnState : NSOffState];
 	[self setComboBox:freqPopup toDoubleVal:globalVDPreferences.frequency];
 	[self setComboBox:tzPopup toDoubleVal:globalVDPreferences.timeZone];
 	[scaleTextField setObjectValue:scale];
+	if( globalVDPreferences.codec ){
+		[codecTextField setObjectValue:[NSString stringWithUTF8String:globalVDPreferences.codec]];
+	}
+	else{
+		[codecTextField setObjectValue:@""];
+	}
+	if( globalVDPreferences.bitRate ){
+		[bitRateTextField setObjectValue:[NSString stringWithUTF8String:globalVDPreferences.bitRate]];
+	}
+	else{
+		[bitRateTextField setObjectValue:@""];
+	}
 	// figure out how to @#$# keep the stepper synchronised with the text field if the latter is changed!
 	[scaleStepperCell takeDoubleValueFrom:scale];
 	if( updateChannelDisplay ){
@@ -226,6 +239,36 @@ static char *channelName(int channel)
 {
 	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender );
 	globalVDPreferences.flipLeftRight = ([flLRButton state] == NSOnState);
+	globalVDPreferences.changed = YES;
+	[self update:YES];
+}
+
+- (void)splitButtonChanged:sender
+{
+	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender );
+	globalVDPreferences.splitQuad = ([splitButton state] == NSOnState);
+	globalVDPreferences.changed = YES;
+	[self update:YES];
+}
+
+- (void)codecTextFieldChanged:sender
+{
+	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender );
+	if( globalVDPreferences.codec ){
+		QTils_free(globalVDPreferences.codec);
+	}
+	globalVDPreferences.codec = QTils_strdup([[codecTextField stringValue] UTF8String]);
+	globalVDPreferences.changed = YES;
+	[self update:YES];
+}
+
+- (void)bitRateTextFieldChanged:sender
+{
+	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender );
+	if( globalVDPreferences.bitRate ){
+		QTils_free(globalVDPreferences.bitRate);
+	}
+	globalVDPreferences.bitRate = QTils_strdup([[bitRateTextField stringValue] UTF8String]);
 	globalVDPreferences.changed = YES;
 	[self update:YES];
 }
@@ -385,14 +428,14 @@ static char *channelName(int channel)
 				"<vod.design>\n" ];
 			[contents appendFormat:@"\t<frequency fps=%g />\n", globalVDPreferences.frequency];
 			[contents appendFormat:@"\t<scale factor=%g />\n", globalVDPreferences.scale];
-			[contents appendFormat:@"\t<UTC zone=%g DST=%s flipLeftRight=%s />\n", globalVDPreferences.timeZone,
-								(globalVDPreferences.DST)? "True" : "False",
-								(globalVDPreferences.flipLeftRight)? "True" : "False" ];
+			[contents appendFormat:@"\t<UTC zone=%g DST=%s />\n", globalVDPreferences.timeZone,
+								(globalVDPreferences.DST)? "True" : "False" ];
 			[contents appendString:@"\t<channels\n"];
 			[contents appendFormat:@"\t\tforward=%d\n", globalVDPreferences.channels.forward];
 			[contents appendFormat:@"\t\tpilot=%d\n", globalVDPreferences.channels.pilot];
 			[contents appendFormat:@"\t\tleft=%d\n", globalVDPreferences.channels.left];
-			[contents appendFormat:@"\t\tright=%d />\n", globalVDPreferences.channels.right];
+			[contents appendFormat:@"\t\tright=%d flipLeftRight=%s />\n", globalVDPreferences.channels.right,
+								(globalVDPreferences.flipLeftRight)? "True" : "False" ];
 			[contents appendString:@"\t<transcoding.mp4\n"];
 			if( globalVDPreferences.codec && *globalVDPreferences.codec ){
 				[contents appendFormat:@"\t\tcodec=%s\n", globalVDPreferences.codec ];
