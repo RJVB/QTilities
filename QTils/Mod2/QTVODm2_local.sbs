@@ -1,7 +1,7 @@
 SCRIPT QTVODm2_local;
 
 BEGIN
-    CreateProject(Win32, "S:\MacOSX\QTilities\QTils\Mod2\QTVODm2_local.sbp");
+    CreateProject(Win32, "QTVODm2_local.sbp");
 
     SetDirectory(DEF, ".;def;s:\MSWin\Archisim\def");
     SetDirectory(MOD, ".;mod;s:\MSWin\Archisim\mod");

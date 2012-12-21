@@ -52,7 +52,7 @@ TYPE
 			(* reply messages *)
 			qtvod_OK, qtvod_Err,
 			qtvod_CurrentTime, qtvod_StartTime, qtvod_Duration, qtvod_Chapter,
-			qtvod_LastInterval
+			qtvod_LastInterval, qtvod_MovieFinished
 		);
 
 	NetMessage =

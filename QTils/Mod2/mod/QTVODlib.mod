@@ -2,7 +2,7 @@ IMPLEMENTATION MODULE QTVODlib;
 
 (* USECHANNELVIEWIMPORTFILES : correspond à l'ancien comportement où pour créer une vidéo cache
 	pour les 4+1 canaux on créait d'abord un fichier .qi2m d'importation *)
-<*/VALIDVERSION:USECHANNELVIEWIMPORTFILES,NOTOUTCOMMENTED*>
+<*/VALIDVERSION:USECHANNELVIEWIMPORTFILES,COMMTIMING,NOTOUTCOMMENTED*>
 
 FROM SYSTEM IMPORT
 	CAST, ADR, ADDRESS;
@@ -490,6 +490,30 @@ BEGIN
 	RETURN 0;
 END movieClose;
 
+PROCEDURE replyMovieFinished( VAR msg : NetMessage; fName : String1kPtr; idx : Int32 );
+BEGIN
+	msg.flags.type := qtvod_MovieFinished;
+	msg.flags.class := qtvod_Notification;
+	msg.data.URN := fName^;
+	msg.data.iVal1 := idx;
+%IF COMMTIMING %THEN
+	msg.sentTime := -1.0;
+%END
+END replyMovieFinished;
+
+PROCEDURE movieFinished(wih : QTMovieWindowH; params : ADDRESS ) : Int32 [CDECL];
+VAR
+	msg : NetMessage;
+BEGIN
+	QTils.LogMsgEx( 'Fin du movie "%s"#%d dans fenêtre %d', wih^^.theURL^, wih^^.idx, numQTWM );
+	IF ( sServeur <> sock_nulle )
+		THEN
+			replyMovieFinished( msg, wih^^.theURL, wih^^.idx );
+			SendMessageToNet( sServeur, msg, SENDTIMEOUT, FALSE, "QTVODm2::movieFinished" );
+	END;
+	RETURN 0;
+END movieFinished;
+
 PROCEDURE SetWindowLayer( pos : HWND; ref : QTMovieWindowH );
 VAR
 	w : CARDINAL;
@@ -681,6 +705,7 @@ BEGIN
 			QTils.register_MCAction( qtwmH, MCAction.Start, movieStart );
 			QTils.register_MCAction( qtwmH, MCAction.Stop, movieStop );
 			QTils.register_MCAction( qtwmH, MCAction.Close, movieClose );
+			QTils.register_MCAction( qtwmH, MCAction.Finished, movieFinished );
 			QTils.register_MCAction( qtwmH, MCAction.KeyUp, movieKeyUp );
 			err := QTils.QTMovieWindowGetGeometry( qtwmH, ADR(Wpos[w]), ADR(Wsize[w]), 1 );
 			IF (AqtwmH[fwWin] <> NULL_QTMovieWindowH) AND (w <> fwWin)

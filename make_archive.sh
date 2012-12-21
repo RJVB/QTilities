@@ -48,12 +48,13 @@ fi
 ${CP} --help 2>&1 | fgrep -- --no-dereference > /dev/null
 if [ $? = 0 -o "$OS" = "Linux" -o "$OS" = "linux" -o "$OS" = "LINUX" ] ;then
 	${ECHO} -n "Making temp copies..."
-	${CP} -prd QTilities $HOME/work/Archive/
+	mkdir -p $HOME/work/Archive/QTilities
+	${CP} -prd QTilities/* QTilities/.gitignore $HOME/work/Archive/QTilities/
 	${ECHO} " done."
 	cd $HOME/work/Archive/
 else
 	${ECHO} -n "Making temp copies (tar to preserve symb. links).."
-	gnutar -cf $HOME/work/Archive/make_archive.tar QTilities
+	gnutar -cf $HOME/work/Archive/make_archive.tar QTilities/*
 	sleep 1
 	${ECHO} "(untar).."
 	cd $HOME/work/Archive/
@@ -74,6 +75,8 @@ rm -rf  QTilities/*.all_data QTilities/*.{log,tc,mov,VOD,avi,aup,caf,png,rgb,tif
 	find . -iname "*.obj" -exec rm '{}' ";" ;\
 	find . -iname "*.user" -exec rm '{}' ";" ;\
 	find . -iname "*.dmg" -exec rm '{}' ";" ;\
+	find . -iname "*.kml*" -exec rm '{}' ";" ;\
+	find . -iname "*.ltp" -exec rm '{}' ";" ;\
 )
 find QTilities -name ".git" -type d | xargs rm -rf
 find QTilities -name "build" -type d | xargs rm -rf

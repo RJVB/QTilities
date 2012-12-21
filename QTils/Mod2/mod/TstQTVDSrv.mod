@@ -109,13 +109,18 @@ BEGIN
 				msgGetDuration(reply2);
 
 		| qtvod_Start,
-		qtvod_Stop :
+		qtvod_Stop, qtvod_MovieFinished :
 				WriteString( NetMessageToString(msg) ); WriteLn;
 				IF ( msg.flags.class = qtvod_Notification )
 					THEN
+						NetMessageToLogMsg( "Notification", "TstQTVDSrv", msg );
 						(* l'utilisateur a demarre/arrete la lecture: quelle heure est-il la-bas? *)
 						msgGetTime( reply, TRUE );
 						msgTimer := StartTimeEx();
+						IF (msg.flags.type = qtvod_MovieFinished) AND (msg.data.iVal1 = 0)
+							THEN
+								msgGotoTime( reply2, 0.0, FALSE );
+						END;
 				END;
 
 		| qtvod_CurrentTime :

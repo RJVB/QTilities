@@ -244,7 +244,7 @@ Section /o $(Sec4Descr) SEC04
   SetOutPath "$INSTDIR\Mod2"
   SetOverwrite ifnewer
   File "S:\MacOSX\QTilities\QTils\Mod2\QTVOD*.res"
-  File "S:\MacOSX\QTilities\QTils\Mod2\QTVOD*.sbs"
+  File "S:\MacOSX\QTilities\QTils\Mod2\QTVODm2_local.sbs"
   File "S:\MacOSX\QTilities\QTils\Mod2\TstQTilsM2.sbs"
 SectionEnd
 

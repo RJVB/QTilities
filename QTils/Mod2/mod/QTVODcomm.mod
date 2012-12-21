@@ -268,6 +268,8 @@ BEGIN
 			str := "GetLastInterval";
 		| qtvod_LastInterval :
 			str := "LastInterval";
+		| qtvod_MovieFinished :
+			str := "MovieFinished";
 	ELSE
 		str := "<??>";
 	END;
@@ -339,6 +341,13 @@ BEGIN
 					QTils.LogMsgEx( '%s %s: %s', title, caption, NetMessageToString(msg) );
 				ELSE
 					QTils.LogMsgEx( '%s: %s', title, NetMessageToString(msg) );
+			END;
+		| qtvod_MovieFinished :
+			IF ( LENGTH(caption) > 0 )
+				THEN
+					QTils.LogMsgEx( '%s %s: %s "%s" canal #%d', title, caption, NetMessageToString(msg), msg.data.URN, msg.data.iVal1 );
+				ELSE
+					QTils.LogMsgEx( '%s: %s "%s" canal #%d', title, NetMessageToString(msg), msg.data.URN, msg.data.iVal1 );
 			END;
 		| qtvod_Err :
 			IF ( LENGTH(caption) > 0 )

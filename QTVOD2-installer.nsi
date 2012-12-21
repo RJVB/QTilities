@@ -212,7 +212,11 @@ Section /o "Interface" SEC04
   SetOutPath "$INSTDIR\API"
   SetOverwrite ifnewer
   File /nonfatal "S:\MacOSX\QTilities\QTils\Mod2\mod\QTVODcomm.mod"
+  File /nonfatal "S:\MacOSX\QTilities\QTils\Mod2\mod\QTilsM2.mod"
+  File /nonfatal "S:\MacOSX\QTilities\QTils\Mod2\mod\POSIXm2.mod"
   File /nonfatal "S:\MacOSX\QTilities\QTils\Mod2\def\QTVODcomm.def"
+  File /nonfatal "S:\MacOSX\QTilities\QTils\Mod2\def\QTilsM2.def"
+  File /nonfatal "S:\MacOSX\QTilities\QTils\Mod2\def\POSIXm2.def"
 SectionEnd
 
 Section "Monaco font" SEC05
