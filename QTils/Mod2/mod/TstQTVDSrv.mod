@@ -119,7 +119,7 @@ BEGIN
 						msgTimer := StartTimeEx();
 						IF (msg.flags.type = qtvod_MovieFinished) AND (msg.data.iVal1 = 0)
 							THEN
-								msgGotoTime( reply2, 0.0, FALSE );
+								msgGotoTime( reply2, 60.0, FALSE );
 						END;
 				END;
 
