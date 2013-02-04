@@ -97,7 +97,7 @@ const char *qi2mStringMask =
 QTMovieWindowH *winlist = NULL;
 int numQTMW = 0, MaxnumQTMW = 0;
 
-#define xfree(x)	if((x)){ free((x)); (x)=NULL; }
+#define xfree(x)	freep((void**)&x)
 
 int movieStep(QTMovieWindowH wi, void *params )
 {
@@ -611,6 +611,18 @@ int main( int argc, char* argv[] )
 			if( (err = OpenMovieFromURL( &theMovie, 1, NULL, (*(winlist[0]))->theURL, NULL, NULL )) == noErr ){
 			  char *dst = "c:/TEMP/kk.mov", *odst;
 			  char *ALLF = NULL, *ALLFlng = NULL;
+			  OSType trackType, trackSubType;
+			  char *componentName = NULL;
+			  long idx = 1;
+				while( GetMovieTrackNrTypes( theMovie, idx, &trackType, &trackSubType ) == noErr
+					 && trackType == 'vide'
+				){
+					GetMovieTrackNrDecompressorInfo( theMovie, idx, &trackSubType, &componentName, NULL );
+					fprintf( stderr, "Track #%ld is '%s' \"%s\"\n", idx,
+						   OSTStr(trackSubType), componentName );
+					xfree(componentName);
+					idx += 1;
+				}
 				err = GetMetaDataStringFromMovie( theMovie, 'AllF', &ALLF, &ALLFlng );
 				if( ALLF ){
 					xfree(ALLF);

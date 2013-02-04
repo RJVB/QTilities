@@ -142,6 +142,7 @@ VAR
 	code : POINTER TO OSTypeStr;
 BEGIN
 	code := ADR(otype);
+	code^[4] := CHR(0);
 	RETURN code^;
 END OSTStr_be;
 
@@ -155,6 +156,7 @@ BEGIN
 	code[1] := c^[2];
 	code[2] := c^[1];
 	code[3] := c^[0];
+	code[4] := CHR(0);
 	RETURN code;
 END OSTStr;
 

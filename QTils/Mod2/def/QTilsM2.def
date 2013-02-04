@@ -70,7 +70,7 @@ TYPE
 	 * la taille ne sert que pour l'affichage dans le debogueur à ce moment; cf. ssprintf et ssprintfAppend *)
 	String1kPtr		= POINTER TO ARRAY[0..1023] OF CHAR;
 	Str255				= ARRAY[0..256] OF CHAR;
-	OSTypeStr			= ARRAY[0..3] OF CHAR;
+	OSTypeStr			= ARRAY[0..4] OF CHAR;
 	Cartesian			=
 		RECORD
 			vertical, horizontal : Int16;
@@ -608,6 +608,9 @@ QTCompressionQualities	=
 			GetTrackWithName : PROCEDURE( (*theMovie*) Movie, (*trackName*) ARRAY OF CHAR, (*trackNr*) VAR Int32 ):ErrCode [CDECL];
 			EnableTrack : PROCEDURE( (*theMovie*) Movie, (*trackNr*) Int32 ):ErrCode [CDECL];
 			DisableTrack : PROCEDURE( (*theMovie*) Movie, (*trackNr*) Int32 ):ErrCode [CDECL];
+			GetMovieTrackTypes : PROCEDURE( (*theMovie*) Movie, (*trackNr*) Int32, VAR (*trackType*) OSType, VAR (*trackSubType*) OSType ):ErrCode [CDECL];
+			GetMovieTrackDecompressorInfo : PROCEDURE( (*theMovie*) Movie, (*trackNr*) Int32, VAR (*trackSubType*) OSType,
+							   VAR (*componentName*) ARRAY OF CHAR, VAR (*componentManufacturer*) OSType ):ErrCode [CDECL];
 			SlaveMovieToMasterMovie : PROCEDURE( (*slave*) Movie, (*master*) Movie ):ErrCode [CDECL];
 			SampleNumberAtMovieTime : PROCEDURE( (*theMovie*) Movie, (*trackNr|0*)Int32, (*t*)Real64, VAR (*sampleNum*) Int32 ):ErrCode [CDECL];
 

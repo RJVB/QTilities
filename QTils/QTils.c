@@ -3727,12 +3727,121 @@ ErrCode DisableTrack_Mod2( Movie theMovie, long trackNr )
 	return GetMoviesError();
 }
 
+ErrCode GetMovieTrackTypes( Movie theMovie, Track theTrack, OSType *trackType, OSType *trackSubType )
+{ OSType creatorManufacturer;
+  Str255 creatorName;
+	if( theTrack ){
+	  SampleDescriptionHandle descH = (SampleDescriptionHandle) NewHandleClear(0);
+		GetMediaHandlerDescription( GetTrackMedia(theTrack), trackType, creatorName, &creatorManufacturer );
+		GetMediaSampleDescription( GetTrackMedia(theTrack), 1, descH );
+		if( trackSubType ){
+			*trackSubType = (*descH)->dataFormat;
+		}
+		DisposeHandle( (Handle)descH );
+		return noErr;
+	}
+	else{
+		return paramErr;
+	}
+}
+
+ErrCode GetMovieTrackNrTypes( Movie theMovie, long trackNr, OSType *trackType, OSType *trackSubType )
+{ Track theTrack = GetMovieIndTrack(theMovie, trackNr);
+	if( theTrack ){
+		return GetMovieTrackTypes( theMovie, theTrack, trackType, trackSubType );
+	}
+	else{
+		return GetMoviesError();
+	}
+}
+
+ErrCode GetMovieTrackDecompressorInfo( Movie theMovie, Track theTrack, OSType *trackSubType,
+							   char **componentName, OSType *componentManufacturer )
+{ ErrCode err;
+	if( !trackSubType ){
+		return paramErr;
+	}
+	err = GetMovieTrackTypes( theMovie, theTrack, NULL, trackSubType );
+	if( err == noErr ){
+//	  Component comp;
+	  ComponentDescription cDescr;
+	  Handle cName = NewHandleClear(200);
+	  ComponentInstance ci;
+		memset( &cDescr, 0, sizeof(cDescr) );
+		// we want image decompressor components:
+//		cDescr.componentType = decompressorComponentType;
+//		cDescr.componentSubType = *trackSubType;
+		ci = OpenDefaultComponent( decompressorComponentType, *trackSubType );
+		err = GetComponentInfo( ci, &cDescr, cName, NULL, NULL );
+		CloseComponent(ci);
+//		comp = FindNextComponent( 0, &cDescr );
+//		err = GetComponentInfo( comp, &cDescr, cName, NULL, NULL );
+		if( err == noErr ){
+		  char *c = *cName;
+			if( componentManufacturer ){
+				*componentManufacturer = cDescr.componentManufacturer;
+			}
+			// should not change anything:
+			*trackSubType = cDescr.componentSubType;
+			if( componentName && c[0] ){
+				*componentName = QTils_strdup( &c[1] );
+			}
+		}
+	}
+	return err;
+}
+
+ErrCode GetMovieTrackNrDecompressorInfo( Movie theMovie, long trackNr, OSType *trackSubType,
+							   char **componentName, OSType *componentManufacturer )
+{ Track theTrack = GetMovieIndTrack(theMovie, trackNr);
+	if( theTrack ){
+		return GetMovieTrackDecompressorInfo( theMovie, theTrack, trackSubType,
+									  componentName, componentManufacturer );
+	}
+	else{
+		return GetMoviesError();
+	}
+}
+
+ErrCode GetMovieTrackNrDecompressorInfo_Mod2( Movie theMovie, long trackNr, OSType *trackSubType,
+							   char *componentName, int clen, OSType *componentManufacturer )
+{ char *cName = NULL;
+  ErrCode err = GetMovieTrackNrDecompressorInfo( theMovie, trackNr, trackSubType, &cName, componentManufacturer );
+	if( err == noErr ){
+		if( cName ){
+		  size_t len = strlen(cName);
+			// Modula-2 passes the size of the "open" 'VAR ARRAY OF CHAR' cName
+			// argument in vlen, so we use that size indication:
+			if( len >= clen ){
+				len = clen - 1;
+			}
+			strncpy( componentName, cName, len );
+			componentName[len] = '\0';
+			QTils_free(&cName);
+		}
+	}
+	return err;
+}
+
 #if TARGET_OS_MAC
-ErrCode testing( Movie theMovie )
+ErrCode testing( Movie theMovie, long trackNr )
 { ErrCode err = paramErr;
   UserData uData = NULL;
+//  OSType trackType, trackSubType;
 
 	if( theMovie ){
+//		if( GetMovieTrackNrTypes( theMovie, trackNr, &trackType, &trackSubType ) == noErr ){
+//		  Component comp;
+//		  ComponentDescription cDescr;
+//		  Handle cName = NewHandleClear(200);
+//			memset( &cDescr, 0, sizeof(cDescr) );
+//			// we want image decompressor components:
+//			cDescr.componentType = 'imdc';
+//			cDescr.componentSubType = trackSubType;
+//			comp = FindNextComponent( 0, &cDescr );
+//			err = GetComponentInfo( comp, &cDescr, cName, NULL, NULL );
+//			DisposeHandle(cName);
+//		}
 		if( (uData = GetMovieUserData(theMovie)) ){
 		  Handle h = NewHandle(0);
 		  long len;
@@ -3848,6 +3957,8 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->GetTrackWithName = GetTrackWithName;
 		dmbase->EnableTrackNr = EnableTrack_Mod2;
 		dmbase->DisableTrackNr = DisableTrack_Mod2;
+		dmbase->GetMovieTrackNrTypes = GetMovieTrackNrTypes;
+		dmbase->GetMovieTrackNrDecompressorInfo = GetMovieTrackNrDecompressorInfo;
 		dmbase->SlaveMovieToMasterMovie = SlaveMovieToMasterMovie;
 		dmbase->SampleNumberAtMovieTime = SampleNumberAtMovieTime;
 
@@ -3926,6 +4037,7 @@ size_t initDMBaseQTils_Mod2( LibQTilsBase *dmbase )
 		dmbase->GetTrackWithName = (void*) GetTrackWithName_Mod2;
 		dmbase->EnableTrackNr = (void*) EnableTrack_Mod2;
 		dmbase->DisableTrackNr = (void*) DisableTrack_Mod2;
+		dmbase->GetMovieTrackNrDecompressorInfo = (void*) GetMovieTrackNrDecompressorInfo_Mod2;
 		dmbase->SampleNumberAtMovieTime = (void*) SampleNumberAtMovieTime_Mod2;
 		dmbase->QTils_LogMsg = (void*) QTils_LogMsg_Mod2;
 		dmbase->QTils_LogMsgEx = (void*) QTils_LogMsgEx_Mod2;

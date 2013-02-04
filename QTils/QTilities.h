@@ -378,6 +378,30 @@ QTLSext ErrCode GetTrackName( Movie theMovie, Track theTrack, char **trackName )
 QTLSext ErrCode GetTrackWithName( Movie theMovie, char *trackName, OSType type, long flags, Track *theTrack, long *trackNr );
 
 /*!
+	Get a track's content type (for instance, 'vide' for video) and subtype (e.g. 'mp4v' for MPEG4)
+	Both trackType and trackSubType can be NULL if the information is not required.
+ */
+QTLSext ErrCode GetMovieTrackTypes( Movie theMovie, Track theTrack, OSType *trackType, OSType *trackSubType );
+
+/*!
+	As GetMovieTrackTypes, but takes a track number instead of a track pointer.
+ */
+QTLSext ErrCode GetMovieTrackNrTypes( Movie theMovie, long trackNr, OSType *trackType, OSType *trackSubType );
+
+/*!
+	Obtains descriptive information of a movie track's content (sub) type and the name and manufacturer
+	of the component used for decompression. componentName and/or componentManufacturer can be NULL pointers.
+ */
+QTLSext ErrCode GetMovieTrackDecompressorInfo( Movie theMovie, Track theTrack, OSType *trackSubType,
+							   char **componentName, OSType *componentManufacturer );
+
+/*!
+	As GetMovieTrackDecompressorInfo but takes a track number instead of a track pointer.
+ */
+QTLSext ErrCode GetMovieTrackNrDecompressorInfo( Movie theMovie, long trackNr, OSType *trackSubType,
+							   char **componentName, OSType *componentManufacturer );
+
+/*!
 	a movie's duration in seconds
  */
 QTLSext double GetMovieDurationSeconds(Movie theMovie);
@@ -1116,6 +1140,9 @@ typedef struct LibQTilsBase {
 	ErrCode (*GetTrackWithName)( Movie theMovie, char *trackName, OSType type, long flags, Track *track, long *trackNr );
 	ErrCode (*EnableTrackNr)( Movie theMovie, long trackNr );
 	ErrCode (*DisableTrackNr)( Movie theMovie, long trackNr );
+	ErrCode (*GetMovieTrackNrTypes)( Movie theMovie, long trackNr, OSType *trackType, OSType *trackSubType );
+	ErrCode (*GetMovieTrackNrDecompressorInfo)( Movie theMovie, long trackNr, OSType *trackSubType,
+							   char **componentName, OSType *componentManufacturer );
 	ErrCode (*SlaveMovieToMasterMovie)( Movie slave, Movie master );
 	ErrCode (*SampleNumberAtMovieTime)( Movie theMovie, Track theTrack, double t, long *sampleNum );
 

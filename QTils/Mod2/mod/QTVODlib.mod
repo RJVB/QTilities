@@ -297,6 +297,9 @@ VAR
 	header : URLString;
 	wih : QTMovieWindowH;
 	ft : MovieFrameTime;
+	trackNr : Int32;
+	trackType, trackSubType, dum : OSType;
+	cName : ARRAY[0..256] OF CHAR;
 BEGIN
 	IF ( (fullMovie <> NIL) AND (MetaDataDisplayStrPtr = NIL) )
 		THEN
@@ -328,6 +331,17 @@ BEGIN
 			appendMetaData( fullMovie, -1, MetaData.akInfo, "Informations: ", MetaDataDisplayStrPtr );
 			appendMetaData( fullMovie, -1, MetaData.akComment, "Commentaires: ", MetaDataDisplayStrPtr );
 			appendMetaData( fullMovie, -1, MetaData.akCreationDate, "Date de création du fichier cache/.mov: ", MetaDataDisplayStrPtr );
+			(* quelques informations techniques sur la vidéo: *)
+			trackNr := 1;
+			WHILE( QTils.GetMovieTrackTypes( fullMovie, trackNr, trackType, trackSubType ) = noErr ) DO
+				IF (trackType = FOUR_CHAR_CODE("vide"))
+						AND (QTils.GetMovieTrackDecompressorInfo( fullMovie, trackNr, trackSubType, cName, dum ) = noErr)
+					THEN
+						QTils.sprintf( header, "Piste #%ld, type '%s', '%s'\n", trackNr, OSTStr(trackSubType), cName );
+						MetaDataDisplayStrPtr := appendString2StringPtr( MetaDataDisplayStrPtr, header );
+				END;
+				INC(trackNr,1);
+			END;
 			IF ( MetaDataDisplayStrPtr <> NIL )
 				THEN
 					PostMessage( "Meta-données", MetaDataDisplayStrPtr^ );
