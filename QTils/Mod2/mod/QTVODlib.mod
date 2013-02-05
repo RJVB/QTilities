@@ -298,7 +298,7 @@ VAR
 	wih : QTMovieWindowH;
 	ft : MovieFrameTime;
 	trackNr : Int32;
-	trackType, trackSubType, dum : OSType;
+	trackType, trackSubType, creator : OSType;
 	cName : ARRAY[0..256] OF CHAR;
 BEGIN
 	IF ( (fullMovie <> NIL) AND (MetaDataDisplayStrPtr = NIL) )
@@ -335,9 +335,10 @@ BEGIN
 			trackNr := 1;
 			WHILE( QTils.GetMovieTrackTypes( fullMovie, trackNr, trackType, trackSubType ) = noErr ) DO
 				IF (trackType = FOUR_CHAR_CODE("vide"))
-						AND (QTils.GetMovieTrackDecompressorInfo( fullMovie, trackNr, trackSubType, cName, dum ) = noErr)
+						AND (QTils.GetMovieTrackDecompressorInfo( fullMovie, trackNr, trackSubType, cName, creator ) = noErr)
 					THEN
-						QTils.sprintf( header, "Piste #%ld, type '%s', '%s'\n", trackNr, OSTStr(trackSubType), cName );
+						QTils.sprintf( header, "Piste #%ld, type '%s' décodeur '%s' par '%s'\n",
+							trackNr, OSTStr(trackSubType), cName, OSTStr(creator) );
 						MetaDataDisplayStrPtr := appendString2StringPtr( MetaDataDisplayStrPtr, header );
 				END;
 				INC(trackNr,1);

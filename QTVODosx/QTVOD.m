@@ -1566,6 +1566,21 @@ BOOL addToRecentDocs = YES;
 		[MetaDataDisplayStr appendString:metaDataNSStr( fullMovie, -1, akInfo, "Information: " ) ];
 		[MetaDataDisplayStr appendString:metaDataNSStr( fullMovie, -1, akComment, "Comments: " ) ];
 		[MetaDataDisplayStr appendString:metaDataNSStr( fullMovie, -1, akCreationDate, "Creation date cache/.mov file: " ) ];
+		{ long trackNr = 1;
+		  OSType trackType, trackSubType, creator;
+		  char *cName;
+			while( GetMovieTrackNrTypes( fullMovie, trackNr, &trackType, &trackSubType ) == noErr ){
+				cName = NULL;
+				if( trackType == 'vide'
+				   && GetMovieTrackNrDecompressorInfo( fullMovie, trackNr, &trackSubType, &cName, &creator ) == noErr
+				){
+					[MetaDataDisplayStr appendFormat:@"Track #%ld, type '%s' codec '%s' by '%s'\n",
+						trackNr, OSTStr(trackSubType), cName, OSTStr(creator) ];
+					QTils_free(cName);
+				}
+				trackNr += 1;
+			}
+		}
 	}
 	if( MetaDataDisplayStr ){
 	  NSAlert* alert = [[[NSAlert alloc] init] autorelease];
@@ -1725,7 +1740,7 @@ BOOL addToRecentDocs = YES;
 		for( w = 0 ; w < maxQTWM ; w++ ){
 			if( WINLIST(w) ){
 			  QTMovie *m = [WINLIST(w) getMovie];
-			  int AllF;
+//			  int AllF;
 				theTimeInterval.AllF[w] = [[m attributeForKey:QTMoviePlaysAllFramesAttribute] boolValue];
 //				QTMovieWindowSetPreferredRate( QTMWH(w), 1000, NULL );
 //				QTMovieWindowSetPlayAllFrames( QTMWH(w), 1, &AllF );
