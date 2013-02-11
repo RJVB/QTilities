@@ -1573,9 +1573,10 @@ BOOL addToRecentDocs = YES;
 				cName = NULL;
 				if( trackType == 'vide'
 				   && GetMovieTrackNrDecompressorInfo( fullMovie, trackNr, &trackSubType, &cName, &creator ) == noErr
-				){
-					[MetaDataDisplayStr appendFormat:@"Track #%ld, type '%s' codec '%s' by '%s'\n",
-						trackNr, OSTStr(trackSubType), cName, OSTStr(creator) ];
+				){ 
+					[MetaDataDisplayStr appendFormat:@"Track #%ld, type '%s' codec '%s'",
+						trackNr, OSTStr(trackSubType), cName ];
+					[MetaDataDisplayStr appendFormat:@" by '%s'\n", OSTStr(creator) ];
 					QTils_free(cName);
 				}
 				trackNr += 1;

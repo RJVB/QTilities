@@ -3787,6 +3787,7 @@ ErrCode GetMovieTrackDecompressorInfo( Movie theMovie, Track theTrack, OSType *t
 				*componentName = QTils_strdup( &c[1] );
 			}
 		}
+		DisposeHandle(cName);
 	}
 	return err;
 }

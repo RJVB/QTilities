@@ -187,6 +187,7 @@ Section !$(Sec2Name) SEC02
   File "S:\MacOSX\QTilities\QTils\Mod2\QTVODm2.exe"
   CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k"
   CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M-fsplit.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k -fsplit TRUE"
+  CreateShortCut "$INSTDIR\QTVODm2-mpeg2-fsplit.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mpeg2video -fbitrate 4000k -fsplit TRUE"
   File "S:\MacOSX\QTilities\QTils\Mod2\LanceQTVODm2.bat"
   File "S:\MacOSX\QTilities\QTils\Mod2\VODdesign.xml"
   File "S:\MacOSX\QTilities\QTils\QTils.dll"

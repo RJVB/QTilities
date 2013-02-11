@@ -205,6 +205,7 @@ Section !$(Sec2Name) SEC02
   File "S:\MacOSX\QTilities\QTils\POSIXm2-dev.dll"
   CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k"
   CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M-fsplit.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k -fsplit TRUE"
+  CreateShortCut "$INSTDIR\QTVODm2-mpeg2-fsplit.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mpeg2video -fbitrate 4000k -fsplit TRUE"
   WriteRegExpandStr ${env_hklm} "QTMW_DoubleBuffering" "true"
   ; make sure windows knows about the change
   SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
