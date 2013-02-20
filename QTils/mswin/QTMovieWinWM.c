@@ -391,6 +391,58 @@ static Boolean nothing( DialogPtr dialog, EventRecord *event, DialogItemIndex *i
 	return 0;
 }
 
+typedef struct BGContext {
+	int workers;
+	struct {
+		QTMovieWindowH wih;
+		char *theURL;
+		Movie theMovie;
+		Handle dataRef;
+		OSType dataRefType;
+		short resId;
+		HANDLE thread;
+		QTMovieWindowH wihReturn;
+		ErrCode errReturn;
+	} InitQTMovieWindowHFromMovie;
+} BGContext;
+
+void *BGInitQTMovieWindowHFromMovie( void *arg )
+{ BGContext *cx = (BGContext*) arg;
+	if( cx ){
+		cx->InitQTMovieWindowHFromMovie.wihReturn = InitQTMovieWindowHFromMovie( cx->InitQTMovieWindowHFromMovie.wih,
+											cx->InitQTMovieWindowHFromMovie.theURL, cx->InitQTMovieWindowHFromMovie.theMovie,
+											cx->InitQTMovieWindowHFromMovie.dataRef, cx->InitQTMovieWindowHFromMovie.dataRefType,
+											NULL, cx->InitQTMovieWindowHFromMovie.resId, &cx->InitQTMovieWindowHFromMovie.errReturn );
+		cx->workers -= 1;
+		return cx->InitQTMovieWindowHFromMovie.wihReturn;
+	}
+	else{
+		return NULL;
+	}
+}
+
+QTMovieWindowH InitQTMovieWindowHFromMovieInBG( BGContext *cx,
+								  QTMovieWindowH wih, const char *theURL, Movie theMovie,
+								  Handle dataRef, OSType dataRefType, DataHandler dh, short resId, ErrCode *err )
+{
+	cx->InitQTMovieWindowHFromMovie.wih = wih;
+	cx->InitQTMovieWindowHFromMovie.theURL = theURL;
+	cx->InitQTMovieWindowHFromMovie.theMovie = theMovie;
+	cx->InitQTMovieWindowHFromMovie.dataRef = dataRef;
+	cx->InitQTMovieWindowHFromMovie.dataRefType = dataRefType;
+	cx->InitQTMovieWindowHFromMovie.resId = resId;
+	cx->InitQTMovieWindowHFromMovie.wihReturn = NULL;
+	if( !(cx->InitQTMovieWindowHFromMovie.thread = CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)BGInitQTMovieWindowHFromMovie,
+													&cx, 0, NULL ))
+	){
+		return NULL;
+	}
+	else{
+		cx->workers += 1;
+		return wih;
+	}
+}
+
 QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
 									    Handle dataRef, OSType dataRefType, int visibleController )
 { QTMovieWindows *wi = NULL;
@@ -431,11 +483,14 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 				wi = NULL, wih = NULL;
 			}
 			else{
+			  BGContext cx;
+				// final association between the new movie and its new window:
+				SetMovieGWorld( wi->theMovie, (CGrafPtr)GetNativeWindowPort(wi->theView), nil );
+				memset( &cx, 0, sizeof(cx) );
 				if( dataRef && wi->dataRef != dataRef ){
 					InitQTMovieWindowHFromMovie( wih, theURL, theMovie, dataRef, dataRefType, NULL, resId, &err );
 				}
-				// final association between the new movie and its new window:
-				SetMovieGWorld( wi->theMovie, (CGrafPtr)GetNativeWindowPort(wi->theView), nil );
+
 				// RJVB 20110316: prepare movie for fast starting. Do it here to let the Movie Toolbox
 				// make best use of the time we spend initialising other things.
 				{ TimeValue timeNow;
@@ -503,6 +558,10 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 				);
 //				ShowMovieInformation( wi->theMovie, nothing, 0 );
 				lastQTWMH = wih;
+				if( cx.InitQTMovieWindowHFromMovie.thread ){
+					WaitForSingleObject( cx.InitQTMovieWindowHFromMovie.thread, 1000 );
+					CloseHandle(cx.InitQTMovieWindowHFromMovie.thread);
+				}
 			}
 			// leave our GWorld to what it was when we started:
 			SetGWorld( currentPort, currentGDH );
