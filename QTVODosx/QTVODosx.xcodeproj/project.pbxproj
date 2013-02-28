@@ -900,6 +900,7 @@
 		C2803300088E2F2900BF3877 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = QTVOD.pch;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -918,6 +919,7 @@
 			buildSettings = {
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_ENABLE_PASCAL_STRINGS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = QTVOD.pch;
@@ -940,6 +942,7 @@
 		C2803302088E2F2900BF3877 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = QTVOD.pch;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1145,6 +1148,7 @@
 		D6F7019C1124745D00A91D05 /* Development Shadow */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = QTVOD.pch;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
