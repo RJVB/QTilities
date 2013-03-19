@@ -114,13 +114,13 @@ void cWriteLogEx(SS_Log *pLog, char* pMsg, va_list ap)
 	va_end(ap);
 }
 
-void cLogStoreFileLine(char* szFile, int nLine)
+void cLogStoreFileLine(SS_Log *pLog, char* szFile, int nLine)
 {
 	if( !active ){
 		active = TRUE;
 #ifdef _SS_LOG_ACTIVE
 		_FlushLog_(&qtLog);
-		LogStoreFileLine( (TCHAR*) szFile, nLine );
+		pLog->StoreFileLine( (TCHAR*) szFile, nLine );
 #endif
 		active = FALSE;
 	}

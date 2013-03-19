@@ -440,34 +440,34 @@ size_t QTils_LogMsg_Mod2( const char *msg, int mlen )
 #if defined(_WINDOWS) || defined(WIN32) || defined(_MSC_VER) || TARGET_OS_WIN32
 	if( qtLog_Initialised ){
 #	ifdef _SS_LOG_ACTIVE
-		cLogStoreFileLine( M2LogEntity, -1 ), cWriteLog( qtLogPtr, (char*) fmt );
+		cLogStoreFileLine( qtLogPtr, M2LogEntity, -1 ), cWriteLog( qtLogPtr, (char*) fmt );
 #else
 		strncpy( lastSSLogMsg, msg, sizeof(lastSSLogMsg) );
 		lastSSLogMsg[sizeof(lastSSLogMsg)-1] = '\0';
 #	endif // _SS_LOG_ACTIVE
+		UnlockCSEHandle(cseLogLock, unlockFlag);
 		if( fmt != msg ){
 			QTils_free(&fmt);
 		}
-		UnlockCSEHandle(cseLogLock, unlockFlag);
 		return strlen(lastSSLogMsg);
 	}
 	else{
 		strncpy( lastSSLogMsg, fmt, sizeof(lastSSLogMsg) );
 		lastSSLogMsg[sizeof(lastSSLogMsg)-1] = '\0';
+		UnlockCSEHandle(cseLogLock, unlockFlag);
 		if( fmt != msg ){
 			QTils_free(&fmt);
 		}
-		UnlockCSEHandle(cseLogLock, unlockFlag);
 		return 0;
 	}
 #else
 	strncpy( lastSSLogMsg, fmt, sizeof(lastSSLogMsg) );
 	lastSSLogMsg[sizeof(lastSSLogMsg)-1] = '\0';
+	UnlockCSEHandle(cseLogLock, unlockFlag);
 	ret = Log( qtLogPtr, fmt );
 	if( fmt != msg ){
 		QTils_free(&fmt);
 	}
-	UnlockCSEHandle(cseLogLock, unlockFlag);
 	return ret;
 #endif
 }
@@ -477,8 +477,8 @@ size_t QTils_vLogMsgEx( const char *msg, va_list ap )
 #if defined(_WINDOWS) || defined(WIN32) || defined(_MSC_VER) || TARGET_OS_WIN32
 	if( qtLog_Initialised ){
 #	ifdef _SS_LOG_ACTIVE
-		cLogStoreFileLine(__FILE__, __LINE__), cWriteLogEx( qtLogPtr, (char*) msg, ap );
-#else
+		cLogStoreFileLine(qtLogPtr, __FILE__, __LINE__), cWriteLogEx( qtLogPtr, (char*) msg, ap );
+#	else
 		vsnprintf( lastSSLogMsg, sizeof(lastSSLogMsg), msg, ap );
 #	endif // _SS_LOG_ACTIVE
 		UnlockCSEHandle(cseLogLock, unlockFlag);
@@ -517,30 +517,30 @@ size_t QTils_LogMsgEx_Mod2( const char *msg, int mlen, va_list ap )
 #if defined(_WINDOWS) || defined(WIN32) || defined(_MSC_VER) || TARGET_OS_WIN32
 	if( qtLog_Initialised ){
 #	ifdef _SS_LOG_ACTIVE
-		cLogStoreFileLine( M2LogEntity, -1 ), cWriteLogEx( qtLogPtr, (char*) fmt, ap );
+		cLogStoreFileLine( qtLogPtr, M2LogEntity, -1 ), cWriteLogEx( qtLogPtr, (char*) fmt, ap );
 #else
 		vsnprintf( lastSSLogMsg, sizeof(lastSSLogMsg), fmt, ap );
 #	endif // _SS_LOG_ACTIVE
+		UnlockCSEHandle(cseLogLock, unlockFlag);
 		if( fmt != msg ){
 			QTils_free(&fmt);
 		}
-		UnlockCSEHandle(cseLogLock, unlockFlag);
 		return strlen(lastSSLogMsg);
 	}
 	else{
 		vsnprintf( lastSSLogMsg, sizeof(lastSSLogMsg), fmt, ap );
+		UnlockCSEHandle(cseLogLock, unlockFlag);
 		if( fmt != msg ){
 			QTils_free(&fmt);
 		}
-		UnlockCSEHandle(cseLogLock, unlockFlag);
 		return 0;
 	}
 #else
 	vsnprintf( lastSSLogMsg, sizeof(lastSSLogMsg), fmt, ap );
+	UnlockCSEHandle(cseLogLock, unlockFlag);
 	if( fmt != msg ){
 		QTils_free(&fmt);
 	}
-	UnlockCSEHandle(cseLogLock, unlockFlag);
 	return Log( qtLogPtr, lastSSLogMsg );
 #endif
 }

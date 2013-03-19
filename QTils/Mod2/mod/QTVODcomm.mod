@@ -10,7 +10,7 @@ FROM WINUSER IMPORT
 	SW_SHOWDEFAULT;
 FROM WIN32 IMPORT
 	CreateProcess, CREATE_NEW_PROCESS_GROUP, DETACHED_PROCESS,
-	PROCESS_INFORMATION, STARTUPINFO, STARTF_USESHOWWINDOW;
+	PROCESS_INFORMATION, STARTUPINFO, STARTF_USESHOWWINDOW, GetLastError;
 FROM WINX IMPORT
 	NULL_HANDLE, NIL_STR, NIL_SECURITY_ATTRIBUTES;
 
@@ -687,6 +687,8 @@ VAR
 	startup : STARTUPINFO;
 	retB : BOOLEAN;
 	timer : CARDINAL32;
+	errMsg : ARRAY[0..255] OF CHAR;
+	errCode : INTEGER;
 BEGIN
 
 	mustSendVODDescription := FALSE;
@@ -755,8 +757,11 @@ BEGIN
 			QTils.LogMsgEx( 'LaunchQTVODm2: CreateProcess("%s","%s") retournait TRUE après %gs (OK)',
 				qtvdPath, args, VAL(Real64,GetTimeEx(timer))/1000.0 );
 		ELSE
-			QTils.LogMsgEx( 'LaunchQTVODm2: CreateProcess("%s","%s") retournait FALSE après %gs (erreur)',
-				qtvdPath, args, VAL(Real64,GetTimeEx(timer))/1000.0 );
+			errCode := GetLastError();
+			MSWinErrorString( errCode, errMsg );
+			QTils.LogMsgEx( 'LaunchQTVODm2: CreateProcess("%s","%s") retournait FALSE après %gs (erreur %d=%s)',
+				qtvdPath, args, VAL(Real64,GetTimeEx(timer))/1000.0,
+				errCode, errMsg );
 	END;
 	RETURN retB;
 END LaunchQTVODm2;

@@ -182,7 +182,7 @@ static char LogLocSet = 0;
 void LogLocation_Mod2( char *fName, int flen, int lineNr )
 {
 	Init_PM2_Log();
-	cLogStoreFileLine( fName, lineNr );
+	cLogStoreFileLine( qtLogPtr, fName, lineNr );
 	strncpy( LogLoc, fName, sizeof(LogLoc) );
 	LogLoc[sizeof(LogLoc)-1] = '\0';
 	LogLine = lineNr;
@@ -201,11 +201,11 @@ size_t PM2_LogMsg_Mod2( const char *msg, int mlen )
 	Init_PM2_Log();
 	if( qtLog_Initialised ){
 		if( LogLocSet ){
-			cLogStoreFileLine( LogLoc, LogLine );
+			cLogStoreFileLine( qtLogPtr, LogLoc, LogLine );
 			LogLocSet = 0;
 		}
 		else{
-			cLogStoreFileLine( M2LogEntity, -1 );
+			cLogStoreFileLine( qtLogPtr, M2LogEntity, -1 );
 		}
 #	ifdef _SS_LOG_ACTIVE
 		cWriteLog( qtLogPtr, (char*) fmt );
@@ -248,11 +248,11 @@ size_t PM2_LogMsgEx_Mod2( const char *msg, int mlen, va_list ap )
 	Init_PM2_Log();
 	if( qtLog_Initialised ){
 		if( LogLocSet ){
-			cLogStoreFileLine( LogLoc, LogLine );
+			cLogStoreFileLine( qtLogPtr, LogLoc, LogLine );
 			LogLocSet = 0;
 		}
 		else{
-			cLogStoreFileLine( M2LogEntity, -1 );
+			cLogStoreFileLine( qtLogPtr, M2LogEntity, -1 );
 		}
 #	ifdef _SS_LOG_ACTIVE
 		cWriteLogEx( qtLogPtr, (char*) fmt, ap );
