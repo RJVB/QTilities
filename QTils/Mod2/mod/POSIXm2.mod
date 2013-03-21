@@ -105,6 +105,32 @@ BEGIN
 	RETURN LENGTH(msg);
 END lLogMsg;
 
+PROCEDURE vLogMsgEx( formatStr : ARRAY OF CHAR; argsList : ADDRESS ): CARDINAL32;
+VAR
+	ret : CARDINAL32;
+BEGIN
+	IF ( POSIXm2Handle <> NULL_HANDLE )
+		THEN
+			ret := POSIXm2C.cLogMsgEx( formatStr, argsList );
+		ELSE
+			IF DevMode
+				THEN
+					pm2PostMessage( "LogMsgEx", formatStr );
+			END;
+			ret := LENGTH(formatStr);
+		END;
+	RETURN ret;
+END vLogMsgEx;
+
+PROCEDURE vPosixLogMsgEx(msg : ARRAY OF CHAR):CARDINAL32  [RightToLeft, LEAVES, VARIABLE];
+VAR
+	argsList : ADDRESS;
+BEGIN
+	VA_START(argsList);
+	POSIX.LogLocation(SOURCEFILE,SOURCELINE);
+	RETURN POSIX.vLogMsgEx( msg, argsList );
+END vPosixLogMsgEx;
+
 PROCEDURE LogMsgEx( formatStr : ARRAY OF CHAR ): CARDINAL32 [RightToLeft, LEAVES, VARIABLE];
 VAR
 	argsList : ADDRESS;
@@ -224,7 +250,7 @@ BEGIN
 					(* taille de la structure initialisée par initDMBasePOSIXm2(): la taille de LibPOSIXm2Base moins
 					 * les (3) membres qui renvoient vers des fonctions Modula-2
 					 *)
-					POSIXm2CSize := TSIZE(LibPOSIXm2Base) - 4 * TSIZE(ADDRESS);
+					POSIXm2CSize := TSIZE(LibPOSIXm2Base) - 5 * TSIZE(ADDRESS);
 					POSIXm2CObtained := getPOSIXm2C( POSIXm2C );
 					(* getPOSIXm2C() (= POSIXm2.dll::initDMBasePOSIXm2) retourne la taille de l'equivalent C du record
 						LibPOSIXm2Base. Évidemment elle doit être égale à POSIXm2CSize, ce qui fournit un
@@ -238,6 +264,7 @@ BEGIN
 						ELSE
 							WITH POSIXm2C DO
 								cPOSIX.LogMsgEx := LogMsgEx;
+								cPOSIX.vLogMsgEx := vLogMsgEx;
 								cPOSIX.sscanf := vsscanf;
 								cPOSIX.sprintf := vsprintf;
 								(* on doit impérativement appeler la fonction setjmp() de la librairie C système,

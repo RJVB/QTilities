@@ -387,9 +387,13 @@ void QTils_LogInit()
 #if (defined(__APPLE_CC__) || defined(__MACH__)) && !defined(EMBEDDED_FRAMEWORK)
 	PCLogAllocPool();
 #endif
+// 20130320 : only create a lock if we're logging. The downside is that concurrent writes to
+// lastSSLogMsg become possible.
+#if defined(_SS_LOG_ACTIVE) || defined(__APPLE_CC__) || defined(__MACH__)
 	if( !cseLogLock ){
 		cseLogLock = CreateCSEHandle(4000);
 	}
+#endif
 }
 
 void QTils_LogFinish()
@@ -440,7 +444,7 @@ size_t QTils_LogMsg_Mod2( const char *msg, int mlen )
 #if defined(_WINDOWS) || defined(WIN32) || defined(_MSC_VER) || TARGET_OS_WIN32
 	if( qtLog_Initialised ){
 #	ifdef _SS_LOG_ACTIVE
-		cLogStoreFileLine( qtLogPtr, M2LogEntity, -1 ), cWriteLog( qtLogPtr, (char*) fmt );
+		cLogStoreFileLine( qtLogPtr, M2LogEntity, -1 ); cWriteLog( qtLogPtr, (char*) fmt );
 #else
 		strncpy( lastSSLogMsg, msg, sizeof(lastSSLogMsg) );
 		lastSSLogMsg[sizeof(lastSSLogMsg)-1] = '\0';
@@ -477,7 +481,7 @@ size_t QTils_vLogMsgEx( const char *msg, va_list ap )
 #if defined(_WINDOWS) || defined(WIN32) || defined(_MSC_VER) || TARGET_OS_WIN32
 	if( qtLog_Initialised ){
 #	ifdef _SS_LOG_ACTIVE
-		cLogStoreFileLine(qtLogPtr, __FILE__, __LINE__), cWriteLogEx( qtLogPtr, (char*) msg, ap );
+		cLogStoreFileLine(qtLogPtr, __FILE__, __LINE__); cWriteLogEx( qtLogPtr, (char*) msg, ap );
 #	else
 		vsnprintf( lastSSLogMsg, sizeof(lastSSLogMsg), msg, ap );
 #	endif // _SS_LOG_ACTIVE
@@ -517,7 +521,7 @@ size_t QTils_LogMsgEx_Mod2( const char *msg, int mlen, va_list ap )
 #if defined(_WINDOWS) || defined(WIN32) || defined(_MSC_VER) || TARGET_OS_WIN32
 	if( qtLog_Initialised ){
 #	ifdef _SS_LOG_ACTIVE
-		cLogStoreFileLine( qtLogPtr, M2LogEntity, -1 ), cWriteLogEx( qtLogPtr, (char*) fmt, ap );
+		cLogStoreFileLine( qtLogPtr, M2LogEntity, -1 ); cWriteLogEx( qtLogPtr, (char*) fmt, ap );
 #else
 		vsnprintf( lastSSLogMsg, sizeof(lastSSLogMsg), fmt, ap );
 #	endif // _SS_LOG_ACTIVE

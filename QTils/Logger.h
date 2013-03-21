@@ -15,7 +15,7 @@
 //	typedef struct SS_Log	SS_Log;
 #	ifdef _SS_LOG_ACTIVE
 
-#		define Log(d,f,...)		cLogStoreFileLine((d),__FILE__, __LINE__), cWriteLog((d),(f),##__VA_ARGS__)
+#		define Log(d,f,...)		cLogStoreFileLine((d),__FILE__, __LINE__);cWriteLog((d),(f),##__VA_ARGS__)
 
 
 #	else // _SS_LOG_ACTIVE

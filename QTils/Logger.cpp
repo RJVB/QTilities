@@ -45,6 +45,7 @@ char lastSSLogMsg[2048] = "";
 typedef struct logEntries {
 	SS_Log *pLog;
 	char *msg;
+	DWORD thread;
 } logEntries;
 static list<logEntries> queuedEntries;
 
@@ -53,14 +54,17 @@ static void _FlushLog_( SS_Log *pLog )
 	if( queuedEntries.size() ){
 	  int i, n = queuedEntries.size();
 	  logEntries head;
-#ifdef _SS_LOG_ACTIVE
-		LogStoreFileLine( (TCHAR*) "queued", -1 );
-#endif // __SS_LOG_ACTIVE
 		for( i = 0 ; i < n ; i++ ){
 			head = queuedEntries.front();
 			queuedEntries.pop_front();
 			// fprintf( stderr, "%d : %s\n", queuedEntries.size(), head.msg );
 #ifdef _SS_LOG_ACTIVE
+			if( head.pLog ){
+				head.pLog->StoreFileLine( (TCHAR*) "queued-by-thread", head.thread );
+			}
+			else{
+				LogStoreFileLine( (TCHAR*) "queued-by-thread", head.thread );
+			}
 			WriteLog( head.pLog, filter, (TCHAR*) head.msg );
 #endif // _SS_LOG_ACTIVE
 			free(head.msg);
@@ -89,6 +93,7 @@ void cWriteLog(SS_Log *pLog, char* pMsg, ...)
 	  logEntries entry;
 		entry.pLog = pLog;
 		entry.msg = strdup(lastSSLogMsg);
+		entry.thread = GetCurrentThreadId();
 		queuedEntries.push_back(entry);
 	}
 #endif
@@ -108,6 +113,7 @@ void cWriteLogEx(SS_Log *pLog, char* pMsg, va_list ap)
 	  logEntries entry;
 		entry.pLog = pLog;
 		entry.msg = strdup(lastSSLogMsg);
+		entry.thread = GetCurrentThreadId();
 		queuedEntries.push_back(entry);
 	}
 #endif
@@ -119,8 +125,13 @@ void cLogStoreFileLine(SS_Log *pLog, char* szFile, int nLine)
 	if( !active ){
 		active = TRUE;
 #ifdef _SS_LOG_ACTIVE
-		_FlushLog_(&qtLog);
-		pLog->StoreFileLine( (TCHAR*) szFile, nLine );
+		_FlushLog_(pLog);
+		if( pLog ){
+			pLog->StoreFileLine( (TCHAR*) szFile, nLine );
+		}
+		else{
+			LogStoreFileLine( (TCHAR*) szFile, nLine );
+		}
 #endif
 		active = FALSE;
 	}

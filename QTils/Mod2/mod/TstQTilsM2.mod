@@ -568,7 +568,7 @@ BEGIN
 
 	FOR n := 0 TO INT(POSIX.argc) - 1 DO
 		Capitalize( POSIX.argv^[n]^ );
-		POSIX.LogMsgEx( "C-style argv[%d] = '%s' (%s)\n", n, POSIX.argv^[n]^, POSIX.Arg(n) );
+		MarkLog; POSIX.LogMsgEx( "C-style argv[%d] = '%s' (%s)\n", n, POSIX.argv^[n]^, POSIX.Arg(n) );
 	END;
 
 	stringPtr := NIL;
@@ -577,7 +577,7 @@ BEGIN
 	n := n + QTils.ssprintfAppend( stringPtr, " Et ceci %s un test\n", "n'est pas" );
 	IF stringPtr <> NIL
 		THEN
-			POSIX.LogMsgEx( "ssprintf returned %d, string='%s'\n", n, stringPtr );
+			PosixLogMsgEx( "ssprintf returned %d, string='%s'\n", n, stringPtr );
 			POSIX.free(stringPtr);
 	END;
 

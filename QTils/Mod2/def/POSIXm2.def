@@ -7,7 +7,7 @@ DEFINITION MODULE POSIXm2;
 
 FROM SYSTEM IMPORT
 %IF StonyBrook %THEN
-		SOURCEFILE, SOURCELINE,
+		SOURCEFILE, SOURCELINE, VA_START,
 %END
     ADDRESS, CAST, BYTE;
 
@@ -88,6 +88,7 @@ TYPE
 			setjmp : setjmpProcedure;
 
 			LogMsgEx : PROCEDURE((*msg*) ARRAY OF CHAR):CARDINAL32 [RightToLeft, LEAVES, VARIABLE];
+			vLogMsgEx : PROCEDURE((*msg*) ARRAY OF CHAR, (*argsList*) ADDRESS):CARDINAL32;
 			(*
 				Appelle la fonction sscanf() de la libraire standard C (a priori de MSVC)
 				sscanf( source, "flottant=%lf, uint16=%hu int32=%d hexcard=0x%lx",
@@ -106,10 +107,11 @@ VAR
 
 	POSIX : POSIXm2Exports;
 
-(* QT initialisation procedure: as of 20110112 this is no longer done at module initialisation time! *)
 PROCEDURE POSIXAvailable() : BOOLEAN;
 
 PROCEDURE pm2PostMessage( title, message : ARRAY OF CHAR ): CARDINAL;
+PROCEDURE vLogMsgEx( formatStr : ARRAY OF CHAR; argsList : ADDRESS ): CARDINAL32;
+PROCEDURE vPosixLogMsgEx(msg : ARRAY OF CHAR):CARDINAL32  [RightToLeft, LEAVES, VARIABLE];
 
 %IF StonyBrook %THEN
 
@@ -117,6 +119,19 @@ PROCEDURE MarkLog; MACRO;
 BEGIN
 	POSIX.LogLocation(SOURCEFILE,SOURCELINE);
 END MarkLog;
+
+(* attempt to make a macro function that records the calling file and linenumber.
+		Doesn't work; SOURCELINE apparently always evaluates to 1 and the varargs list
+		isn't passed on properly.
+ *)
+PROCEDURE PosixLogMsgEx(msg : ARRAY OF CHAR):CARDINAL32  [RightToLeft, LEAVES, VARIABLE]; MACRO;
+VAR
+	argsList : ADDRESS;
+BEGIN
+	VA_START(argsList);
+	POSIX.LogLocation(SOURCEFILE,SOURCELINE);
+	RETURN POSIX.vLogMsgEx( msg, argsList );
+END PosixLogMsgEx;
 
 %ELSE
 
