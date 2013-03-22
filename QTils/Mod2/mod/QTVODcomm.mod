@@ -9,7 +9,7 @@ FROM Strings IMPORT
 FROM WINUSER IMPORT
 	SW_SHOWDEFAULT;
 FROM WIN32 IMPORT
-	CreateProcess, CREATE_NEW_PROCESS_GROUP, DETACHED_PROCESS,
+	CreateProcess, CREATE_NEW_PROCESS_GROUP, DETACHED_PROCESS, CloseHandle,
 	PROCESS_INFORMATION, STARTUPINFO, STARTF_USESHOWWINDOW, GetLastError;
 FROM WINX IMPORT
 	NULL_HANDLE, NIL_STR, NIL_SECURITY_ATTRIBUTES;
@@ -754,6 +754,8 @@ BEGIN
 		CREATE_NEW_PROCESS_GROUP BOR DETACHED_PROCESS, NIL, NIL_STR, startup, pInfo );
 	IF retB
 		THEN
+			CloseHandle(pInfo.hProcess);
+			CloseHandle(pInfo.hThread);
 			QTils.LogMsgEx( 'LaunchQTVODm2: CreateProcess("%s","%s") retournait TRUE après %gs (OK)',
 				qtvdPath, args, VAL(Real64,GetTimeEx(timer))/1000.0 );
 		ELSE
