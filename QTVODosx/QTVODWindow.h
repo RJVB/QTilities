@@ -89,6 +89,7 @@ typedef enum QTVODwinIDs {
 #endif
 }
 
+- (NSString*) description;
 - (void)updateMenus;
 
 - (NSString*) thePath;

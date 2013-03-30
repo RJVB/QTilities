@@ -377,6 +377,11 @@
 	qtmwH = NULL;
 }
 
+- (NSString*) description
+{
+	return [[NSString alloc] initWithFormat:@"<%@ with movie %@>", NSStringFromClass([self class]), qtMovie];
+}
+
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize
 { NSSize mSize = [self movieSizeForWindowSize:frameSize];
 	if( !([[sender currentEvent] modifierFlags] & NSShiftKeyMask) || !resizesVertically ){
@@ -497,6 +502,18 @@ extern QTMovieWindowH QTMovieWindowHFromNativeWindow( NativeWindow hWnd );
 		unregister_QTMovieWindowH_from_NativeWindow((*wi)->theView);
 		(*wi)->theView = NULL;
 	}
+}
+
+@end
+
+@implementation NSWindow (description)
+
+- (NSString*) description
+{ NSRect frame = [self frame];
+	return [[NSString alloc]
+		   initWithFormat:@"<%@ %p '%@' %gx%g+%g+%g>", NSStringFromClass([self class]), self,
+		   [self title], frame.size.width, frame.size.height,
+		   frame.origin.x, frame.origin.y];
 }
 
 @end

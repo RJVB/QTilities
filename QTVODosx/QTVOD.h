@@ -90,6 +90,7 @@ typedef struct TimeInterval {
 - (ErrCode) urlReadDefaultVODDescription:(NSURL*)url toDescription:(VODDescription*)descr;
 - (ErrCode) ScanForDefaultVODDescription:(const char*)fName toDescription:(VODDescription*)descr;
 - (ErrCode) nsScanForDefaultVODDescription:(NSString*)fName toDescription:(VODDescription*)descr;
+- (NSString*) description;
 
 @property (readonly) QTVODWindow *sysOwned;
 @property (readonly) QTVODWindow *forward, *pilot, *left, *right, *TC;

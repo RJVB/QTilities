@@ -1378,6 +1378,20 @@ static unsigned int fullScreenViews= 0;
     return @"QTVODWindow";
 }
 
+- (NSString*) description
+{
+	if( theQTVOD ){
+		return [[NSString alloc]
+			   initWithFormat:@"<%@ showing movie %@, part of %@>", NSStringFromClass([self class]),
+			   movie, theQTVOD];
+	}
+	else{
+		return [[NSString alloc]
+			   initWithFormat:@"<%@ showing movie %@>", NSStringFromClass([self class]),
+			   movie];
+	}
+}
+
 - (void)windowControllerDidLoadNib:(NSWindowController *) aController
 {
     [super windowControllerDidLoadNib:aController];
@@ -2255,6 +2269,7 @@ static unsigned int fullScreenViews= 0;
 
 - (BOOL) windowShouldClose:(id)sender
 {
+	NSLog( @"[%@ windowShouldClose]", self );
 	if( handlingMCAction > 0 ){
 		delayedClosing = YES;
 		return NO;

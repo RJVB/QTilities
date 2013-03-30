@@ -50,6 +50,7 @@
 - (void) setTitleWithCString:(const char*)title;
 - (void) boundsDidChange:(NSQTMovieWindow*)sender;
 - (void) prepareForRelease;
+- (NSString*) description;
 // delegate functions:
 - (BOOL) windowShouldClose:(id)sender;
 - (void) windowWillClose:(NSNotification*)notification;
@@ -66,4 +67,8 @@
 @interface QTMovieWindowDelegate : NSObject
 - (BOOL) windowShouldClose:(id)sender;
 - (void) windowWillClose:(NSNotification*)notification;
+@end
+
+@interface NSWindow (description)
+- (NSString*) description;
 @end

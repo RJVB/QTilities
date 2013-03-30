@@ -1539,6 +1539,13 @@ BOOL addToRecentDocs = YES;
 	}
 }
 
+- (NSString*) description
+{
+	return [[NSString alloc]
+		   initWithFormat:@"<%@ spatialised VOD video document for %@ with associated data %@; %hd windows>", NSStringFromClass([self class]),
+		   theURL, (assocDataFile)? assocDataFile : @"(N/A)", numQTMW];
+}
+
 - (void) ShowMetaData
 { static NSMutableString *MetaDataDisplayStr = NULL;
   QTMovieWindowH wih;
