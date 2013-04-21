@@ -57,8 +57,7 @@ make -C $OUTPUT_DIRECTORY/html install
 rm -f $TEMP_DIR/loadDocSet.scpt
 
 echo "tell application \"Xcode\"" >> $TEMP_DIR/loadDocSet.scpt
-echo "load documentation set with path \"/Users/$USER/Library/Developer/Shared/Documentation/DocSets/\"" 
-     >> $TEMP_DIR/loadDocSet.scpt
+echo "load documentation set with path \"/Users/$USER/Library/Developer/Shared/Documentation/DocSets/\"" >> $TEMP_DIR/loadDocSet.scpt
 echo "end tell" >> $TEMP_DIR/loadDocSet.scpt
 
 #  Run the load-docset applescript command.
