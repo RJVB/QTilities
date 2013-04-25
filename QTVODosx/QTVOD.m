@@ -895,6 +895,17 @@ BOOL addToRecentDocs = YES;
 	return ret;
 }
 
+- (int) movieAnyAction:(QTMovieWindowH)wih withParams:(void*)params
+{ short action = (params)? *((short*)params) : 0;
+  double t;
+  extern double HRTime_Time();
+//	if( (*wih)->isPlaying ){
+		QTMovieWindowGetTime(wih, &t, 0);
+		NSLog( @"AnyAction<%hd>@t=%gs %@ currentTime=%g", action, HRTime_Time(), self, t );
+//	}
+	return 0;
+}
+
 #define REGISTER_NSMCACTION(wih,action,sel)	register_NSMCAction(self,(wih),(action),@selector(sel:withParams:),(NSMCActionCallback) [self methodForSelector:@selector(sel:withParams:)])
 
 - (void) register_window:(QTMovieWindowH)wih withIndex:(int)idx
@@ -912,6 +923,7 @@ BOOL addToRecentDocs = YES;
 		REGISTER_NSMCACTION( wih, MCAction()->Close, movieClose );
 		REGISTER_NSMCACTION( wih, MCAction()->KeyUp, movieKeyUp );
 		REGISTER_NSMCACTION( wih, MCAction()->Finished, movieFinished );
+//		REGISTER_NSMCACTION( wih, MCAction()->AnyAction, movieAnyAction );
 		QTMovieWindowGetGeometry( wih, &Wpos[idx], &Wsize[idx], 1 );
 	}
 }

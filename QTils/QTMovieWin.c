@@ -244,7 +244,7 @@ const MCActions _MCAction_ = {
 	mcActionDeactivate, mcActionGoToTime, mcActionMouseDown,
 	mcActionMovieClick, mcActionKeyUp, mcActionSuspend, mcActionResume,
 	mcActionMovieLoadStateChanged, mcActionMovieFinished, mcActionIdle,
-	-1, -2, -3,
+	-1, -2, -3, -4
 };
 
 const MCActions *MCAction()
@@ -376,6 +376,18 @@ Boolean QTMovieWindow_MCActionHandler( MovieController mc, short action, void *p
 			wi->wasStepped = FALSE;
 			wi->wasScanned = FALSE;
 			break;
+	}
+	if( wi->hasAnyMCAction ){
+#if TARGET_OS_MAC
+		if( (nsfun = get_NSMCAction( wih, _MCAction_.AnyAction, &target, &selector )) ){
+			(*nsfun)( target, selector, wih, &action );
+			QTWMflush();
+		}
+		else
+#endif
+		if( (fun = get_MCAction( wih, _MCAction_.AnyAction )) ){
+			(Boolean) (*fun)( wih, &action );
+		}
 	}
 	switch( action ){
 		case mcActionMovieLoadStateChanged:

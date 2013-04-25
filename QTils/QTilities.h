@@ -530,6 +530,7 @@ typedef struct QTMovieWindows {
 	void *MCActionList;				//!< pointer to a C++ map associating MCAction values with user-specified callbacks
 	float lastActionTime;
 	short lastAction, stepPending;
+	int hasAnyMCAction;
 	SInt64 stepStartTime;
 	QTMovieInfo theInfo;			//!< source for the info member in the public section.
 #endif //__QUICKTIME__
@@ -592,7 +593,10 @@ typedef struct MCActions {
 		Idle,		//!< For completeness sake: the Idle action which can be received *very* often
 		Start,		//!< non-QT action
 		Stop,		//!< non-QT action
-		Close;		//!< non-QT action
+		Close,		//!< non-QT action
+		AnyAction;	//!< non-QT action: used to install an MCActionCallback that is called at the reception of any
+					//!< MCAction event, before the dedicated handler. The params argument will point to an Int16
+					//!< containing the action identifier, and the return value is IGNORED.
 } MCActions;
 
 QTLSext int _QTMovieWindowH_Check_( QTMovieWindowH wih );

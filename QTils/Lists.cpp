@@ -304,6 +304,8 @@ void unregister_MCActionList(void *list)
 	}
 #endif
 
+extern const MCActions _MCAction_;
+
 /*!
 	register an MCActionCallback <- MCAction association
  */
@@ -312,6 +314,9 @@ void register_MCAction( QTMovieWindowH wi, short action, MCActionCallback callba
 	if( action && QTMovieWindowH_Check(wi) && (*wi)->MCActionList ){
 	  MCActionLists *mlist = (MCActionLists*) (*wi)->MCActionList;
 		(*mlist)[action] = callback;
+		if( action == _MCAction_.AnyAction ){
+			(*wi)->hasAnyMCAction = 1;
+		}
 	}
 }
 
@@ -327,6 +332,9 @@ void register_MCAction( QTMovieWindowH wi, short action, MCActionCallback callba
 			info.selector = selector;
 			info.callback = callback;
 			(*mlist)[action] = info;
+			if( action == _MCAction_.AnyAction ){
+				(*wi)->hasAnyMCAction = 1;
+			}
 		}
 	}
 #endif
@@ -389,6 +397,9 @@ void unregister_MCAction( QTMovieWindowH wi, short action )
 		if( mlist->count(action) ){
 			mlist->erase(action);
 			mlist->resize(0);
+			if( action == _MCAction_.AnyAction ){
+				(*wi)->hasAnyMCAction = 1;
+			}
 		}
 	}
 }
@@ -404,6 +415,9 @@ void unregister_MCAction( QTMovieWindowH wi, short action )
 			if( mlist->count(action) ){
 				mlist->erase(action);
 				mlist->resize(0);
+				if( action == _MCAction_.AnyAction ){
+					(*wi)->hasAnyMCAction = 1;
+				}
 			}
 		}
 	}

@@ -2149,6 +2149,10 @@ BEGIN
 	splitCamTrack.pilot := -1;
 	splitCamTrack.left := -1;
 	splitCamTrack.right := -1;
+	currentTimeSubscription.sendInterval := 0.0;
+	currentTimeSubscription.lastSentTime := 0.0;
+	currentTimeSubscription.lastMovieTime := -1.0;
+	currentTimeSubscription.absolute := FALSE;
 
 FINALLY
 

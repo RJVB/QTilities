@@ -42,7 +42,7 @@ VAR
 	c : CHAR;
 	srv, s : SOCK;
 	receipt, reply, command : NetMessage;
-	finished, clientQuit, sendNewFileName : BOOLEAN;
+	finished, clientQuit, sendNewFileName, currentTimeSubscribed : BOOLEAN;
 	received, sent : UInt32;
 	msgTimer, clntTimer : CARDINAL32;
 
@@ -209,6 +209,7 @@ BEGIN
 	received := 0;
 	sent := 0;
 	clientQuit := FALSE;
+	currentTimeSubscribed := FALSE;
 	ArgsChan := ArgChan();
 	IF IsArgPresent()
 		THEN
@@ -238,6 +239,12 @@ BEGIN
 			LOOP
 				IF ( GetClient(s) )
 					THEN
+						IF NOT currentTimeSubscribed
+							THEN
+								msgGetTimeSubscription( command, 0.5, FALSE );
+								SendMessageToNet( s, command, SENDTIMEOUT, FALSE, "TstQTVDSrv-envoi" );
+								currentTimeSubscribed := TRUE;
+						END;
 						IF ReceiveMessageFromNet( s, receipt, 250, FALSE, "TstQTVDSrv-lecture" )
 							THEN
 								TraiteMsgDeQTVODm2(receipt, reply);
@@ -278,6 +285,7 @@ BEGIN
 								 * le 1e message reçu de QTVODm2 et sinon pas plus souvent qu'une fois toutes
 								 * les 5 secondes. NB: msgTimer est mis à jour à d'autres endroits aussi! *)
 								IF ( (received = 1 ) OR ((received > 0) AND (GetTimeEx(msgTimer) >= 5000)) )
+									AND (NOT currentTimeSubscribed)
 									THEN
 										msgGetTime( command, TRUE );
 										(* MAJ de msgTimer *)

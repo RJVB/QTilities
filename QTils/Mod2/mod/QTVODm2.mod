@@ -31,9 +31,6 @@ FROM LongStr IMPORT
 FROM WholeStr IMPORT
 	StrToInt;
 
-FROM ElapsedTime IMPORT
-	StartTimeEx, GetTimeEx;
-
 FROM QTilsM2 IMPORT *;
 FROM QTVODlib IMPORT *;
 FROM POSIXm2 IMPORT
@@ -57,8 +54,8 @@ VAR
 	idx, n, l, m : UInt32;
 	movieDescription : VODDescription;
 	msgNet, Netreply : NetMessage;
-	handlingIdleAction, isCompleteReset : BOOLEAN;
-	msgTimer : CARDINAL32;
+	handlingIdleAction, cyclingNetPump, isCompleteReset : BOOLEAN;
+	msgTimer : Real64;
 	ipAddress : ARRAY[0..63] OF CHAR;
 	err : ErrCode;
 
@@ -234,6 +231,13 @@ BEGIN
 						SendNetErrorNotification( sServeur, NetMessageToString(msg), 1 );
 						RETURN 1;
 				END;
+		| qtvod_GetTimeSubscription :
+				WITH currentTimeSubscription DO
+					sendInterval := msg.data.val1;
+					absolute := msg.data.boolean;
+					lastSentTime := HRTime();
+					lastMovieTime := -1.0;
+				END;
 
 		| qtvod_GotoTime :
 				SetTimes( msg.data.val1, NULL_QTMovieWindowH, VAL(Int32,msg.data.boolean) );
@@ -384,15 +388,47 @@ BEGIN
 	RETURN msg.data.error;
 END ReplyNetMsg;
 
-PROCEDURE PumpNetMessagesOnce(timeOutms : INTEGER) : BOOLEAN;
+PROCEDURE PumpNetMessagesOnce(timeOutms : INTEGER; fromIdle : BOOLEAN) : BOOLEAN;
+VAR
+	subscrTimer, dt : Real64;
 BEGIN
-	msgTimer := StartTimeEx();
+	cyclingNetPump := TRUE;
+	msgTimer := HRTime();
+	subscrTimer := msgTimer;
+	(* on vérifie s'il faut envoyer le temps courant et s'il est temps de le faire *)
+	WITH currentTimeSubscription DO
+		dt := subscrTimer - lastSentTime;
+		IF (sendInterval > 0.0) AND (dt >= sendInterval)
+			THEN
+				(* on obtient le temps courant dans la fenêtre 'forward' *)
+				replyCurrentTime( msgNet, qtvod_Subscription, qtwmH[fwWin], absolute );
+				(* si ce temps est différent au temps précédemment envoyé, on envoie le message *)
+				IF msgNet.data.val1 <> lastMovieTime
+					THEN
+						QTils.LogMsgEx( "SUBS dt=%g-%g=%g movie.dt=%g-%g=%g fromIdle=%d",
+							subscrTimer, lastSentTime,
+							dt,
+							msgNet.data.val1, lastMovieTime,
+							msgNet.data.val1 - lastMovieTime, VAL(INTEGER,fromIdle) );
+						lastMovieTime := msgNet.data.val1;
+						SendMessageToNet( sServeur, msgNet, SENDTIMEOUT, FALSE, "QTVODm2 - currentTime subscription" );
+						(* on veut envoyer le premier temps différent du temps précédent, donc ne modifie
+							msgTime QUE quand il y a eu envoi. Cela entraine une petite surcharge (vérification
+							du temps courant) quand la vidéo n'est pas en mode lecture, mais dans ce cas cela n'a
+							pas d'importance. *)
+						lastSentTime := subscrTimer;
+				END;
+		END;
+	END;
+	(* maintenant on vérifie s'il y a des messages à recevoir *)
 	IF ReceiveMessageFromNet( sServeur, msgNet, timeOutms, FALSE, "QTVODM2" )
 		THEN
 			ReplyNetMsg(msgNet);
 			m := m + 1;
+			cyclingNetPump := FALSE;
 			RETURN TRUE;
 		ELSE
+			cyclingNetPump := FALSE;
 			RETURN FALSE;
 	END;
 END PumpNetMessagesOnce;
@@ -402,7 +438,7 @@ VAR
 	n : UInt32;
 BEGIN
 	n := 0;
-	WHILE PumpNetMessagesOnce(firstTimeOutms) DO
+	WHILE PumpNetMessagesOnce(firstTimeOutms, FALSE) DO
 		firstTimeOutms := 0;
 		n := n + 1;
 	END;
@@ -413,13 +449,17 @@ BEGIN
 END PumpNetMessages;
 
 PROCEDURE movieIdle(wih : QTMovieWindowH; params : ADDRESS ) : Int32 [CDECL];
+VAR
+	dt : Real64;
 BEGIN
-	IF ( handlingIdleAction OR (sServeur = sock_nulle) OR (GetTimeEx(msgTimer) < 100) )
+	dt := HRTime() - msgTimer;
+	IF cyclingNetPump OR (sServeur = sock_nulle) OR
+		((dt < 100.0) AND (currentTimeSubscription.sendInterval <= 0.0))
 		THEN
 			RETURN 0;
 		END;
 	handlingIdleAction := TRUE;
-	PumpNetMessagesOnce(0);
+	PumpNetMessagesOnce(0, TRUE);
 	handlingIdleAction := FALSE;
 	IF ( closeRequest OR quitRequest OR resetRequest )
 		THEN
@@ -637,6 +677,8 @@ BEGIN
 	(* on initialise QTilsM2 *)
 	OpenQT();
 
+	handlingIdleAction := FALSE;
+	cyclingNetPump := FALSE;
 	Sortie := CompareKeystroke;
 	HandleSendErrors := SendErrorHandler;
 
@@ -741,7 +783,11 @@ BEGIN
 			(* on traite les évenements tant qu'au moins 1 des fenêtres reste ouverte: *)
 			QTils.LogMsg( "entrée de la boucle principale" );
 			n := 0; l:= 0; m := 0;
-			msgTimer := StartTimeEx();
+			msgTimer := HRTime();
+			WITH currentTimeSubscription DO
+				lastSentTime := msgTimer;
+				lastMovieTime := -1.0;
+			END;
 			WHILE ( (numQTWM <> 0) AND (NOT quitRequest) ) DO
 				IF (theTimeInterVal.benchMarking) AND (qtwmH[fwWin] <> NULL_QTMovieWindowH)
 					THEN

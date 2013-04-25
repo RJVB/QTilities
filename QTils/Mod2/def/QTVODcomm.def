@@ -22,6 +22,7 @@ TYPE
 		END;
 
 	URLString = ARRAY[0..1024] OF CHAR;
+	Str64 = ARRAY[0..64] OF CHAR;
 
 	VODDescription	=
 		RECORD
@@ -29,7 +30,7 @@ TYPE
 			timeZone : Real64;
 			DST, useVMGI, log, flipLeftRight : BOOLEAN;
 			channels : VODChannels;
-			codec, bitRate : URLString;
+			codec, bitRate : Str64;
 			splitQuad : BOOLEAN;
 		END;
 	VODDescriptionPtr = POINTER TO VODDescription;
@@ -37,7 +38,7 @@ TYPE
 	String256 = ARRAY[0..255] OF CHAR;
 	NetMessageClass =
 		(
-			qtvod_NoClass, qtvod_Command, qtvod_Confirmation, qtvod_Notification
+			qtvod_NoClass, qtvod_Command, qtvod_Confirmation, qtvod_Notification, qtvod_Subscription
 		);
 	NetMessageType =
 		(
@@ -45,7 +46,7 @@ TYPE
 			(* commands to QTVOD that are also sent back as confirmation: *)
 			qtvod_Open, qtvod_Start, qtvod_Stop,
 			qtvod_Close, qtvod_Reset, qtvod_Quit, qtvod_GotoTime, qtvod_NewChapter,
-			qtvod_MarkIntervalTime,
+			qtvod_MarkIntervalTime, qtvod_GetTimeSubscription,
 			(* commands that are confirmed via a dedicated message: *)
 			qtvod_GetTime, qtvod_GetStartTime, qtvod_GetDuration, qtvod_GetChapter,
 			qtvod_GetLastInterval,
@@ -129,6 +130,7 @@ PROCEDURE msgResetQTVOD( VAR msg : NetMessage; complete : BOOLEAN );
 PROCEDURE msgQuitQTVOD( VAR msg : NetMessage );
 PROCEDURE msgGotoTime( VAR msg : NetMessage; t : Real64; absolute : BOOLEAN );
 PROCEDURE msgGetTime( VAR msg : NetMessage; absolute : BOOLEAN );
+PROCEDURE msgGetTimeSubscription( VAR msg : NetMessage; interval : Real64; absolute : BOOLEAN );
 PROCEDURE msgGetStartTime( VAR msg : NetMessage );
 PROCEDURE msgGetDuration( VAR msg : NetMessage );
 PROCEDURE msgGetChapter(VAR msg : NetMessage; idx : Int32);

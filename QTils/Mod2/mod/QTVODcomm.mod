@@ -270,6 +270,8 @@ BEGIN
 			str := "LastInterval";
 		| qtvod_MovieFinished :
 			str := "MovieFinished";
+		| qtvod_GetTimeSubscription :
+			str := "GetTimeSubscription";
 	ELSE
 		str := "<??>";
 	END;
@@ -280,6 +282,8 @@ BEGIN
 			Append( " (notification)", str );
 		| qtvod_Confirmation:
 			Append( " (confirmation)", str );
+		| qtvod_Subscription:
+			Append( " (subscription)", str );
 		ELSE
 			(* noop *)
 	END;
@@ -367,6 +371,13 @@ BEGIN
 					QTils.LogMsgEx( '%s %s: %s t=%gs %s', title, caption, NetMessageToString(msg), msg.data.val1, tType );
 				ELSE
 					QTils.LogMsgEx( '%s: %s t=%gs %s', title, NetMessageToString(msg), msg.data.val1, tType );
+			END;
+		| qtvod_GetTimeSubscription :
+			IF ( LENGTH(caption) > 0 )
+				THEN
+					QTils.LogMsgEx( '%s %s: %s interval=%gs %s', title, caption, NetMessageToString(msg), msg.data.val1, tType );
+				ELSE
+					QTils.LogMsgEx( '%s: %s interval=%gs %s', title, NetMessageToString(msg), msg.data.val1, tType );
 			END;
 		| qtvod_NewChapter,
 		qtvod_GetChapter,
@@ -466,6 +477,17 @@ BEGIN
 	msg.sentTime := -1.0;
 %END
 END msgGetTime;
+
+PROCEDURE msgGetTimeSubscription( VAR msg : NetMessage; interval : Real64; absolute : BOOLEAN );
+BEGIN
+	msg.flags.type := qtvod_GetTimeSubscription;
+	msg.flags.class := qtvod_Command;
+	msg.data.val1 := interval;
+	msg.data.boolean := absolute;
+%IF COMMTIMING %THEN
+	msg.sentTime := -1.0;
+%END
+END msgGetTimeSubscription;
 
 PROCEDURE msgGetStartTime( VAR msg : NetMessage );
 BEGIN

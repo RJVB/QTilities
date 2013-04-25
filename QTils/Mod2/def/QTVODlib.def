@@ -21,6 +21,21 @@ FROM QTilsM2 IMPORT
 	XMLElement, XML_RECORD, UInt32;
 *)
 
+TYPE
+
+	CurrentTimeSubscription =
+		RECORD
+			(* l'intervalle à envoyer le temps courant dans la fenêtre 'forward' *)
+			sendInterval,
+				(* le dernier temps que cet envoi a eu lieu *)
+				lastSentTime,
+				(* le dernier temps envoyé *)
+				lastMovieTime : Real64;
+			(* envoyer le temps absolut? *)
+			absolute : BOOLEAN;
+		END;
+
+PROCEDURE HRTime() : Real64;
 PROCEDURE SetTimes( t : Real64; ref : QTMovieWindowH; absolute : Int32 );
 PROCEDURE StartVideo(excl : QTMovieWindowH);
 PROCEDURE StepVideo(excl : QTMovieWindowH ; steps : Int32);
@@ -63,5 +78,6 @@ VAR
 	fullMovie : Movie;
 	fullMovieChanged, fullMovieIsSplit : BOOLEAN;
 	fullMovieWMH : QTMovieWindowH;
+	currentTimeSubscription : CurrentTimeSubscription;
 
 END QTVODlib.
