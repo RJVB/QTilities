@@ -1,5 +1,8 @@
 DEFINITION MODULE QTVODlib;
 
+FROM SYSTEM IMPORT
+	ADDRESS;
+
 %IF CHAUSSETTE2 %THEN
 FROM Chaussette2 IMPORT
 %ELSE
@@ -51,6 +54,7 @@ PROCEDURE ReadDefaultVODDescription( fName : URLString; VAR descr : VODDescripti
 PROCEDURE ScanForDefaultVODDescription( movie, fName : URLString; VAR descr : VODDescription ) : ErrCode;
 PROCEDURE BenchmarkPlaybackRate;
 PROCEDURE CalcTimeInterval(reset, display : BOOLEAN);
+PROCEDURE PumpSubscriptions(wih : QTMovieWindowH; params : ADDRESS ) : Int32 [CDECL];
 
 PROCEDURE GetXMLParamString( theElement : XMLElement; idx : CARDINAL; elm : UInt32; designTable : ARRAY OF XML_RECORD;
 	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;

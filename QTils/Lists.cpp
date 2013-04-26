@@ -304,7 +304,9 @@ void unregister_MCActionList(void *list)
 	}
 #endif
 
-extern const MCActions _MCAction_;
+extern "C" {
+	extern const MCActions _MCAction_;
+}
 
 /*!
 	register an MCActionCallback <- MCAction association

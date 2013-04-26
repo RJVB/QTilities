@@ -9,7 +9,7 @@ MODULE QTVODm2;
 %END
 
 FROM SYSTEM IMPORT
-	CAST, ADDRESS;
+	CAST, ADDRESS, ADR;
 
 FROM Strings IMPORT
 	Equal, Length, Assign, Capitalize;
@@ -237,6 +237,12 @@ BEGIN
 					absolute := msg.data.boolean;
 					lastSentTime := HRTime();
 					lastMovieTime := -1.0;
+					IF sendInterval > 0.0
+						THEN
+							QTils.register_MCAction( qtwmH[fwWin], MCAction.AnyAction, PumpSubscriptions );
+						ELSE
+							QTils.unregister_MCAction( qtwmH[fwWin], MCAction.AnyAction );
+					END;
 				END;
 
 		| qtvod_GotoTime :
@@ -388,38 +394,10 @@ BEGIN
 	RETURN msg.data.error;
 END ReplyNetMsg;
 
-PROCEDURE PumpNetMessagesOnce(timeOutms : INTEGER; fromIdle : BOOLEAN) : BOOLEAN;
-VAR
-	subscrTimer, dt : Real64;
+PROCEDURE PumpNetMessagesOnce(timeOutms : INTEGER) : BOOLEAN;
 BEGIN
 	cyclingNetPump := TRUE;
 	msgTimer := HRTime();
-	subscrTimer := msgTimer;
-	(* on vérifie s'il faut envoyer le temps courant et s'il est temps de le faire *)
-	WITH currentTimeSubscription DO
-		dt := subscrTimer - lastSentTime;
-		IF (sendInterval > 0.0) AND (dt >= sendInterval)
-			THEN
-				(* on obtient le temps courant dans la fenêtre 'forward' *)
-				replyCurrentTime( msgNet, qtvod_Subscription, qtwmH[fwWin], absolute );
-				(* si ce temps est différent au temps précédemment envoyé, on envoie le message *)
-				IF msgNet.data.val1 <> lastMovieTime
-					THEN
-						QTils.LogMsgEx( "SUBS dt=%g-%g=%g movie.dt=%g-%g=%g fromIdle=%d",
-							subscrTimer, lastSentTime,
-							dt,
-							msgNet.data.val1, lastMovieTime,
-							msgNet.data.val1 - lastMovieTime, VAL(INTEGER,fromIdle) );
-						lastMovieTime := msgNet.data.val1;
-						SendMessageToNet( sServeur, msgNet, SENDTIMEOUT, FALSE, "QTVODm2 - currentTime subscription" );
-						(* on veut envoyer le premier temps différent du temps précédent, donc ne modifie
-							msgTime QUE quand il y a eu envoi. Cela entraine une petite surcharge (vérification
-							du temps courant) quand la vidéo n'est pas en mode lecture, mais dans ce cas cela n'a
-							pas d'importance. *)
-						lastSentTime := subscrTimer;
-				END;
-		END;
-	END;
 	(* maintenant on vérifie s'il y a des messages à recevoir *)
 	IF ReceiveMessageFromNet( sServeur, msgNet, timeOutms, FALSE, "QTVODM2" )
 		THEN
@@ -436,9 +414,12 @@ END PumpNetMessagesOnce;
 PROCEDURE PumpNetMessages(firstTimeOutms : INTEGER) : UInt32;
 VAR
 	n : UInt32;
+	action : Int16;
 BEGIN
 	n := 0;
-	WHILE PumpNetMessagesOnce(firstTimeOutms, FALSE) DO
+	action := 0;
+	PumpSubscriptions( qtwmH[fwWin], ADR(action) );
+	WHILE PumpNetMessagesOnce(firstTimeOutms) DO
 		firstTimeOutms := 0;
 		n := n + 1;
 	END;
@@ -453,13 +434,12 @@ VAR
 	dt : Real64;
 BEGIN
 	dt := HRTime() - msgTimer;
-	IF cyclingNetPump OR (sServeur = sock_nulle) OR
-		((dt < 100.0) AND (currentTimeSubscription.sendInterval <= 0.0))
+	IF cyclingNetPump OR (sServeur = sock_nulle) OR (dt < 100.0)
 		THEN
 			RETURN 0;
 		END;
 	handlingIdleAction := TRUE;
-	PumpNetMessagesOnce(0, TRUE);
+	PumpNetMessagesOnce(0);
 	handlingIdleAction := FALSE;
 	IF ( closeRequest OR quitRequest OR resetRequest )
 		THEN
