@@ -903,10 +903,30 @@ BOOL addToRecentDocs = YES;
 	if( (*wih)->isPlaying && !active ){
 		active = 1;
 		QTMovieWindowGetTime(wih, &t, 0);
-		NSLog( @"AnyAction<%hd>@t=%gs %@ currentTime=%g", action, HRTime_Time(), forward, t );
+		NSLog( @"AnyAction<%hd>@t=%gs currentTime=%g", action, HRTime_Time(), t );
 		active = 0;
 	}
 	return 0;
+}
+
+#define CALLBACK_WITH_INTERRUPTS	1
+#define CALLBACK_INTERVAL		1.0/12.0
+
+void timeCallBack( QTCallBack cbRegister, long data )
+{ QTMovieWindowH wih = (QTMovieWindowH) data;
+  double t;
+  static double pt = 0;
+  extern double HRTime_Time();
+	if( wih && (*wih) && (*wih)->self == *wih && (*wih)->theView ){
+		if( (*wih)->isPlaying ){
+			QTMovieWindowGetTime(wih, &t, 0);
+			doNSLog( @"timeCallBack @t=%gs %@ currentTime=%g dt=%g",
+				   HRTime_Time(), (*wih)->theNSQTMovieWindow, t, t-pt );
+			pt = t;
+		}
+		TimedCallBackRegisterFunctionInTime( (*wih)->theMovie, cbRegister, CALLBACK_INTERVAL, timeCallBack,
+									 (long) wih, CALLBACK_WITH_INTERRUPTS);
+	}	
 }
 
 #define REGISTER_NSMCACTION(wih,action,sel)	register_NSMCAction(self,(wih),(action),\
@@ -928,9 +948,14 @@ BOOL addToRecentDocs = YES;
 		REGISTER_NSMCACTION( wih, MCAction()->Close, movieClose );
 		REGISTER_NSMCACTION( wih, MCAction()->KeyUp, movieKeyUp );
 		REGISTER_NSMCACTION( wih, MCAction()->Finished, movieFinished );
-//		if( idx == fwWin ){
+		if( idx == fwWin ){
 //			REGISTER_NSMCACTION( wih, MCAction()->AnyAction, movieAnyAction );
-//		}
+//			if( !cbRegister ){
+//				NewTimedCallBackRegisterForMovie( (*wih)->theMovie, &cbRegister, CALLBACK_WITH_INTERRUPTS );
+//			}
+//			TimedCallBackRegisterFunctionInTime( (*wih)->theMovie, cbRegister, CALLBACK_INTERVAL, timeCallBack,
+//										 (long) wih, CALLBACK_WITH_INTERRUPTS);
+		}
 		QTMovieWindowGetGeometry( wih, &Wpos[idx], &Wsize[idx], 1 );
 	}
 }
@@ -1522,6 +1547,10 @@ BOOL addToRecentDocs = YES;
 	}
 	if( QTVODList && [QTVODList containsObject:self] ){
 		[QTVODList removeObject:self];
+	}
+	if( cbRegister ){
+		DisposeCallBack(cbRegister);
+		cbRegister = NULL;
 	}
 	[super dealloc];
 }

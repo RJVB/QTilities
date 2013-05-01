@@ -111,6 +111,8 @@ typedef struct TCTrackInfo {
 	typedef struct MovieType**	Movie;
 	typedef struct TrackType**	Track;
 	typedef char**				Handle;
+	typedef struct QTCallBackHeader*	QTCallBack;
+	typedef void				(*QTCallBackUPP)(QTCallBack cb, long refCon);
 #	define noErr				0
 	typedef struct TimeCodeTime {
 		unsigned char hours;
@@ -315,7 +317,10 @@ QTLSext ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memR
 	QTLSext void SetMovieStartTime( Movie theMovie, TimeValue startTime, int changeTimeBase );
 	QTLSext ErrCode SlaveMovieToMasterMovie( Movie slave, Movie master );
 	QTLSext void qtSetMoviePlayHints( Movie theMovie, unsigned long hints, int exclusive );
-
+	QTLSext ErrCode NewTimedCallBackRegisterForMovie( Movie movie, QTCallBack *callbackRegister, int allowAtInterrupt );
+	QTLSext ErrCode TimedCallBackRegisterFunctionInTime( Movie movie, QTCallBack cbRegister,
+											  double time, QTCallBackUPP function, long data, int allowAtInterrupt);	
+	
 	typedef struct MediaRefs {
 		Media theMedia;
 		Handle dataRef;
@@ -1149,7 +1154,11 @@ typedef struct LibQTilsBase {
 							   char **componentName, OSType *componentManufacturer );
 	ErrCode (*SlaveMovieToMasterMovie)( Movie slave, Movie master );
 	ErrCode (*SampleNumberAtMovieTime)( Movie theMovie, Track theTrack, double t, long *sampleNum );
-
+	ErrCode (*NewTimedCallBackRegisterForMovie)( Movie movie, QTCallBack *callbackRegister, int allowAtInterrupt );
+	ErrCode (*TimedCallBackRegisterFunctionInTime)( Movie movie, QTCallBack cbRegister,
+											  double time, QTCallBackUPP function, long data, int allowAtInterrupt);
+	ErrCode (*DisposeCallBack)(QTCallBack cb);
+	
 	// QTXML functions:
 
 	ErrCode (*Check4XMLError)( ComponentInstance xmlParser, ErrCode err, const char *theURL, Str255 descr );

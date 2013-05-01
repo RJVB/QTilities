@@ -312,6 +312,10 @@ QTCompressionQualities	=
 	(* Handle: pointer to pointer to quelquechose *)
 	QTMovieWindowH	= POINTER TO QTMovieWindowPtr;
 
+	(* support pour l'appel d'une fonction à un temps vidéo donnée *)
+	QTCallBack = ADDRESS;
+	QTCallBackUPP = PROCEDURE((*register*) QTCallBack, (*refData*) Int32) [CDECL];
+
 	(* type de fonction appellée quand une QuickTime MovieController action se produit *)
 	MCActionParams	= ADDRESS;
 	MCActionCallback= PROCEDURE(QTMovieWindowH, MCActionParams):Int32 [CDECL];
@@ -618,6 +622,10 @@ QTCompressionQualities	=
 							   VAR (*componentName*) ARRAY OF CHAR, VAR (*componentManufacturer*) OSType ):ErrCode [CDECL];
 			SlaveMovieToMasterMovie : PROCEDURE( (*slave*) Movie, (*master*) Movie ):ErrCode [CDECL];
 			SampleNumberAtMovieTime : PROCEDURE( (*theMovie*) Movie, (*trackNr|0*)Int32, (*t*)Real64, VAR (*sampleNum*) Int32 ):ErrCode [CDECL];
+			NewTimedCallBackRegisterForMovie : PROCEDURE( (*theMovie*) Movie, (*register*) VAR QTCallBack, (*allowAtInterrupt*) Int32 ) : ErrCode [CDECL];
+			TimedCallBackRegisterFunctionInTime : PROCEDURE( (*theMovie*) Movie, (*register*) QTCallBack,
+											  (*delta-t*) Real64, (*callbackFunction*) QTCallBackUPP, (*refData*) Int32, (*allowAtInterrupt*) Int32) : ErrCode [CDECL];
+			DisposeCallBack : PROCEDURE( (*register*) QTCallBack ) [CDECL];
 
 			Check4XMLError : PROCEDURE( (*xmlParser*) ComponentInstance, (*err*) ErrCode,
 									(*theURL*) ARRAY OF CHAR, VAR (*descr*) Str255 ):ErrCode [CDECL];

@@ -1662,6 +1662,71 @@ ErrCode SlaveMovieToMasterMovie( Movie slave, Movie master )
 	}
 }
 
+// 20130501
+/*!
+	Creates a callback "register" in which one can register functions to be called when the movie
+	reaches a given time. Accuracy increases when this callback is allowed to be called during
+	interrupts, but that restricts the actions it can take (notably, moving memory).
+	callbackRegister must be release through a call to DisposeCallBack.
+ */
+ErrCode NewTimedCallBackRegisterForMovie( Movie movie, QTCallBack *callbackRegister, int allowAtInterrupt )
+{
+	if( movie && callbackRegister ){ 
+		if( allowAtInterrupt ){
+			*callbackRegister = NewCallBack( GetMovieTimeBase(movie), callBackAtTime|callBackAtInterrupt );
+		}
+		else{
+			*callbackRegister = NewCallBack( GetMovieTimeBase(movie), callBackAtTime );
+		}
+		return GetMoviesError();
+	}
+	else{
+		return paramErr;
+	}
+}
+
+/*!
+	Registers the given function in the callback register belonging to the given movie.
+	@param	movie	the movie of interest
+	@param	cbRegister	a callback register created with NewTimedCallBackRegisterForMovie
+	@param	lapse	an interval; the function will be called once when the movie reaches this lapse
+					from its current position
+	@param	function	the function to be called
+	@param	data		passed on to the function, to provide context
+	@param	allowAtInterrupt	if true, the function can be called at interrupt time.
+	@n
+	It is important to note that the callback function must re-register itself through another
+	call to TimedCallBackRegisterFunctionInTime if it is to be called repeatedly!
+ */
+ErrCode TimedCallBackRegisterFunctionInTime( Movie movie, QTCallBack cbRegister,
+								    double lapse, QTCallBackUPP function, long data, int allowAtInterrupt )
+{ ErrCode ret = paramErr;
+	if( cbRegister ){
+	  TimeRecord trec;
+	  double t;
+	  long movieTime, flags;
+		GetMovieTime( movie, &trec );
+		ret = GetMoviesError();
+		if( ret == noErr ){
+			t = ((double) *((SInt64*)&trec.value))/((double)trec.scale);
+			if( lapse > 0 ){
+				flags = triggerTimeFwd;
+			}
+			else{
+				flags = triggerTimeBwd;
+			}
+			if( allowAtInterrupt ){
+				flags |= callBackAtInterrupt;
+			}
+			// go from a delta-t to a lapse:
+			lapse += t;
+			movieTime = (long) (lapse * trec.scale + 0.5);
+			ret = CallMeWhen( cbRegister, function, data, flags, movieTime, trec.scale );
+		}
+	}
+	return ret;
+}
+
 // 20101017: kudos to Jan Schotsman for giving the solution on how to create a "dref atom" that allows to
 // store all the TimeCode information in theFile->theMovie. The second approach using PtrToHand comes from
 // http://developer.apple.com/library/mac/#qa/qa1539/_index.html
@@ -3966,6 +4031,9 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->GetMovieTrackNrDecompressorInfo = GetMovieTrackNrDecompressorInfo;
 		dmbase->SlaveMovieToMasterMovie = SlaveMovieToMasterMovie;
 		dmbase->SampleNumberAtMovieTime = SampleNumberAtMovieTime;
+		dmbase->NewTimedCallBackRegisterForMovie = NewTimedCallBackRegisterForMovie;
+		dmbase->TimedCallBackRegisterFunctionInTime = TimedCallBackRegisterFunctionInTime;
+		dmbase->DisposeCallBack = DisposeCallBack;
 
 		dmbase->Check4XMLError = Check4XMLError;
 		dmbase->ParseXMLFile = ParseXMLFile;

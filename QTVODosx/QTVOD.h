@@ -52,6 +52,7 @@ typedef struct TimeInterval {
 	TimeInterval theTimeInterval;
 	BOOL fullMovieChanged, finalCloseVideo, shouldBeClosed, fullMovieIsSplit;
 	VODChannels splitCamTrack;
+	QTCallBack cbRegister;
 }
 
 + (QTVOD*) createWithAbsoluteURL:(NSURL*)aURL ofType:(NSString*)typeName
