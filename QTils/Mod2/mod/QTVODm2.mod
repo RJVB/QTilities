@@ -237,11 +237,19 @@ BEGIN
 					absolute := msg.data.boolean;
 					lastSentTime := HRTime();
 					lastMovieTime := -1.0;
-					IF sendInterval > 0.0
+					IF (sendInterval > 0.0) AND QTils.QTMovieWindowH_Check(qtwmH[fwWin])
 						THEN
+(*
 							QTils.register_MCAction( qtwmH[fwWin], MCAction.AnyAction, PumpSubscriptions );
+*)
+							QTils.TimedCallBackRegisterFunctionInTime( qtwmH[fwWin]^^.theMovie, callbackRegister,
+								sendInterval, PumpSubscriptions, CAST(Int32,qtwmH[fwWin]), qtCallBacksAllowedAtInterrupt );
 						ELSE
+(*
 							QTils.unregister_MCAction( qtwmH[fwWin], MCAction.AnyAction );
+*)
+							QTils.TimedCallBackRegisterFunctionInTime( qtwmH[fwWin]^^.theMovie, callbackRegister,
+								sendInterval, CAST(QTCallBackUPP,0), CAST(Int32,qtwmH[fwWin]), qtCallBacksAllowedAtInterrupt );
 					END;
 				END;
 
@@ -418,7 +426,13 @@ VAR
 BEGIN
 	n := 0;
 	action := 0;
+(*
 	PumpSubscriptions( qtwmH[fwWin], ADR(action) );
+*)
+	IF callbackRegister <> NIL
+		THEN
+			PumpSubscriptions( callbackRegister, CAST(Int32,qtwmH[fwWin]) );
+	END;
 	WHILE PumpNetMessagesOnce(firstTimeOutms) DO
 		firstTimeOutms := 0;
 		n := n + 1;
@@ -587,6 +601,9 @@ BEGIN
 					Capitalize(POSIX.argv^[arg]^);
 					movieDescription.splitQuad := Equal(POSIX.Arg(arg), "TRUE");
 					QTils.LogMsgEx( "-fsplit=%s -> %d", POSIX.Arg(arg), VAL(INTEGER,movieDescription.splitQuad) );
+			ELSIF CheckOptArg( arg, "-debugWait" )
+				THEN
+					PostMessage( "QTVODm2", "Attente du débogueur ..." );
 			ELSE
 				IF NOT argError
 					THEN

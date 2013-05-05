@@ -529,29 +529,32 @@ BEGIN
 	RETURN 0;
 END movieFinished;
 
+(*
 PROCEDURE PumpSubscriptions(wih : QTMovieWindowH; params : ADDRESS ) : Int32 [CDECL];
+*)
+PROCEDURE PumpSubscriptions( cbRegister : QTCallBack; params : Int32 ) [CDECL];
 VAR
 	subscrTimer, dt : Real64;
 	msg : NetMessage;
+	wih : QTMovieWindowH;
 BEGIN
+	wih := CAST(QTMovieWindowH, params);
 	subscrTimer := HRTime();
 	(* on vérifie s'il faut envoyer le temps courant et s'il est temps de le faire *)
 	WITH currentTimeSubscription DO
 		dt := subscrTimer - lastSentTime;
-		IF (sendInterval > 0.0) AND (dt >= sendInterval)
+		IF (sendInterval > 0.0) (* AND (dt >= sendInterval) *)
 			THEN
 				(* on obtient le temps courant dans la fenêtre *)
 				replyCurrentTime( msg, qtvod_Subscription, wih, absolute );
 				(* si ce temps est différent au temps précédemment envoyé, on envoie le message *)
 				IF msg.data.val1 <> lastMovieTime
 					THEN
-(*
 						QTils.LogMsgEx( "SUBS dt=%g-%g=%g movie.dt=%g-%g=%g",
 							subscrTimer, lastSentTime,
 							dt,
 							msg.data.val1, lastMovieTime,
 							msg.data.val1 - lastMovieTime );
-*)
 						lastMovieTime := msg.data.val1;
 						SendMessageToNet( sServeur, msg, SENDTIMEOUT, FALSE, "QTVODm2 - currentTime subscription" );
 						(* on veut envoyer le premier temps différent du temps précédent, donc ne modifie
@@ -561,8 +564,9 @@ BEGIN
 						lastSentTime := subscrTimer;
 				END;
 		END;
+		QTils.TimedCallBackRegisterFunctionInTime( wih^^.theMovie, callbackRegister,
+			sendInterval, PumpSubscriptions, params, qtCallBacksAllowedAtInterrupt );
 	END;
-	RETURN 0;
 END PumpSubscriptions;
 
 PROCEDURE SetWindowLayer( pos : HWND; ref : QTMovieWindowH );
@@ -1602,7 +1606,17 @@ BEGIN
 	FOR w := 0 TO maxQTWM	DO
 		register_window(qtwmH, w);
 	END;
+(*
 	QTils.register_MCAction( qtwmH[fwWin], MCAction.AnyAction, PumpSubscriptions );
+*)
+	IF QTils.QTMovieWindowH_Check(qtwmH[fwWin])
+		THEN
+			IF callbackRegister <> NIL
+				THEN
+					QTils.DisposeCallBackRegister(callbackRegister);
+			END;
+			QTils.NewTimedCallBackRegisterForMovie( qtwmH[fwWin]^^.theMovie, callbackRegister, qtCallBacksAllowedAtInterrupt );
+	END;
 
 	PlaceWindows( ULCorner, 1.0);
 
@@ -1663,6 +1677,11 @@ PROCEDURE CloseVideo(final : BOOLEAN);
 VAR
 	w : CARDINAL;
 BEGIN
+	IF callbackRegister <> NIL
+		THEN
+			QTils.DisposeCallBackRegister(callbackRegister);
+			callbackRegister := NIL;
+	END;
 	IF final
 		THEN
 			FOR w := 0 TO maxQTWM	DO
@@ -2190,6 +2209,7 @@ BEGIN
 	currentTimeSubscription.lastSentTime := 0.0;
 	currentTimeSubscription.lastMovieTime := -1.0;
 	currentTimeSubscription.absolute := FALSE;
+	callbackRegister := NIL;
 
 FINALLY
 

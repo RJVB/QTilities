@@ -1670,7 +1670,7 @@ ErrCode SlaveMovieToMasterMovie( Movie slave, Movie master )
 	callbackRegister must be release through a call to DisposeCallBack.
  */
 ErrCode NewTimedCallBackRegisterForMovie( Movie movie, QTCallBack *callbackRegister, int allowAtInterrupt )
-{
+{ ErrCode ret;
 	if( movie && callbackRegister ){ 
 		if( allowAtInterrupt ){
 			*callbackRegister = NewCallBack( GetMovieTimeBase(movie), callBackAtTime|callBackAtInterrupt );
@@ -1678,7 +1678,8 @@ ErrCode NewTimedCallBackRegisterForMovie( Movie movie, QTCallBack *callbackRegis
 		else{
 			*callbackRegister = NewCallBack( GetMovieTimeBase(movie), callBackAtTime );
 		}
-		return GetMoviesError();
+		ret = GetMoviesError();
+		return ret;
 	}
 	else{
 		return paramErr;
@@ -1705,9 +1706,10 @@ ErrCode TimedCallBackRegisterFunctionInTime( Movie movie, QTCallBack cbRegister,
 	  TimeRecord trec;
 	  double t;
 	  long movieTime, flags;
+		CancelCallBack(cbRegister);
 		GetMovieTime( movie, &trec );
 		ret = GetMoviesError();
-		if( ret == noErr ){
+		if( ret == noErr && function ){
 			t = ((double) *((SInt64*)&trec.value))/((double)trec.scale);
 			if( lapse > 0 ){
 				flags = triggerTimeFwd;
@@ -1723,6 +1725,16 @@ ErrCode TimedCallBackRegisterFunctionInTime( Movie movie, QTCallBack cbRegister,
 			movieTime = (long) (lapse * trec.scale + 0.5);
 			ret = CallMeWhen( cbRegister, function, data, flags, movieTime, trec.scale );
 		}
+	}
+	return ret;
+}
+
+ErrCode DisposeCallBackRegister( QTCallBack cbRegister )
+{ ErrCode ret = paramErr;
+	if( cbRegister ){
+		CancelCallBack(cbRegister);
+		DisposeCallBack(cbRegister);
+		ret = GetMoviesError();
 	}
 	return ret;
 }
@@ -4033,7 +4045,7 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->SampleNumberAtMovieTime = SampleNumberAtMovieTime;
 		dmbase->NewTimedCallBackRegisterForMovie = NewTimedCallBackRegisterForMovie;
 		dmbase->TimedCallBackRegisterFunctionInTime = TimedCallBackRegisterFunctionInTime;
-		dmbase->DisposeCallBack = DisposeCallBack;
+		dmbase->DisposeCallBackRegister = DisposeCallBackRegister;
 
 		dmbase->Check4XMLError = Check4XMLError;
 		dmbase->ParseXMLFile = ParseXMLFile;

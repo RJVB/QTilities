@@ -11,7 +11,7 @@ FROM Chaussette IMPORT
 	sock_nulle, SOCK;
 
 FROM QTilsM2 IMPORT
-	QTMovieWindowH, Movie, Int32, UInt32, Real64, ErrCode, XMLElement, XML_RECORD;
+	QTMovieWindowH, Movie, Int32, UInt32, Real64, ErrCode, XMLElement, XML_RECORD, QTCallBack;
 
 FROM QTVODcomm IMPORT
 	(* ces types sont définis dans QTVODcomm.def pour ne pas obliger d'inclure QTVODlib
@@ -54,7 +54,10 @@ PROCEDURE ReadDefaultVODDescription( fName : URLString; VAR descr : VODDescripti
 PROCEDURE ScanForDefaultVODDescription( movie, fName : URLString; VAR descr : VODDescription ) : ErrCode;
 PROCEDURE BenchmarkPlaybackRate;
 PROCEDURE CalcTimeInterval(reset, display : BOOLEAN);
+(*
 PROCEDURE PumpSubscriptions(wih : QTMovieWindowH; params : ADDRESS ) : Int32 [CDECL];
+*)
+PROCEDURE PumpSubscriptions( cbRegister : QTCallBack; params : Int32 ) [CDECL];
 
 PROCEDURE GetXMLParamString( theElement : XMLElement; idx : CARDINAL; elm : UInt32; designTable : ARRAY OF XML_RECORD;
 	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
@@ -71,6 +74,7 @@ CONST
 	leftWin = 2;
 	rightWin = 3;
 	tcWin = 4;
+	qtCallBacksAllowedAtInterrupt = 1;
 
 VAR
 	numQTWM : Int32;
@@ -83,5 +87,6 @@ VAR
 	fullMovieChanged, fullMovieIsSplit : BOOLEAN;
 	fullMovieWMH : QTMovieWindowH;
 	currentTimeSubscription : CurrentTimeSubscription;
+	callbackRegister : QTCallBack;
 
 END QTVODlib.

@@ -625,7 +625,7 @@ QTCompressionQualities	=
 			NewTimedCallBackRegisterForMovie : PROCEDURE( (*theMovie*) Movie, (*register*) VAR QTCallBack, (*allowAtInterrupt*) Int32 ) : ErrCode [CDECL];
 			TimedCallBackRegisterFunctionInTime : PROCEDURE( (*theMovie*) Movie, (*register*) QTCallBack,
 											  (*delta-t*) Real64, (*callbackFunction*) QTCallBackUPP, (*refData*) Int32, (*allowAtInterrupt*) Int32) : ErrCode [CDECL];
-			DisposeCallBack : PROCEDURE( (*register*) QTCallBack ) [CDECL];
+			DisposeCallBackRegister : PROCEDURE( (*register*) QTCallBack ):ErrCode [CDECL];
 
 			Check4XMLError : PROCEDURE( (*xmlParser*) ComponentInstance, (*err*) ErrCode,
 									(*theURL*) ARRAY OF CHAR, VAR (*descr*) Str255 ):ErrCode [CDECL];

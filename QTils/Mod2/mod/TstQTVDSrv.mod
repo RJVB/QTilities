@@ -205,6 +205,7 @@ BEGIN
 %END
 
 	finished := FALSE;
+	Duration := -1.0;
 	s := sock_nulle;
 	received := 0;
 	sent := 0;
@@ -232,16 +233,16 @@ BEGIN
 			QTils.LogMsg( "Serveur lancé...\n(q/Q pour sortir)\n" );
 			IF ( LENGTH(fName) > 0 )
 				THEN
-					LaunchQTVODm2( ".", fName, "", ADR(descrFichierVOD), "127.0.0.1", sendNewFileName );
+					LaunchQTVODm2( ".", fName, "-debugWait", ADR(descrFichierVOD), "127.0.0.1", sendNewFileName );
 				ELSE
 					sendNewFileName := FALSE;
 			END;
 			LOOP
 				IF ( GetClient(s) )
 					THEN
-						IF NOT currentTimeSubscribed
+						IF (NOT currentTimeSubscribed) AND (Duration >= 0.0)
 							THEN
-								msgGetTimeSubscription( command, 0.5, FALSE );
+								msgGetTimeSubscription( command, 1.5, FALSE );
 								SendMessageToNet( s, command, SENDTIMEOUT, FALSE, "TstQTVDSrv-envoi" );
 								currentTimeSubscribed := TRUE;
 						END;

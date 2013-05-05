@@ -320,7 +320,8 @@ QTLSext ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memR
 	QTLSext ErrCode NewTimedCallBackRegisterForMovie( Movie movie, QTCallBack *callbackRegister, int allowAtInterrupt );
 	QTLSext ErrCode TimedCallBackRegisterFunctionInTime( Movie movie, QTCallBack cbRegister,
 											  double time, QTCallBackUPP function, long data, int allowAtInterrupt);	
-	
+	QTLSext ErrCode DisposeCallBackRegister( QTCallBack cbRegister );
+
 	typedef struct MediaRefs {
 		Media theMedia;
 		Handle dataRef;
@@ -1157,7 +1158,7 @@ typedef struct LibQTilsBase {
 	ErrCode (*NewTimedCallBackRegisterForMovie)( Movie movie, QTCallBack *callbackRegister, int allowAtInterrupt );
 	ErrCode (*TimedCallBackRegisterFunctionInTime)( Movie movie, QTCallBack cbRegister,
 											  double time, QTCallBackUPP function, long data, int allowAtInterrupt);
-	ErrCode (*DisposeCallBack)(QTCallBack cb);
+	ErrCode (*DisposeCallBackRegister)(QTCallBack cb);
 	
 	// QTXML functions:
 

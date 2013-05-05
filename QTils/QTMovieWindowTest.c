@@ -229,6 +229,8 @@ int movieFinished(QTMovieWindowH wi, void *params )
 	return FALSE;
 }
 
+QTCallBack cbRegister = NULL;
+
 int movieClose(QTMovieWindowH wi, void *params )
 {
 	if( QTMovieWindowH_Check(wi) && (*wi)->idx >= 0 && (*wi)->idx < MaxnumQTMW ){
@@ -239,6 +241,9 @@ int movieClose(QTMovieWindowH wi, void *params )
 		// (esp. on Mac OS X)
 		// so we cannot remove the wi from our local list via
 		// winlist[ (*wi)->idx ] = NULL;
+		if( (*wi)->idx == 1 ){
+			DisposeCallBackRegister(cbRegister);
+		}
 		DisposeQTMovieWindow(wi);
 		return TRUE;
 	}
@@ -396,6 +401,27 @@ void freep( void **p )
 		free(*p);
 		*p = NULL;
 	}
+}
+
+#define CALLBACK_WITH_INTERRUPTS	1
+#define CALLBACK_INTERVAL		0.5
+
+void timeCallBack( QTCallBack cbRegister, long data )
+{ QTMovieWindowH wih = (QTMovieWindowH) data;
+  double t;
+  static double pt = 0;
+  extern double HRTime_Time();
+	if( wih && (*wih) && (*wih)->self == *wih && (*wih)->theView ){
+		if( (*wih)->isPlaying ){
+			QTMovieWindowGetTime(wih, &t, 0);
+			fprintf( stderr, "timeCallBack @t=%gs currentTime=%g dt=%g\n",
+				   HRTime_Time(), t, t-pt );
+			fflush(stderr);
+			pt = t;
+		}
+		TimedCallBackRegisterFunctionInTime( (*wih)->theMovie, cbRegister, CALLBACK_INTERVAL, timeCallBack,
+									 (long) wih, CALLBACK_WITH_INTERRUPTS);
+	}	
 }
 
 int main( int argc, char* argv[] )
@@ -594,6 +620,14 @@ int main( int argc, char* argv[] )
 					}
 				}
 				register_wi(wi);
+				if( i == 1 ){
+					(*wi)->idx = 1;
+					if( !cbRegister ){
+						NewTimedCallBackRegisterForMovie( (*wi)->theMovie, &cbRegister, CALLBACK_WITH_INTERRUPTS );
+					}
+					TimedCallBackRegisterFunctionInTime( (*wi)->theMovie, cbRegister, CALLBACK_INTERVAL, timeCallBack,
+												 (long) wi, CALLBACK_WITH_INTERRUPTS);
+				}
 			}
 		}
 		signal( SIGABRT, doSigExit );
@@ -790,6 +824,9 @@ int main( int argc, char* argv[] )
 			nMsg += PumpMessages(1);
 			nPumps += 1;
 		}
+
+		// dispose of the callback register BEFORE closing the movie it is associated with!
+		DisposeCallBackRegister(cbRegister);
 
 		for( i = 0 ; i < MaxnumQTMW ; i++ ){
 			DisposeQTMovieWindow( winlist[i] );
