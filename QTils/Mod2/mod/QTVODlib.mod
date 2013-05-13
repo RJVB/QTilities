@@ -65,6 +65,7 @@ TYPE
 VAR
 
 	xmlVD : VODDescription;
+	cbPT : Real64;
 
 CONST
 
@@ -550,9 +551,9 @@ BEGIN
 				(* si ce temps est différent au temps précédemment envoyé, on envoie le message *)
 				IF msg.data.val1 <> lastMovieTime
 					THEN
-						QTils.LogMsgEx( "SUBS dt=%g-%g=%g movie.dt=%g-%g=%g",
+						QTils.LogMsgEx( "SUBS dt=%g-%g=%g movie#%d.dt=%g-%g=%g",
 							subscrTimer, lastSentTime,
-							dt,
+							dt, wih^^.idx,
 							msg.data.val1, lastMovieTime,
 							msg.data.val1 - lastMovieTime );
 						lastMovieTime := msg.data.val1;
@@ -564,10 +565,33 @@ BEGIN
 						lastSentTime := subscrTimer;
 				END;
 		END;
-		QTils.TimedCallBackRegisterFunctionInTime( wih^^.theMovie, callbackRegister,
-			sendInterval, PumpSubscriptions, params, qtCallBacksAllowedAtInterrupt );
 	END;
+	QTils.TimedCallBackRegisterFunctionInTime( wih^^.theMovie, cbRegister,
+		currentTimeSubscription.sendInterval, PumpSubscriptions, params, qtCallBacksAllowedAtInterrupt );
 END PumpSubscriptions;
+
+PROCEDURE timeCallBack( cbRegister : QTCallBack; params : Int32 ) [CDECL];
+VAR
+	t : Real64;
+	wih : QTMovieWindowH;
+BEGIN
+	wih := CAST(QTMovieWindowH, params);
+	IF QTils.QTMovieWindowH_Check(wih)
+		THEN
+(*
+			IF wih^^.isPlaying <> 0
+				THEN
+*)
+					QTils.QTMovieWindowGetTime(wih, t, 0);
+					QTils.LogMsgEx( "timeCallBack @t=%gs currentTime=%g dt=%g\n", HRTime(), t, t-cbPT );
+					cbPT := t;
+(*
+			END;
+*)
+		QTils.TimedCallBackRegisterFunctionInTime( wih^^.theMovie, cbRegister, 1.5, timeCallBack,
+									 params, qtCallBacksAllowedAtInterrupt);
+	END;
+END timeCallBack;
 
 PROCEDURE SetWindowLayer( pos : HWND; ref : QTMovieWindowH );
 VAR
@@ -1609,14 +1633,9 @@ BEGIN
 (*
 	QTils.register_MCAction( qtwmH[fwWin], MCAction.AnyAction, PumpSubscriptions );
 *)
-	IF QTils.QTMovieWindowH_Check(qtwmH[fwWin])
-		THEN
-			IF callbackRegister <> NIL
-				THEN
-					QTils.DisposeCallBackRegister(callbackRegister);
-			END;
-			QTils.NewTimedCallBackRegisterForMovie( qtwmH[fwWin]^^.theMovie, callbackRegister, qtCallBacksAllowedAtInterrupt );
-	END;
+	QTils.NewTimedCallBackRegisterForMovie( qtwmH[fwWin]^^.theMovie, callbackRegister, qtCallBacksAllowedAtInterrupt );
+	QTils.TimedCallBackRegisterFunctionInTime( qtwmH[fwWin]^^.theMovie, callbackRegister,
+		1.5, timeCallBack, CAST(Int32,qtwmH[fwWin]), qtCallBacksAllowedAtInterrupt );
 
 	PlaceWindows( ULCorner, 1.0);
 

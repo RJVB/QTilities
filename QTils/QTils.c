@@ -1679,6 +1679,8 @@ ErrCode NewTimedCallBackRegisterForMovie( Movie movie, QTCallBack *callbackRegis
 			*callbackRegister = NewCallBack( GetMovieTimeBase(movie), callBackAtTime );
 		}
 		ret = GetMoviesError();
+		Log( qtLogPtr, "NewTimedCallBackRegisterForMovie() new register %p for movie %p, ret=%d",
+				*callbackRegister, movie, ret );
 		return ret;
 	}
 	else{
@@ -1704,13 +1706,13 @@ ErrCode TimedCallBackRegisterFunctionInTime( Movie movie, QTCallBack cbRegister,
 { ErrCode ret = paramErr;
 	if( cbRegister ){
 	  TimeRecord trec;
-	  double t;
-	  long movieTime, flags;
+	  double movieTime, callTime;
+	  long movieTicks, flags;
 		CancelCallBack(cbRegister);
 		GetMovieTime( movie, &trec );
 		ret = GetMoviesError();
 		if( ret == noErr && function ){
-			t = ((double) *((SInt64*)&trec.value))/((double)trec.scale);
+			movieTime = ((double) *((SInt64*)&trec.value))/((double)trec.scale);
 			if( lapse > 0 ){
 				flags = triggerTimeFwd;
 			}
@@ -1720,10 +1722,12 @@ ErrCode TimedCallBackRegisterFunctionInTime( Movie movie, QTCallBack cbRegister,
 			if( allowAtInterrupt ){
 				flags |= callBackAtInterrupt;
 			}
-			// go from a delta-t to a lapse:
-			lapse += t;
-			movieTime = (long) (lapse * trec.scale + 0.5);
-			ret = CallMeWhen( cbRegister, function, data, flags, movieTime, trec.scale );
+			callTime = movieTime + lapse;
+			movieTicks = (long) (callTime * trec.scale + 0.5);
+			ret = CallMeWhen( cbRegister, function, data, flags, movieTicks, trec.scale );
+			Log( qtLogPtr,
+			    "TimedCallBackRegisterFunctionInTime(movie %p,register %p, lapse %gs) movie timeScale=%ld,t=%lld=%gs, calling function %p at %ld ticks with params=%p and flags=%ld",
+			    movie, cbRegister, lapse, trec.scale, *((SInt64*)&trec.value), movieTime, function, movieTicks, data, flags );
 		}
 	}
 	return ret;
@@ -1735,6 +1739,7 @@ ErrCode DisposeCallBackRegister( QTCallBack cbRegister )
 		CancelCallBack(cbRegister);
 		DisposeCallBack(cbRegister);
 		ret = GetMoviesError();
+		Log( qtLogPtr, "DisposeCallBackRegister(%p)=%d", cbRegister, ret );
 	}
 	return ret;
 }

@@ -237,20 +237,35 @@ BEGIN
 					absolute := msg.data.boolean;
 					lastSentTime := HRTime();
 					lastMovieTime := -1.0;
-					IF (sendInterval > 0.0) AND QTils.QTMovieWindowH_Check(qtwmH[fwWin])
+					IF QTils.QTMovieWindowH_Check(qtwmH[fwWin])
 						THEN
+							IF sendInterval > 0.0
+								THEN
 (*
-							QTils.register_MCAction( qtwmH[fwWin], MCAction.AnyAction, PumpSubscriptions );
+									QTils.register_MCAction( qtwmH[fwWin], MCAction.AnyAction, PumpSubscriptions );
 *)
-							QTils.TimedCallBackRegisterFunctionInTime( qtwmH[fwWin]^^.theMovie, callbackRegister,
-								sendInterval, PumpSubscriptions, CAST(Int32,qtwmH[fwWin]), qtCallBacksAllowedAtInterrupt );
-						ELSE
+									IF callbackRegister <> NIL
+										THEN
+										ELSE
+											QTils.NewTimedCallBackRegisterForMovie( qtwmH[fwWin]^^.theMovie, callbackRegister, qtCallBacksAllowedAtInterrupt );
+									END;
 (*
-							QTils.unregister_MCAction( qtwmH[fwWin], MCAction.AnyAction );
+									QTils.TimedCallBackRegisterFunctionInTime( qtwmH[fwWin]^^.theMovie, callbackRegister,
+										sendInterval, PumpSubscriptions, CAST(Int32,qtwmH[fwWin]), qtCallBacksAllowedAtInterrupt );
 *)
-							QTils.TimedCallBackRegisterFunctionInTime( qtwmH[fwWin]^^.theMovie, callbackRegister,
-								sendInterval, CAST(QTCallBackUPP,0), CAST(Int32,qtwmH[fwWin]), qtCallBacksAllowedAtInterrupt );
-					END;
+								ELSE
+(*
+									QTils.unregister_MCAction( qtwmH[fwWin], MCAction.AnyAction );
+*)
+									IF callbackRegister <> NIL
+										THEN
+											QTils.TimedCallBackRegisterFunctionInTime( qtwmH[fwWin]^^.theMovie, callbackRegister,
+												sendInterval, CAST(QTCallBackUPP,0), CAST(Int32,qtwmH[fwWin]), qtCallBacksAllowedAtInterrupt );
+											QTils.DisposeCallBackRegister(callbackRegister);
+											callbackRegister := NIL;
+									END;
+							END;
+						END;
 				END;
 
 		| qtvod_GotoTime :

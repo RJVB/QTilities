@@ -773,7 +773,7 @@ BEGIN
 	 *)
 	pInfo.hProcess := NULL_HANDLE;
 	retB := CreateProcess( qtvdPath, args, NIL_SECURITY_ATTRIBUTES, NIL_SECURITY_ATTRIBUTES, FALSE,
-		CREATE_NEW_PROCESS_GROUP BOR DETACHED_PROCESS, NIL, NIL_STR, startup, pInfo );
+		0 (*CREATE_NEW_PROCESS_GROUP BOR DETACHED_PROCESS*), NIL, NIL_STR, startup, pInfo );
 	IF retB
 		THEN
 			CloseHandle(pInfo.hProcess);

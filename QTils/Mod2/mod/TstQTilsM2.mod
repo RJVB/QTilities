@@ -20,6 +20,7 @@ FROM RealStr IMPORT
 	RealToStr;
 
 FROM WIN32 IMPORT
+	LARGE_INTEGER, QueryPerformanceFrequency, QueryPerformanceCounter,
 	Sleep;
 
 FROM ElapsedTime IMPORT
@@ -45,6 +46,8 @@ CONST
 	(* streamer = "http://trailers.apple.com/movies/dreamworks/kung_fu_panda/kung_fu_panda-tlr1_h720p.mov"; *)
 	(* 84Mb: *)
 	(* streamer = "http://trailers.apple.com/movies/dreamworks/kung_fu_panda/kung_fu_panda-tlr1_h1080p.mov"; *)
+	CALLBACK_INTERVAL = 1.5;
+	CALLBACK_WITH_INTERRUPTS = 1;
 
 VAR
 	otype : OSType;
@@ -55,10 +58,11 @@ VAR
 	qtwmPtr : QTMovieWindowPtr;
 	qtwmH, qtwmH2, qtwmH3 : QTMovieWindowH;
 	err : ErrCode;
+	callbackRegister : QTCallBack;
 	n, ljumps, dumInt : Int32;
 	theMovie : Movie;
 	nTracks : Int32;
-	t : Real64;
+	t, cbPT, HPCcalibrator : Real64;
 	ft : MovieFrameTime;
 	testStr : ARRAY[0..16] OF CHAR;
 	Title1 : ARRAY[0..1024] OF CHAR = "Title1";
@@ -74,6 +78,30 @@ VAR
 %IF AVEC_EXCEPTIONS %THEN
 	exc : ExceptionSource;
 %END
+
+PROCEDURE InitHRTime();
+VAR
+	HPCval : LARGE_INTEGER;
+BEGIN
+	IF QueryPerformanceFrequency(HPCval)
+		THEN
+			HPCcalibrator := 1.0 / VAL(Real64, HPCval);
+		ELSE
+			HPCcalibrator := 0.0;
+	END;
+END InitHRTime;
+
+PROCEDURE HRTime() : Real64;
+VAR
+	HPCval : LARGE_INTEGER;
+BEGIN
+	IF QueryPerformanceCounter(HPCval)
+		THEN
+			RETURN VAL(Real64,HPCval) * HPCcalibrator;
+		ELSE
+			RETURN -1.0;
+	END;
+END HRTime;
 
 PROCEDURE movieStep(wih : QTMovieWindowH; params : ADDRESS ) : Int32 [CDECL];
 VAR
@@ -548,6 +576,29 @@ BEGIN
 	RETURN qmsErr;
 END testQTMovieSinks;
 
+PROCEDURE timeCallBack( cbRegister : QTCallBack; params : Int32 ) [CDECL];
+VAR
+	t : Real64;
+	wih : QTMovieWindowH;
+BEGIN
+	wih := CAST(QTMovieWindowH, params);
+	IF QTils.QTMovieWindowH_Check(wih)
+		THEN
+(*
+			IF wih^^.isPlaying <> 0
+				THEN
+*)
+					QTils.QTMovieWindowGetTime(wih, t, 0);
+					QTils.LogMsgEx( "timeCallBack @t=%gs currentTime=%g dt=%g\n", HRTime(), t, t-cbPT );
+					cbPT := t;
+(*
+			END;
+*)
+		QTils.TimedCallBackRegisterFunctionInTime( wih^^.theMovie, cbRegister, CALLBACK_INTERVAL, timeCallBack,
+									 params, CALLBACK_WITH_INTERRUPTS);
+	END;
+END timeCallBack;
+
 (* ==================================== BEGIN ==================================== *)
 BEGIN
 %IF StonyBrook %AND %NOT(LINUX) %THEN
@@ -565,6 +616,8 @@ BEGIN
 	QTils.QTils_Allocator^.calloc := POSIX.calloc;
 	QTils.QTils_Allocator^.realloc := POSIX.realloc;
 	QTils.QTils_Allocator^.free := POSIX.free;
+
+	InitHRTime();
 
 	FOR n := 0 TO INT(POSIX.argc) - 1 DO
 		Capitalize( POSIX.argv^[n]^ );
@@ -764,6 +817,14 @@ BEGIN
 				END;
 				IF isPlayable(qtwmH3)
 					THEN
+						IF CALLBACK_INTERVAL > 0.0
+							THEN
+								NewTimedCallBackRegisterForMovie( qtwmH3^^.theMovie, callbackRegister, CALLBACK_WITH_INTERRUPTS );
+								TimedCallBackRegisterFunctionInTime( qtwmH3^^.theMovie, callbackRegister,
+									CALLBACK_INTERVAL, timeCallBack, CAST(Int32,qtwmH3), CALLBACK_WITH_INTERRUPTS );
+							ELSE
+								callbackRegister := CAST(QTCallBack,0);
+						END;
 						QTMovieWindowPlay(qtwmH3);
 				END;
 
@@ -775,6 +836,11 @@ BEGIN
 
 				DisposeQTMovieWindow(qtwmH);
 				DisposeQTMovieWindow(qtwmH2);
+				IF callbackRegister <> NIL
+					THEN
+						DisposeCallBackRegister(callbackRegister);
+						callbackRegister := NIL;
+				END;
 				DisposeQTMovieWindow(qtwmH3);
 
 				LogMsg( "We're done!" );
