@@ -231,7 +231,12 @@ PROCEDURE OpenQT() : ErrCode;
 BEGIN
 	IF QTilsHandle <> NULL_HANDLE
 		THEN
-			lQTOpenError := QTilsC.cOpenQT();
+			IF lQTOpened
+				THEN
+					lQTOpenError := noErr;
+				ELSE
+					lQTOpenError := QTilsC.cOpenQT();
+			END;
 		ELSE
 			lQTOpenError := 1;
 	END;

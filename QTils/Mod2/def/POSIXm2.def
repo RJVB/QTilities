@@ -11,6 +11,9 @@ FROM SYSTEM IMPORT
 %END
     ADDRESS, CAST, BYTE;
 
+FROM WIN32 IMPORT
+	HANDLE;
+
 TYPE
 	String1024		= ARRAY[0..1023] OF CHAR;
 	String1024Ptr	= POINTER TO String1024;
@@ -75,6 +78,8 @@ TYPE
 
 			strstr : PROCEDURE( (*str*) ARRAY OF CHAR, (*pattern*) ARRAY OF CHAR ) : String1024Ptr [CDECL];
 			strrstr : PROCEDURE( (*str*) ARRAY OF CHAR, (*pattern*) ARRAY OF CHAR ) : String1024Ptr [CDECL];
+
+			DetachProcess : PROCEDURE( (*commandline*) ARRAY OF CHAR ) : HANDLE [CDECL];
 
 			(* ================================================================
 				fin de la partie initialisée par POSIXm2.dll::initDMBasePOSIXm2();

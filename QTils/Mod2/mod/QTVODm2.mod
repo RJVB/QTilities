@@ -1,7 +1,7 @@
 MODULE QTVODm2;
 
 <*/resource:QTVODm2.res*>
-<*/VALIDVERSION:QTVOD_TESTING*>
+<*/VALIDVERSION:QTVOD_TESTING,USE_TIMEDCALLBACK*>
 
 %IF StonyBrook %AND %NOT(LINUX) %THEN
 	FROM SYSTEM IMPORT
@@ -37,7 +37,7 @@ FROM POSIXm2 IMPORT
 	POSIX, POSIXAvailable;
 
 FROM WIN32 IMPORT
-	Sleep;
+	Sleep, STARTUPINFO, GetStartupInfo;
 
 <*/VALIDVERSION:CHAUSSETTE2*>
 %IF CHAUSSETTE2 %THEN
@@ -58,6 +58,7 @@ VAR
 	msgTimer : Real64;
 	ipAddress : ARRAY[0..63] OF CHAR;
 	err : ErrCode;
+	startupInfo : STARTUPINFO;
 
 PROCEDURE SendErrorHandler( errors : CARDINAL );
 VAR
@@ -241,22 +242,19 @@ BEGIN
 						THEN
 							IF sendInterval > 0.0
 								THEN
-(*
-									QTils.register_MCAction( qtwmH[fwWin], MCAction.AnyAction, PumpSubscriptions );
-*)
+%IF USE_TIMEDCALLBACK %THEN
 									IF callbackRegister <> NIL
 										THEN
 										ELSE
 											QTils.NewTimedCallBackRegisterForMovie( qtwmH[fwWin]^^.theMovie, callbackRegister, qtCallBacksAllowedAtInterrupt );
 									END;
-(*
 									QTils.TimedCallBackRegisterFunctionInTime( qtwmH[fwWin]^^.theMovie, callbackRegister,
 										sendInterval, PumpSubscriptions, CAST(Int32,qtwmH[fwWin]), qtCallBacksAllowedAtInterrupt );
-*)
+%ELSE
+									QTils.register_MCAction( qtwmH[fwWin], MCAction.AnyAction, PumpSubscriptions );
+%END
 								ELSE
-(*
-									QTils.unregister_MCAction( qtwmH[fwWin], MCAction.AnyAction );
-*)
+%IF USE_TIMEDCALLBACK %THEN
 									IF callbackRegister <> NIL
 										THEN
 											QTils.TimedCallBackRegisterFunctionInTime( qtwmH[fwWin]^^.theMovie, callbackRegister,
@@ -264,6 +262,9 @@ BEGIN
 											QTils.DisposeCallBackRegister(callbackRegister);
 											callbackRegister := NIL;
 									END;
+%ELSE
+									QTils.unregister_MCAction( qtwmH[fwWin], MCAction.AnyAction );
+%END
 							END;
 						END;
 				END;
@@ -441,13 +442,9 @@ VAR
 BEGIN
 	n := 0;
 	action := 0;
-(*
+%IF %NOT USE_TIMEDCALLBACK %THEN
 	PumpSubscriptions( qtwmH[fwWin], ADR(action) );
-*)
-	IF callbackRegister <> NIL
-		THEN
-			PumpSubscriptions( callbackRegister, CAST(Int32,qtwmH[fwWin]) );
-	END;
+%END
 	WHILE PumpNetMessagesOnce(firstTimeOutms) DO
 		firstTimeOutms := 0;
 		n := n + 1;
@@ -616,7 +613,7 @@ BEGIN
 					Capitalize(POSIX.argv^[arg]^);
 					movieDescription.splitQuad := Equal(POSIX.Arg(arg), "TRUE");
 					QTils.LogMsgEx( "-fsplit=%s -> %d", POSIX.Arg(arg), VAL(INTEGER,movieDescription.splitQuad) );
-			ELSIF CheckOptArg( arg, "-debugWait" )
+			ELSIF Equal(POSIX.Arg(arg), "-debugWait" )
 				THEN
 					PostMessage( "QTVODm2", "Attente du débogueur ..." );
 			ELSE
@@ -675,6 +672,7 @@ END BenchmarkStep;
 BEGIN
 %IF StonyBrook %AND %NOT(LINUX) %THEN
 	AttachDebugger(AttachAll);
+	GetStartupInfo(startupInfo);
 %END
 
 	QTils.QTils_Allocator^.malloc := POSIX.malloc;
@@ -749,7 +747,7 @@ BEGIN
 						THEN
 							FOR idx := 0 TO maxQTWM DO
 								(*
-								 * si jamais OpenVideo n'a pas initalise <movie>, on obtient le nom
+								 * si jamais OpenVideo n'a pas initalisé <movie>, on obtient le nom
 								 * du fichier ouvert a partir de la 1e fenetre ouverte
 								 *)
 								IF ( (movie[0] = CHR(0)) AND QTils.QTMovieWindowH_isOpen(qtwmH[idx]) )
@@ -804,7 +802,7 @@ BEGIN
 				IF (theTimeInterVal.benchMarking) AND (qtwmH[fwWin] <> NULL_QTMovieWindowH)
 					THEN
 						BenchmarkStep();
-				ELSIF ( sServeur <> sock_nulle )
+				ELSIF TRUE (* sServeur <> sock_nulle *)
 					THEN
 
 						(* le callback pour l'action Idle n'est installée qu'une seule fois, pour la vu 'forward',

@@ -2,7 +2,7 @@ IMPLEMENTATION MODULE QTVODlib;
 
 (* USECHANNELVIEWIMPORTFILES : correspond à l'ancien comportement où pour créer une vidéo cache
 	pour les 4+1 canaux on créait d'abord un fichier .qi2m d'importation *)
-<*/VALIDVERSION:USECHANNELVIEWIMPORTFILES,COMMTIMING,NOTOUTCOMMENTED*>
+<*/VALIDVERSION:USECHANNELVIEWIMPORTFILES,COMMTIMING,NOTOUTCOMMENTED,USE_TIMEDCALLBACK*>
 
 FROM SYSTEM IMPORT
 	CAST, ADR, ADDRESS;
@@ -530,32 +530,41 @@ BEGIN
 	RETURN 0;
 END movieFinished;
 
-(*
-PROCEDURE PumpSubscriptions(wih : QTMovieWindowH; params : ADDRESS ) : Int32 [CDECL];
-*)
+%IF USE_TIMEDCALLBACK %THEN
 PROCEDURE PumpSubscriptions( cbRegister : QTCallBack; params : Int32 ) [CDECL];
+%ELSE
+PROCEDURE PumpSubscriptions(wih : QTMovieWindowH; params : ADDRESS ) : Int32 [CDECL];
+%END
 VAR
 	subscrTimer, dt : Real64;
 	msg : NetMessage;
+%IF USE_TIMEDCALLBACK %THEN
 	wih : QTMovieWindowH;
+%END
 BEGIN
-	wih := CAST(QTMovieWindowH, params);
 	subscrTimer := HRTime();
 	(* on vérifie s'il faut envoyer le temps courant et s'il est temps de le faire *)
 	WITH currentTimeSubscription DO
 		dt := subscrTimer - lastSentTime;
-		IF (sendInterval > 0.0) (* AND (dt >= sendInterval) *)
+%IF USE_TIMEDCALLBACK %THEN
+		wih := CAST(QTMovieWindowH, params);
+		IF (sendInterval > 0.0)
+%ELSE
+		IF (sendInterval > 0.0) AND (dt >= sendInterval)
+%END
 			THEN
 				(* on obtient le temps courant dans la fenêtre *)
 				replyCurrentTime( msg, qtvod_Subscription, wih, absolute );
 				(* si ce temps est différent au temps précédemment envoyé, on envoie le message *)
 				IF msg.data.val1 <> lastMovieTime
 					THEN
+(*
 						QTils.LogMsgEx( "SUBS dt=%g-%g=%g movie#%d.dt=%g-%g=%g",
 							subscrTimer, lastSentTime,
 							dt, wih^^.idx,
 							msg.data.val1, lastMovieTime,
 							msg.data.val1 - lastMovieTime );
+*)
 						lastMovieTime := msg.data.val1;
 						SendMessageToNet( sServeur, msg, SENDTIMEOUT, FALSE, "QTVODm2 - currentTime subscription" );
 						(* on veut envoyer le premier temps différent du temps précédent, donc ne modifie
@@ -566,8 +575,12 @@ BEGIN
 				END;
 		END;
 	END;
+%IF USE_TIMEDCALLBACK %THEN
 	QTils.TimedCallBackRegisterFunctionInTime( wih^^.theMovie, cbRegister,
 		currentTimeSubscription.sendInterval, PumpSubscriptions, params, qtCallBacksAllowedAtInterrupt );
+%ELSE
+	RETURN 0;
+%END
 END PumpSubscriptions;
 
 PROCEDURE timeCallBack( cbRegister : QTCallBack; params : Int32 ) [CDECL];
@@ -1630,12 +1643,11 @@ BEGIN
 	FOR w := 0 TO maxQTWM	DO
 		register_window(qtwmH, w);
 	END;
-(*
-	QTils.register_MCAction( qtwmH[fwWin], MCAction.AnyAction, PumpSubscriptions );
-*)
+%IF USE_TIMEDCALLBACK %THEN
 	QTils.NewTimedCallBackRegisterForMovie( qtwmH[fwWin]^^.theMovie, callbackRegister, qtCallBacksAllowedAtInterrupt );
-	QTils.TimedCallBackRegisterFunctionInTime( qtwmH[fwWin]^^.theMovie, callbackRegister,
-		1.5, timeCallBack, CAST(Int32,qtwmH[fwWin]), qtCallBacksAllowedAtInterrupt );
+%ELSE
+	QTils.register_MCAction( qtwmH[fwWin], MCAction.AnyAction, PumpSubscriptions );
+%END
 
 	PlaceWindows( ULCorner, 1.0);
 

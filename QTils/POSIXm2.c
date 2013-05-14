@@ -366,6 +366,74 @@ char *CLArgNr( unsigned short arg )
 #endif
 }
 
+#if defined(_WINDOWS) || defined(WIN32) || defined(_MSC_VER)
+#include <Userenv.h>
+
+HANDLE DetachProcess( char *commandline )
+{ STARTUPINFO startupInfo;
+  PROCESS_INFORMATION processInfo;
+  LPVOID env = NULL;
+  DWORD flags = CREATE_NEW_PROCESS_GROUP|DETACHED_PROCESS;
+//  SECURITY_ATTRIBUTES secAttr;
+//  SECURITY_DESCRIPTOR secDescr;
+
+	memset( &startupInfo, 0, sizeof(startupInfo) );
+	startupInfo.cb = sizeof(startupInfo);
+//	startupInfo.dwFlags = STARTF_FORCEONFEEDBACK;
+
+//	memset( &secAttr, 0, sizeof(secAttr) );
+//	secAttr.nLength = sizeof(secAttr);
+//	InitializeSecurityDescriptor( &secDescr, SECURITY_DESCRIPTOR_REVISION );
+//	secAttr.lpSecurityDescriptor = &secDescr;
+//	secAttr.bInheritHandle = TRUE;
+	if( !CreateEnvironmentBlock( &env, NULL, FALSE ) ){
+		env = NULL;
+	}
+	else{
+		flags |= CREATE_UNICODE_ENVIRONMENT;
+	}
+	if( CreateProcess( NULL, commandline,
+//				   &secAttr, &secAttr, FALSE,
+				   NULL, NULL, FALSE,
+				   flags, env, NULL,
+				   &startupInfo, &processInfo )
+	   ){
+		CloseHandle(processInfo.hThread);
+		DestroyEnvironmentBlock(env);
+		return processInfo.hProcess;
+	}
+	else{
+		return NULL;
+	}
+}
+
+HANDLE DetachProcess_Mod2( char *commandline, int clen )
+{
+//	LPTCH env;
+//	if( (env = GetEnvironmentStrings()) ){
+//	  char *c;
+//		Init_PM2_Log();
+//		Log( qtLogPtr, "Calling process environment: \"%s\"", env );
+//		c = env;
+//		do{
+//			// find the next nullbyte
+//			while( *c ){
+//				c++;
+//			}
+//			// peek 1 character ahead
+//			if( c[1] ){
+//				// if there's more content, advance and print it
+//				c++;
+//				Log( qtLogPtr, c );
+//			}
+//			// loop if there's content to see if there's more
+//		} while( *c );
+//		FreeEnvironmentStrings(env);
+//	}
+	return DetachProcess(commandline);
+}
+#endif
+
 void test23_Mod2( test23Struct *data, int dmax, int *Nret )
 { int i;
 #ifdef DEBUG
@@ -423,6 +491,10 @@ size_t initDMBasePOSIXm2( LibPOSIXm2Base *dmbase )
 
 		dmbase->strstr = strstr_Mod2;
 		dmbase->strrstr = strrstr_Mod2;
+
+#if defined(_WINDOWS) || defined(WIN32) || defined(_MSC_VER)
+		dmbase->DetachProcess = DetachProcess_Mod2;
+#endif
 
 		return sizeof(*dmbase);
 	}

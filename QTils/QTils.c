@@ -1671,16 +1671,17 @@ ErrCode SlaveMovieToMasterMovie( Movie slave, Movie master )
  */
 ErrCode NewTimedCallBackRegisterForMovie( Movie movie, QTCallBack *callbackRegister, int allowAtInterrupt )
 { ErrCode ret;
-	if( movie && callbackRegister ){ 
+	if( movie && callbackRegister ){
+	  TimeBase tb = GetMovieTimeBase(movie);
 		if( allowAtInterrupt ){
-			*callbackRegister = NewCallBack( GetMovieTimeBase(movie), callBackAtTime|callBackAtInterrupt );
+			*callbackRegister = NewCallBack( tb, callBackAtTime|callBackAtInterrupt );
 		}
 		else{
-			*callbackRegister = NewCallBack( GetMovieTimeBase(movie), callBackAtTime );
+			*callbackRegister = NewCallBack( tb, callBackAtTime );
 		}
 		ret = GetMoviesError();
-		Log( qtLogPtr, "NewTimedCallBackRegisterForMovie() new register %p for movie %p, ret=%d",
-				*callbackRegister, movie, ret );
+		Log( qtLogPtr, "NewTimedCallBackRegisterForMovie() new register %p for movie %p, TimeBase rate=%d, ret=%d",
+				*callbackRegister, movie, Fix2Long(GetTimeBaseRate(tb)), ret );
 		return ret;
 	}
 	else{
@@ -1725,9 +1726,11 @@ ErrCode TimedCallBackRegisterFunctionInTime( Movie movie, QTCallBack cbRegister,
 			callTime = movieTime + lapse;
 			movieTicks = (long) (callTime * trec.scale + 0.5);
 			ret = CallMeWhen( cbRegister, function, data, flags, movieTicks, trec.scale );
-			Log( qtLogPtr,
-			    "TimedCallBackRegisterFunctionInTime(movie %p,register %p, lapse %gs) movie timeScale=%ld,t=%lld=%gs, calling function %p at %ld ticks with params=%p and flags=%ld",
-			    movie, cbRegister, lapse, trec.scale, *((SInt64*)&trec.value), movieTime, function, movieTicks, data, flags );
+//			Log( qtLogPtr,
+//			    "TimedCallBackRegisterFunctionInTime(movie %p,register %p, lapse %gs) movie timeScale=%ld,t=%lld=%gs TimeBase rate=%d, calling function %p at %ld ticks with params=%p and flags=%ld",
+//			    movie, cbRegister, lapse, trec.scale, *((SInt64*)&trec.value), movieTime,
+//			    Fix2Long(GetTimeBaseRate(GetCallBackTimeBase(cbRegister))),
+//			    function, movieTicks, data, flags );
 		}
 	}
 	return ret;

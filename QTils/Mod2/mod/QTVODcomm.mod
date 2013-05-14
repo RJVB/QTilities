@@ -1,5 +1,7 @@
 IMPLEMENTATION MODULE QTVODcomm;
 
+<*/VALIDVERSION:CHAUSSETTE2,DEBUG,COMMTIMING,USE_POSIX_DETACHPROCESS,USE_SHELLEXECUTE*>
+
 FROM SYSTEM IMPORT
 	CAST;
 
@@ -7,12 +9,17 @@ FROM Strings IMPORT
 	Concat, Append, Assign, Capitalize, FindPrev, Delete;
 
 FROM WINUSER IMPORT
-	SW_SHOWDEFAULT;
+	SW_SHOWDEFAULT, SW_SHOWNORMAL;
 FROM WIN32 IMPORT
-	CreateProcess, CREATE_NEW_PROCESS_GROUP, DETACHED_PROCESS, CloseHandle,
-	PROCESS_INFORMATION, STARTUPINFO, STARTF_USESHOWWINDOW, GetLastError;
+	CreateProcess, CREATE_NEW_PROCESS_GROUP, DETACHED_PROCESS,
+	CREATE_DEFAULT_ERROR_MODE, CloseHandle,
+	PROCESS_INFORMATION, STARTUPINFO, STARTF_USESHOWWINDOW, GetLastError, HANDLE;
 FROM WINX IMPORT
 	NULL_HANDLE, NIL_STR, NIL_SECURITY_ATTRIBUTES;
+%IF USE_SHELLEXECUTE %THEN
+	FROM SHELLAPI IMPORT
+		ShellExecute;
+%END
 
 FROM WINSOCK2 IMPORT
 	WSAEWOULDBLOCK;
@@ -23,7 +30,6 @@ FROM WIN32 IMPORT
 FROM ElapsedTime IMPORT
 	StartTimeEx, GetTimeEx;
 
-<*/VALIDVERSION:CHAUSSETTE2,DEBUG,COMMTIMING*>
 %IF CHAUSSETTE2 %THEN
 FROM Chaussette2 IMPORT
 %ELSE
@@ -33,15 +39,21 @@ FROM Chaussette IMPORT
 	InitIP, FinIP, EtabliClientUDPouTCP, EtabliServeurUDPouTCP, FermeClient, FermeServeur,
 	AttenteConnexionDunClient, ConnexionAuServeur, FermeConnexionAuServeur, errSock;
 
+%IF USE_POSIX_DETACHPROCESS %THEN
+	FROM POSIXm2 IMPORT *;
+%END
 FROM QTilsM2 IMPORT *;
 
 CONST
 
 	NULL_VODDescriptionPtr = CAST(VODDescriptionPtr,0);
+	CREATE_BREAKAWAY_FROM_JOB = 001000000h;
+	CREATE_PRESERVE_CODE_AUTHZ_LEVEL = 002000000h;
 
 VAR
 
 	SendErrors, ReceiveErrors : CARDINAL;
+	QTVODm2Process : HANDLE;
 	HPCcalibrator : Real64;
 	HPCval : LARGE_INTEGER;
 
@@ -195,13 +207,6 @@ PROCEDURE ReceiveMessageFromNet(ss : SOCK; VAR msg : NetMessage; timeOutms : INT
 VAR
 	ret : BOOLEAN;
 BEGIN
-(*
-%IF CHAUSSETTE2 %THEN
-		RETURN BasicReceiveNetMessage(ss, msg, SIZE(msg), timeOutms, block);
-%ELSE
-		RETURN BasicReceiveNetMessage(ss, msg, SIZE(msg), block);
-%END
-*)
 %IF CHAUSSETTE2 %THEN
 		ret := BasicReceiveNetMessage(ss, msg, SIZE(msg), timeOutms, block);
 %ELSE
@@ -699,6 +704,84 @@ END SendNetErrorNotification;
  * complexe à utiliser mais ne semble pas bloquer autant de temps que WinExec peut le faire
  * (quelques millisecondes contre parfois des dizaines de secondes).
  *)
+%IF USE_POSIX_DETACHPROCESS %THEN
+
+PROCEDURE LaunchQTVODm2( path : ARRAY OF CHAR; fileName, extraArgs : URLString;
+						descr :VODDescriptionPtr; serverIP : ARRAY OF CHAR;
+						VAR mustSendVODDescription : BOOLEAN ) : BOOLEAN;
+VAR
+	commandline : URLString;
+	retB : BOOLEAN;
+	timer : CARDINAL32;
+	errMsg : ARRAY[0..255] OF CHAR;
+	errCode : INTEGER;
+BEGIN
+
+	mustSendVODDescription := FALSE;
+
+	Concat(path, "\QTVODm2.exe", commandline);
+	IF ( LENGTH(serverIP) > 0 )
+		THEN
+			Append( " -client ", commandline );
+			Append( serverIP, commandline );
+	END;
+	IF ( LENGTH(extraArgs) > 0 )
+		THEN
+			Append( " ", commandline );
+			Append( extraArgs, commandline );
+	END;
+	IF ( LENGTH(fileName) > 0 )
+		THEN
+			IF (descr = NIL)
+				THEN
+					Append( ' ', commandline );
+					IF fileName[0] <> '"'
+						THEN
+							Append( '"', commandline );
+					END;
+					Append( fileName, commandline );
+					IF fileName[0] <> '"'
+						THEN
+							Append( '"', commandline );
+					END;
+				ELSE
+					Append( ' -attendVODDescription', commandline );
+					mustSendVODDescription := TRUE;
+			END;
+		ELSE
+			IF descr = NIL
+				THEN
+					(* noop - compilateur peut se tromper sur 'descr <> NIL' *)
+				ELSE
+					Append( ' -attendVODDescription', commandline );
+					mustSendVODDescription := TRUE;
+			END;
+	END;
+	timer := StartTimeEx();
+	IF QTVODm2Process <> NULL_HANDLE
+		THEN
+			CloseHandle(QTVODm2Process);
+			QTVODm2Process := NULL_HANDLE;
+	END;
+	QTVODm2Process := POSIX.DetachProcess(commandline);
+	IF QTVODm2Process <> NULL_HANDLE
+		THEN
+			QTils.LogMsgEx( 'LaunchQTVODm2: DetachProcess("%s") a réussi après %gs (OK)',
+				commandline, VAL(Real64,GetTimeEx(timer))/1000.0 );
+			retB := TRUE;
+		ELSE
+			errCode := GetLastError();
+			MSWinErrorString( errCode, errMsg );
+			QTils.LogMsgEx( 'LaunchQTVODm2: DetachProcess("%s") a échoué après %gs (erreur %d=%s)',
+				commandline, VAL(Real64,GetTimeEx(timer))/1000.0,
+				errCode, errMsg );
+			retB := FALSE;
+	END;
+	RETURN retB;
+END LaunchQTVODm2;
+
+%ELSE
+
 PROCEDURE LaunchQTVODm2( path : ARRAY OF CHAR; fileName, extraArgs : URLString;
 						descr :VODDescriptionPtr; serverIP : ARRAY OF CHAR;
 						VAR mustSendVODDescription : BOOLEAN ) : BOOLEAN;
@@ -715,20 +798,24 @@ BEGIN
 
 	mustSendVODDescription := FALSE;
 	Concat(path, "\QTVODm2.exe", qtvdPath);
+%IF %NOT USE_SHELLEXECUTE %THEN
 	startup.cb := SIZE(startup);
 	startup.lpReserved := NIL;
 	startup.lpDesktop := NIL;
 	startup.lpTitle := NIL;
-	startup.dwFlags := STARTF_USESHOWWINDOW;
+	startup.dwFlags := 0 (*STARTF_USESHOWWINDOW*);
 	startup.dwX := 0;
 	startup.dwY := 0;
 	startup.dwXSize := 0;
 	startup.dwYSize := 0;
 	startup.cbReserved2 := 0;
 	startup.lpReserved2 := NIL;
-	startup.wShowWindow := SW_SHOWDEFAULT;
+	startup.wShowWindow := 0 (*SW_SHOWDEFAULT*);
 
-	Assign( qtvdPath, args );
+	Concat(path, "\QTVODm2.exe", args);
+%ELSE
+	Assign( "", args );
+%END
 	IF ( LENGTH(serverIP) > 0 )
 		THEN
 			Append( " -client ", args );
@@ -771,12 +858,33 @@ BEGIN
 	 * pInfo est une variable de sortie, mais il parait qu'il faut
 	 * quand même initialiser hProcess!!
 	 *)
-	pInfo.hProcess := NULL_HANDLE;
-	retB := CreateProcess( qtvdPath, args, NIL_SECURITY_ATTRIBUTES, NIL_SECURITY_ATTRIBUTES, FALSE,
-		0 (*CREATE_NEW_PROCESS_GROUP BOR DETACHED_PROCESS*), NIL, NIL_STR, startup, pInfo );
+%IF USE_SHELLEXECUTE %THEN
+	errCode := CAST(INTEGER, ShellExecute( NIL, "open", qtvdPath, args, NIL_STR, SW_SHOWNORMAL ) );
+	retB := errCode > 32;
 	IF retB
 		THEN
-			CloseHandle(pInfo.hProcess);
+			QTils.LogMsgEx( 'LaunchQTVODm2: ShellExecute("%s","%s") retournait %d après %gs (OK)',
+				qtvdPath, args, errCode, VAL(Real64,GetTimeEx(timer))/1000.0 );
+		ELSE
+			MSWinErrorString( GetLastError(), errMsg );
+			QTils.LogMsgEx( 'LaunchQTVODm2: ShellExecute("%s","%s") retournait FALSE après %gs (erreur %d=%s)',
+				qtvdPath, args, VAL(Real64,GetTimeEx(timer))/1000.0,
+				errCode, errMsg );
+	END;
+%ELSE
+	pInfo.hProcess := NULL_HANDLE;
+	IF QTVODm2Process <> NULL_HANDLE
+		THEN
+			CloseHandle(QTVODm2Process);
+			QTVODm2Process := NULL_HANDLE;
+	END;
+	retB := CreateProcess( qtvdPath, args, NIL_SECURITY_ATTRIBUTES, NIL_SECURITY_ATTRIBUTES,
+		(*inheritHandles*) TRUE,
+		CREATE_NEW_PROCESS_GROUP BOR DETACHED_PROCESS BOR CREATE_BREAKAWAY_FROM_JOB BOR
+		CREATE_DEFAULT_ERROR_MODE BOR CREATE_PRESERVE_CODE_AUTHZ_LEVEL, NIL, NIL_STR, startup, pInfo );
+	IF retB
+		THEN
+			QTVODm2Process := pInfo.hProcess;
 			CloseHandle(pInfo.hThread);
 			QTils.LogMsgEx( 'LaunchQTVODm2: CreateProcess("%s","%s") retournait TRUE après %gs (OK)',
 				qtvdPath, args, VAL(Real64,GetTimeEx(timer))/1000.0 );
@@ -787,8 +895,11 @@ BEGIN
 				qtvdPath, args, VAL(Real64,GetTimeEx(timer))/1000.0,
 				errCode, errMsg );
 	END;
+%END
 	RETURN retB;
 END LaunchQTVODm2;
+
+%END
 
 PROCEDURE HasExtension( VAR URL : ARRAY OF CHAR; ext : ARRAY OF CHAR ) : BOOLEAN;
 VAR
@@ -845,7 +956,13 @@ BEGIN
 		ELSE
 			HPCcalibrator := 0.0;
 	END;
+	QTVODm2Process := NIL;
 
 FINALLY
+	IF QTVODm2Process <> NULL_HANDLE
+		THEN
+			CloseHandle(QTVODm2Process);
+			QTVODm2Process := NULL_HANDLE;
+	END;
 	FinIP;
 END QTVODcomm.

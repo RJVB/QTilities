@@ -30,6 +30,8 @@ FROM ProgramArgs IMPORT
 
 FROM WIN32 IMPORT
 	Sleep;
+FROM COMMDLG IMPORT
+	OPENFILENAME, GetOpenFileName, OFN_FILEMUSTEXIST, OFN_NOCHANGEDIR, OFN_EXPLORER, OFN_ENABLETEMPLATE;
 
 FROM ElapsedTime IMPORT
 	StartTimeEx, GetTimeEx;
@@ -37,6 +39,7 @@ FROM ElapsedTime IMPORT
 FROM QTVODcomm IMPORT *;
 FROM QTilsM2 IMPORT
 	UInt32, Real64, ErrCode, noErr, QTils, MovieFrameTime;
+FROM POSIXm2 IMPORT *;
 
 VAR
 	c : CHAR;
@@ -197,6 +200,31 @@ BEGIN
 	END;
 END GetClient;
 
+PROCEDURE GetFileName( title : ARRAY OF CHAR; VAR fileName : ARRAY OF CHAR ) : BOOLEAN;
+VAR
+	lp : OPENFILENAME;
+BEGIN
+	POSIX.memset( lp, 0, SIZE(lp) );
+	lp.lStructSize := SIZE(OPENFILENAME);
+	lp.lpstrFilter := ADR("Fichiers QuickTime" + CHR(0) + "*.mov" + CHR(0)
+			+ "Media supportés" + CHR(0) + "*.mov;*.qi2m;*.VOD;*.jpgs;*.mpg;*.mp4;*.mpeg;*.avi;*.wmv;*.mp3;*.aif;*.wav;*.mid;*.jpg;*.jpeg" + CHR(0)
+			+ "Tous les fichiers" + CHR(0) + "*.*" + CHR(0) + CHR(0));
+	lp.nFilterIndex := 1;
+	fileName[0] := CHR(0);
+	lp.lpstrFile := ADR(fileName);
+	lp.nMaxFile := SIZE(fileName);
+	lp.lpstrTitle := ADR(title);
+	(* un jour je l'aurai ... la customisation de la fenêtre OpenFile! *)
+	lp.lpTemplateName := ADR("VODdesign");
+	lp.Flags := OFN_FILEMUSTEXIST BOR OFN_NOCHANGEDIR BOR OFN_EXPLORER;
+	IF GetOpenFileName(lp)
+		THEN
+			RETURN TRUE;
+		ELSE
+			RETURN FALSE;
+	END;
+END GetFileName;
+
 (* =========================================================================================================== *)
 
 BEGIN
@@ -231,6 +259,10 @@ BEGIN
 			clntTimer := StartTimeEx();
 			WriteString( "Serveur lance... (q/Q pour sortir)" ); WriteLn;
 			QTils.LogMsg( "Serveur lancé...\n(q/Q pour sortir)\n" );
+			IF LENGTH(fName) = 0
+				THEN
+					GetFileName( "Merci de choisir un fichier vidéo", fName );
+			END;
 			IF ( LENGTH(fName) > 0 )
 				THEN
 					LaunchQTVODm2( ".", fName, "-debugWait", ADR(descrFichierVOD), "127.0.0.1", sendNewFileName );
@@ -242,7 +274,7 @@ BEGIN
 					THEN
 						IF (NOT currentTimeSubscribed) AND (Duration >= 0.0)
 							THEN
-								msgGetTimeSubscription( command, 1.5, FALSE );
+								msgGetTimeSubscription( command, 0.25, FALSE );
 								SendMessageToNet( s, command, SENDTIMEOUT, FALSE, "TstQTVDSrv-envoi" );
 								currentTimeSubscribed := TRUE;
 						END;

@@ -62,3 +62,11 @@ QTVODm2-v1.3RC-devel-dev-installer.exe
 QTVOD-Mac-rw.dmg
 QTVODm2-v1.3RC2-installer.exe
 QTVODm2-v1.3RC2-devel-dev-installer.exe
+QTils/Mod2/Debug
+QTils/Mod2/CreateProcess.cpp
+QTils/Mod2/CreateProcess.exe
+QTils/Mod2/CreateProcess.sln
+QTils/Mod2/CreateProcess.vcxproj
+QTils/Mod2/win32getpath.c
+QTils/Mod2/win32popen.c
+QTils/Mod2/win32popen.h

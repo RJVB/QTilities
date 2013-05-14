@@ -25,6 +25,10 @@ extern "C"
 #	define PM2ext /**/
 #endif
 	
+#if defined(_WINDOWS) || defined(WIN32) || defined(_MSC_VER)
+#	include <windows.h>
+#endif
+	
 #ifdef __GNUC__
 #	include <stdio.h>
 #	include <sys/types.h>
@@ -116,6 +120,10 @@ typedef struct LibPOSIXm2Base {
 
 	char* (*strstr)( const char *a, int alen, const char *b, int blen );
 	char* (*strrstr)( const char *a, int alen, const char *b, int blen );
+
+#if defined(_WINDOWS) || defined(WIN32) || defined(_MSC_VER)
+	HANDLE (*DetachProcess)( char *commandline, int clen );
+#endif
 
 	// NB!! Modula-2 defines additional members in its interface that are not initialised in C!
 } GCC_PACKED LibPOSIXm2Base;
