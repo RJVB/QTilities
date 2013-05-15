@@ -961,7 +961,7 @@ BEGIN
 			QTils.sprintf( xmlStr,
 				'\t<sequence src="%s" freq=%g channel=%hd timepad=False hflip=%s vmgi=%s\n'
 				+ '\t\trelTransH=%g relTransV=%g newchapter=True description="%s" />\n',
-				source, descr.frequency, VAL(Int16,6), "False", useVMGI, 0.5, 0.0, "timeStamps" );
+				source, descr.frequency, VAL(Int16,6), "False", useVMGI, CAST(Real64,0.5), CAST(Real64,0.0), "timeStamps" );
 			WriteString( fp, xmlStr );
 
 			QTils.sprintf( xmlStr,

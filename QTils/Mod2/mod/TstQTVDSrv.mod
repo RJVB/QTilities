@@ -51,7 +51,7 @@ VAR
 
 	fName : URLString;
 	descrFichierVOD : VODDescription;
-	startTimeAbs, Duration : Real64;
+	startTimeAbs, Duration, prevCurrentTime : Real64;
 
 	ArgsChan : ChanId;
 
@@ -75,6 +75,7 @@ PROCEDURE TraiteMsgDeQTVODm2( VAR msg, reply : NetMessage ) : ErrCode;
 VAR
 	ft : MovieFrameTime;
 	reply2 : NetMessage;
+	txt : ARRAY[0..127] OF CHAR;
 BEGIN
 	QTils.LogMsgEx( 'Msg Net serveur "%s"', NetMessageToString(msg) );
 	received := received + 1;
@@ -128,7 +129,11 @@ BEGIN
 
 		| qtvod_CurrentTime :
 				NetMessageToLogMsg( "Temps actuel", "TstQTVDSrv", msg );
-				WriteString( QTils.lastSSLogMsg^ ) ; WriteLn;
+				WriteString( QTils.lastSSLogMsg^ );
+				QTils.sprintf( txt, " dt=%gs", msg.data.val1 - prevCurrentTime );
+				WriteString(txt);
+				WriteLn;
+				prevCurrentTime := msg.data.val1;
 				IF msg.data.boolean
 					THEN
 						QTils.secondsToFrameTime( msg.data.val1, msg.data.val2, ft );
@@ -237,6 +242,7 @@ BEGIN
 	s := sock_nulle;
 	received := 0;
 	sent := 0;
+	prevCurrentTime := 0.0;
 	clientQuit := FALSE;
 	currentTimeSubscribed := FALSE;
 	ArgsChan := ArgChan();

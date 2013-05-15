@@ -1,6 +1,6 @@
 IMPLEMENTATION MODULE Chaussette2;
 
-<*/VALIDVERSION:CHAUSSETTE2,GDOS*>
+<*/VALIDVERSION:CHAUSSETTE2,GDOS,WIN16*>
 
 (*
 	Procédures présentes dans ce module :

@@ -11,6 +11,10 @@ FROM SYSTEM IMPORT
 	SOURCEFILE, SOURCELINE,
 %END
 	CAST, BYTE, ADDRESS, TSIZE, VA_START;
+%IF ADW %THEN
+FROM SYSTEM IMPORT
+ VA_LIST;
+%END
 
 %IF WIN32 %THEN
 	FROM WIN32 IMPORT
@@ -124,16 +128,16 @@ END vLogMsgEx;
 
 PROCEDURE vPosixLogMsgEx(msg : ARRAY OF CHAR):CARDINAL32  [RightToLeft, LEAVES, VARIABLE];
 VAR
-	argsList : ADDRESS;
+	argsList : VA_LIST;
 BEGIN
 	VA_START(argsList);
 	POSIX.LogLocation(SOURCEFILE,SOURCELINE);
-	RETURN POSIX.vLogMsgEx( msg, argsList );
+	RETURN POSIX.vLogMsgEx( msg, CAST(ADDRESS,argsList) );
 END vPosixLogMsgEx;
 
 PROCEDURE LogMsgEx( formatStr : ARRAY OF CHAR ): CARDINAL32 [RightToLeft, LEAVES, VARIABLE];
 VAR
-	argsList : ADDRESS;
+	argsList : VA_LIST;
 	ret : CARDINAL32;
 (*
 	msg : ARRAY[0..2048] OF CHAR;
@@ -145,7 +149,7 @@ BEGIN
 (*
 			IF FormatStringEx(formatStr, msg, argsList)
 *)
-			ret := POSIXm2C.cLogMsgEx( formatStr, argsList );
+			ret := POSIXm2C.cLogMsgEx( formatStr, CAST(ADDRESS,argsList) );
 		ELSE
 			(* on pourrait utiliser wvsprintf ici pour générer le message voulu... *)
 			IF DevMode
@@ -159,13 +163,13 @@ END LogMsgEx;
 
 PROCEDURE vsscanf( source, formatStr : ARRAY OF CHAR ): INTEGER32 [RightToLeft, LEAVES, VARIABLE];
 VAR
-	argsList : ADDRESS;
+	argsList : VA_LIST;
 	ret : INTEGER32;
 BEGIN
 	IF ( POSIXm2Handle <> NULL_HANDLE )
 		THEN
 			VA_START(argsList); (* <= to get the variable arguments base address *)
-			ret := POSIXm2C.cvsscanf( source, formatStr, argsList );
+			ret := POSIXm2C.cvsscanf( source, formatStr, CAST(ADDRESS,argsList) );
 		ELSE
 			ret := -2;
 		END;
@@ -174,13 +178,13 @@ END vsscanf;
 
 PROCEDURE vsprintf( VAR dest : ARRAY OF CHAR; formatStr : ARRAY OF CHAR ): INTEGER32 [RightToLeft, LEAVES, VARIABLE];
 VAR
-	argsList : ADDRESS;
+	argsList : VA_LIST;
 	ret : INTEGER32;
 BEGIN
 	IF ( POSIXm2Handle <> NULL_HANDLE )
 		THEN
 			VA_START(argsList); (* <= to get the variable arguments base address *)
-			ret := POSIXm2C.cvsprintf( dest, formatStr, argsList );
+			ret := POSIXm2C.cvsprintf( dest, formatStr, CAST(ADDRESS,argsList) );
 		ELSE
 			ret := -2;
 		END;

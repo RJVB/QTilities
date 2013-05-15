@@ -1,7 +1,7 @@
-SCRIPT QTVODm2_local;
+SCRIPT QTVODm2_local_adw;
 
 BEGIN
-    CreateProject(Win32, "QTVODm2_local.sbp");
+    CreateProjectEx(Windows_IA32, "QTVODm2_local_adw.sbp");
 
     SetDirectory(DEF, ".;def;s:\MSWin\Archisim\def");
     SetDirectory(MOD, ".;mod;s:\MSWin\Archisim\mod");
@@ -10,8 +10,8 @@ BEGIN
     SetDirectory(RES, ".");
     SetDirectory(LIB, ".");
 
-    SetValidVersionTags("DLL,SGI,GPLINUX,LIB_UTIL,VK,PF,AVEC_EXCEPTIONS,GDOS,CHAUSSETTE2,QTILS_DEV,ParseArgs,DEBUG,QTILS_DEBUG,USE_POSIX_DETACHPROCESS,USE_SHELLEXECUTE,USE_TIMEDCALLBACK,ADW");
-    SetVersionTags("AVEC_EXCEPTIONS,CHAUSSETTE2,ParseArgs,USE_TIMEDCALLBACK");
+    SetValidVersionTags("DLL,SGI,GPLINUX,LIB_UTIL,VK,PF,AVEC_EXCEPTIONS,GDOS,CHAUSSETTE2,QTILS_DEV,ParseArgs,DEBUG,QTILS_DEBUG,USE_POSIX_DETACHPROCESS,USE_SHELLEXECUTE,USE_TIMEDCALLBACK,WIN32,SixteenBit");
+    SetVersionTags("AVEC_EXCEPTIONS,CHAUSSETTE2,ParseArgs,USE_TIMEDCALLBACK,WIN32");
 
     (* Project options *)
 
@@ -20,13 +20,15 @@ BEGIN
     SetProjectOption(PrjSafetyBelts, Yes);
     SetProjectOption(PrjRestrictCpu, No);
     SetProjectOption(PrjStackSize, 64);
-    SetProjectOption(PrjObjFormat, msCOFF);
     SetProjectOption(PrjScanProjectsFirst, No);
     SetProjectOption(PrjCheckRemoteDirectories, Yes);
     SetProjectOption(PrjImportsAreReadWrite, No);
     SetProjectOption(PrjLinkDllRtl, No);
     SetProjectOption(PrjInitDataValue, 0DEADBEEFh);
     SetProjectOption(PrjStopBuildOnError, No);
+    SetProjectOption(PrjShowCrossImportsError, No);
+    SetProjectOption(PrjLocalsStackWarning, 64);
+    SetProjectOption(PrjGenPIC, No);
 
 
     (* Global compiler options *)
@@ -36,7 +38,6 @@ BEGIN
     SetCompilerOption(CheckVariants, GlobalOption, Yes);
     SetCompilerOption(CheckPointers, GlobalOption, No);
     SetCompilerOption(CheckOverflow, GlobalOption, Yes);
-    SetCompilerOption(CheckStack, GlobalOption, Yes);
     SetCompilerOption(ModuleCheck, GlobalOption, Yes);
     SetCompilerOption(CheckUninitialized, GlobalOption, Yes);
     SetCompilerOption(InitializeData, GlobalOption, No);
@@ -70,6 +71,8 @@ BEGIN
     SetCompilerOption(WarnFuncCalledAsProc, GlobalOption, Yes);
     SetCompilerOption(WarnRange, GlobalOption, Yes);
     SetCompilerOption(WarnWith, GlobalOption, Yes);
+    SetCompilerOption(AlignWarningsAreErrors, GlobalOption, No);
+    SetCompilerOption(CastWarningsAreErrors, GlobalOption, Yes);
     SetCompilerOption(OptimizeSpace, GlobalOption, Yes);
     SetCompilerOption(EnableSrcOptimize, GlobalOption, Yes);
     SetCompilerOption(CommonSubs, GlobalOption, Yes);
@@ -103,9 +106,6 @@ BEGIN
     SetLinkerOption(LinkConsoleApp, No);
     SetLinkerOption(LinkOtherLinker, No);
     SetLinkerOption(LinkPostProcess, No);
-    SetLinkerOption(LinkSectionAlign, Align4k);
-    SetLinkerOption(LinkSystemVersion, 5.10);
-    SetLinkerOption(LinkUserVersion, 1.3);
     SetLinkerOption(LinkStackReserve, 1024);
     SetLinkerOption(LinkHeapReserve, 1024);
     SetLinkerOption(LinkHeapCommit, 4);
@@ -130,12 +130,10 @@ BEGIN
     (* Local compiler options *)
 
     Select(M2Program, "QTVODm2");
-    SetCompilerOption(Alignment, LocalOption, Align8);
     SetCompilerOption(InlineLimit, LocalOption, Inline20);
     Select(ImpModule, "QTVODlib");
     SetCompilerOption(CheckPointers, LocalOption, Yes);
     SetCompilerOption(CheckOverflow, LocalOption, Yes);
-    SetCompilerOption(CheckStack, LocalOption, Yes);
     SetCompilerOption(TargetProcessor, LocalOption, PentiumII);
     SetCompilerOption(EnableAsmOptimize, LocalOption, Yes);
     SetCompilerOption(PeepholeFlow, LocalOption, Yes);
@@ -143,9 +141,7 @@ BEGIN
     SetCompilerOption(InstructionHoisting, LocalOption, Yes);
     SetCompilerOption(TailMerging, LocalOption, Yes);
 
-    SetProgramParameters("-DST true -assocData "" -fsplit TRUE");
-
     LinkAllPrograms;
 
     ExitProgram;
-END QTVODm2_local.
+END QTVODm2_local_adw.

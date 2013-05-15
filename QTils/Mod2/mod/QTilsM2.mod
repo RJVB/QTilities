@@ -4,7 +4,11 @@ IMPLEMENTATION MODULE QTilsM2;
 <*/VALIDVERSION:QTILS_DEV,QTILS_DEBUG*>
 
 FROM SYSTEM IMPORT
-	CAST, ADR, ADDRESS, TSIZE, VA_START, ADDADR;
+	CAST, ADR, ADDRESS, TSIZE, VA_START,
+%IF ADW %THEN
+	VA_LIST,
+%END
+	ADDADR;
 
 FROM Environment IMPORT
 	GetCommandLine;
@@ -35,6 +39,9 @@ FROM FormatString IMPORT
 (* ===== création de l'interface avec QTils.dll ==== *)
 TYPE
 
+%IF %NOT ADW %THEN
+	VA_LIST								= ADDRESS;
+%END
 	QTCompressionCodecPtr = POINTER TO QTCompressionCodecs;
 	QTCompressionQualityPtr = POINTER TO QTCompressionQualities;
 	(* NB: il semble qu'il vaut mieux déclarer tout [CDECL] et non [StdCall]! *)
@@ -350,7 +357,7 @@ END lLogMsg;
 
 PROCEDURE LogMsgEx(formatStr : ARRAY OF CHAR) : UInt32 [RightToLeft, LEAVES, VARIABLE];
 VAR
-	argsList : ADDRESS;
+	argsList : VA_LIST;
 	ret : UInt32;
 (*
 	msg : ARRAY[0..2048] OF CHAR;
@@ -362,7 +369,7 @@ BEGIN
 (*
 			IF FormatStringEx(formatStr, msg, argsList)
 *)
-			ret := QTilsC.cLogMsgEx(formatStr, argsList);
+			ret := QTilsC.cLogMsgEx(formatStr, CAST(ADDRESS,argsList));
 		ELSE
 			(* on pourrait utiliser wvsprintf ici pour générer le message voulu... *)
 			IF DevMode
@@ -376,13 +383,13 @@ END LogMsgEx;
 
 PROCEDURE vsscanf(source, formatStr : ARRAY OF CHAR) : Int32 [RightToLeft, LEAVES, VARIABLE];
 VAR
-	argsList : ADDRESS;
+	argsList : VA_LIST;
 	ret : Int32;
 BEGIN
 	IF (QTilsHandle <> NULL_HANDLE)
 		THEN
 			VA_START(argsList); (* <= to get the variable arguments base address *)
-			ret := QTilsC.cvsscanf(source, formatStr, argsList);
+			ret := QTilsC.cvsscanf(source, formatStr, CAST(ADDRESS,argsList));
 		ELSE
 			ret := -2;
 		END;
@@ -391,13 +398,13 @@ END vsscanf;
 
 PROCEDURE vsprintf(VAR dest : ARRAY OF CHAR; formatStr : ARRAY OF CHAR) : Int32 [RightToLeft, LEAVES, VARIABLE];
 VAR
-	argsList : ADDRESS;
+	argsList : VA_LIST;
 	ret : Int32;
 BEGIN
 	IF (QTilsHandle <> NULL_HANDLE)
 		THEN
 			VA_START(argsList); (* <= to get the variable arguments base address *)
-			ret := QTilsC.cvsprintf(dest, formatStr, argsList);
+			ret := QTilsC.cvsprintf(dest, formatStr, CAST(ADDRESS,argsList));
 		ELSE
 			ret := -2;
 		END;
@@ -406,13 +413,13 @@ END vsprintf;
 
 PROCEDURE vssprintf( VAR dest : String1kPtr; formatStr : ARRAY OF CHAR) : Int32 [RightToLeft, LEAVES, VARIABLE];
 VAR
-	argsList : ADDRESS;
+	argsList : VA_LIST;
 	ret : Int32;
 BEGIN
 	IF (QTilsHandle <> NULL_HANDLE)
 		THEN
 			VA_START(argsList); (* <= to get the variable arguments base address *)
-			ret := QTilsC.cvssprintf(dest, formatStr, argsList);
+			ret := QTilsC.cvssprintf(dest, formatStr, CAST(ADDRESS,argsList));
 		ELSE
 			ret := -2;
 		END;
@@ -421,13 +428,13 @@ END vssprintf;
 
 PROCEDURE vssprintfAppend( VAR dest : String1kPtr; formatStr : ARRAY OF CHAR) : Int32 [RightToLeft, LEAVES, VARIABLE];
 VAR
-	argsList : ADDRESS;
+	argsList : VA_LIST;
 	ret : Int32;
 BEGIN
 	IF (QTilsHandle <> NULL_HANDLE)
 		THEN
 			VA_START(argsList); (* <= to get the variable arguments base address *)
-			ret := QTilsC.cvssprintfAppend(dest, formatStr, argsList);
+			ret := QTilsC.cvssprintfAppend(dest, formatStr, CAST(ADDRESS,argsList));
 		ELSE
 			ret := -2;
 		END;

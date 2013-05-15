@@ -246,7 +246,7 @@ CONST
 *)
 %END
 *)
-%IF WIN32 %OR WIN16 %THEN
+%IF WIN32 %THEN
 CONST
 		GetPeerName = WINSOCK2.getpeername;
 		GetSockName = WINSOCK2.getsockname;

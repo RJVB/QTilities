@@ -246,6 +246,7 @@ Section /o $(Sec4Descr) SEC04
   SetOverwrite ifnewer
   File "S:\MacOSX\QTilities\QTils\Mod2\QTVOD*.res"
   File "S:\MacOSX\QTilities\QTils\Mod2\QTVODm2_local.sbs"
+  File "S:\MacOSX\QTilities\QTils\Mod2\QTVODm2_local_adw.sbs"
   File "S:\MacOSX\QTilities\QTils\Mod2\TstQTilsM2.sbs"
 SectionEnd
 

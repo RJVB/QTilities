@@ -10,11 +10,18 @@ FROM SYSTEM IMPORT
 		SOURCEFILE, SOURCELINE, VA_START,
 %END
     ADDRESS, CAST, BYTE;
+%IF ADW %THEN
+FROM SYSTEM IMPORT
+ VA_LIST;
+%END
 
 FROM WIN32 IMPORT
 	HANDLE;
 
 TYPE
+%IF %NOT ADW %THEN
+	VA_LIST				= ADDRESS;
+%END
 	String1024		= ARRAY[0..1023] OF CHAR;
 	String1024Ptr	= POINTER TO String1024;
 	ArgString			= ARRAY[0..1023] OF CHAR;
@@ -62,7 +69,7 @@ TYPE
 				fait un saut programmé (longjmp) vers l'endroit+etat stockés dans jmp_buf
 				avec le code <val> qui ne peut pas être 0.
 			*)
-			longjmp : PROCEDURE( (*env*) jmp_buf, (*val*) : INTEGER ) [CDECL];
+			longjmp : PROCEDURE( (*env*) jmp_buf, (*val*) INTEGER ) [CDECL];
 
 			(*
 				gestion mémoire via les routines C
@@ -131,11 +138,11 @@ END MarkLog;
  *)
 PROCEDURE PosixLogMsgEx(msg : ARRAY OF CHAR):CARDINAL32  [RightToLeft, LEAVES, VARIABLE]; MACRO;
 VAR
-	argsList : ADDRESS;
+	argsList : VA_LIST;
 BEGIN
 	VA_START(argsList);
 	POSIX.LogLocation(SOURCEFILE,SOURCELINE);
-	RETURN POSIX.vLogMsgEx( msg, argsList );
+	RETURN POSIX.vLogMsgEx( msg, CAST(ADDRESS,argsList) );
 END PosixLogMsgEx;
 
 %ELSE

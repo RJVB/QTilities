@@ -220,16 +220,17 @@ TYPE
 (*
 	public structure containing the encoding statistics of a compression session
 *)
-QTMSEncodingStats	=
-	RECORD
-		Duration,													(* current duration *)
-			frameRate : Real64;							(* current instantaneous frame rate *)
-		Total,														(* total number of encoded frames until now *)
-			Dropped,												(* ICM: number of dropped frames *)
-			Merged,													(* ICM: number of frames that were merged (with preceding frame(s)) *)
-			timeChanged,										(* ICM: number of frames for which the frametime was modified *)
-			bufferCopied : Int32;						(* ICM: number of frames that had to be copied to allow encoding *)
-	END;
+	QTMSEncodingStats	=
+		RECORD
+			Duration,													(* current duration *)
+				frameRate : Real64;							(* current instantaneous frame rate *)
+			Total,														(* total number of encoded frames until now *)
+				Dropped,												(* ICM: number of dropped frames *)
+				Merged,													(* ICM: number of frames that were merged (with preceding frame(s)) *)
+				timeChanged,										(* ICM: number of frames for which the frametime was modified *)
+				bufferCopied : Int32;						(* ICM: number of frames that had to be copied to allow encoding *)
+		END;
+	QTMSEncodingStatsPtr = POINTER TO QTMSEncodingStats;
 
 (*
 	The video codecs supported by default. These are just convenience variables allowing to avoid
@@ -680,7 +681,7 @@ QTCompressionQualities	=
 				si la fréquence de rafraichissement est constante! stats est optionel.
 			 *)
 			CloseQTMovieSink : PROCEDURE( VAR (*qms*) QTMovieSinks, (*addTCTrack*) INTEGER,
-									(*stats*) POINTER TO QTMSEncodingStats, (*closeQT*) INTEGER ):ErrCode [CDECL];
+									(*stats*) QTMSEncodingStatsPtr, (*closeQT*) INTEGER ):ErrCode [CDECL];
 			(*
 				une image est chargée dans qms.imageFrame: AddFrameToQTMovieSink l'ajoute à la vidéo, précisant
 				la durée d'affichage de la trame.
