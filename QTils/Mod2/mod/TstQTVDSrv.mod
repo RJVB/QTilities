@@ -47,7 +47,7 @@ VAR
 	receipt, reply, command : NetMessage;
 	finished, clientQuit, sendNewFileName, currentTimeSubscribed : BOOLEAN;
 	received, sent : UInt32;
-	msgTimer, clntTimer : CARDINAL32;
+	msgTimer, clntTimer, tAttente : CARDINAL32;
 
 	fName : URLString;
 	descrFichierVOD : VODDescription;
@@ -172,7 +172,6 @@ END TraiteMsgDeQTVODm2;
 
 PROCEDURE GetClient( VAR s : SOCK ) : BOOLEAN;
 VAR
-	t : CARDINAL32;
 	ts : Real64;
 BEGIN
 	IF ( s = sock_nulle )
@@ -185,8 +184,8 @@ BEGIN
 					Sleep(250);
 %END
 				ELSE
-					t := GetTimeEx(clntTimer);
-					ts := VAL(Real64,t)/1000.0;
+					tAttente := GetTimeEx(clntTimer);
+					ts := VAL(Real64,tAttente)/1000.0;
 					QTils.LogMsgEx( "GetClient() client connect apres %gs", ts );
 					WriteString( QTils.lastSSLogMsg^ ) ; WriteLn;
 			END;
@@ -311,7 +310,7 @@ BEGIN
 										msgOpenFile( command, fName, descrFichierVOD );
 										SendMessageToNet( s, command, SENDTIMEOUT, FALSE, "TstQTVDSrv-envoi" );
 										WriteString("commande 'Open' envoyee"); WriteLn;
-										Sleep(3000);
+										Sleep(tAttente);
 %END (* TESTING *)
 										msgQuitQTVOD(command);
 										SendMessageToNet( s, command, SENDTIMEOUT, FALSE, "TstQTVDSrv-envoi" );

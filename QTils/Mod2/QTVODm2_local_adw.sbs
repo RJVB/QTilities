@@ -3,8 +3,8 @@ SCRIPT QTVODm2_local_adw;
 BEGIN
     CreateProjectEx(Windows_IA32, "QTVODm2_local_adw.sbp");
 
-    SetDirectory(DEF, ".;def;s:\MSWin\Archisim\def");
-    SetDirectory(MOD, ".;mod;s:\MSWin\Archisim\mod");
+    SetDirectory(DEF, ".;def;s:\MSWin\Archisim\def;Z:\Users\RJVB\cworks\MSWin\Archisim\def");
+    SetDirectory(MOD, ".;mod;s:\MSWin\Archisim\mod;Z:\Users\RJVB\cworks\MSWin\Archisim\mod");
     SetDirectory(SYM, "win32sym");
     SetDirectory(OBJ, "win32obj");
     SetDirectory(RES, ".");

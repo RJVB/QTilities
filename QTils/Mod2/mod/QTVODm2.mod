@@ -802,7 +802,7 @@ BEGIN
 				IF (theTimeInterVal.benchMarking) AND (qtwmH[fwWin] <> NULL_QTMovieWindowH)
 					THEN
 						BenchmarkStep();
-				ELSIF TRUE (* sServeur <> sock_nulle *)
+				ELSIF sServeur <> sock_nulle
 					THEN
 
 						(* le callback pour l'action Idle n'est installée qu'une seule fois, pour la vu 'forward',

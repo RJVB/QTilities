@@ -13,6 +13,8 @@ FROM WINUSER IMPORT
 FROM WIN32 IMPORT
 	CreateProcess, CREATE_NEW_PROCESS_GROUP, DETACHED_PROCESS,
 	CREATE_DEFAULT_ERROR_MODE, CloseHandle,
+	CRITICAL_SECTION, InitializeCriticalSectionAndSpinCount, DeleteCriticalSection,
+	EnterCriticalSection, LeaveCriticalSection,
 	PROCESS_INFORMATION, STARTUPINFO, STARTF_USESHOWWINDOW, GetLastError, HANDLE;
 FROM WINX IMPORT
 	NULL_HANDLE, NIL_STR, NIL_SECURITY_ATTRIBUTES;
@@ -56,6 +58,7 @@ VAR
 	QTVODm2Process : HANDLE;
 	HPCcalibrator : Real64;
 	HPCval : LARGE_INTEGER;
+	SendMutex, ReceiveMutex : CRITICAL_SECTION;
 
 PROCEDURE InitCommClient(
 	VAR clnt : SOCK; IP : ARRAY OF CHAR; portS, portC : UInt16;
@@ -171,6 +174,7 @@ PROCEDURE SendMessageToNet( ss : SOCK; VAR msg : NetMessage; timeOutms : INTEGER
 VAR
 	ret : BOOLEAN;
 BEGIN
+	EnterCriticalSection(SendMutex);
 	errSock := 0;
 %IF COMMTIMING %THEN
 	IF QueryPerformanceCounter(HPCval)
@@ -181,25 +185,26 @@ BEGIN
 	END;
 %END
 %IF CHAUSSETTE2 %THEN
-		ret := BasicSendNetMessage( ss, msg, SIZE(msg), timeOutms, block );
+	ret := BasicSendNetMessage( ss, msg, SIZE(msg), timeOutms, block );
 %ELSE
-		ret := BasicSendNetMessage( ss, msg, SIZE(msg), block );
+	ret := BasicSendNetMessage( ss, msg, SIZE(msg), block );
 %END
-		IF ret
-			THEN
-				NetMessageToLogMsg( caller, "(envoyé)", msg );
-			ELSE
-				NetMessageToLogMsg( caller, "(échec d'envoi)", msg );
-				IF ( errSock <> 0 )
-					THEN
-						SendErrors := SendErrors + 1;
-						IF ( HandleSendErrors <> CommErrorHandler_nulle )
-							THEN
-								HandleSendErrors(SendErrors);
-						END;
-				END;
-		END;
-		RETURN ret;
+	IF ret
+		THEN
+			NetMessageToLogMsg( caller, "(envoyé)", msg );
+		ELSE
+			NetMessageToLogMsg( caller, "(échec d'envoi)", msg );
+			IF ( errSock <> 0 )
+				THEN
+					SendErrors := SendErrors + 1;
+					IF ( HandleSendErrors <> CommErrorHandler_nulle )
+						THEN
+							HandleSendErrors(SendErrors);
+					END;
+			END;
+	END;
+	LeaveCriticalSection(SendMutex);
+	RETURN ret;
 END SendMessageToNet;
 
 PROCEDURE ReceiveMessageFromNet(ss : SOCK; VAR msg : NetMessage; timeOutms : INTEGER; block : BOOLEAN;
@@ -207,6 +212,7 @@ PROCEDURE ReceiveMessageFromNet(ss : SOCK; VAR msg : NetMessage; timeOutms : INT
 VAR
 	ret : BOOLEAN;
 BEGIN
+	EnterCriticalSection(ReceiveMutex);
 %IF CHAUSSETTE2 %THEN
 		ret := BasicReceiveNetMessage(ss, msg, SIZE(msg), timeOutms, block);
 %ELSE
@@ -223,6 +229,7 @@ BEGIN
 			END;
 %END
 	END;
+	LeaveCriticalSection(ReceiveMutex);
 	RETURN ret;
 END ReceiveMessageFromNet;
 
@@ -949,6 +956,8 @@ BEGIN
 	HandleReceiveErrors := CommErrorHandler_nulle;
 	SendErrors := 0;
 	ReceiveErrors := 0;
+	InitializeCriticalSectionAndSpinCount( SendMutex, 4000 );
+	InitializeCriticalSectionAndSpinCount( ReceiveMutex, 4000 );
 
 	IF QueryPerformanceFrequency(HPCval)
 		THEN
@@ -964,5 +973,7 @@ FINALLY
 			CloseHandle(QTVODm2Process);
 			QTVODm2Process := NULL_HANDLE;
 	END;
+	DeleteCriticalSection(SendMutex);
+	DeleteCriticalSection(ReceiveMutex);
 	FinIP;
 END QTVODcomm.
