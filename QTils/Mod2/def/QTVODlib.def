@@ -37,11 +37,11 @@ TYPE
 				(* le dernier temps envoyé *)
 				lastMovieTime : Real64;
 			(* envoyer le temps absolut? *)
-			absolute : BOOLEAN;
+			absolute, forcePump : BOOLEAN;
 		END;
 
 PROCEDURE HRTime() : Real64;
-PROCEDURE SetTimes( t : Real64; ref : QTMovieWindowH; absolute : Int32 );
+PROCEDURE SetTimes( t : Real64; ref : QTMovieWindowH; absolute : Int32 ) : BOOLEAN;
 PROCEDURE StartVideo(excl : QTMovieWindowH);
 PROCEDURE StepVideo(excl : QTMovieWindowH ; steps : Int32);
 PROCEDURE StopVideo(excl : QTMovieWindowH);

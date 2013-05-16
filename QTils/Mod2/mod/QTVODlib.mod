@@ -188,9 +188,10 @@ BEGIN
 	END;
 END HRTime;
 
-PROCEDURE SetTimes( t : Real64; ref : QTMovieWindowH; absolute : Int32 );
+PROCEDURE SetTimes( t : Real64; ref : QTMovieWindowH; absolute : Int32 ) : BOOLEAN;
 VAR
 	w : CARDINAL;
+	ret : BOOLEAN;
 BEGIN
 	FOR w := 0 TO maxQTWM DO
 		IF qtwmH[w] <> ref
@@ -198,17 +199,30 @@ BEGIN
 				QTils.QTMovieWindowSetTime(qtwmH[w], t, absolute);
 		END;
 	END;
+	ret := FALSE;
+%IF USE_TIMEDCALLBACK %THEN
+	IF (callbackRegister <> NIL) AND QTils.QTMovieWindowH_Check(qtwmH[fwWin])
+		THEN
+			(* on doit remettre encore une pendule à l'heure: *)
+			currentTimeSubscription.forcePump := TRUE;
+			PumpSubscriptions( callbackRegister, CAST(Int32,qtwmH[fwWin]) );
+			currentTimeSubscription.forcePump := FALSE;
+			ret := TRUE;
+	END;
+%END
+	RETURN ret;
 END SetTimes;
 
 PROCEDURE SetTimesAndNotify( t : Real64; ref : QTMovieWindowH; absolute : Int32; ss : SOCK; class : NetMessageClass );
 VAR
 	msg : NetMessage;
+	timeSent : BOOLEAN;
 BEGIN
-	SetTimes( t, ref, absolute );
-	IF ss <> sock_nulle
+	timeSent := SetTimes( t, ref, absolute );
+	IF (ss <> sock_nulle) AND (NOT timeSent)
 		THEN
 			replyCurrentTime( msg, class, ref, VAL(BOOLEAN,absolute) );
-			IF ( ss <> sock_nulle )
+			IF ss <> sock_nulle
 				THEN
 					SendMessageToNet( ss, msg, SENDTIMEOUT, FALSE, "QTVODm2::SetTimesAndNotify" );
 			END;
@@ -556,7 +570,7 @@ BEGIN
 				(* on obtient le temps courant dans la fenêtre *)
 				replyCurrentTime( msg, qtvod_Subscription, wih, absolute );
 				(* si ce temps est différent au temps précédemment envoyé, on envoie le message *)
-				IF msg.data.val1 <> lastMovieTime
+				IF (msg.data.val1 <> lastMovieTime) OR forcePump
 					THEN
 (*
 						QTils.LogMsgEx( "SUBS dt=%g-%g=%g movie#%d.dt=%g-%g=%g",
@@ -1643,9 +1657,7 @@ BEGIN
 	FOR w := 0 TO maxQTWM	DO
 		register_window(qtwmH, w);
 	END;
-%IF USE_TIMEDCALLBACK %THEN
-	QTils.NewTimedCallBackRegisterForMovie( qtwmH[fwWin]^^.theMovie, callbackRegister, qtCallBacksAllowedAtInterrupt );
-%ELSE
+%IF %NOT USE_TIMEDCALLBACK %THEN
 	QTils.register_MCAction( qtwmH[fwWin], MCAction.AnyAction, PumpSubscriptions );
 %END
 

@@ -1664,7 +1664,7 @@ ErrCode SlaveMovieToMasterMovie( Movie slave, Movie master )
 
 // 20130501
 /*!
-	Creates a callback "register" in which one can register functions to be called when the movie
+	Creates a callback "register" in which one can register a single function to be called when the movie
 	reaches a given time. Accuracy increases when this callback is allowed to be called during
 	interrupts, but that restricts the actions it can take (notably, moving memory).
 	callbackRegister must be release through a call to DisposeCallBack.

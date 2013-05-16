@@ -71,3 +71,4 @@ QTils/Mod2/win32getpath.c
 QTils/Mod2/win32popen.c
 QTils/Mod2/win32popen.h
 QTils/Mod2/QTVODm2.H
+QTils/Mod2/*.dll
