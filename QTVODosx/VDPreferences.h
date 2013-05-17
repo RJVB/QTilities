@@ -61,14 +61,14 @@ extern VODDescription globalVDPreferences;
 
 - (BOOL) savePreferences:(const char*)prefsFileName;
 
-@property (retain) NSButton		*dstButton;
-@property (retain) NSButton		*flLRButton;
-@property (retain) NSButton		*splitButton;
-@property (retain) NSTextField	*scaleTextField;
-@property (retain) NSTextField	*codecTextField;
-@property (retain) NSTextField	*bitRateTextField;
-@property (retain) NSNumberFormatter	*scaleNFormatter;
-@property (retain) NSStepperCell	*scaleStepperCell;
+@property (retain,readonly) NSButton		*dstButton;
+@property (retain,readonly) NSButton		*flLRButton;
+@property (retain,readonly) NSButton		*splitButton;
+@property (retain,readonly) NSTextField	*scaleTextField;
+@property (retain,readonly) NSTextField	*codecTextField;
+@property (retain,readonly) NSTextField	*bitRateTextField;
+@property (retain,readonly) NSNumberFormatter	*scaleNFormatter;
+@property (retain,readonly) NSStepperCell	*scaleStepperCell;
 @end
 
 extern void UpdateVDPrefsWin(BOOL updateChannelDisplay);

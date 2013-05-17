@@ -74,6 +74,21 @@ BEGIN
 	END;
 END SendErrorHandler;
 
+PROCEDURE ReceiveErrorHandler( errors : CARDINAL );
+VAR
+	errStr : ARRAY[0..1023] OF CHAR;
+BEGIN
+	IF (errors > 3) AND (numQTWM <= 0)
+		THEN
+			CloseCommClient(sServeur);
+			MSWinErrorString( errSock, errStr );
+			QTils.LogMsgEx( "%u message reception errors (last %d '%s'): closing communications channel",
+				errors, errSock, errStr );
+			PostMessage( "QTVODm2", "Trop d'erreurs de communication avec le serveur!" );
+			quitRequest := TRUE;
+	END;
+END ReceiveErrorHandler;
+
 PROCEDURE CompareKeystroke( ref : CHAR; VAR c : CHAR ) : BOOLEAN
 		%IF DLL %THEN [EXPORT, PROPAGATEEXCEPTION] %END;
 BEGIN
@@ -691,6 +706,7 @@ BEGIN
 	cyclingNetPump := FALSE;
 	Sortie := CompareKeystroke;
 	HandleSendErrors := SendErrorHandler;
+	HandleReceiveErrors := ReceiveErrorHandler;
 
 	(* QTOpened est TRUE si QTilsM2 s'est initialisé correctement, sinon, QuickTime n'est pas disponible: *)
 	IF QTOpened()

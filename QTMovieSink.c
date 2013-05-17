@@ -96,7 +96,7 @@ static int set_priority(int priority)
 #	define QTils_malloc(s)		malloc((s))
 #	define QTils_calloc(n,s)		calloc((n),(s))
 #	define QTils_realloc(p,s)	realloc((p),(s))
-#	define QTils_free(p)		free(*(p))
+#	define QTils_free(p)		free((p))
 #endif
 #include "QTMovieSink.h"
 
@@ -244,7 +244,7 @@ OSErr CreateMovieStorageFromURL( const char **URL, OSType creator, ScriptCode sc
 				if( fullURL ){
 					*fullURL = theURL;
 				}
-				QTils_free(&theURL);
+				QTils_free(theURL);
 				theURL = c;
 				*URL = theURL;
 			}
@@ -282,7 +282,7 @@ OSErr CreateMovieStorageFromURL( const char **URL, OSType creator, ScriptCode sc
 	}
 bail:
 	if( !fullURL ){
-		QTils_free(&theURL);
+		QTils_free(theURL);
 	}
 	return err;
 }
@@ -318,7 +318,7 @@ static OSErr CreateMovieStorageFromURL( const char **URL, OSType creator, Script
 		);
 		if( err == noErr ){
 			if( !fullURL && URL && *URL != orgURL ){
-				QTils_free( (char**) URL);
+				QTils_free(*URL);
 				*URL = orgURL;
 			}
 		}
@@ -726,14 +726,14 @@ ErrCode close_QTMovieSink( QTMovieSinks **QMS, int addTCTrack, QTMSEncodingStats
 				qms->imageFrame = NULL;
 			}
 			if( qtPriv->saved_theURL ){
-				QTils_free((char**)&qms->theURL);
+				QTils_free(qms->theURL);
 				qms->theURL = qtPriv->saved_theURL;
 			}
 			if( qtPriv->dataRef ){
 				DisposeHandle( (Handle) qtPriv->dataRef );
 				qtPriv->dataRef = NULL;
 			}
-			QTils_free( (char**)&qtPriv);
+			QTils_free(qtPriv);
 			qms->privQT = NULL;
 			if( closeQT ){
 				ExitMovies();
@@ -744,7 +744,7 @@ ErrCode close_QTMovieSink( QTMovieSinks **QMS, int addTCTrack, QTMSEncodingStats
 		}
 		qms->lastErr = err;
 		if( qms->dealloc_qms ){
-			QTils_free( (char**)&qms);
+			QTils_free(qms);
 			*QMS = NULL;
 		}
 	}
@@ -1330,14 +1330,14 @@ static ErrCode close_QTMovieSinkICM( QTMovieSinks **QMS, int addTCTrack, QTMSEnc
 				qms->imageFrame = NULL;
 			}
 			if( qtPriv->saved_theURL ){
-				QTils_free((char**)&qms->theURL);
+				QTils_free(qms->theURL);
 				qms->theURL = qtPriv->saved_theURL;
 			}
 			if( qtPriv->dataRef ){
 				DisposeHandle( (Handle) qtPriv->dataRef );
 				qtPriv->dataRef = NULL;
 			}
-			QTils_free( (char**)&qtPriv);
+			QTils_free(qtPriv);
 			qms->privQT = NULL;
 			if( closeQT ){
 				ExitMovies();
@@ -1348,7 +1348,7 @@ static ErrCode close_QTMovieSinkICM( QTMovieSinks **QMS, int addTCTrack, QTMSEnc
 		}
 		qms->lastErr = err;
 		if( qms->dealloc_qms ){
-			QTils_free( (char**)&qms);
+			QTils_free(qms);
 			*QMS = NULL;
 		}
 	}
@@ -1562,7 +1562,7 @@ static ErrCode AddMetaDataString( QTMovieSinks *qms, int toTrack,
 										(UInt8*) newvalue, size, 0 )) == noErr
 						){ size_t len = strlen(newvalue);
 							snprintf( &newvalue[len], nvlen-len, "\n%s", value );
-							QTils_free((char**)&value);
+							QTils_free(value);
 							value = newvalue;
 							newvalue = NULL;
 							 // set the item to the new value:
@@ -1597,11 +1597,11 @@ static ErrCode AddMetaDataString( QTMovieSinks *qms, int toTrack,
 				if( err != noErr ){
 					// failure, in this case we're sure we can release the allocated memory.
 					if( value != newvalue ){
-						QTils_free((char**)&value);
+						QTils_free(value);
 						value = NULL;
 					}
 					if( newvalue ){
-						QTils_free((void**)&newvalue);
+						QTils_free(newvalue);
 						newvalue = NULL;
 					}
 				}

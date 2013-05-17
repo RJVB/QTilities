@@ -176,6 +176,8 @@ VAR
 BEGIN
 	EnterCriticalSection(SendMutex);
 	errSock := 0;
+	msg.size := CAST(UInt16,SIZE(msg));
+	msg.protocol := CAST(UInt16,NETMESSAGE_PROTOCOL);
 %IF COMMTIMING %THEN
 	IF QueryPerformanceCounter(HPCval)
 		THEN
@@ -211,6 +213,16 @@ PROCEDURE ReceiveMessageFromNet(ss : SOCK; VAR msg : NetMessage; timeOutms : INT
 	caller : ARRAY OF CHAR ) : BOOLEAN;
 VAR
 	ret : BOOLEAN;
+
+	PROCEDURE receiveError();
+	BEGIN
+		ReceiveErrors := ReceiveErrors + 1;
+		IF ( HandleReceiveErrors <> CommErrorHandler_nulle )
+			THEN
+				HandleReceiveErrors(ReceiveErrors);
+		END;
+	END receiveError;
+
 BEGIN
 	EnterCriticalSection(ReceiveMutex);
 %IF CHAUSSETTE2 %THEN
@@ -220,6 +232,14 @@ BEGIN
 %END
 	IF ret
 		THEN
+			IF (msg.size <> SIZE(msg)) OR (msg.protocol <> NETMESSAGE_PROTOCOL)
+				THEN
+					QTils.LogMsgEx(
+						"ReceiveMessageFromNet: suppression d'un NetMessage de taille %hu!=%hu et/ou protocol %hu!=%hu",
+						msg.size, VAL(UInt16,SIZE(msg)), msg.protocol, VAL(UInt16,NETMESSAGE_PROTOCOL) );
+					ret := FALSE;
+					receiveError();
+			END;
 %IF COMMTIMING %THEN
 			IF QueryPerformanceCounter(HPCval)
 				THEN
@@ -228,6 +248,12 @@ BEGIN
 					msg.recdTime := -1.0;
 			END;
 %END
+		ELSE
+			IF ( errSock <> 0 )
+				THEN
+					NetMessageToLogMsg( caller, "(échec de réception)", msg );
+					receiveError();
+			END;
 	END;
 	LeaveCriticalSection(ReceiveMutex);
 	RETURN ret;

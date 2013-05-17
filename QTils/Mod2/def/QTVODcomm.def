@@ -14,6 +14,9 @@ FROM Chaussette IMPORT
 FROM QTilsM2 IMPORT
 	Real64, Int32, QTMovieWindowH, ErrCode, UInt16;
 
+CONST
+	NETMESSAGE_PROTOCOL = 3;
+
 TYPE
 
 	VODChannels =
@@ -58,6 +61,7 @@ TYPE
 
 	NetMessage =
 		RECORD
+			size, protocol : UInt16;
 			flags :
 				RECORD
 					type : NetMessageType;

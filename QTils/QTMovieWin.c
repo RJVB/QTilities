@@ -147,7 +147,7 @@ QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theU
 					if( strcmp( trackName, "timeStamp Track" ) == 0 ){
 						wi->theTimeStampTrack = tTrack;
 					}
-					QTils_free(&trackName);
+					QTils_free(trackName);
 				}
 				i += 1;
 			}
@@ -169,7 +169,7 @@ QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theU
 		}
 		if( theURL ){
 			if( wi->theURL ){
-				QTils_free(&wi->theURL);
+				QTils_free(wi->theURL);
 			}
 			wi->theURL = (const char*) QTils_strdup(theURL);
 		}
@@ -221,7 +221,7 @@ void DisposeQTMovieWindow( QTMovieWindowH WI )
 #ifdef USE_QTHANDLES
 		DisposeHandle( (Handle) WI );
 #else
-		QTils_free(&wi);
+		QTils_free(wi);
 #endif
 	}
 }
@@ -797,10 +797,10 @@ ErrCode QTMovieWindowSetPlayAllFrames( QTMovieWindowH WI, int onoff, int *curSta
 		  size_t allfSize = 0;
 			if( (err = GetUserDataFromMovie( wi->theMovie, (void**) &allf, &allfSize, 'AllF' )) == noErr ){
 				*curState = *allf;
-				QTils_free(&allf);
+				QTils_free(allf);
 			}
 			else{
-				QTils_free(&allf);
+				QTils_free(allf);
 				if( err != userDataItemNotFound ){
 					goto bail;
 				}

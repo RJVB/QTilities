@@ -52,7 +52,7 @@ QTLSext void *QTils_malloc( size_t s );
 QTLSext void *QTils_calloc( size_t n, size_t s );
 QTLSext void *QTils_realloc( void* mem, size_t size );
 QTLSext void QTils_freep( void **mem );
-#define QTils_free(x)	QTils_freep((void**)(x))
+#define QTils_free(x)	QTils_freep((void**)&(x))
 QTLSext char *QTils_strdup( const char *txt );
 
 /*!

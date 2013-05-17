@@ -226,6 +226,10 @@
 		D676F0210BC419C8008693F8 /* QTAMovieView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTAMovieView.h; sourceTree = "<group>"; };
 		D676F0220BC419C8008693F8 /* QTAMovieView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTAMovieView.m; sourceTree = "<group>"; };
 		D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "QTMovieSink-106.xcodeproj"; path = "../QTMovieSink-106.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		D6868AD217453D5A00A87874 /* Chaussette2.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.mod; name = Chaussette2.mod; path = ../QTils/Mod2/mod/Chaussette2.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D6868AD317453D5A00A87874 /* Chaussette2.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; name = Chaussette2.def; path = ../QTils/Mod2/def/Chaussette2.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D6868AD417453D7A00A87874 /* Chaussette2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Chaussette2.c; path = ../QTils/Chaussette2.c; sourceTree = SOURCE_ROOT; };
+		D6868AD517453D8A00A87874 /* Chaussette2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Chaussette2.h; path = ../QTils/Chaussette2.h; sourceTree = SOURCE_ROOT; };
 		D68F873D142B3F8B00840E75 /* QTVODController-OSA-xgraph.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "QTVODController-OSA-xgraph.py"; sourceTree = "<group>"; };
 		D68FAFAD1422033B003CB551 /* VDPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VDPreferences.m; sourceTree = "<group>"; };
 		D68FAFAE1422033B003CB551 /* VDPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VDPreferences.h; sourceTree = "<group>"; };
@@ -325,6 +329,7 @@
 		2A37F4ABFDCFA73011CA2CEA /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				D6868AD417453D7A00A87874 /* Chaussette2.c */,
 				D676F0220BC419C8008693F8 /* QTAMovieView.m */,
 				C2FFEF25084332E000AAB5DB /* BatchExportController.m */,
 				C2F093850840E3B400249D8A /* FullscreenFocusedWindow.m */,
@@ -437,6 +442,7 @@
 		D651F56314167C2E007169F9 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				D6868AD517453D8A00A87874 /* Chaussette2.h */,
 				D676F0210BC419C8008693F8 /* QTAMovieView.h */,
 				C2FFEF24084332E000AAB5DB /* BatchExportController.h */,
 				C2F093840840E3B400249D8A /* FullscreenFocusedWindow.h */,
@@ -456,6 +462,8 @@
 		D6604223141F56260011DBC6 /* QTVODm2 */ = {
 			isa = PBXGroup;
 			children = (
+				D6868AD317453D5A00A87874 /* Chaussette2.def */,
+				D6868AD217453D5A00A87874 /* Chaussette2.mod */,
 				D6604229141F566C0011DBC6 /* POSIXm2.def */,
 				D6604228141F566C0011DBC6 /* QTilsM2.def */,
 				D660422B141F566C0011DBC6 /* QTVODlib.def */,

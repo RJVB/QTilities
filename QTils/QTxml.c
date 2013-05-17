@@ -114,7 +114,7 @@ ErrCode ParseXMLFile( const char *theURL, ComponentInstance xmlParser, long flag
 		Check4XMLError( xmlParser, err, theURL, errdescr );
 	}
 	if( orgURL && theURL != orgURL ){
-		QTils_free(&orgURL);
+		QTils_free(orgURL);
 	}
 	return err;
 }
@@ -542,7 +542,7 @@ ErrCode GetStringAttribute_Mod2( XMLElement *element, UInt32 attributeID, char *
 		strncpy( theString, str, slen );
 		theString[slen-1] = '\0';
 //		Log( qtLogPtr, "GetStringAttribute_Mod2(): got \"%s\" -> '%s'[%d]\n", str, theString, slen );
-		QTils_free(&str);
+		QTils_free(str);
 	}
 	return err;
 }

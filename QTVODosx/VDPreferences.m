@@ -454,6 +454,10 @@ static char *channelName(int channel)
 	}
 	return ret;
 }
+
+@synthesize splitButton;
+@synthesize bitRateTextField;
+@synthesize codecTextField;
 @synthesize dstButton;
 @synthesize flLRButton;
 @synthesize scaleTextField;

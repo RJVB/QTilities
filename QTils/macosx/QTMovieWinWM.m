@@ -272,7 +272,7 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 			wi->theMC = nil;
 		}
 		if( wi->theURL ){
-			QTils_free( (void**)&wi->theURL);
+			QTils_free(wi->theURL);
 			wi->theURL = NULL;
 		}
 		if( wi->dataRef ){
@@ -528,7 +528,7 @@ QTMovieWindowH OpenQTMovieInWindow_Mod2( const char *theURL, int ulen, int contr
 			URL = (char*) QTils_calloc( 1024, sizeof(char*) );
 			if( URL ){
 				strcpy( URL, (*wih)->theURL );
-				QTils_free( &(*wih)->theURL );
+				QTils_free( (*wih)->theURL );
 				(*wih)->theURL = URL;
 			}
 		}

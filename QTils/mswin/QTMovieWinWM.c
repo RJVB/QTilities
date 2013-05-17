@@ -351,7 +351,7 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 			wi->dataHandler = nil;
 		}
 		if( wi->theURL ){
-			QTils_free( (char**) &wi->theURL);
+			QTils_free(wi->theURL);
 			wi->theURL = NULL;
 		}
 		if( wi->dataRef ){
@@ -640,7 +640,7 @@ QTMovieWindowH OpenQTMovieInWindow_Mod2( const char *theURL, int ulen, int visib
 			URL = (char*) QTils_calloc( 1024, sizeof(char*) );
 			if( URL ){
 				strcpy( URL, (*wih)->theURL );
-				QTils_free( &(*wih)->theURL );
+				QTils_free( (*wih)->theURL );
 				(*wih)->theURL = URL;
 			}
 		}
@@ -955,7 +955,7 @@ static ErrCode lOpenQT()
 				UseQTMLDoubleBuffering = 1;
 			}
 		}
-		QTils_free(&envVal);
+		QTils_free(envVal);
 	}
 	// If calling InitializeQML() gives an unhandled exception while debugging mentioning
 	// "NtClose a été appelé sur un handle qui était protégé contre la fermeture via NtSetInformationObject."
@@ -1151,10 +1151,10 @@ short InitQTMovieWindows( void *hInst )
 	}
 	QTWMcounter = -1;
 	if( iconXBits ){
-		QTils_free( (char**)&iconXBits);
+		QTils_free( iconXBits);
 	}
 	if( maskBits ){
-		QTils_free(&maskBits);
+		QTils_free(maskBits);
 	}
 	return ret;
 }
