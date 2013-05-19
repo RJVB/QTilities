@@ -120,7 +120,7 @@ typedef struct QTMSEncodingStats{
 	@n
 	Modula-2 name: OpenQTMovieSink
 	@param	qms		pointer to the QTMovieSinks object to initialise, or NULL to allocate a new one
-	@param	theURL	destination movie file name
+	@param	theURL	destination movie file name, or NULL to create an in-memory movie object
 	@param	Width	image pixel width
 	@param	Height	image pixel height
 	@param	hasAlpha	image has an alpha channel. Best set to True even if there is none...
@@ -161,9 +161,11 @@ QTMSext QTMovieSinks *open_QTMovieSinkWithData( QTMovieSinks *qms, const char *t
 						sens for movies with a (perfectly) fixed frame rate; no attempt is made to construct
 						a complex TimeCode track that takes fluctuating frame presentation times into account!
 	@param	stats	optional; passed to get_QTMovieSink_EncodingStats just before the movie is closed.
+	@param	closeMovie	whether to close the movie or leave it open for future use.
 	@param	closeQT	whether to close down QuickTime
  */
-QTMSext ErrCode close_QTMovieSink( QTMovieSinks **qms, int addTCTrack, QTMSEncodingStats *stats, int closeQT );
+QTMSext ErrCode close_QTMovieSink( QTMovieSinks **qms, int addTCTrack, QTMSEncodingStats *stats,
+						    int closeMovie, int closeQT );
 
 /*!
 	add a frame to the current sink, to be displayed with the specified duration. The frame added
@@ -357,12 +359,12 @@ QTMSext ErrCode open_QTMovieSinkWithData_Mod2( QTMovieSinks *qms, const char *th
 						unsigned short frameBuffers,
 						unsigned long codec, unsigned long quality, int useICM,
 						int openQT );
-QTMSext ErrCode close_QTMovieSink_Mod2( QTMovieSinks *qms, int addTCTrack, QTMSEncodingStats *stats, int closeQT );
+QTMSext ErrCode close_QTMovieSink_Mod2( QTMovieSinks *qms, int addTCTrack, QTMSEncodingStats *stats,
+							    int closeMovie, int closeQT );
 QTMSext ErrCode QTMovieSink_AddTrackMetaDataString_Mod2( QTMovieSinks *qms,
 						AnnotationKeys key, const char *value, int vlen, const char *lang, int llen );
 QTMSext ErrCode QTMovieSink_AddMovieMetaDataString_Mod2( QTMovieSinks *qms,
 						AnnotationKeys key, const char *value, int vlen, const char *lang, int llen );
-
 
 #ifdef __cplusplus
 }

@@ -42,11 +42,13 @@ IDENTIFY("QTMovieWinWM: QuickTime utilities: Mac OS X part of the toolkit");
 #	define TARGET_OS_MAC
 #endif
 
+#include "QTMovieSinkQTStuff.h"
+#include "QTMovieSink.h"
+
 #include "../QTilities.h"
 #include "../Lists.h"
 #include "../QTMovieWin.h"
 #import "NSQTMovieWindow.h"
-
 
 static char errbuf[512];
 
@@ -252,7 +254,7 @@ void QTWMflush()
 ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 { ErrCode err = paramErr;
   QTMovieWindows *wi;
-	if( WI && *WI && (*WI)->self == *WI && QTMovieWindowH_from_Movie((*WI)->theMovie) ){
+	if( Handle_Check(WI) && (*WI)->self == *WI && QTMovieWindowH_from_Movie((*WI)->theMovie) ){
 		wi = *WI;
 		if( wi->handlingEvent ){
 			return noErr;
@@ -360,12 +362,15 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 		wi = *wih;
 	}
 
-	if( wih && *wih && (*wih)->self == *wih ){
+	if( Handle_Check(wih) && (*wih)->self == *wih ){
 		if( theURL && (!wi->theURL || strcmp(theURL, wi->theURL)) ){
 			wi->theURL = (const char*) QTils_strdup(theURL);
 		}
-		else{
+		else if( wi->theURL ){
 			theURL = wi->theURL;
+		}
+		else if( !theURL && !wi->theURL ){
+			theURL = wi->theURL = (const char*) QTils_strdup("*in memory*");
 		}
 		wi->theMovie = theMovie;
 		GetMovieBox( wi->theMovie, &wi->theMovieRect );
@@ -475,6 +480,20 @@ QTMovieWindowH OpenQTMovieWindowWithMovie_Mod2( Movie theMovie, char *theURL, in
 			theURL = NULL;
 		}
 		wih = OpenQTMovieWindowWithMovie( theMovie, theURL, 1, NULL, 0, visibleController );
+	}
+	return wih;
+}
+
+QTMovieWindowH OpenQTMovieWindowWithQTMovieSink( struct QTMovieSinks *qms, int addTCTrack, int controllerVisible )
+{ QTMovieWindowH wih = NULL;
+	if( qms && qms->privQT ){
+		if( close_QTMovieSink( &qms, addTCTrack, NULL, FALSE, FALSE ) == noErr ){
+			wih = OpenQTMovieWindowWithMovie( qms->privQT->theMovie, qms->theURL, 1,
+									  qms->privQT->dataRef, qms->privQT->dataRefType, controllerVisible );
+			if( wih ){
+				(*wih)->sourceQMS = qms;
+			}
+		}
 	}
 	return wih;
 }

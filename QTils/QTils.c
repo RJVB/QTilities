@@ -2523,7 +2523,7 @@ ErrCode SaveMovie( Movie theMovie )
   Boolean closeDH;
 #ifndef QTMOVIESINK
   QTMovieWindowH wih = QTMovieWindowH_from_Movie(theMovie);
-	if( wih && (*wih)->self == (*wih) ){
+	if( Handle_Check(wih) && (*wih)->self == (*wih) ){
 		odataRef = (*wih)->dataRef;
 		odataRefType = (*wih)->dataRefType;
 		odataHandler = (*wih)->dataHandler;
@@ -2630,7 +2630,7 @@ ErrCode SaveMovieAsRefMov( const char *dstURL, Movie theMovie )
 	}
 	else if( err2 == fBsyErr 
 #ifndef QTMOVIESINK
-		   && wih && (*wih)->theURL && strcmp((*wih)->theURL, dstURL) == 0
+		   && Handle_Check(wih) && (*wih)->theURL && strcmp((*wih)->theURL, dstURL) == 0
 #endif
 	){
 		err2 = SaveMovie( theMovie );
@@ -3304,7 +3304,7 @@ ErrCode FindTimeStampInMovieAtTime( Movie theMovie, double Time, char **foundTex
   ErrCode err;
   QTMovieWindowH wih = QTMovieWindowH_from_Movie(theMovie);
 
-	if( wih && (*wih)->theTimeStampTrack && foundText ){
+	if( Handle_Check(wih) && (*wih)->theTimeStampTrack && foundText ){
 		*foundText = NULL;
 		st = (TimeValue) (Time * (*wih)->info->timeScale + 0.5);
 		err = GetTrackTextAtTime( (*wih)->theTimeStampTrack, st, foundText, &st, NULL );
@@ -4020,6 +4020,7 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->OpenMovieFromMemoryDataRef = OpenMovieFromMemoryDataRef;
 		dmbase->OpenQTMovieFromMemoryDataRefInWindow = OpenQTMovieFromMemoryDataRefInWindow;
 		dmbase->OpenQTMovieWindowWithMovie = OpenQTMovieWindowWithMovie_Mod2;
+		dmbase->OpenQTMovieWindowWithQTMovieSink = OpenQTMovieWindowWithQTMovieSink;
 
 		dmbase->OpenMovieFromURL = OpenMovieFromURL;
 		dmbase->HasMovieChanged = HasMovieChanged_Mod2;

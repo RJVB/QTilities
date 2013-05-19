@@ -23,6 +23,9 @@ FROM WIN32 IMPORT
 	LARGE_INTEGER, QueryPerformanceFrequency, QueryPerformanceCounter,
 	Sleep;
 
+FROM WINX IMPORT
+	NIL_STR;
+
 FROM ElapsedTime IMPORT
 	StartTimeEx, GetTimeEx;
 
@@ -553,11 +556,11 @@ VAR
 							ici on pourrait ajouter quelques méta-données:
 							AddMetaDataStringToMovie( GetQTMovieSinkMovie(qms), MetaData.akComment, "Movie généré avec QTMovieSinks pour Modula-2", "fr_FR" );
 						*)
-						qmsCloseErr := CloseQTMovieSink( qms, 1, ADR(stats), 0 );
+						qmsCloseErr := CloseQTMovieSink( qms, 1, ADR(stats), 1, 0 );
 						totDuration := VAL(Real64, GetTimeEx(totTimer))/1000.0;
 						LogMsgEx( 'Enregistré %gs(%gs) et %hu(%ld) trames dans "%s" en %gs => %gfps(%gfps); err=%d/%d\n',
 											duration, stats.Duration, i, stats.Total,
-											qms.theURL, totDuration, VAL(Real64,i)/duration, stats.frameRate, qmsErr, qmsCloseErr );
+											fName, totDuration, VAL(Real64,i)/duration, stats.frameRate, qmsErr, qmsCloseErr );
 						IF qmsErr = noErr
 							THEN
 								qmsErr := qmsCloseErr;

@@ -253,6 +253,7 @@ BEGIN
 				THEN
 					NetMessageToLogMsg( caller, "(échec de réception)", msg );
 					receiveError();
+					errSock := 0;
 			END;
 	END;
 	LeaveCriticalSection(ReceiveMutex);

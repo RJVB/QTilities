@@ -43,6 +43,10 @@ IDENTIFY("QTMovieWin: QuickTime utilities: a simple toolkit for opening/controll
 #	include <QuickTime/QuickTime.h>
 #endif // TARGET_OS_WIN32
 
+#ifndef QTMOVIESINK
+#	include "QTMovieSinkQTStuff.h"
+#	include "QTMovieSink.h"
+#endif
 
 #include "QTilities.h"
 #include "Lists.h"
@@ -90,7 +94,7 @@ QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theU
 								  Handle dataRef, OSType dataRefType, DataHandler dh, short resId, ErrCode *err )
 { QTMovieWindows *wi;
   extern int QTWMcounter;
-	if( wih && *wih && (*wih)->self == *wih && theMovie ){
+	if( Handle_Check(wih) && (*wih)->self == *wih && theMovie ){
 		wi = *wih;
 
 		GetMovieBox( theMovie, &wi->theMovieRect );
@@ -167,7 +171,7 @@ QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theU
 		if( wi->theInfo.TCframeRate < 0 ){
 			wi->theInfo.TCframeRate = wi->theInfo.frameRate;
 		}
-		if( theURL ){
+		if( theURL && wi->theURL != theURL ){
 			if( wi->theURL ){
 				QTils_free(wi->theURL);
 			}
@@ -206,10 +210,16 @@ QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theU
  */
 void DisposeQTMovieWindow( QTMovieWindowH WI )
 {
-	if( WI && *WI && (*WI)->self == *WI && QTMovieWindowH_from_Movie((*WI)->theMovie) ){
+	if( Handle_Check(WI) /*&& (*WI)->self == *WI && QTMovieWindowH_from_Movie((*WI)->theMovie) */ ){
 	  QTMovieWindows *wi = *WI;
 #ifndef QTMOVIESINK
 		CloseQTMovieWindow(WI);
+		if( wi->sourceQMS ){
+			wi->sourceQMS->privQT->theMovie = NULL;
+			wi->sourceQMS->privQT->theTrack = NULL;
+			wi->sourceQMS->privQT->dataRef = NULL;
+			close_QTMovieSink( &wi->sourceQMS, TRUE, NULL, TRUE, FALSE );
+		}
 #endif //QTMOVIESINK
 #if TARGET_OS_MAC
 		DrainQTMovieWindowPool(WI);

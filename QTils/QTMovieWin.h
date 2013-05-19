@@ -95,6 +95,12 @@ QTLSext ErrCode GetStringAttribute_Mod2( XMLElement *element, UInt32 attributeTy
 QTLSext int vsscanf_Mod2( const char *source, int slen, const char *format, int flen, va_list ap );
 QTLSext int vsnprintf_Mod2( char *dest, int slen, const char *format, int flen, va_list ap );
 
+#if !defined(USE_QTHANDLES) || TARGET_OS_WIN32
+#	define Handle_Check(x)	((x) && *(x))
+#else
+#	define Handle_Check(x)	IsHandleValid((Handle)(x))
+#endif
+
 #ifdef __cplusplus
 }
 #endif

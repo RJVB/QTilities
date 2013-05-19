@@ -144,14 +144,14 @@ Movie get_QTMovieSink_Movie( QTMovieSinks *qms )
 	}
 }
 
-ErrCode close_QTMovieSink_Mod2( QTMovieSinks *qms, int addTCTrack, QTMSEncodingStats *stats, int closeQT )
+ErrCode close_QTMovieSink_Mod2( QTMovieSinks *qms, int addTCTrack, QTMSEncodingStats *stats, int closeMovie, int closeQT )
 {
 	if( !qms ){
 		return paramErr;
 	}
 	// just to be sure!
 	qms->dealloc_qms = FALSE;
-	return close_QTMovieSink( &qms, addTCTrack, stats, closeQT );
+	return close_QTMovieSink( &qms, addTCTrack, stats, closeMovie, closeQT );
 }
 
 ErrCode QTMovieSink_AddTrackMetaDataString_Mod2( QTMovieSinks *qms,

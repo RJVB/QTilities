@@ -1,7 +1,7 @@
 IMPLEMENTATION MODULE QTilsM2;
 
 (* definir QTILS_DEV pour charger la librairie QTils-dev.dll au lieu de QTils.dll *)
-<*/VALIDVERSION:QTILS_DEV,QTILS_DEBUG*>
+<*/VALIDVERSION:QTILS_DEV,QTILS_DEBUG,ADW*>
 
 FROM SYSTEM IMPORT
 	CAST, ADR, ADDRESS, TSIZE, VA_START,
@@ -717,6 +717,25 @@ VAR
 	ch : CH_CMDE;
 	ii : CARDINAL;
 	pCh : P_CH_CMDE;
+
+PROCEDURE ShowQTilsLogo() : QTMovieWindowH;
+TYPE
+	LogoProc = PROCEDURE() : QTMovieWindowH [CDECL];
+VAR
+	logoProc : LogoProc;
+	logoWin : QTMovieWindowH;
+BEGIN
+	logoWin := NIL;
+	IF (QTilsHandle <> NULL_HANDLE)
+		THEN
+			logoProc := CAST(LogoProc, dlsym(QTilsHandle, "ShowQTilsLogo", valid));
+			IF valid
+				THEN
+					logoWin := logoProc();
+			END;
+	END;
+	RETURN logoWin;
+END ShowQTilsLogo;
 
 PROCEDURE LoadQTilsDLL() : BOOLEAN;
 VAR

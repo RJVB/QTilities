@@ -411,7 +411,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
   double t;
   static double pt = 0;
   extern double HRTime_Time();
-	if( wih && (*wih) && (*wih)->self == *wih && (*wih)->theView ){
+	if( QTMovieWindowH_Check(wih) ){
 		if( (*wih)->isPlaying ){
 			QTMovieWindowGetTime(wih, &t, 0);
 			fprintf( stderr, "timeCallBack @t=%gs currentTime=%g dt=%g\n",

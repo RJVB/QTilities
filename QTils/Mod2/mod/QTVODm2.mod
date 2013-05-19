@@ -39,6 +39,9 @@ FROM POSIXm2 IMPORT
 FROM WIN32 IMPORT
 	Sleep, STARTUPINFO, GetStartupInfo;
 
+FROM WINUSER IMPORT
+	SetWindowPos, HWND_BOTTOM, HWND_TOP, SWP_NOMOVE, SWP_NOSIZE;
+
 <*/VALIDVERSION:CHAUSSETTE2*>
 %IF CHAUSSETTE2 %THEN
 	FROM Chaussette2 IMPORT
@@ -58,6 +61,7 @@ VAR
 	msgTimer : Real64;
 	ipAddress : ARRAY[0..63] OF CHAR;
 	err : ErrCode;
+	logoWin : QTMovieWindowH;
 	startupInfo : STARTUPINFO;
 
 PROCEDURE SendErrorHandler( errors : CARDINAL );
@@ -181,6 +185,7 @@ BEGIN
 
 		| qtvod_Open :
 				CloseVideo(TRUE);
+				QTils.DisposeQTMovieWindow(logoWin);
 				err := OpenVideo( msg.data.URN, msg.data.description );
 				IF (numQTWM > 0)
 					THEN
@@ -490,6 +495,34 @@ BEGIN
 	END;
 END movieIdle;
 
+PROCEDURE logoKeyUp(wih : QTMovieWindowH; params : ADDRESS ) : Int32 [CDECL];
+VAR
+	evt : EventRecordPtr;
+BEGIN
+	IF( params = NIL )
+		THEN
+			RETURN 0;
+	END;
+	evt := CAST(EventRecordPtr, params);
+	lastKeyUp := VAL(CHAR,evt^.message);
+	CASE lastKeyUp OF
+		'q', 'Q' :
+				(* Il vaut mieux ne pas fermer des movies/fenêtres dans une MCActionCallback! *)
+				quitRequest := TRUE;
+				(* ici on retourne TRUE! *)
+				RETURN 1;
+		| 'c', 'C' :
+				QTils.QTMovieWindowToggleMCController(wih);
+		| 'f', 'F':
+				SetWindowPos( wih^^.theView, HWND_TOP, 0,0,0,0, SWP_NOMOVE BOR SWP_NOSIZE );
+		| 'b', 'B':
+				SetWindowPos( wih^^.theView, HWND_BOTTOM, 0,0,0,0, SWP_NOMOVE BOR SWP_NOSIZE );
+		ELSE
+			(* noop *)
+	END;
+	RETURN 0;
+END logoKeyUp;
+
 PROCEDURE ParseArgs;
 VAR
 	arg : UInt16;
@@ -707,6 +740,7 @@ BEGIN
 	Sortie := CompareKeystroke;
 	HandleSendErrors := SendErrorHandler;
 	HandleReceiveErrors := ReceiveErrorHandler;
+	logoWin := NIL;
 
 	(* QTOpened est TRUE si QTilsM2 s'est initialisé correctement, sinon, QuickTime n'est pas disponible: *)
 	IF QTOpened()
@@ -871,9 +905,20 @@ BEGIN
 						SendMessageToNet( sServeur, Netreply, SENDTIMEOUT, FALSE, "QTVODm2 - reset" );
 						resetRequest := FALSE;
 				END;
+				IF (numQTWM < 0) AND (logoWin = NIL)
+					THEN
+						(* on attend encore la description du fichier à ouvrir. Ne restons pas sans
+						 * interface interactive avec l'utilisateur: ouvrons le logo QTils dans une fenêtre
+						 *)
+						logoWin := ShowQTilsLogo();
+						QTils.register_MCAction( logoWin, MCAction.KeyUp, logoKeyUp );
+				END;
 			END; (*boucleur principal*)
 			QTils.LogMsgEx( "%d évenements et %d messages en %d boucles", n, m, l );
 			CloseVideo(TRUE);
+
+			QTils.DisposeQTMovieWindow(logoWin);
+
 			IF sServeur <> sock_nulle
 				THEN
 					SendNetCommandOrNotification( sServeur, qtvod_Quit, qtvod_Notification );

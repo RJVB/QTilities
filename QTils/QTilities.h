@@ -67,6 +67,8 @@ typedef enum AnnotationKeys { akAuthor='auth', akComment='cmmt', akCopyRight='cp
 	akInfo='info', akKeywords='keyw', akDescr='desc', akFormat='orif', akSource='oris',
 	akSoftware='soft', akWriter='wrtr', akYear='year', akCreationDate='@day', akTrack='@trk'
 } AnnotationKeys;
+
+struct QTMovieSinks;
 #endif
 
 /*!
@@ -540,6 +542,7 @@ typedef struct QTMovieWindows {
 	SInt64 stepStartTime;
 	QTMovieInfo theInfo;			//!< source for the info member in the public section.
 #endif //__QUICKTIME__
+	struct QTMovieSinks *sourceQMS;
 } QTMovieWindows;
 
 typedef struct QTMovieWindows* QTMovieWindowPtr;
@@ -552,7 +555,11 @@ typedef QTMovieWindowPtr* QTMovieWindowH;
 	check if a QTMovieWindowH references a valid QTMovieWindow
  */
 #ifdef _QTILS_C
-#	define QTMovieWindowH_Check(wih)	((wih) && NativeWindow_from_QTMovieWindowH((wih)) && (*wih)->self == (*wih))
+#	ifdef _QTMOVIEWIN_H
+#		define QTMovieWindowH_Check(wih)	(Handle_Check(wih) && NativeWindow_from_QTMovieWindowH((wih)) && (*wih)->self == (*wih))
+#	else
+#		define QTMovieWindowH_Check(wih)	((wih) && NativeWindow_from_QTMovieWindowH((wih)) && (*wih)->self == (*wih))
+#	endif
 #else
 #	define QTMovieWindowH_Check(wih)	_QTMovieWindowH_Check_((wih))
 #endif // _QTILS_C
@@ -626,6 +633,7 @@ QTLSext NativeWindowH NativeWindowHFromQTMovieWindowH( QTMovieWindowH wi );
 QTLSext QTMovieWindowH OpenQTMovieFromMemoryDataRefInWindow( MemoryDataRef *memRef, OSType contentType, int controllerVisible );
 QTLSext QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
 								    Handle dataRef, OSType dataRefType, int controllerVisible );
+QTLSext QTMovieWindowH OpenQTMovieWindowWithQTMovieSink( struct QTMovieSinks *qms, int addTCTrack, int controllerVisible );
 
 QTLSext ErrCode ActivateQTMovieWindow( QTMovieWindowH wih );
 /*!
@@ -1111,6 +1119,7 @@ typedef struct LibQTilsBase {
 	ErrCode (*OpenMovieFromMemoryDataRef)( Movie *newMovie, MemoryDataRef *memRef, OSType contentType );
 	QTMovieWindowH (*OpenQTMovieFromMemoryDataRefInWindow)( MemoryDataRef *memRef, OSType contentType, int controllerVisible );
 	QTMovieWindowH (*OpenQTMovieWindowWithMovie)( Movie theMovie, char *theURL, int ulen, int visibleController );
+	QTMovieWindowH (*OpenQTMovieWindowWithQTMovieSink)( struct QTMovieSinks *qms, int addTCTrack, int controllerVisible );
 
 #if !defined(__QUICKTIME__) && !defined(__MOVIES__)
 	ErrCode (*OpenMovieFromURL)( Movie *newMovie, short flags, short *id, const char *URL, void *dum1, OSType *type );
@@ -1191,7 +1200,8 @@ typedef struct LibQTilsBase {
 							unsigned char frameBuffers,
 							unsigned long codec, unsigned long quality, int useICM,
 							int openQT, ErrCode *errReturn );
-	ErrCode (*close_QTMovieSink)( struct QTMovieSinks **qms, int addTCTrack, struct QTMSEncodingStats *stats, int closeQT );
+	ErrCode (*close_QTMovieSink)( struct QTMovieSinks **qms, int addTCTrack, struct QTMSEncodingStats *stats,
+						    int closeMovie, int closeQT );
 	ErrCode (*QTMovieSink_AddFrame)( struct QTMovieSinks *qms, double frameDuration );
 	ErrCode (*QTMovieSink_AddFrameWithTime)( struct QTMovieSinks *qms, double frameTime );
 	union QTAPixel* (*QTMSFrameBuffer)( struct QTMovieSinks *qms, unsigned short frameBuffer );
@@ -1219,6 +1229,8 @@ typedef struct LibQTilsBase {
  */
 QTLSext size_t initDMBaseQTils( LibQTilsBase *dmbase );
 
+QTLSext QTMovieWindowH ShowQTilsLogo();
+	
 /*!
 	the class for our movie windows, under MSWin
  */

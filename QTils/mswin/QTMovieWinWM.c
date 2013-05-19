@@ -46,6 +46,9 @@ IDENTIFY("QTMovieWinWM: QuickTime utilities: MSWin32 part of the toolkit");
 #	define TARGET_OS_WIN32
 #endif
 
+#include "QTMovieSinkQTStuff.h"
+#include "QTMovieSink.h"
+
 #include "../QTilities.h"
 #include "../Lists.h"
 #include "../QTMovieWin.h"
@@ -298,7 +301,7 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 	}
 	// we might have closed the wi at this point, so do an additional check
 	// to see if we can really decrease the event handling counter!
-	if( wi && *wi ){
+	if( Handle_Check(wi) ){
 		(*wi)->handlingEvent -= 1;
 	}
 
@@ -323,7 +326,7 @@ void QTWMflush()
 ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 { ErrCode err = paramErr;
   QTMovieWindows *wi;
-	if( WI && *WI && (*WI)->self == *WI && QTMovieWindowH_from_Movie((*WI)->theMovie) ){
+	if( Handle_Check(WI) && (*WI)->self == *WI && QTMovieWindowH_from_Movie((*WI)->theMovie) ){
 		wi = *WI;
 		// remove the associations between this WI and its native window, so that any
 		// events to the latter do not get passed on by us to QT anymore.
@@ -453,10 +456,17 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 		wi = *wih;
 	}
 
-	if( wih && *wih && (*wih)->self == *wih ){
-		if( !theURL ){
+	if( Handle_Check(wih) && (*wih)->self == *wih ){
+		if( theURL && (!wi->theURL || strcmp(theURL, wi->theURL)) ){
+			wi->theURL = (const char*) QTils_strdup(theURL);
+		}
+		else if( wi->theURL ){
 			theURL = wi->theURL;
 		}
+		else if( !theURL && !wi->theURL ){
+			theURL = wi->theURL = (const char*) QTils_strdup("*in memory*");
+		}
+		wi->theMovie = theMovie;
 		GetMovieBox( theMovie, &wi->theMovieRect );
 		MacOffsetRect( &wi->theMovieRect, -wi->theMovieRect.left, -wi->theMovieRect.top );
 		wi->theView = CreateWindowEx(
@@ -588,6 +598,20 @@ QTMovieWindowH OpenQTMovieWindowWithMovie_Mod2( Movie theMovie, char *theURL, in
 			theURL = NULL;
 		}
 		wih = OpenQTMovieWindowWithMovie( theMovie, theURL, 1, NULL, 0, visibleController );
+	}
+	return wih;
+}
+
+QTMovieWindowH OpenQTMovieWindowWithQTMovieSink( struct QTMovieSinks *qms, int addTCTrack, int controllerVisible )
+{ QTMovieWindowH wih = NULL;
+	if( qms && qms->privQT ){
+		if( close_QTMovieSink( &qms, addTCTrack, NULL, FALSE, FALSE ) == noErr ){
+			wih = OpenQTMovieWindowWithMovie( qms->privQT->theMovie, qms->theURL, 1,
+									  qms->privQT->dataRef, qms->privQT->dataRefType, controllerVisible );
+			if( wih ){
+				(*wih)->sourceQMS = qms;
+			}
+		}
 	}
 	return wih;
 }

@@ -28,6 +28,7 @@
 #endif
 
 #include "QTilities.h"
+#include "QTMovieWin.h"
 
 #include "google/dense_hash_map"
 //#include "google/sparse_hash_map"
@@ -47,7 +48,8 @@ google::dense_hash_map<Movie, QTMovieWindowH> m2qtmwh;
 	google::dense_hash_map<ErrCode, MacErrorTables*> metMap;
 #endif
 
-static QTMovieWindowH lastQTWMH = NULL;
+// 20130518 - why would we want to shadow a global variable here??
+//static QTMovieWindowH lastQTWMH = NULL;
 
 /*!
 	initialise the various google::dense_hash_map "lists" that are used throughout QTils
@@ -222,7 +224,7 @@ QTMovieWindowH QTMovieWindowH_from_Movie( Movie movie )
 { QTMovieWindowH wi;
 	if( movie && m2qtmwh_initialised && m2qtmwh.count(movie) ){
 		wi = m2qtmwh[movie];
-		if( wi  && *wi && (*wi)->self == *wi && (*wi)->theMovie == movie ){
+		if( Handle_Check(wi) && (*wi)->self == *wi && (*wi)->theMovie == movie ){
 			return wi;
 		}
 	}

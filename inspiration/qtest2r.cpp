@@ -46,6 +46,7 @@
 #include <String>
 
 #include "timing.h"
+#include "QTMovieSinkQTStuff.h"
 #include "QTMovieSink.h"
 #ifdef HAS_PERFORMER
 #	include "QTpfuSaveImage.h"
@@ -687,6 +688,8 @@ void TestXMLParsing()
 }
 #endif
 
+QTMovieWindowH logoWin;
+
 int main()
 {
 #if 0
@@ -752,12 +755,80 @@ int main()
 		    std::cerr << "Frames - Total: " << stats.Total << " Dropped: " << stats.Dropped << " Merged: " << stats.Merged
 			<< " timeChanged: " << stats.timeChanged << " bufferCopied: " << stats.bufferCopied << std::endl;
 	    }
-	    close_QTMovieSink( &qms, TRUE, NULL, FALSE );
+	    close_QTMovieSink( &qms, TRUE, NULL, TRUE, FALSE );
 	    sleep(2);
 	}
 	else{
 	    std::cerr << "open_QTMovieSinkICM() failed with error " << err << std::endl;
 	}
+	if( (qms = open_QTMovieSink( NULL, NULL,
+						   _w, _h, TRUE, QMSframes, codec,
+						   quality, FALSE, FALSE, &err )) ){
+	  int frames;
+	  std::ostrstream s;
+	  QTMSEncodingStats stats;
+	    std::cerr << "*in memory*" << " : ";
+	    for( frames = 0 ; frames < qms->frameBuffers ; frames++ ){
+		    for( int i= 0; i < _w*_h; i++ ){
+			    qms->imageFrame[frames][i].ciChannel.red = 0xDE;
+			    qms->imageFrame[frames][i].ciChannel.green = 0xAD;
+			    qms->imageFrame[frames][i].ciChannel.blue = 0xBA;
+			    qms->imageFrame[frames][i].ciChannel.alpha = 0xBE;
+		    }
+	    }
+	    init_HRTime();
+	    SET_REALTIME();
+	    HRTime_tic();
+	    for( frames = 0; HRTime_toc() < 3; frames++ ){
+		    QTMovieSink_AddFrame( qms, 0.016667 );
+	    }
+	    double elapsed = HRTime_toc();
+	    EXIT_REALTIME();
+	    s << frames << " frames in " << elapsed << " seconds - " << frames/elapsed << " fps" << std::ends;
+	    std::cerr << s.str();
+	    std::cerr << std::endl;
+	    QTMovieSink_AddMovieMetaDataString( qms, akInfo, s.str(), NULL );
+	    if( get_QTMovieSink_EncodingStats( qms, &stats ) ){
+		    std::cerr << "Frames - Total: " << stats.Total << " Dropped: " << stats.Dropped << " Merged: " << stats.Merged
+			<< " timeChanged: " << stats.timeChanged << " bufferCopied: " << stats.bufferCopied << std::endl;
+	    }
+	    { QTMovieWindowH qwi;
+		 QTMovieWindows qtbak;
+		 NativeWindowH nwi;
+#if TARGET_OS_MAC
+		    InitQTMovieWindows();
+#endif
+			close_QTMovieSink( &qms, TRUE, NULL, FALSE, FALSE );
+			qms->theURL = QTils_strdup("QTils Logo");
+			qwi = OpenQTMovieWindowWithQTMovieSink( qms, TRUE, TRUE );
+			nwi = NativeWindowHFromQTMovieWindowH(qwi);
+			if( nwi ){
+				qtbak = **qwi;
+				register_MCAction( qwi, MCAction()->Step, movieStep );
+				register_MCAction( qwi, MCAction()->GoToTime, movieScan );
+				register_MCAction( qwi, MCAction()->Play, moviePlay );
+				register_MCAction( qwi, MCAction()->Finished, movieFinished );
+				std::cerr << "Opened QT Movie window (native window=" << (void*) nwi << "->" << (void*) *nwi << "->" << **nwi << ")!" << std::endl;
+			}
+			SaveMovieAsRefMov( NULL, (*qwi)->theMovie );
+			while( QTMovieWindowH_isOpen(qwi) ){
+				PumpMessages(TRUE);
+			}
+			if( qwi ){
+				std::cerr << "QT Movie window closed (native window=" << (void*) nwi << "->" << (void*) *nwi << ")!" << std::endl;
+				DisposeQTMovieWindow(qwi);
+			}
+//			qms->privQT->theMovie = NULL;
+//			qms->privQT->theTrack = NULL;
+//			qms->privQT->dataRef = NULL;
+//			close_QTMovieSink( &qms, TRUE, NULL, TRUE, FALSE );
+	    }
+	    sleep(2);
+	}
+	else{
+	    std::cerr << "open_QTMovieSink(*in memory*) failed with error " << err << std::endl;
+	}
+	logoWin = ShowQTilsLogo();
 	if( (qms = open_QTMovieSink( NULL, "ApplePhotoJPEG-QTMovieSink.mov",
 						   _w, _h, TRUE, QMSframes, codec, quality, FALSE, FALSE, &err ))
 	){
@@ -784,7 +855,7 @@ int main()
 	    std::cerr << s.str();
 	    std::cerr << std::endl;
 	    QTMovieSink_AddMovieMetaDataString( qms, akInfo, s.str(), NULL );
-	    close_QTMovieSink( &qms, TRUE, NULL, FALSE );
+	    close_QTMovieSink( &qms, TRUE, NULL, TRUE, FALSE );
 	    sleep(2);
 	    { QTMovieWindowH qwi;
 		 QTMovieWindows qtbak;
@@ -802,7 +873,7 @@ int main()
 				register_MCAction( qwi, MCAction()->Finished, movieFinished );
 				std::cerr << "Opened QT Movie window (native window=" << (void*) nwi << "->" << (void*) *nwi << "->" << **nwi << ")!" << std::endl;
 			}
-			while( QTMovieWindowH_isOpen(qwi) ){
+			while( QTMovieWindowH_isOpen(qwi) || QTMovieWindowH_isOpen(logoWin) ){
 //				std::cerr << "Handled " << PumpMessages(TRUE) << " messages" << std::endl;
 //				ActivateQTMovieWindow(qwi);
 				PumpMessages(TRUE);
@@ -813,6 +884,7 @@ int main()
 				std::cerr << "QT Movie window closed (native window=" << (void*) nwi << "->" << (void*) *nwi << ")!" << std::endl;
 				DisposeQTMovieWindow(qwi);
 			}
+			DisposeQTMovieWindow(logoWin);
 	    }
 		{ Movie theMovie;
 			short id = 0;
@@ -851,7 +923,7 @@ int main()
 		    std::cerr << "Frames - Total: " << stats.Total << " Dropped: " << stats.Dropped << " Merged: " << stats.Merged
 			<< " timeChanged: " << stats.timeChanged << " bufferCopied: " << stats.bufferCopied << std::endl;
 	    }
-	    close_QTMovieSink( &qms, TRUE, NULL, FALSE );
+	    close_QTMovieSink( &qms, TRUE, NULL, TRUE, FALSE );
 	    sleep(2);
 	}
 	else{

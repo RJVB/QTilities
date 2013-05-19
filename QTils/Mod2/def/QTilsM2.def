@@ -540,6 +540,7 @@ QTCompressionQualities	=
 			OpenQTMovieFromMemoryDataRefInWindow : PROCEDURE( (*memRef*) VAR MemoryDataRef, (*contentType*) OSType,
 				(*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
 			OpenQTMovieWindowWithMovie : PROCEDURE( (*theMovie*)Movie, (*theURL*) ARRAY OF CHAR, (*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
+			OpenQTMovieWindowWithQTMovieSink : PROCEDURE( VAR (*qms*) QTMovieSinks, (*addTCTrack*) Int32, (*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
 
 			(* ouvre le fichier QuickTime spécifié et retourne un 'handle' dans Movie. Passer flags=1 pour
 			 * ouvrir le Movie en mode active. NB: ce Movie ne sera pas affichée dans une fenêtre! *)
@@ -660,7 +661,7 @@ QTCompressionQualities	=
 				initialise une structure et fichier QuickTime pour recevoir un flux d'images de la taille
 				donnée, utilisant un codec et une qualité donnés pour la compression, et initialisant QuickTime
 				au préalable si besoin. Les images doivent être passées dans qms.imageFrame, mémoire allouée
-				par la fonction.
+				par la fonction. theURL peut être NIL_STR pour créer un movie qui existe uniquement en mémoire.
 			 *)
 			OpenQTMovieSink : PROCEDURE( VAR (*qms*) QTMovieSinks, (*theURL*) ARRAY OF CHAR,
 									(*Width*) UInt16, (*Height*) UInt16, (*hasAlpha*) INTEGER,
@@ -681,7 +682,7 @@ QTCompressionQualities	=
 				si la fréquence de rafraichissement est constante! stats est optionel.
 			 *)
 			CloseQTMovieSink : PROCEDURE( VAR (*qms*) QTMovieSinks, (*addTCTrack*) INTEGER,
-									(*stats*) QTMSEncodingStatsPtr, (*closeQT*) INTEGER ):ErrCode [CDECL];
+									(*stats*) QTMSEncodingStatsPtr, (*closeMovie*) INTEGER, (*closeQT*) INTEGER ):ErrCode [CDECL];
 			(*
 				une image est chargée dans qms.imageFrame: AddFrameToQTMovieSink l'ajoute à la vidéo, précisant
 				la durée d'affichage de la trame.
@@ -870,5 +871,7 @@ PROCEDURE BoolStr(state : BOOLEAN) : String5b;
 PROCEDURE MSWinErrorString( err : INTEGER; VAR errStr : ARRAY OF CHAR ) : UInt32;
 PROCEDURE PostMessage( title, message : ARRAY OF CHAR ): CARDINAL;
 PROCEDURE PostYesNoDialog( title, message : ARRAY OF CHAR ): BOOLEAN;
+
+PROCEDURE ShowQTilsLogo(): QTMovieWindowH;
 
 END QTilsM2.
