@@ -523,6 +523,16 @@ BEGIN
 	RETURN 0;
 END logoKeyUp;
 
+PROCEDURE logoClose(wih : QTMovieWindowH; params : ADDRESS ) : Int32 [CDECL];
+BEGIN
+	QTils.LogMsgEx( 'Fermeture de la fenêtre logo' );
+	IF numQTWM < 0
+		THEN
+			quitRequest := TRUE;
+	END;
+	RETURN 0;
+END logoClose;
+
 PROCEDURE ParseArgs;
 VAR
 	arg : UInt16;
@@ -912,6 +922,7 @@ BEGIN
 						 *)
 						logoWin := ShowQTilsLogo();
 						QTils.register_MCAction( logoWin, MCAction.KeyUp, logoKeyUp );
+						QTils.register_MCAction( logoWin, MCAction.Close, logoClose );
 				END;
 			END; (*boucleur principal*)
 			QTils.LogMsgEx( "%d évenements et %d messages en %d boucles", n, m, l );

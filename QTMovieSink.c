@@ -2691,7 +2691,7 @@ QTMovieWindowH ShowQTilsLogo()
 	}
 	if( !qtLogoWin && (qms = open_QTMovieSink( NULL, NULL,
 						   QTILS_LOGO_WIDTH, QTILS_LOGO_HEIGHT, TRUE, 1,
-						   QTCompressionCodec()->JPEG, QTCompressionQuality()->Normal,
+						   _QTCompressionCodec_.Raw, _QTCompressionQuality_.Normal,
 						   FALSE, FALSE, &err ))
 	){
 	  int i, frames;
