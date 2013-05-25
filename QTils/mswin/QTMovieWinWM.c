@@ -396,26 +396,33 @@ static Boolean nothing( DialogPtr dialog, EventRecord *event, DialogItemIndex *i
 
 typedef struct BGContext {
 	int workers;
-	struct {
+	int (*initQTMW)(QTMovieWindowH,void*);
+	void *initQTMWData;
+	int initQTMWReturn;
+	struct BGContextInitFromMovieData {
 		QTMovieWindowH wih;
 		char *theURL;
 		Movie theMovie;
+		QTMovieWindowH wihReturn;
+		ErrCode errReturn;
 		Handle dataRef;
 		OSType dataRefType;
 		short resId;
 		HANDLE thread;
-		QTMovieWindowH wihReturn;
-		ErrCode errReturn;
 	} InitQTMovieWindowHFromMovie;
 } BGContext;
 
 void *BGInitQTMovieWindowHFromMovie( void *arg )
 { BGContext *cx = (BGContext*) arg;
 	if( cx ){
-		cx->InitQTMovieWindowHFromMovie.wihReturn = InitQTMovieWindowHFromMovie( cx->InitQTMovieWindowHFromMovie.wih,
-											cx->InitQTMovieWindowHFromMovie.theURL, cx->InitQTMovieWindowHFromMovie.theMovie,
-											cx->InitQTMovieWindowHFromMovie.dataRef, cx->InitQTMovieWindowHFromMovie.dataRefType,
-											NULL, cx->InitQTMovieWindowHFromMovie.resId, &cx->InitQTMovieWindowHFromMovie.errReturn );
+	  struct BGContextInitFromMovieData *dat = &cx->InitQTMovieWindowHFromMovie;
+		dat->wihReturn = InitQTMovieWindowHFromMovie( dat->wih,
+											dat->theURL, dat->theMovie,
+											dat->dataRef, dat->dataRefType,
+											NULL, dat->resId, &dat->errReturn );
+		if( cx->initQTMW ){
+			cx->initQTMWReturn = (*cx->initQTMW)( dat->wih, cx->initQTMWData );
+		}
 		cx->workers -= 1;
 		return cx->InitQTMovieWindowHFromMovie.wihReturn;
 	}

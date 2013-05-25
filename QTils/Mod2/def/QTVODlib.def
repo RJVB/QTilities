@@ -35,7 +35,7 @@ TYPE
 				(* le dernier temps que cet envoi a eu lieu *)
 				lastSentTime,
 				(* le dernier temps envoyé *)
-				lastMovieTime : Real64;
+				lastMovieTime, lastForcedMovieTime : Real64;
 			(* envoyer le temps absolut? *)
 			absolute, forcePump : BOOLEAN;
 		END;

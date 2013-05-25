@@ -2,7 +2,7 @@ IMPLEMENTATION MODULE QTVODlib;
 
 (* USECHANNELVIEWIMPORTFILES : correspond à l'ancien comportement où pour créer une vidéo cache
 	pour les 4+1 canaux on créait d'abord un fichier .qi2m d'importation *)
-<*/VALIDVERSION:USECHANNELVIEWIMPORTFILES,COMMTIMING,NOTOUTCOMMENTED,USE_TIMEDCALLBACK*>
+<*/VALIDVERSION:USECHANNELVIEWIMPORTFILES,COMMTIMING,NOTOUTCOMMENTED,USE_TIMEDCALLBACK,CCV_IN_BACKGROUND*>
 
 FROM SYSTEM IMPORT
 	CAST, ADR, ADDRESS;
@@ -46,6 +46,14 @@ FROM COMMDLG IMPORT
 FROM WIN32 IMPORT
 	LARGE_INTEGER, QueryPerformanceFrequency, QueryPerformanceCounter;
 
+%IF CCV_IN_BACKGROUND %THEN
+FROM WIN32 IMPORT
+	CRITICAL_SECTION, InitializeCriticalSectionAndSpinCount, DeleteCriticalSection,
+	EnterCriticalSection, LeaveCriticalSection;
+FROM Threads IMPORT
+	Thread, CreateThread, WaitForThreadTermination, KillThread, WaitResult;
+%END
+
 %IF CHAUSSETTE2 %THEN
 FROM Chaussette2 IMPORT
 %ELSE
@@ -62,10 +70,36 @@ TYPE
 
 	VODDESIGN_PARSER = ARRAY[0..37] OF XML_RECORD;
 
+	ChannelDescription =
+		RECORD
+			source : URLString;
+			description : VODDescription;
+			channel : INTEGER;
+			scale : Real64;
+			chName : ARRAY[0..63] OF CHAR;
+			fName : URLString;
+			wihReturn : QTMovieWindowH;
+%IF CCV_IN_BACKGROUND %THEN
+			thread : Thread;
+			mutex : CRITICAL_SECTION;
+%END
+	END;
+	ChannelDescriptionPtr = POINTER TO ChannelDescription;
+
 VAR
 
 	xmlVD : VODDescription;
 	cbPT : Real64;
+	channelDesc : ARRAY[0..maxQTWM] OF ChannelDescription;
+	wIdx : CARDINAL;
+%IF CCV_IN_BACKGROUND %THEN
+	(* si TRUE, les 5 vues sont chargées dans des Threads individuels. Il se trouve
+	 * que cela 1) n'accélère pas le processus d'ouverture et 2) que ce n'est pas une bonne
+	 * idée car ni MSWin ni QuickTime sont conçus pour supporter à 100% des éléments IHM sur
+	 * des threads autre que le principale.
+	 *)
+	CCV_IN_BACKGROUND : BOOLEAN;
+%END
 
 CONST
 
@@ -202,10 +236,12 @@ BEGIN
 	ret := FALSE;
 %IF USE_TIMEDCALLBACK %THEN
 	IF (callbackRegister <> NIL) AND QTils.QTMovieWindowH_Check(qtwmH[fwWin])
+		AND (currentTimeSubscription.lastForcedMovieTime <> t)
 		THEN
 			(* on doit remettre encore une pendule à l'heure: *)
 			currentTimeSubscription.forcePump := TRUE;
 			PumpSubscriptions( callbackRegister, CAST(Int32,qtwmH[fwWin]) );
+			currentTimeSubscription.lastForcedMovieTime := t;
 			currentTimeSubscription.forcePump := FALSE;
 			ret := TRUE;
 	END;
@@ -1128,9 +1164,9 @@ BEGIN
 	RETURN err;
 END ImportMovie;
 
-PROCEDURE CreateChannelView( src : ARRAY OF CHAR; description : VODDescription; channel : INTEGER;
-														chName : ARRAY OF CHAR; scale : Real64; VAR fName : ARRAY OF CHAR ) : QTMovieWindowH;
+PROCEDURE CCDWorker( args : ADDRESS ) : CARDINAL;
 VAR
+	CDp : ChannelDescriptionPtr;
 	chanNum : ARRAY[0..16] OF CHAR;
 	source : ARRAY[0..1024] OF CHAR;
 	errString, errComment : ARRAY[0..127] OF CHAR;
@@ -1146,26 +1182,37 @@ VAR
 	res : OpenResults;
 	wih : QTMovieWindowH;
 BEGIN
-	IntToStr( channel, chanNum );
-	(*Concat( src, chName, fName );
-	Append( ".mov", fName );*)
+
+	CDp := args;
+
+%IF CCV_IN_BACKGROUND %THEN
+	IF CCV_IN_BACKGROUND
+		THEN
+			EnterCriticalSection(CDp^.mutex);
+			QTils.LogMsgEx( "CCDWorker started on '%s'#%d", CDp^.source, CDp^.channel );
+	END;
+%END
+
+	IntToStr( CDp^.channel, chanNum );
+	(*Concat( CDp^.source, CDp^.chName, CDp^.fName );
+	Append( ".mov", CDp^.fName );*)
 	(* 20121121: c'est plus propre de stocker les fichiers cache dans un répertoire spécifique;
 		CreateDirTree() permet de faire ça facilement *)
-	POSIX.sprintf( fName, "%svid\%s.mov", src, chName );
-	IF NOT CreateDirTree(fName)
+	POSIX.sprintf( CDp^.fName, "%svid\%s.mov", CDp^.source, CDp^.chName );
+	IF NOT CreateDirTree(CDp^.fName)
 		THEN
 			(* on retourne à l'ancien comportement *)
-			POSIX.sprintf( fName, "%s-%s.mov", src, chName );
+			POSIX.sprintf( CDp^.fName, "%s-%s.mov", CDp^.source, CDp^.chName );
 	END;
 	IF NOT recreateChannelViews
 		THEN
-			(* si la vue sur <channel> existe déjà en cache (fichier .mov), on l'ouvre directement dans
+			(* si la vue sur <CDp^.channel> existe déjà en cache (fichier .mov), on l'ouvre directement dans
 			 * une fenêtre *)
-			IF ( (channel = 5) OR (channel = 6) )
+			IF ( (CDp^.channel = 5) OR (CDp^.channel = 6) )
 				THEN
-					wih := QTils.OpenQTMovieInWindow( fName, 1 );
+					wih := QTils.OpenQTMovieInWindow( CDp^.fName, 1 );
 				ELSE
-					wih := QTils.OpenQTMovieInWindow( fName, vues_avec_controleur );
+					wih := QTils.OpenQTMovieInWindow( CDp^.fName, vues_avec_controleur );
 			END;
 		ELSE
 			wih := NULL_QTMovieWindowH;
@@ -1173,14 +1220,14 @@ BEGIN
 	IF ( wih = NULL_QTMovieWindowH )
 		THEN
 %IF USECHANNELVIEWIMPORTFILES %THEN
-			(* on va créer le fichier .qi2m pour ouvrir <channel> dans la vidéo <src> *)
-			Delete( fName, LENGTH(fName)-4, 4 );
-			Append( ".qi2m", fName );
-			QTils.LogMsgEx( "création %s pour canal %d", fName, channel );
-			Open( fp, fName, write+old, res );
+			(* on va créer le fichier .qi2m pour ouvrir <CDp^.channel> dans la vidéo <CDp^.source> *)
+			Delete( CDp^.fName, LENGTH(CDp^.fName)-4, 4 );
+			Append( ".qi2m", CDp^.fName );
+			QTils.LogMsgEx( "création %s pour canal %d", CDp^.fName, CDp^.channel );
+			Open( fp, CDp^.fName, write+old, res );
 			IF ( res = opened )
 				THEN
-					Concat( src, ".mov", source );
+					Concat( CDp^.source, ".mov", source );
 					WriteString( fp, '<?xml version="1.0"?>' ); WriteLn(fp);
 					WriteString( fp, '<?quicktime type="video/x-qt-img2mov"?>' ); WriteLn(fp);
 					(* on active l'autoSave sur l'importation pour une création automatique du fichier cache *)
@@ -1192,10 +1239,10 @@ BEGIN
 					IF LENGTH(assocDataFileName) = 0
 						THEN
 							QTils.sprintf( tmpStr, '\t<description txt="UTC timeZone=%g, DST=%hd" />',
-								description.timeZone, VAL(Int16,description.DST) );
+								CDp^.description.timeZone, VAL(Int16,CDp^.description.DST) );
 						ELSE
 							QTils.sprintf( tmpStr, '\t<description txt="UTC timeZone=%g, DST=%hd, assoc.data:%s" />',
-								description.timeZone, VAL(Int16,description.DST), assocDataFileName );
+								CDp^.description.timeZone, VAL(Int16,CDp^.description.DST), assocDataFileName );
 					END;
 					(* 20110913 - tmpStr was never printed?! *)
 					WriteString( fp, tmpStr ); WriteLn(fp);
@@ -1208,12 +1255,13 @@ BEGIN
 							WriteString( fp, '" channel=' );
 							WriteString( fp, chanNum );
 					END;
-					IF ( (channel <> 5) AND (channel <> 6) )
+					IF ( (CDp^.channel <> 5) AND (CDp^.channel <> 6) )
 						THEN
 							(* on cache la piste TimeCode des vues des 4 caméras (hidetc=True)
 							 * et on force l'interprétation comme 'movie' *)
 							WriteString( fp, ' hidetc=True timepad=False asmovie=True' );
-							IF description.flipLeftRight AND ((channel = description.channels.left) OR (channel = description.channels.right))
+							IF CDp^.description.flipLeftRight AND ((CDp^.channel = CDp^.description.channels.left)
+								OR (CDp^.channel = CDp^.description.channels.right))
 								THEN
 									(* vues à inverser horizontalement *)
 									WriteString( fp, ' hflip=True' );
@@ -1221,22 +1269,22 @@ BEGIN
 									WriteString( fp, ' hflip=False' );
 							END;
 						ELSE
-							(* channel no. 5 = la piste TimeCode; no. 6 = la piste texte avec l'horodatage des trames *)
+							(* CDp^.channel no. 5 = la piste TimeCode; no. 6 = la piste texte avec l'horodatage des trames *)
 							WriteString( fp, ' hidetc=False timepad=False asmovie=True newchapter=False' );
 					END;
 					WriteString( fp, ' />' ); WriteLn(fp);
 					WriteString( fp, '</import>' ); WriteLn(fp);
 					Close(fp);
 					(* fichier .qi2m créé, on l'ouvre maintenant, d'abord sans fenêtre *)
-					err := QTils.OpenMovieFromURL( theMovie, 1, fName );
+					err := QTils.OpenMovieFromURL( theMovie, 1, CDp^.fName );
 					IF err = noErr
 						THEN
 							(* on prépare le movie pour être affiché *)
-							IF PrepareChannelCacheMovie( theMovie, description.channels, channel )
+							IF PrepareChannelCacheMovie( theMovie, CDp^.description.channels, CDp^.channel )
 								THEN
 									QTils.SaveMovie(theMovie);
 							END;
-							IF ( (channel = 5) OR (channel = 6) )
+							IF ( (CDp^.channel = 5) OR (CDp^.channel = 6) )
 								THEN
 									wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", 1 );
 								ELSE
@@ -1244,11 +1292,11 @@ BEGIN
 							END;
 					END;
 %IF NOTOUTCOMMENTED %THEN
-					IF ( (channel = 5) OR (channel = 6) )
+					IF ( (CDp^.channel = 5) OR (CDp^.channel = 6) )
 						THEN
-							wih := QTils.OpenQTMovieInWindow( fName, 1 );
+							wih := QTils.OpenQTMovieInWindow( CDp^.fName, 1 );
 						ELSE
-							wih := QTils.OpenQTMovieInWindow( fName, vues_avec_controleur );
+							wih := QTils.OpenQTMovieInWindow( CDp^.fName, vues_avec_controleur );
 					END;
 %END
 					IF ( wih = NULL_QTMovieWindowH )
@@ -1259,28 +1307,28 @@ BEGIN
 								ELSE
 									QTils.LogMsgEx( "Echec d'importation %d", QTils.LastQTError() );
 							END;
-							PostMessage( fName, QTils.lastSSLogMsg^ );
+							PostMessage( CDp^.fName, QTils.lastSSLogMsg^ );
 						ELSE
-							DeleteFile(fName);
-							QTils.LogMsgEx( "%s importé et supprimé", fName );
+							DeleteFile(CDp^.fName);
+							QTils.LogMsgEx( "%s importé et supprimé", CDp^.fName );
 					END;
 				ELSE
-					PostMessage( fName, "Echec de création/ouverture" );
+					PostMessage( CDp^.fName, "Echec de création/ouverture" );
 			END;
 %ELSE (* NOT USECHANNELVIEWIMPORTFILES *)
 			qi2mString := NIL;
-			Concat( src, ".mov", source );
+			Concat( CDp^.source, ".mov", source );
 			QTils.ssprintf( qi2mString,
 					'<?xml version="1.0"?>\n<?quicktime type="video/x-qt-img2mov"?>\n<import autoSave=True autoSaveName=%s >\n',
 					(* on active l'autoSave sur l'importation pour une création automatique du fichier cache *)
-					fName );
+					CDp^.fName );
 			IF LENGTH(assocDataFileName) = 0
 				THEN
 					QTils.ssprintfAppend( qi2mString, '\t<description txt="UTC timeZone=%g, DST=%hd" />\n',
-						description.timeZone, VAL(Int16,description.DST) );
+						CDp^.description.timeZone, VAL(Int16,CDp^.description.DST) );
 				ELSE
 					QTils.ssprintfAppend( qi2mString, '\t<description txt="UTC timeZone=%g, DST=%hd, assoc.data:%s" />\n',
-						description.timeZone, VAL(Int16,description.DST), assocDataFileName );
+						CDp^.description.timeZone, VAL(Int16,CDp^.description.DST), assocDataFileName );
 			END;
 			(* début de la définition d'une séquence: *)
 			IF fullMovieIsSplit
@@ -1289,12 +1337,13 @@ BEGIN
 				ELSE
 					QTils.ssprintfAppend( qi2mString, '\t<sequence src="%s" channel=%s', source, chanNum );
 			END;
-			IF ( (channel <> 5) AND (channel <> 6) )
+			IF ( (CDp^.channel <> 5) AND (CDp^.channel <> 6) )
 				THEN
 					(* on cache la piste TimeCode des vues des 4 caméras (hidetc=True)
 					 * et on force l'interprétation comme 'movie' *)
 					QTils.ssprintfAppend( qi2mString, '%s', ' hidetc=True timepad=False asmovie=True' );
-					IF description.flipLeftRight AND ((channel = description.channels.left) OR (channel = description.channels.right))
+					IF CDp^.description.flipLeftRight AND ((CDp^.channel = CDp^.description.channels.left)
+						OR (CDp^.channel = CDp^.description.channels.right))
 						THEN
 							(* vues à inverser horizontalement *)
 							QTils.ssprintfAppend( qi2mString, '%s', ' hflip=True' );
@@ -1302,24 +1351,24 @@ BEGIN
 							QTils.ssprintfAppend( qi2mString, '%s', ' hflip=False' );
 					END;
 				ELSE
-					(* channel no. 5 = la piste TimeCode; no. 6 = la piste texte avec l'horodatage des trames *)
+					(* CDp^.channel no. 5 = la piste TimeCode; no. 6 = la piste texte avec l'horodatage des trames *)
 					QTils.ssprintfAppend( qi2mString, '%s', ' hidetc=False timepad=False asmovie=True newchapter=False' );
 			END;
 			QTils.ssprintfAppend( qi2mString, '%s\n%s\n', ' />', '</import>' );
 			IF qi2mString <> NIL
 				THEN
-					err := QTils.MemoryDataRefFromString( qi2mString^, fName, memRef );
+					err := QTils.MemoryDataRefFromString( qi2mString^, CDp^.fName, memRef );
 					IF err = noErr
 						THEN
 							(* le MemoryDataRef a été créé, on l'ouvre maintenant, d'abord dans un .mov *)
 							err := QTils.OpenMovieFromMemoryDataRef( theMovie, memRef, FOUR_CHAR_CODE('QI2M') );
 							IF err = noErr
 								THEN
-									IF PrepareChannelCacheMovie( theMovie, description.channels, channel )
+									IF PrepareChannelCacheMovie( theMovie, CDp^.description.channels, CDp^.channel )
 										THEN
-											QTils.SaveMovieAsRefMov( fName, theMovie );
+											QTils.SaveMovieAsRefMov( CDp^.fName, theMovie );
 									END;
-									IF ( (channel = 5) OR (channel = 6) )
+									IF ( (CDp^.channel = 5) OR (CDp^.channel = 6) )
 										THEN
 											wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", 1 );
 										ELSE
@@ -1334,31 +1383,69 @@ BEGIN
 										ELSE
 											QTils.LogMsgEx( "Echec d'importation %d\n%s\n", QTils.LastQTError(), qi2mString^ );
 									END;
-									PostMessage( fName, QTils.lastSSLogMsg^ );
+									PostMessage( CDp^.fName, QTils.lastSSLogMsg^ );
 									QTils.DisposeMemoryDataRef(memRef);
 								ELSE
-									QTils.LogMsgEx( "%s importé de mémoire", fName );
+									QTils.LogMsgEx( "%s importé de mémoire", CDp^.fName );
 							END;
 						ELSE
 							QTils.LogMsgEx( "Echec de création de MemoryDataRef pour canal %s: %d", chanNum, err );
-							PostMessage( fName, QTils.lastSSLogMsg^ );
+							PostMessage( CDp^.fName, QTils.lastSSLogMsg^ );
 					END;
 					QTils.free(qi2mString);
 				ELSE
-					QTils.LogMsgEx( "Echec de création de %s en mémoire", fName );
-					PostMessage( fName, QTils.lastSSLogMsg^ );
+					QTils.LogMsgEx( "Echec de création de %s en mémoire", CDp^.fName );
+					PostMessage( CDp^.fName, QTils.lastSSLogMsg^ );
 			END;
 %END
 	END;
 	IF QTils.QTMovieWindowH_isOpen(wih)
 		THEN
-		IF ( (scale <> 1.0) & (scale > 0.0) )
+		IF ( (CDp^.scale <> 1.0) & (CDp^.scale > 0.0) )
 			THEN
-				QTils.QTMovieWindowSetGeometry( wih, NIL, NIL, scale, 0 );
+				QTils.QTMovieWindowSetGeometry( wih, NIL, NIL, CDp^.scale, 0 );
 		END;
 		QTils.SetMoviePlayHints( wih^^.theMovie, hintsPlayingEveryFrame, 1 );
 	END;
-	RETURN wih;
+
+	CDp^.wihReturn := wih;
+%IF CCV_IN_BACKGROUND %THEN
+	IF CCV_IN_BACKGROUND
+		THEN
+			QTils.LogMsgEx( "CCDWorker finished with '%s'#%d", CDp^.source, CDp^.channel );
+			LeaveCriticalSection(CDp^.mutex);
+			(* windows created on a background thread need their own message pump ... *)
+			WHILE ( (QTils.QTMovieWindowH_Check(wih)) AND (NOT quitRequest) ) DO
+				QTils.PumpMessages(1);
+			END;
+			QTils.DisposeQTMovieWindow(wih);
+			QTils.PumpMessages(0);
+	END;
+%END
+	RETURN VAL(CARDINAL, (wih <> NULL_QTMovieWindowH) );
+END CCDWorker;
+
+PROCEDURE CreateChannelView( VAR CD : ChannelDescription ) : QTMovieWindowH;
+VAR
+BEGIN
+%IF CCV_IN_BACKGROUND %THEN
+	IF CCV_IN_BACKGROUND
+		THEN
+			IF CreateThread( CD.thread, CCDWorker, ADR(CD), 0, TRUE )
+				THEN
+					RETURN NULL_QTMovieWindowH;
+				ELSE
+					CCDWorker( ADR(CD) );
+					RETURN CD.wihReturn;
+			END;
+		ELSE
+			CCDWorker( ADR(CD) );
+			RETURN CD.wihReturn;
+	END;
+%ELSE
+	CCDWorker( ADR(CD) );
+	RETURN CD.wihReturn;
+%END
 END CreateChannelView;
 
 PROCEDURE PruneExtensions( VAR URL : ARRAY OF CHAR );
@@ -1639,6 +1726,13 @@ BEGIN
 
 	(* maintenant on peut tenter d'ouvrir les 5 fenêtres *)
 	(* vue vers l'avant *)
+	FOR w := 0 TO maxQTWM DO
+		channelDesc[w].source := URL;
+		channelDesc[w].description := description;
+		channelDesc[w].scale := description.scale;
+	END;
+(*
+	(* vue vers l'avant *)
 	qtwmH[fwWin] := CreateChannelView( URL, description, description.channels.forward, "forward",
 			description.scale, fName );
 	(* vue conducteur *)
@@ -1652,6 +1746,46 @@ BEGIN
 			description.scale, fName );
 	(* la piste TimeCode qui donne le temps pour les 4 vues *)
 	qtwmH[tcWin] := CreateChannelView( URL, description, TimeCodeChannel, "TC", 1.0, fName );
+*)
+	(* vue vers l'avant *)
+	channelDesc[fwWin].channel := description.channels.forward;
+	channelDesc[fwWin].chName := "forward";
+	CreateChannelView( channelDesc[fwWin] );
+	(* vue conducteur *)
+	channelDesc[pilotWin].channel := description.channels.pilot;
+	channelDesc[pilotWin].chName := "pilot";
+	CreateChannelView( channelDesc[pilotWin] );
+	(* vue latérale-gauche *)
+	channelDesc[leftWin].channel := description.channels.left;
+	channelDesc[leftWin].chName := "left";
+	CreateChannelView( channelDesc[leftWin] );
+	(* vue latérale-droite *)
+	channelDesc[rightWin].channel := description.channels.right;
+	channelDesc[rightWin].chName := "right";
+	CreateChannelView( channelDesc[rightWin] );
+	(* la piste TimeCode qui donne le temps pour les 4 vues *)
+	channelDesc[tcWin].channel := TimeCodeChannel;
+	channelDesc[tcWin].chName := "TC";
+	channelDesc[tcWin].scale := 1.0;
+	CreateChannelView( channelDesc[tcWin] );
+
+%IF CCV_IN_BACKGROUND %THEN
+	IF CCV_IN_BACKGROUND
+		THEN
+			(* loop until all background threads are ready to roll on *)
+			FOR w := 0 TO maxQTWM DO
+				EnterCriticalSection( channelDesc[w].mutex );
+				LeaveCriticalSection( channelDesc[w].mutex );
+				QTils.PumpMessages(0);
+			END;
+	END;
+%END
+
+	qtwmH[fwWin] := channelDesc[fwWin].wihReturn;
+	qtwmH[pilotWin] := channelDesc[pilotWin].wihReturn;
+	qtwmH[leftWin] := channelDesc[leftWin].wihReturn;
+	qtwmH[rightWin] := channelDesc[rightWin].wihReturn;
+	qtwmH[tcWin] := channelDesc[tcWin].wihReturn;
 
 	(* enregistrement des fonctions de gestion d'actions et MAJ de numQTMW *)
 	FOR w := 0 TO maxQTWM	DO
@@ -2251,10 +2385,35 @@ BEGIN
 	currentTimeSubscription.sendInterval := 0.0;
 	currentTimeSubscription.lastSentTime := 0.0;
 	currentTimeSubscription.lastMovieTime := -1.0;
+	currentTimeSubscription.lastForcedMovieTime := -1.0;
 	currentTimeSubscription.absolute := FALSE;
 	callbackRegister := NIL;
+	FOR wIdx := 0 TO maxQTWM DO
+		channelDesc[wIdx].wihReturn := NULL_QTMovieWindowH;
+		channelDesc[wIdx].fName := "";
+%IF CCV_IN_BACKGROUND %THEN
+		channelDesc[wIdx].thread := NIL;
+		IF CCV_IN_BACKGROUND
+			THEN
+				InitializeCriticalSectionAndSpinCount( channelDesc[wIdx].mutex, 4000 );
+		END;
+%END
+	END;
 
 FINALLY
+
+%IF CCV_IN_BACKGROUND %THEN
+	IF CCV_IN_BACKGROUND
+		THEN
+			FOR wIdx := 0 TO maxQTWM DO
+				DeleteCriticalSection(channelDesc[wIdx].mutex);
+				IF channelDesc[wIdx].thread <> NIL
+					THEN
+						KillThread( channelDesc[wIdx].thread, 0 );
+				END;
+		END;
+	END;
+%END
 
 	CloseCommClient(sServeur);
 	IF xmlParser <> NIL

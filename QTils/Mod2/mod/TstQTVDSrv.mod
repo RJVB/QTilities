@@ -63,6 +63,16 @@ BEGIN
 			CASE c OF
 				'q', 'Q' :
 					RETURN TRUE;
+				| 's', 'S' :
+					IF (NOT currentTimeSubscribed)
+						THEN
+							msgGetTimeSubscription( command, 1.5, FALSE );
+							currentTimeSubscribed := TRUE;
+						ELSE
+							msgGetTimeSubscription( command, 0.0, FALSE );
+							currentTimeSubscribed := FALSE;
+					END;
+					SendMessageToNet( s, command, SENDTIMEOUT, FALSE, "TstQTVDSrv-envoi" );
 				ELSE
 					(* noop *)
 			END;
@@ -274,15 +284,18 @@ BEGIN
 				ELSE
 					sendNewFileName := FALSE;
 			END;
+			IF ( GetClient(s) )
+				THEN
+					IF (NOT currentTimeSubscribed) AND (Duration >= 0.0)
+						THEN
+							msgGetTimeSubscription( command, 1.5, FALSE );
+							SendMessageToNet( s, command, SENDTIMEOUT, FALSE, "TstQTVDSrv-envoi" );
+							currentTimeSubscribed := TRUE;
+					END;
+			END;
 			LOOP
 				IF ( GetClient(s) )
 					THEN
-						IF (NOT currentTimeSubscribed) AND (Duration >= 0.0)
-							THEN
-								msgGetTimeSubscription( command, 0.25, FALSE );
-								SendMessageToNet( s, command, SENDTIMEOUT, FALSE, "TstQTVDSrv-envoi" );
-								currentTimeSubscribed := TRUE;
-						END;
 						IF ReceiveMessageFromNet( s, receipt, 250, FALSE, "TstQTVDSrv-lecture" )
 							THEN
 								TraiteMsgDeQTVODm2(receipt, reply);
