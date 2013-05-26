@@ -68,6 +68,7 @@ static void _FlushLog_( SS_Log *pLog )
 			WriteLog( head.pLog, filter, (TCHAR*) head.msg );
 #endif // _SS_LOG_ACTIVE
 			free(head.msg);
+			n = queuedEntries.size();
 		}
 	}
 }

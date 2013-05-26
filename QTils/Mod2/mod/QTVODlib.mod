@@ -2388,6 +2388,9 @@ BEGIN
 	currentTimeSubscription.lastForcedMovieTime := -1.0;
 	currentTimeSubscription.absolute := FALSE;
 	callbackRegister := NIL;
+%IF CCV_IN_BACKGROUND %THEN
+	CCV_IN_BACKGROUND := FALSE;
+%END
 	FOR wIdx := 0 TO maxQTWM DO
 		channelDesc[wIdx].wihReturn := NULL_QTMovieWindowH;
 		channelDesc[wIdx].fName := "";
