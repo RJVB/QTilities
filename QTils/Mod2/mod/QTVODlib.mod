@@ -255,7 +255,8 @@ VAR
 	timeSent : BOOLEAN;
 BEGIN
 	timeSent := SetTimes( t, ref, absolute );
-	IF (ss <> sock_nulle) AND (NOT timeSent)
+	IF (ss <> sock_nulle)
+		AND ((NOT timeSent) OR (currentTimeSubscription.absolute <> VAL(BOOLEAN,absolute)))
 		THEN
 			replyCurrentTime( msg, class, ref, VAL(BOOLEAN,absolute) );
 			IF ss <> sock_nulle
@@ -429,9 +430,18 @@ VAR
 BEGIN
 	tNew := CAST(Real64Ptr, params);
 	QTils.QTMovieWindowGetTime(wih, t, 0);
+		QTils.LogMsgEx( "movieScan(): t=%gs tNew=%gs scanned=%d, stepped=%d", t, tNew^, wih^^.wasScanned, wih^^.wasStepped );
 	IF ( t <> tNew^ )
 		THEN
-			SetTimes( tNew^, wih, 0 );
+			IF wih^^.wasStepped < 0
+				THEN
+					(* 20130601: on a fait un pas (avec les touches curseur du clavier?), et on veut notifier le serveur! *)
+					SetTimesAndNotify( tNew^, wih, 0, sServeur, qtvod_Notification );
+				ELSE
+					(* ici pas besoin de notifier le serveur - sauf s'il a fait une subscription ... un cas pris en compte
+						par SetTimes *)
+					SetTimes( tNew^, wih, 0 );
+			END;
 	END;
 	RETURN 0;
 END movieScan;
@@ -598,9 +608,9 @@ BEGIN
 		dt := subscrTimer - lastSentTime;
 %IF USE_TIMEDCALLBACK %THEN
 		wih := CAST(QTMovieWindowH, params);
-		IF (sendInterval > 0.0)
+		IF (sendInterval > 0.0) OR forcePump
 %ELSE
-		IF (sendInterval > 0.0) AND (dt >= sendInterval)
+		IF ((sendInterval > 0.0) AND (dt >= sendInterval)) OR forcePump
 %END
 			THEN
 				(* on obtient le temps courant dans la fenêtre *)
