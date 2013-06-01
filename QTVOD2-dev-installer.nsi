@@ -189,8 +189,8 @@ Section "FFmpeg" SEC08
   DetailPrint "KillProc ffprobe returned $R0"
   SetOutPath "$QTDIR\QTSystem"
   SetOverwrite ifnewer
-  File "d:\Cygwin\bin\ffmpeg.exe"
-  File "d:\Cygwin\bin\ffprobe.exe"
+  File "s:\MacOSX\brigade\FFmpeg\win32\ffmpeg.exe"
+  File "s:\MacOSX\brigade\FFmpeg\win32\ffprobe.exe"
 SectionEnd
 
 Section !$(Sec2Name) SEC02
@@ -254,7 +254,7 @@ Section "SS_Log" SEC05
   SetOutPath $WINDIR
   SetOverwrite ifnewer
   File "C:\Libs\SS_Log_bin\SS_Log_Window.exe"
-  File /nonfatal "C:\Libs\SS_Log_bin\SS_Log_AddIn.dll"
+;  File /nonfatal "C:\Libs\SS_Log_bin\SS_Log_AddIn.dll"
 SectionEnd
 
 Section /o "SS_Log lib" SEC06

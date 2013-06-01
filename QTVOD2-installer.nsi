@@ -177,8 +177,8 @@ Section "FFmpeg 64bits" SEC08
   DetailPrint "KillProc ffprobe returned $R0"
   SetOutPath "$QTDIR\QTSystem"
   SetOverwrite ifnewer
-  File "s:\MacOSX\brigade\FFmpeg\win32\ffmpeg.exe"
-  File "s:\MacOSX\brigade\FFmpeg\win32\ffprobe.exe"
+  File "s:\MacOSX\brigade\FFmpeg\win64\ffmpeg.exe"
+  File "s:\MacOSX\brigade\FFmpeg\win64\ffprobe.exe"
 ;  NSISdl::download http://www.domain.com/file "$QTDIR\QTSystem\ffmpeg.exe"
 ;  Pop $R0 ;Get the return value
 ;    StrCmp $R0 "success" +3
