@@ -2607,6 +2607,9 @@ __attribute__((constructor))
 static void initialiser( int argc, char** argv, char** envp )
 { extern Boolean QTMWInitialised;
 	if( !QTMWInitialised ){
+		// 20130603: at this point, the connection to the window server hasn't yet been made,
+		// so handle that first.
+		[NSApplication sharedApplication];
 		InitQTMovieWindows();
 	}
 }
