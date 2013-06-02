@@ -340,6 +340,9 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 		wi->idx = -1;
 		err = noErr;
 	}
+	else{
+		unregister_QTMovieWindowH(WI);
+	}
 	return err;
 }
 

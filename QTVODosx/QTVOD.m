@@ -950,11 +950,11 @@ void timeCallBack( QTCallBack cbRegister, long data )
 		REGISTER_NSMCACTION( wih, MCAction()->Finished, movieFinished );
 		if( idx == fwWin ){
 //			REGISTER_NSMCACTION( wih, MCAction()->AnyAction, movieAnyAction );
-			if( !cbRegister ){
-				NewTimedCallBackRegisterForMovie( (*wih)->theMovie, &cbRegister, CALLBACK_WITH_INTERRUPTS );
-			}
-			TimedCallBackRegisterFunctionInTime( (*wih)->theMovie, cbRegister, CALLBACK_INTERVAL, timeCallBack,
-										 (long) wih, CALLBACK_WITH_INTERRUPTS);
+//			if( !cbRegister ){
+//				NewTimedCallBackRegisterForMovie( (*wih)->theMovie, &cbRegister, CALLBACK_WITH_INTERRUPTS );
+//			}
+//			TimedCallBackRegisterFunctionInTime( (*wih)->theMovie, cbRegister, CALLBACK_INTERVAL, timeCallBack,
+//										 (long) wih, CALLBACK_WITH_INTERRUPTS);
 		}
 		QTMovieWindowGetGeometry( wih, &Wpos[idx], &Wsize[idx], 1 );
 	}

@@ -384,6 +384,10 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 		err = noErr;
 		PumpMessages(FALSE);
 	}
+	else{
+		// 20130602
+		unregister_QTMovieWindowH(WI);
+	}
 	return (ErrCode) err;
 }
 
