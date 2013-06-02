@@ -47,6 +47,9 @@
 #	include <stdlib.h>
 #	include <unistd.h>
 #	include <string.h>
+#	ifdef __cplusplus
+#		include <sstream>
+#	endif
 #	include <errno.h>
 #	include <signal.h>
 #	include <sys/time.h>
@@ -332,12 +335,34 @@ typedef void*		LPVOID;
 			/*!
 				HANDLE string representation (cf. Python's __repr__)
 			 */
+			const std::ostringstream& asStringStream(std::ostringstream& ret);
 			std::string asString();
+			template <typename CharT, typename Traits>
+				friend std::basic_ostream<CharT, Traits>& operator <<(std::basic_ostream <CharT, Traits>& os, const struct MSHANDLE& x)
+				{
+					if( os.good() ){
+					  typename std::basic_ostream <CharT, Traits>::sentry opfx(os);
+						if( opfx ){
+						  std::basic_ostringstream<CharT, Traits> s;
+							s.flags(os.flags());
+							s.imbue(os.getloc());
+							s.precision(os.precision());
+							((MSHANDLE)x).asStringStream(s);
+							if( s.fail() ){
+								os.setstate(std::ios_base::failbit);
+							}
+							else{
+								os << s.str();
+							}
+						}
+					}
+					return os;
+				};
 #	endif //cplusplus
 	} MSHANDLE;
 #endif // !__MINGWxx__
 
-#if defined(TARGET_OS_MAC) && defined(__THREADS__)
+#if defined(__APPLE__) || defined(__MACH__) && defined(__THREADS__)
 #	define GetCurrentThread()	GetCurrentThreadHANDLE()
 #endif
 

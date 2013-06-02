@@ -20,6 +20,7 @@
 
 NSMenuItem *DoLoggingMI = NULL;
 BOOL doLogging = NO;
+extern BOOL QTils_LogSetActive(BOOL);
 
 - (void)updateMenus
 {
@@ -29,8 +30,11 @@ BOOL doLogging = NO;
 }
 
 - (void)toggleLogging:sender
-{ extern BOOL QTils_LogSetActive(BOOL);
+{
 	doLogging = !doLogging;
+	if( doLogging ){
+		[[NSWorkspace sharedWorkspace] launchApplication:@"NSLogger"];
+	}
 	QTils_LogMsgEx( "toggleLogging: logging now %s\n", (doLogging)? "ON" : "OFF" );
 	QTils_LogSetActive(doLogging);
 	if( sender != self ){
@@ -120,6 +124,7 @@ static void freep( void **p)
 int main(int argc, char *argv[])
 { extern Boolean QTMWInitialised;
 	QTils_MessagePumpIsInActive = TRUE;
+	QTils_LogSetActive(doLogging);
 	if( !QTMWInitialised ){
 		init_QTils_Allocator( malloc, calloc, realloc, freep );
 		InitQTMovieWindows();
@@ -134,5 +139,5 @@ int main(int argc, char *argv[])
 		[qv release];
 	}
 	[NSApp setDelegate:[[[QTVODApplicationDelegate alloc] init] autorelease] ];
-	return NSApplicationMain(argc, (const char **) argv);
+	return NSApplicationMain( argc, (const char **) argv );
 }

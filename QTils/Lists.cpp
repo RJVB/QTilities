@@ -89,6 +89,18 @@ void init_QTMWlists()
 	lastQTWMH = NULL;
 }
 
+#if defined(__APPLE_CC__) || defined(__MACH__)
+__attribute__((constructor))
+static void initialiser()
+{
+	if( q2nw_initialised || nw2q_initialised || m2qtmwh_initialised ){
+		fprintf( stderr, "Warning: init_QTMWlists() was called before List.cpp::initialiser()!\n" );
+	}
+	q2nw_initialised = nw2q_initialised = m2qtmwh_initialised = 0;
+	init_QTMWlists();
+}
+#endif
+
 const char *GetMacOSStatusErrStrings(ErrCode err, const char **comment)
 {
 #if defined(WIN32) || defined(_WINDOWS) || defined(_MSC_VER)

@@ -323,14 +323,20 @@ public:
 #endif //CRITSECTEX_ALLOWSHARED
 
 	// Constructor/Destructor
-//	CritSectEx()
-//	{
-//		ZeroMemory(this, sizeof(*this));
-//		SetSpinMax(0);
-//	}
 	CritSectEx(DWORD dwSpinMax=0)
 	{
-		ZeroMemory(this, sizeof(*this));
+		s_dwProcessors = 0;
+		m_nLocker = 0;
+#ifdef DEBUG0
+		m_nLockedBy = 0;
+#endif
+		m_dwSpinMax = 0;
+		m_hSemaphore = NULL;
+		m_nWaiters = 0;
+		m_bIsLocked = false, m_bTimedOut = false;
+#ifdef DEBUG
+		m_bUnlocking = false;
+#endif
 		SetSpinMax(dwSpinMax);
 	}
 	~CritSectEx()
@@ -400,6 +406,7 @@ public:
 	virtual operator bool () const { return m_bIsLocked; }
 
 	// Some extra
+	__forceinline DWORD SpinMax()	const { return m_dwSpinMax; }
 	void SetSpinMax(DWORD dwSpinMax);
 	void AllocateKernelSemaphore();
 
@@ -593,6 +600,7 @@ public:
 	operator bool () const { return m_cs.IsLocked(); }
 
 	// Some extra
+	__forceinline DWORD SpinMax()	const { return m_cs.SpinMax(); }
 	void SetSpinMax(DWORD dwSpinMax){ m_cs.SetSpinMax(dwSpinMax); }
 	void AllocateKernelSemaphore(){ m_cs.AllocateKernelSemaphore(); }
 
@@ -792,6 +800,7 @@ public:
 
 	__forceinline bool TimedOut() const { return m_bTimedOut; }
 	__forceinline bool IsLocked() const { return m_bIsLocked; }
+	__forceinline DWORD SpinMax()	const { return m_dwSpinMax; }
 	operator bool () const { return m_bIsLocked; }
 
 	// Some extra
@@ -1033,6 +1042,7 @@ public:
 
 	__forceinline bool TimedOut() const { return m_bTimedOut; }
 	__forceinline bool IsLocked() const { return (bool) m_bIsLocked; }
+	__forceinline DWORD SpinMax()	const { return 0; }
 	operator bool () const { return (bool) m_bIsLocked; }
 
 	// Some extra
@@ -1279,6 +1289,53 @@ extern unsigned char DidCSEScopeTimeout(CSEScopedLock *scopeL);
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __OBJC__
+
+#	if !defined __cplusplus
+	typedef struct CritSectEx		CritSectEx;
+	typedef struct CritSectExScope	CritSectExScope;
+#else
+	typedef CritSectEx::Scope		CritSectExScope;
+#	endif
+	typedef void					(^LockedBlock)();
+
+	@class NSCriticalSection;
+	@class NSCriticalSectionScope;
+
+	@interface NSCriticalSection : NSObject
+	{
+		CritSectEx *cse;
+		NSString *info;
+		DWORD spinMax;
+		@public DWORD scopedLocks;
+	}
+	+ (id) createWithSpinMax:(DWORD)sm;
+	- (id) initWithSpinMax:(DWORD)sM;
+	- (NSCriticalSectionScope*) getLockScope;
+	- (NSCriticalSectionScope*) getLockScopeWithTimeOut:(DWORD)timeOut;
+	- (void) callLockedBlock:(LockedBlock)block;
+	- (void) callLockedBlock:(LockedBlock)block withTimeOut:(DWORD)timeOut;
+	- (BOOL) hasTimedOut;
+	- (BOOL) isLocked;
+	- (NSString*) description;
+
+	@property DWORD spinMax;
+	@property (retain) NSString *info;
+	@property CritSectEx *cse;
+	@end
+
+	@interface NSCriticalSectionScope : NSObject
+	{
+		NSCriticalSection *criticalSection;
+		CritSectExScope *scope;
+	}
+	- (CritSectExScope*) setScopeForCS:(NSCriticalSection*)cs withTimeOut:(DWORD)timeOut;
+	- (BOOL) hasTimedOut;
+	- (BOOL) isLocked;
+	@end
+
+#endif // __OBJC__
 
 #define _CRITSECTEX_H
 #endif // !_CRITSECTEX_H

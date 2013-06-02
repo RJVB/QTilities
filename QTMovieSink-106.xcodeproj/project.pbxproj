@@ -66,7 +66,7 @@
 		D65F63C912C3CA8D009A3D72 /* QTilities.h in Headers */ = {isa = PBXBuildFile; fileRef = D68788F7129A87ED009ACD66 /* QTilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D65F63CB12C3CA8D009A3D72 /* Lists.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6878986129ACB17009ACD66 /* Lists.cpp */; };
 		D65F644412C3D025009A3D72 /* QTMovieWin.c in Sources */ = {isa = PBXBuildFile; fileRef = D68788F8129A87ED009ACD66 /* QTMovieWin.c */; };
-		D65F646712C40076009A3D72 /* QTMovieWinWM.m in Sources */ = {isa = PBXBuildFile; fileRef = D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */; };
+		D65F646712C40076009A3D72 /* QTMovieWinWM.mm in Sources */ = {isa = PBXBuildFile; fileRef = D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.mm */; };
 		D67ACE441416129D00E99EA2 /* copyright.h in Headers */ = {isa = PBXBuildFile; fileRef = D619278B11FF690800BDAAAA /* copyright.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D67ACE451416129D00E99EA2 /* QTilities.h in Headers */ = {isa = PBXBuildFile; fileRef = D68788F7129A87ED009ACD66 /* QTilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D67ACE461416129D00E99EA2 /* QTMovieSink.h in Headers */ = {isa = PBXBuildFile; fileRef = D619272711FF64E500BDAAAA /* QTMovieSink.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -80,24 +80,36 @@
 		D67ACE501416129D00E99EA2 /* QTils.c in Sources */ = {isa = PBXBuildFile; fileRef = D6D39C4A129C586B00DFACCC /* QTils.c */; };
 		D67ACE511416129D00E99EA2 /* Lists.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6878986129ACB17009ACD66 /* Lists.cpp */; };
 		D67ACE521416129D00E99EA2 /* QTMovieWin.c in Sources */ = {isa = PBXBuildFile; fileRef = D68788F8129A87ED009ACD66 /* QTMovieWin.c */; };
-		D67ACE531416129D00E99EA2 /* QTMovieWinWM.m in Sources */ = {isa = PBXBuildFile; fileRef = D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */; };
+		D67ACE531416129D00E99EA2 /* QTMovieWinWM.mm in Sources */ = {isa = PBXBuildFile; fileRef = D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.mm */; };
 		D67ACE541416129D00E99EA2 /* AskFileName.m in Sources */ = {isa = PBXBuildFile; fileRef = D6EC1D5812EF058300B53DBC /* AskFileName.m */; };
 		D67ACE551416129D00E99EA2 /* QTxml.c in Sources */ = {isa = PBXBuildFile; fileRef = D6E64D2612F743FA00DF4419 /* QTxml.c */; };
 		D67ACE561416129D00E99EA2 /* timing.c in Sources */ = {isa = PBXBuildFile; fileRef = D629600A121BE82D00F66BA8 /* timing.c */; };
 		D67ACE571416129D00E99EA2 /* QTMovieSink.c in Sources */ = {isa = PBXBuildFile; fileRef = D619275011FF65E200BDAAAA /* QTMovieSink.c */; };
 		D67ACE581416129D00E99EA2 /* QTMovieSink_mod2.c in Sources */ = {isa = PBXBuildFile; fileRef = D6FFD4CF1325545B005CF3D5 /* QTMovieSink_mod2.c */; };
-		D67ACE5A1416129D00E99EA2 /* LogControllerGCFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */; };
 		D67ACE5B1416129D00E99EA2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
 		D67ACE5C1416129D00E99EA2 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639D12C3C80C009A3D72 /* QTKit.framework */; };
 		D67ACE5D1416129D00E99EA2 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F63A112C3C815009A3D72 /* QuickTime.framework */; };
 		D67ACE5E1416129D00E99EA2 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63EFD75131CF5BE005B6423 /* QuartzCore.framework */; };
-		D67ACE601416129D00E99EA2 /* LogControllerGCFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */; };
 		D67ACF42141620E600E99EA2 /* QTils-emb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67ACE641416129D00E99EA2 /* QTils-emb.framework */; };
 		D67AD1861416274900E99EA2 /* QTils-emb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67ACE641416129D00E99EA2 /* QTils-emb.framework */; };
 		D6912C1E132E55BE00CD5E78 /* QTMovieWindowTest.c in Sources */ = {isa = PBXBuildFile; fileRef = D64CFEC4129ED62900AD4351 /* QTMovieWindowTest.c */; };
-		D696D5A01414C21A00E2F416 /* LogControllerGCFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */; };
-		D696D6621414C76E00E2F416 /* LogControllerGCFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */; };
 		D69C2E0A133EB4AB001C8D4C /* PkgInfo in Resources */ = {isa = PBXBuildFile; fileRef = D69C2E04133EB3AC001C8D4C /* PkgInfo */; };
+		D6B2577A175B88C20090F55F /* NSLogger-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = D6B25774175B88C20090F55F /* NSLogger-LICENSE.txt */; };
+		D6B2577B175B88C20090F55F /* LoggerCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = D6B25775175B88C20090F55F /* LoggerCommon.h */; };
+		D6B2577C175B88C20090F55F /* LoggerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D6B25776175B88C20090F55F /* LoggerClient.m */; };
+		D6B2577D175B88C20090F55F /* LoggerClient.h in Headers */ = {isa = PBXBuildFile; fileRef = D6B25777175B88C20090F55F /* LoggerClient.h */; };
+		D6B2577E175B88C20090F55F /* NSLoggerClient.h in Headers */ = {isa = PBXBuildFile; fileRef = D6B25778175B88C20090F55F /* NSLoggerClient.h */; };
+		D6B2577F175B88C20090F55F /* NSLoggerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D6B25779175B88C20090F55F /* NSLoggerClient.m */; };
+		D6B25780175B88C20090F55F /* NSLogger-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = D6B25774175B88C20090F55F /* NSLogger-LICENSE.txt */; };
+		D6B25781175B88C20090F55F /* LoggerCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = D6B25775175B88C20090F55F /* LoggerCommon.h */; };
+		D6B25782175B88C20090F55F /* LoggerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D6B25776175B88C20090F55F /* LoggerClient.m */; };
+		D6B25783175B88C20090F55F /* LoggerClient.h in Headers */ = {isa = PBXBuildFile; fileRef = D6B25777175B88C20090F55F /* LoggerClient.h */; };
+		D6B25784175B88C20090F55F /* NSLoggerClient.h in Headers */ = {isa = PBXBuildFile; fileRef = D6B25778175B88C20090F55F /* NSLoggerClient.h */; };
+		D6B25785175B88C20090F55F /* NSLoggerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D6B25779175B88C20090F55F /* NSLoggerClient.m */; };
+		D6B257A5175B89D30090F55F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6B257A4175B89D30090F55F /* SystemConfiguration.framework */; };
+		D6B257A8175B89E10090F55F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6B257A4175B89D30090F55F /* SystemConfiguration.framework */; };
+		D6BC645C175BB84D004B136E /* msemul.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6B259D4175BAEBC0090F55F /* msemul.cpp */; };
+		D6BC645D175BB84E004B136E /* msemul.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6B259D4175BAEBC0090F55F /* msemul.cpp */; };
 		D6CE60511347AF45002E166B /* MacErrorTable.h in Headers */ = {isa = PBXBuildFile; fileRef = D6CE60501347AF45002E166B /* MacErrorTable.h */; };
 		D6DD1BF7131A97B70063BBFE /* empty.mov in Resources */ = {isa = PBXBuildFile; fileRef = D6DD1BF6131A97B70063BBFE /* empty.mov */; };
 		D6E64D2712F743FA00DF4419 /* QTxml.c in Sources */ = {isa = PBXBuildFile; fileRef = D6E64D2612F743FA00DF4419 /* QTxml.c */; };
@@ -121,34 +133,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D6169C5C134CF7D7004A2A56 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
-			remoteInfo = LogController;
-		};
-		D6169C5E134CF7D7004A2A56 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D67A1CDB134B9F3600073807;
-			remoteInfo = LogController_loader;
-		};
-		D6169C60134CF7D7004A2A56 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D6D6C048134C5F1C00E43CC5;
-			remoteInfo = pipeLogger;
-		};
-		D6169D1D134D021D004A2A56 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D6169D1A134D021D004A2A56;
-			remoteInfo = "LogController_loader copy";
-		};
 		D618399C131FE916004D1997 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -170,20 +154,6 @@
 			remoteGlobalIDString = D65F639312C3C7A4009A3D72;
 			remoteInfo = QTils.framework;
 		};
-		D67ACE421416129D00E99EA2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D696D5681414C06700E2F416;
-			remoteInfo = LogControllerGC_framework;
-		};
-		D67AD138141624B100E99EA2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D67AD130141624B100E99EA2;
-			remoteInfo = "pipeLogger-emb";
-		};
 		D67AD17C1416274200E99EA2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -198,20 +168,6 @@
 			remoteGlobalIDString = D6887054131FCAF000A696E6;
 			remoteInfo = DocSet;
 		};
-		D696D57B1414C08500E2F416 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D696D5761414C06700E2F416;
-			remoteInfo = LogControllerGC_framework;
-		};
-		D696D5D61414C3A700E2F416 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D696D5681414C06700E2F416;
-			remoteInfo = LogControllerGC_framework;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -221,7 +177,6 @@
 			dstPath = Versions/Frameworks;
 			dstSubfolderSpec = 1;
 			files = (
-				D696D6621414C76E00E2F416 /* LogControllerGCFW.framework in Frameworks */,
 			);
 			name = Frameworks;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -232,7 +187,6 @@
 			dstPath = Versions/Frameworks;
 			dstSubfolderSpec = 1;
 			files = (
-				D67ACE601416129D00E99EA2 /* LogControllerGCFW.framework in Frameworks */,
 			);
 			name = Frameworks;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -254,7 +208,6 @@
 		D602C30711FE52C800D568BD /* QTMovieFile.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; name = QTMovieFile.cpp; path = inspiration/QTMovieFile.cpp; sourceTree = "<group>"; };
 		D602C30811FE52C800D568BD /* QTMovieFile.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; lineEnding = 2; name = QTMovieFile.h; path = inspiration/QTMovieFile.h; sourceTree = "<group>"; };
 		D607F756122E9C2300B63D4C /* testgl.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = testgl.c; path = inspiration/testgl.c; sourceTree = "<group>"; };
-		D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LogController.xcodeproj; path = "../GNUStep-PC-LogController/LogController.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		D619272711FF64E500BDAAAA /* QTMovieSink.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = QTMovieSink.h; sourceTree = "<group>"; };
 		D619275011FF65E200BDAAAA /* QTMovieSink.c */ = {isa = PBXFileReference; fileEncoding = 4; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = QTMovieSink.c; sourceTree = "<group>"; };
 		D619278B11FF690800BDAAAA /* copyright.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = copyright.h; sourceTree = "<group>"; };
@@ -305,7 +258,7 @@
 		D65F63EC12C3CC3F009A3D72 /* sparsehashtable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sparsehashtable.h; sourceTree = "<group>"; };
 		D65F63ED12C3CC3F009A3D72 /* sparsetable */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sparsetable; sourceTree = "<group>"; };
 		D65F63EE12C3CC3F009A3D72 /* type_traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = type_traits.h; sourceTree = "<group>"; };
-		D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = QTMovieWinWM.m; sourceTree = "<group>"; };
+		D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = QTMovieWinWM.mm; sourceTree = "<group>"; };
 		D663BD331328DF96007DFF5C /* QTVOD2-installer.nsi */ = {isa = PBXFileReference; explicitFileType = text.script; fileEncoding = 12; path = "QTVOD2-installer.nsi"; sourceTree = SOURCE_ROOT; };
 		D663BD351328FFA5007DFF5C /* QTVOD2-dev-installer.nsi */ = {isa = PBXFileReference; explicitFileType = text.script; fileEncoding = 12; path = "QTVOD2-dev-installer.nsi"; sourceTree = SOURCE_ROOT; };
 		D665F1F3132BCCD300E0B732 /* QTilities-v1.3.pages */ = {isa = PBXFileReference; lastKnownFileType = file; path = "QTilities-v1.3.pages"; sourceTree = "<group>"; };
@@ -336,8 +289,15 @@
 		D6912BA9132E3F1700CD5E78 /* QTText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QTText.h; path = ../qttext/QTText.h; sourceTree = SOURCE_ROOT; };
 		D6912C13132E54C300CD5E78 /* QTMovieWindowTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QTMovieWindowTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6912C15132E54C300CD5E78 /* QTMovieWindowTest.app-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QTMovieWindowTest.app-Info.plist"; sourceTree = "<group>"; };
-		D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LogControllerGCFW.framework; path = "/Volumes/Debian/Users/bertin/work/src/MacOSX/GNUStep-PC-LogController/build/Release/LogControllerGCFW.framework"; sourceTree = "<absolute>"; };
 		D69C2E04133EB3AC001C8D4C /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PkgInfo; sourceTree = SOURCE_ROOT; };
+		D6B25774175B88C20090F55F /* NSLogger-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSLogger-LICENSE.txt"; sourceTree = "<group>"; };
+		D6B25775175B88C20090F55F /* LoggerCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggerCommon.h; sourceTree = "<group>"; };
+		D6B25776175B88C20090F55F /* LoggerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoggerClient.m; sourceTree = "<group>"; };
+		D6B25777175B88C20090F55F /* LoggerClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggerClient.h; sourceTree = "<group>"; };
+		D6B25778175B88C20090F55F /* NSLoggerClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSLoggerClient.h; sourceTree = "<group>"; };
+		D6B25779175B88C20090F55F /* NSLoggerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSLoggerClient.m; sourceTree = "<group>"; };
+		D6B257A4175B89D30090F55F /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		D6B259D4175BAEBC0090F55F /* msemul.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = msemul.cpp; sourceTree = "<group>"; };
 		D6B6E59D130E769200279904 /* POSIXm2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = POSIXm2.c; path = QTils/POSIXm2.c; sourceTree = SOURCE_ROOT; };
 		D6B6E5A1130E774400279904 /* POSIXm2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = POSIXm2.h; path = QTils/POSIXm2.h; sourceTree = SOURCE_ROOT; };
 		D6B6E605130E8F5700279904 /* dllPOSIXm2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dllPOSIXm2.cpp; path = QTils/dllPOSIXm2.cpp; sourceTree = SOURCE_ROOT; };
@@ -403,11 +363,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D696D5A01414C21A00E2F416 /* LogControllerGCFW.framework in Frameworks */,
 				D65F639A12C3C7F5009A3D72 /* Cocoa.framework in Frameworks */,
 				D65F639E12C3C80C009A3D72 /* QTKit.framework in Frameworks */,
 				D65F63A212C3C815009A3D72 /* QuickTime.framework in Frameworks */,
 				D63EFD76131CF5BE005B6423 /* QuartzCore.framework in Frameworks */,
+				D6B257A5175B89D30090F55F /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -415,11 +375,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D67ACE5A1416129D00E99EA2 /* LogControllerGCFW.framework in Frameworks */,
 				D67ACE5B1416129D00E99EA2 /* Cocoa.framework in Frameworks */,
 				D67ACE5C1416129D00E99EA2 /* QTKit.framework in Frameworks */,
 				D67ACE5D1416129D00E99EA2 /* QuickTime.framework in Frameworks */,
 				D67ACE5E1416129D00E99EA2 /* QuartzCore.framework in Frameworks */,
+				D6B257A8175B89E10090F55F /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,7 +397,6 @@
 		08FB7794FE84155DC02AAC07 /* FreeImage-testAPI */ = {
 			isa = PBXGroup;
 			children = (
-				D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */,
 				D6912BA2132E3EDB00CD5E78 /* Inspiration */,
 				D665F1F3132BCCD300E0B732 /* QTilities-v1.3.pages */,
 				D6FC2AAD131E588B00583ACC /* make_archive.sh */,
@@ -449,8 +408,8 @@
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 				D65191B012199F490077C8D3 /* QTMovieSink-Info.plist */,
 				D6912C15132E54C300CD5E78 /* QTMovieWindowTest.app-Info.plist */,
-				D696D59F1414C21A00E2F416 /* LogControllerGCFW.framework */,
 				D64B62CB15823A2400FCA20C /* qtest2r.app-Info.plist */,
+				D6B257A4175B89D30090F55F /* SystemConfiguration.framework */,
 			);
 			name = "FreeImage-testAPI";
 			sourceTree = "<group>";
@@ -481,19 +440,6 @@
 				D602C30711FE52C800D568BD /* QTMovieFile.cpp */,
 			);
 			name = QTMovieFile;
-			sourceTree = "<group>";
-		};
-		D6169C54134CF7D7004A2A56 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				D6169C5D134CF7D7004A2A56 /* LogController.framework */,
-				D6169C5F134CF7D7004A2A56 /* LogControllerL.framework */,
-				D6169D1E134D021D004A2A56 /* LogControllerFW.framework */,
-				D6169C61134CF7D7004A2A56 /* pipeLogger */,
-				D696D57C1414C08500E2F416 /* LogControllerGCFW.framework */,
-				D67AD139141624B100E99EA2 /* pipeLogger-emb.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		D61C363912A55CB2000B426F /* Mod2 */ = {
@@ -528,6 +474,7 @@
 		D61EEE4B14841C0400D479D9 /* CritSectEx */ = {
 			isa = PBXGroup;
 			children = (
+				D6B259D4175BAEBC0090F55F /* msemul.cpp */,
 				D61EEE4C14841C0400D479D9 /* CritSectEx.cpp */,
 				D61EEE4D14841C0400D479D9 /* CritSectEx.h */,
 			);
@@ -538,11 +485,12 @@
 		D65F63AF12C3C837009A3D72 /* macosx */ = {
 			isa = PBXGroup;
 			children = (
+				D6B25773175B88C20090F55F /* Logging */,
 				D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */,
 				D65F639512C3C7A4009A3D72 /* QTils-Info.plist */,
 				D6DD1BF6131A97B70063BBFE /* empty.mov */,
 				D6EC1D5812EF058300B53DBC /* AskFileName.m */,
-				D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.m */,
+				D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.mm */,
 				D65F63E212C3CC3F009A3D72 /* gcygwin */,
 				D6FEC29D141A1C230005D2B9 /* NSQTWindow.h */,
 				D6FEC29E141A1C230005D2B9 /* NSQTWindow.m */,
@@ -658,6 +606,19 @@
 			name = Inspiration;
 			sourceTree = "<group>";
 		};
+		D6B25773175B88C20090F55F /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				D6B25774175B88C20090F55F /* NSLogger-LICENSE.txt */,
+				D6B25775175B88C20090F55F /* LoggerCommon.h */,
+				D6B25776175B88C20090F55F /* LoggerClient.m */,
+				D6B25777175B88C20090F55F /* LoggerClient.h */,
+				D6B25778175B88C20090F55F /* NSLoggerClient.h */,
+				D6B25779175B88C20090F55F /* NSLoggerClient.m */,
+			);
+			name = Logging;
+			sourceTree = "<group>";
+		};
 		D6B6E59C130E767600279904 /* POSIXm2 */ = {
 			isa = PBXGroup;
 			children = (
@@ -746,6 +707,9 @@
 				D6FEC298141A1B0B0005D2B9 /* NSQTMovieView.h in Headers */,
 				D6FEC2A1141A1C230005D2B9 /* NSQTWindow.h in Headers */,
 				D61EEE5114841C0400D479D9 /* CritSectEx.h in Headers */,
+				D6B2577B175B88C20090F55F /* LoggerCommon.h in Headers */,
+				D6B2577D175B88C20090F55F /* LoggerClient.h in Headers */,
+				D6B2577E175B88C20090F55F /* NSLoggerClient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -762,6 +726,9 @@
 				D6FEC29A141A1B0B0005D2B9 /* NSQTMovieView.h in Headers */,
 				D6FEC29F141A1C230005D2B9 /* NSQTWindow.h in Headers */,
 				D61EEE4F14841C0400D479D9 /* CritSectEx.h in Headers */,
+				D6B25781175B88C20090F55F /* LoggerCommon.h in Headers */,
+				D6B25783175B88C20090F55F /* LoggerClient.h in Headers */,
+				D6B25784175B88C20090F55F /* NSLoggerClient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -834,7 +801,6 @@
 			);
 			comments = "other linker flags: -framework Foundation -framework AppKit";
 			dependencies = (
-				D696D5D71414C3A700E2F416 /* PBXTargetDependency */,
 			);
 			name = QTils.framework;
 			productName = QTils;
@@ -855,7 +821,6 @@
 			);
 			comments = "other linker flags: -framework Foundation -framework AppKit";
 			dependencies = (
-				D67ACE411416129D00E99EA2 /* PBXTargetDependency */,
 			);
 			name = "QTils-emb.framework";
 			productName = QTils;
@@ -901,12 +866,6 @@
 			);
 			mainGroup = 08FB7794FE84155DC02AAC07 /* FreeImage-testAPI */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = D6169C54134CF7D7004A2A56 /* Products */;
-					ProjectRef = D6169C53134CF7D7004A2A56 /* LogController.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				D65F639312C3C7A4009A3D72 /* QTils.framework */,
@@ -920,51 +879,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		D6169C5D134CF7D7004A2A56 /* LogController.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = LogController.framework;
-			remoteRef = D6169C5C134CF7D7004A2A56 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D6169C5F134CF7D7004A2A56 /* LogControllerL.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = LogControllerL.framework;
-			remoteRef = D6169C5E134CF7D7004A2A56 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D6169C61134CF7D7004A2A56 /* pipeLogger */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = pipeLogger;
-			remoteRef = D6169C60134CF7D7004A2A56 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D6169D1E134D021D004A2A56 /* LogControllerFW.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = LogControllerFW.framework;
-			remoteRef = D6169D1D134D021D004A2A56 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D67AD139141624B100E99EA2 /* pipeLogger-emb.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = "pipeLogger-emb.app";
-			remoteRef = D67AD138141624B100E99EA2 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D696D57C1414C08500E2F416 /* LogControllerGCFW.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = LogControllerGCFW.framework;
-			remoteRef = D696D57B1414C08500E2F416 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		D64B62C515823A2400FCA20C /* Resources */ = {
@@ -983,6 +897,7 @@
 				D69C2E0A133EB4AB001C8D4C /* PkgInfo in Resources */,
 				D6FEC1E9141A09570005D2B9 /* QTVODosx.icns in Resources */,
 				D6FEC219141A0C750005D2B9 /* MainMenu.nib in Resources */,
+				D6B2577A175B88C20090F55F /* NSLogger-LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -995,6 +910,7 @@
 				D67ACE4D1416129D00E99EA2 /* PkgInfo in Resources */,
 				D6FEC1EA141A09570005D2B9 /* QTVODosx.icns in Resources */,
 				D6FEC21A141A0C750005D2B9 /* MainMenu.nib in Resources */,
+				D6B25780175B88C20090F55F /* NSLogger-LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1076,7 +992,7 @@
 				D65F63C712C3CA8D009A3D72 /* QTils.c in Sources */,
 				D65F63CB12C3CA8D009A3D72 /* Lists.cpp in Sources */,
 				D65F644412C3D025009A3D72 /* QTMovieWin.c in Sources */,
-				D65F646712C40076009A3D72 /* QTMovieWinWM.m in Sources */,
+				D65F646712C40076009A3D72 /* QTMovieWinWM.mm in Sources */,
 				D6EC1D5B12EF05E200B53DBC /* AskFileName.m in Sources */,
 				D6E64D2712F743FA00DF4419 /* QTxml.c in Sources */,
 				D634F02C13171B2700D2BAFD /* timing.c in Sources */,
@@ -1085,6 +1001,9 @@
 				D6FEC299141A1B0B0005D2B9 /* NSQTMovieView.m in Sources */,
 				D6FEC2A2141A1C230005D2B9 /* NSQTWindow.m in Sources */,
 				D61EEE5014841C0400D479D9 /* CritSectEx.cpp in Sources */,
+				D6B2577C175B88C20090F55F /* LoggerClient.m in Sources */,
+				D6B2577F175B88C20090F55F /* NSLoggerClient.m in Sources */,
+				D6BC645C175BB84D004B136E /* msemul.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1096,7 +1015,7 @@
 				D67ACE501416129D00E99EA2 /* QTils.c in Sources */,
 				D67ACE511416129D00E99EA2 /* Lists.cpp in Sources */,
 				D67ACE521416129D00E99EA2 /* QTMovieWin.c in Sources */,
-				D67ACE531416129D00E99EA2 /* QTMovieWinWM.m in Sources */,
+				D67ACE531416129D00E99EA2 /* QTMovieWinWM.mm in Sources */,
 				D67ACE541416129D00E99EA2 /* AskFileName.m in Sources */,
 				D67ACE551416129D00E99EA2 /* QTxml.c in Sources */,
 				D67ACE561416129D00E99EA2 /* timing.c in Sources */,
@@ -1105,6 +1024,9 @@
 				D6FEC29B141A1B0B0005D2B9 /* NSQTMovieView.m in Sources */,
 				D6FEC2A0141A1C230005D2B9 /* NSQTWindow.m in Sources */,
 				D61EEE4E14841C0400D479D9 /* CritSectEx.cpp in Sources */,
+				D6B25782175B88C20090F55F /* LoggerClient.m in Sources */,
+				D6B25785175B88C20090F55F /* NSLoggerClient.m in Sources */,
+				D6BC645D175BB84E004B136E /* msemul.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1134,11 +1056,6 @@
 			target = D65F639312C3C7A4009A3D72 /* QTils.framework */;
 			targetProxy = D64B62D415823AD700FCA20C /* PBXContainerItemProxy */;
 		};
-		D67ACE411416129D00E99EA2 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = LogControllerGC_framework;
-			targetProxy = D67ACE421416129D00E99EA2 /* PBXContainerItemProxy */;
-		};
 		D67AD17D1416274200E99EA2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D67ACE401416129D00E99EA2 /* QTils-emb.framework */;
@@ -1148,11 +1065,6 @@
 			isa = PBXTargetDependency;
 			target = D6887054131FCAF000A696E6 /* DocSet */;
 			targetProxy = D6887057131FCB1700A696E6 /* PBXContainerItemProxy */;
-		};
-		D696D5D71414C3A700E2F416 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = LogControllerGC_framework;
-			targetProxy = D696D5D61414C3A700E2F416 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1394,6 +1306,7 @@
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = QTils;
+				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
@@ -1435,6 +1348,7 @@
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = QTils;
+				SDKROOT = macosx10.6;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -1502,7 +1416,7 @@
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = "QTils-emb";
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
@@ -1546,7 +1460,7 @@
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = "QTils-emb";
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx10.6;
 				ZERO_LINK = NO;
 			};
 			name = Release;

@@ -989,18 +989,15 @@ static ErrCode QTMovieWindowSetTimeChecked( QTMovieWindowH wih, double t, int ab
 //			}
 //		}
 #else
-		{ extern void SetQTMovieTime( struct NSQTMovieWindow *theNSQTMovieWindow, TimeRecord *trec );
-		  extern void SetQTMovieTimeValue( struct NSQTMovieWindow *theNSQTMovieWindow, TimeValue tVal, TimeValue tScale );
-			if( useThisTime ){
-				SetQTMovieTimeValue( wi->theNSQTMovieWindow, *useThisTime, wi->theInfo.timeScale );
-			}
-			else{
-				*( (SInt64*)&(trec.value) ) = (SInt64)( t * wi->theInfo.timeScale + 0.5 );
-				SetQTMovieTime( wi->theNSQTMovieWindow, &trec );
-			}
-			err = GetMoviesError();
-			UpdateMovie(wi->theMovie);
+		if( useThisTime ){
+			SetQTMovieTimeValue( wi->theNSQTMovieWindow, *useThisTime, wi->theInfo.timeScale );
 		}
+		else{
+			*( (SInt64*)&(trec.value) ) = (SInt64)( t * wi->theInfo.timeScale + 0.5 );
+			SetQTMovieTime( wi->theNSQTMovieWindow, &trec );
+		}
+		err = GetMoviesError();
+		UpdateMovie(wi->theMovie);
 #endif
 		MoviesTask( wi->theMovie, 0L );
 		QTWMflush();

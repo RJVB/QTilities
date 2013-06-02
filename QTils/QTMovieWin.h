@@ -95,6 +95,23 @@ QTLSext ErrCode GetStringAttribute_Mod2( XMLElement *element, UInt32 attributeTy
 QTLSext int vsscanf_Mod2( const char *source, int slen, const char *format, int flen, va_list ap );
 QTLSext int vsnprintf_Mod2( char *dest, int slen, const char *format, int flen, va_list ap );
 
+#ifndef __OBJC__
+#	undef	BOOL
+#	define	BOOL		bool
+#else
+	QTLSext int QTils_Log(const char *fileName, int lineNr, NSString *format, ... );
+#endif
+QTLSext BOOL QTils_LogActive();
+QTLSext BOOL QTils_LogSetActive(BOOL active);
+
+// 20130602: these are not exported:
+QTMovieWindowH QTMovieWindowHFromNativeWindow( NativeWindow hWnd );
+int DrainQTMovieWindowPool( QTMovieWindowH WI );
+#if defined(_QTMOVIESINKQTSTUFF_H)
+	void SetQTMovieTime( struct NSQTMovieWindow *theNSQTMovieWindow, TimeRecord *trec );
+	void SetQTMovieTimeValue( struct NSQTMovieWindow *theNSQTMovieWindow, TimeValue tVal, TimeValue tScale );
+#endif
+
 #if !defined(USE_QTHANDLES) || TARGET_OS_WIN32
 #	define Handle_Check(x)	((x) && *(x))
 #else

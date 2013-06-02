@@ -482,6 +482,10 @@ typedef struct QTMovieInfo {
 #	pragma pack(pop)
 #endif
 
+#ifdef _QTMW_M
+	@class NSQTMovieWindow;
+#endif
+
 /*!
 	internal representation of a QTMovieWindow
 	The members from self through user_data are 'public' and exported to Modula-2;
@@ -526,7 +530,7 @@ typedef struct QTMovieWindows {
 								//!< this state is set while the windowShouldClose window delegate executes
 								//!<
 #	ifdef _QTMW_M
-	IBOutlet struct NSQTMovieWindow *theNSQTMovieWindow;	//!<  receives an instance of our NSDocument class after loading the NIB
+	IBOutlet NSQTMovieWindow *theNSQTMovieWindow;	//!<  receives an instance of our NSDocument class after loading the NIB
 #	else
 	struct NSQTMovieWindow *theNSQTMovieWindow;
 #	endif
