@@ -135,7 +135,8 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)$(TargetName)$(TargetExt)</Command>
+      <Command>copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)$(TargetName)$(TargetExt)
+copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(TargetExt)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">
@@ -179,7 +180,8 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)$(TargetName)$(TargetExt)</Command>
+      <Command>copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)$(TargetName)$(TargetExt)
+copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(TargetExt)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
