@@ -1868,15 +1868,19 @@ static CritSectEx *shMemCSE = NULL;
 //} MSEShMemEntries;
 
 typedef google::dense_hash_map<void*,HANDLE> MSEShMemLists;
-static MSEShMemLists theMSEShMemList;
+static MSEShMemLists *theMSEShMemList;
 static DWORD sharedMemKey;
 static bool sharedMemKeyCreated = false;
 
 static void WarnLockedShMemList()
 {
-	fprintf( stderr, "Failure preempting access to the shared memory registry."
+//	fprintf( stderr, "Failure preempting access to the shared memory registry."
+//		" This probably means it is being accessed from another thread; proceeding with fingers crossed\n"
+//		" Set a breakpoint in WarnLockedShMemList() to trace the origin of this event.\n" );
+	MessageBox(NULL, "Failure preempting access to the shared memory registry."
 		" This probably means it is being accessed from another thread; proceeding with fingers crossed\n"
-		" Set a breakpoint in WarnLockedShMemList() to trace the origin of this event.\n" );
+		" Set a breakpoint in WarnLockedShMemList() to trace the origin of this event.",
+		"Warning", MB_APPLMODAL|MB_OK|MB_ICONEXCLAMATION);
 }
 
 /*!
@@ -1891,7 +1895,7 @@ int MSEmul_UseSharedMemory(int useShared)
 		sharedMemKey = TlsAlloc();
 		sharedMemKeyCreated = true;
 	}
-	ret = (int) TlsGetValue(sharedMemKey);
+	ret = (int) (TlsGetValue(sharedMemKey) != NULL);
 	TlsSetValue( sharedMemKey, (LPVOID) useShared );
 	return ret;
 }
@@ -1905,7 +1909,7 @@ int MSEmul_UseSharedMemory()
 		sharedMemKey = TlsAlloc();
 		sharedMemKeyCreated = true;
 	}
-	return (int) TlsGetValue(sharedMemKey);
+	return (int) (TlsGetValue(sharedMemKey) != NULL);
 }
 
 /*!
@@ -1928,10 +1932,10 @@ void MSEfreeShared(void *ptr)
 			WarnLockedShMemList();
 		}
 		if( theMSEShMemListReady && theMSEShMemList->count(ptr) ){
-		  HANDLE hmem = theMSEShMemList[ptr];
+		  HANDLE hmem = (*theMSEShMemList)[ptr];
 			UnmapViewOfFile(ptr);
 			if( CloseHandle(hmem) ){
-				theMSEShMemList[ptr] = NULL;
+				(*theMSEShMemList)[ptr] = NULL;
 				theMSEShMemList->erase(ptr);
 				if( ++calls >= 32 ){
 					theMSEShMemList->resize(0);
@@ -1984,6 +1988,18 @@ void MSEfreeAllShared()
 	}
 }
 
+static void InitMSEShMem()
+{
+	if( !theMSEShMemListReady ){
+		theMSEShMemListReady = true;
+		theMSEShMemList = new google::dense_hash_map<void*,HANDLE>();
+		theMSEShMemList->resize(4);
+		theMSEShMemList->set_empty_key(NULL);
+		theMSEShMemList->set_deleted_key( (HANDLE)-1 );
+		atexit(MSEfreeAllShared);
+	}
+}
+
 /*!
 	Allocate or reallocate memory of size <oldN> to size <N>. If the thread-specific flag is
 	set or forceShared==true, the memory is allocated in anonymous shared memory, otherwise
@@ -1996,7 +2012,7 @@ void *MSEreallocShared( void* ptr, size_t N, size_t oldN, int forceShared )
 		return (ptr)? realloc(ptr,N) : calloc(N,1);
 	}
 	// split the size specified over 2 32bit values, if it is larger than UINT_MAX;
-	// (N >> 32) is undefined in 32bit operation!
+	// (N >> 32) is undefined in 32bit operation (but in that case N<=size_lo)!
 	DWORD size_lo = (N & 0xffffffff), size_hi = (N > size_lo)? (N >> 32) : 0;
 	// 20120713: Should send NULL for the name, or else allocated memory buffers might overlap?!
 	// I guess lpName==NULL is what gives anonymous memory...
@@ -2030,7 +2046,7 @@ void *MSEreallocShared( void* ptr, size_t N, size_t oldN, int forceShared )
 			fprintf( stderr, "@@ MSEreallocShared(%p,%lu,%lu,%d) registering %p)\n",
 				   ptr, N, oldN, forceShared, mem );
 #endif
-			theMSEShMemList[mem] = hmem;
+			(*theMSEShMemList)[mem] = hmem;
 		}
 #ifdef DEBUG
 //		fprintf( stderr, "MSEreallocShared(%p,%lu)=%p, file mapping handle=%p\n", ptr, N, mem, hmem );

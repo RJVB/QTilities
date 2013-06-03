@@ -715,6 +715,7 @@ class CritSect {
 	// try to optimise something important away.
 	volatile CRITICAL_SECTION	m_hCriticalSection;
 	volatile bool	m_bIsLocked, m_bTimedOut;
+	volatile DWORD	m_dwSpinMax;
 #ifdef DEBUG
 	volatile HANDLE m_hLockerThread;
 	volatile bool m_bUnlocking;
@@ -769,6 +770,7 @@ public:
 		}
 		else{
 			InitializeCriticalSection( (LPCRITICAL_SECTION) &m_hCriticalSection );
+			m_dwSpinMax = 0;
 		}
 	}
 	~CritSect()
@@ -807,6 +809,7 @@ public:
 	void SetSpinMax(DWORD dwSpinMax)
 	{
 		SetCriticalSectionSpinCount( (LPCRITICAL_SECTION) &m_hCriticalSection, dwSpinMax );
+		m_dwSpinMax = dwSpinMax;
 	}
 	void AllocateKernelSemaphore()
 	{

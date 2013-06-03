@@ -164,7 +164,7 @@ static double calibrator= 0;
 #	define	__forceinline	inline
 #endif
 
-__forceinline void init_HRTime()
+void init_HRTime()
 {
 	if( !calibrator ){
 		if( !QueryPerformanceFrequency(&lpFrequency) ){
@@ -177,7 +177,7 @@ __forceinline void init_HRTime()
 }
 
 
-__forceinline double HRTime_Time()
+double HRTime_Time()
 { LARGE_INTEGER count;
 
 	QueryPerformanceCounter(&count);
@@ -185,13 +185,13 @@ __forceinline double HRTime_Time()
 }
 
 static double ticTime;
-__forceinline double HRTime_tic()
+double HRTime_tic()
 { LARGE_INTEGER count;
 	QueryPerformanceCounter(&count);
 	return( (ticTime= count.QuadPart * calibrator) );
 }
 
-__forceinline double HRTime_toc()
+double HRTime_toc()
 { LARGE_INTEGER count;
 	QueryPerformanceCounter(&count);
 	return count.QuadPart * calibrator - ticTime;
