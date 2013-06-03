@@ -6,12 +6,13 @@
 #include <stdio.h>
 
 // RJVB 20100218: on teste pour la presence de differents macros, pour determiner si on compile sous MSWindows ou non:
-#if !defined(MON_WIN_SOCK) && (defined(linux) || defined(__DARWIN__) || defined(__APPLE_CC__) || defined(__MACH__) )
+#if !defined(__WINSOCK__) && (defined(linux) || defined(__DARWIN__) || defined(__APPLE_CC__) || defined(__MACH__) )
 	#include <sys/types.h>
 	#include <sys/socket.h>
 	#include <sys/time.h>
 	#include <sys/ioctl.h>
 	#include <netinet/in.h>
+	#include <arpa/inet.h>
 	#include <errno.h>
 	#include <netdb.h>
 	#define sock_nulle -1
@@ -31,8 +32,8 @@
 		#define FALSE	0
 	#endif
 #else
-	#ifndef MON_WIN_SOCK
-		#define MON_WIN_SOCK
+	#ifndef __WINSOCK__
+		#define __WINSOCK__
 	#endif
 	#include <winsock.h>
 	#define sock_nulle INVALID_SOCKET
@@ -41,17 +42,17 @@
 	#define geterrno() h_errno
 #endif
 
-typedef enum Etats
+typedef enum STATES
 {
-	ouverte, connecte
-}ETATS;
+	opened=1, connected=2
+}STATES;
 
-typedef struct EtatSock
+typedef struct STATE_SOCK
 {
-	unsigned char ouverte : 1;
-	unsigned char connecte : 1;
+	unsigned char opened : 1;
+	unsigned char connected : 1;
 
-} ETAT_SOCK;
+} STATE_SOCK;
 
 // contenu mininum de la partie 'service' des messages geres par SendNetMessage() et ReceiveNetMessage()
 #define SOCKMSG_SERVICEMINIMUM \
@@ -90,40 +91,40 @@ extern int sendTimeOut, receiveTimeOut;
 
 extern BOOL InitIP();
 
-extern BOOL EtabliClient(SOCK *s, unsigned short port);
+extern BOOL CreateClient(SOCK *s, unsigned short port);
 
-extern BOOL ConnexionAuServeur(SOCK s, unsigned short port, char *nom, char *numeroIP, int timeOutms, BOOL *fatale);
+extern BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *numeroIP, int timeOutms, BOOL *fatale);
 
-extern void FermeClient(SOCK *s);
-#define FermeServeur(s)	FermeClient(s)
+extern void CloseClient(SOCK *s);
+#define CloseServer(s)	CloseClient(s)
 
-extern void FinIP();
+extern void EndIP();
 
-extern BOOL EstDsEtatS(SOCK s, ETATS ee);
+extern BOOL LookupSocketState(SOCK s, STATES ee);
 
-extern void MajEtatS(SOCK s, ETAT_SOCK nvelEtat);
+extern void UpdateSocketState(SOCK s, STATE_SOCK newState);
 
-extern void TestEtat(SOCK s, BOOL *r, BOOL *w, BOOL *e, int timeOutms);
+extern void TestSocketState(SOCK s, BOOL *r, BOOL *w, BOOL *e, int timeOutms);
 
-extern void FermeConnexionAuServeur(SOCK *s);
+extern void CloseConnectionToServer(SOCK *s);
 
-extern BOOL SendNetMessage(SOCK s, void *msg, short serviceLen, short msgLen, BOOL blocking);
+extern BOOL SendNetMessage(SOCK s, void *msg, short serviceLen, short msgLen, int timeOutms, BOOL blocking);
 // envoi d'un message sans partie service; retourne le nombre de trames utilisees.
-extern int BasicSendNetMessage(SOCK s, void *msg, short msgLen, BOOL blocking);
+extern int BasicSendNetMessage(SOCK s, void *msg, short msgLen, int timeOutms, BOOL blocking);
 
 // si Srvce et Msg font partie d'une meme structure envoyee par SendNetMessage(), attention a serviceLen
 // (qui doit prendre en compte les eventuels octets de 'padding' entre Srvce et Msg dans la structure) et
 // passer des pointeurs vers &trame.Srvce et &trame.Msg pour eviter des debordements a la lecture si
 // il y du padding (cf. le commentaire a la definition de sockMsg_ServiceMinimum .
-extern BOOL ReceiveNetMessage(SOCK s, void *Srvce, short serviceLen, void *Msg, short msgLen, 
+extern BOOL ReceiveNetMessage(SOCK s, void *Srvce, short serviceLen, void *Msg, short msgLen, int timeOutms, 
 		BOOL blocking);
 // reception d'un message sans partie service; retourne le nombre de trames utilisees.
-extern int BasicReceiveNetMessage(SOCK s, void *Msg, short msgLen, BOOL blocking );
+extern int BasicReceiveNetMessage(SOCK s, void *Msg, short msgLen, int timeOutms, BOOL blocking );
 
-extern BOOL EtabliServeur( SOCK *s, unsigned short port );
-extern BOOL AttenteConnexionDunClient( SOCK s, BOOL blocking, SOCK *ss );
+extern BOOL CreateServer( SOCK *s, unsigned short port );
+extern BOOL WaitForClientConnection( SOCK s, int timeOutms, BOOL blocking, SOCK *ss );
 
-extern BOOL PortEstInutilise(unsigned short port);
+extern BOOL IsPortAvailable(unsigned short port);
 
 extern char *errSockText(long errID);
 

@@ -1847,6 +1847,10 @@ static unsigned int fullScreenViews= 0;
   static char active = 0;
   NSString *absPath = [absoluteURL path];
   BOOL addRecent = addToRecentDocs;
+//	doNSLog( @"URL=\"%@\", ofType \"%@\"", absoluteURL, typeName );
+	if( [typeName isEqual:@"XMLPropertyList"] ){
+		return NO;
+	}
 	if( !active && ([absPath hasSuffix:@".VOD" caseSensitive:YES]
 				 || [absPath hasSuffix:@".avi" caseSensitive:YES]
 				 || [absPath hasSuffix:@".IEF" caseSensitive:YES]

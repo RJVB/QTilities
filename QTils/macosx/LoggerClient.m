@@ -578,8 +578,8 @@ static void *LoggerWorkerThread(Logger *logger)
 
 		// Make sure we restart connection attempts if we get disconnected
 		if (!logger->connected &&
-			!CFArrayGetCount(logger->bonjourServices) &&
-			!CFArrayGetCount(logger->bonjourServiceBrowsers) &&
+			(!logger->bonjourServices || !CFArrayGetCount(logger->bonjourServices)) &&
+			(!logger->bonjourServiceBrowsers || !CFArrayGetCount(logger->bonjourServiceBrowsers)) &&
 			!CFArrayGetCount(logger->bonjourServices))
 		{
 			if (logger->options & kLoggerOption_BrowseBonjour)

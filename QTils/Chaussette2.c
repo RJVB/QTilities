@@ -1,30 +1,30 @@
-/* Chausset.c
+/*! @file Chaussette2.c
  \ librairie de fonctions pour la communication par socket TCP/IP inspirée sur et compatible avec Chaussette.mod
- \ revue, corrigée et étendue par RJVB, fév,mars 2010
+ \ revue, corrigée et étendue par RJVB, fév,mars 2010, may/june 2013
  */
 
 #include <stdio.h>
 
-//#include "stdafx.h"
 #include <string.h>
-#include "Chausset.h"
+#include "Chaussette2.h"
 
-#if defined(__APPLE_CC__) || defined(__MACH__)
-	#include <sys/fcntl.h>
+#if defined(__APPLE_CC__) || defined(__MACH__) || defined(linux)
+#	include <unistd.h>
+#	include <sys/fcntl.h>
 #endif
 
 #if defined(_MSC_VER) || defined(WIN32)
-#	define MON_WIN_SOCK
+#	define __WINSOCK__
 #endif
 
 typedef struct TS
 {
 	SOCK s;
-	ETAT_SOCK e;
+	STATE_SOCK e;
 } TS;
 
 static TS ts[max_sock];
-statit BOOL isInitialised;
+static BOOL isInitialised;
 
 long errSock;
 char carChaussette;
@@ -35,7 +35,7 @@ char carChaussette;
 //int receiveTimeOut = MIN_ATTENTE_USEC;
 
 char *errSockText(long errID)
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 // RJVB 20100317: convertit un code erreur MSWin en text:
 { static TCHAR *buffer = NULL;
 	// on laisse le system allouer la chaine de retour, mais il faudra la liberer nous-memes.
@@ -58,7 +58,7 @@ char *errSockText(long errID)
 BOOL InitIP()
 {
 	short e;
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 	WSADATA donneeInit;
 	e = WSAStartup(0x101, &donneeInit);
   
@@ -69,8 +69,8 @@ BOOL InitIP()
 #endif
 	
 	for( e = 0; e < max_sock; e++ ){
-		ts[e].e.ouverte = FALSE;
-		ts[e].e.connecte = FALSE;
+		ts[e].e.opened = FALSE;
+		ts[e].e.connected = FALSE;
 		ts[e].s = sock_nulle;
 	}
 
@@ -79,7 +79,7 @@ BOOL InitIP()
  	return TRUE;
 } //InitIP
 
-void MajEtatS(SOCK s, ETAT_SOCK newState)
+void UpdateSocketState(SOCK s, STATE_SOCK newState)
 {
 	short i;
 
@@ -97,19 +97,19 @@ void MajEtatS(SOCK s, ETAT_SOCK newState)
 			return;
 		}
 	}
-}// MajEtatS;
+}// UpdateSocketState;
 
 #define SOCKET_PROTOCOL	SOCK_STREAM
 
 // RJVB 20100314: etablir client ou serveur revient a presque la meme chose, donc une seule fonction
 // avec juste quelques lignes dediees semble plus elegant que 2 copies largement identiques.
-BOOL EtabliClientOuServeur(SOCK *s, unsigned short port, BOOL serveur )
+BOOL CreateClientOrServer(SOCK *s, unsigned short port, BOOL serveur )
 { SOCKADDR_IN lsock;
   short e;
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
   unsigned long mode;
 #endif
-  ETAT_SOCK etatSock;
+  STATE_SOCK etatSock;
 
 	*s = socket( AF_INET, SOCKET_PROTOCOL, 0 );
 
@@ -155,7 +155,7 @@ BOOL EtabliClientOuServeur(SOCK *s, unsigned short port, BOOL serveur )
 #endif
 
 	// set non-blocking socket
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 	mode = 1; // non bloquant si # 0 
 	e = ioctlsocket( *s, FIONBIO, &mode );
 	if( e != 0 ){
@@ -169,20 +169,20 @@ BOOL EtabliClientOuServeur(SOCK *s, unsigned short port, BOOL serveur )
 	}
 #endif
 
-	etatSock.ouverte = TRUE;
-	etatSock.connecte = FALSE;
+	etatSock.opened = TRUE;
+	etatSock.connected = FALSE;
 
-	MajEtatS(*s, etatSock);
+	UpdateSocketState(*s, etatSock);
 	return TRUE;
 
 } // anciennement EtabliClient
 
-BOOL EtabliClient(SOCK *s, unsigned short port)
+BOOL CreateClient(SOCK *s, unsigned short port)
 {
-	return EtabliClientOuServeur( s, port, FALSE );
+	return CreateClientOrServer( s, port, FALSE );
 }
 
-BOOL ConnexionAuServeur(SOCK s, unsigned short port, char *nom, char *numeroIP, int timeOutms, BOOL *fatale)
+BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *numeroIP, int timeOutms, BOOL *fatale)
 {
 	short e;
 	SOCKADDR_IN fsock;
@@ -190,7 +190,7 @@ BOOL ConnexionAuServeur(SOCK s, unsigned short port, char *nom, char *numeroIP, 
 	BOOL rd, wr, ee;
 	rd = wr = ee = 0;
 
-	if( s == sock_nulle || !EstDsEtatS(s, ouverte) ){
+	if( s == sock_nulle || !LookupSocketState(s, opened) ){
 		*fatale = TRUE;
 		return FALSE;
 	}
@@ -217,23 +217,23 @@ BOOL ConnexionAuServeur(SOCK s, unsigned short port, char *nom, char *numeroIP, 
 	errSock = connect( s, (SOCKADDR*)&fsock, sizeof(SOCKADDR_IN) );
 
 	if( errSock == 0 ){
-		ETAT_SOCK etatSock = { TRUE, TRUE };
-		MajEtatS( s, etatSock );
+		STATE_SOCK etatSock = { TRUE, TRUE };
+		UpdateSocketState( s, etatSock );
 		return TRUE;
 	}
 	errSock = geterrno();
 	// errno contient la description de l'erreur 
 
-#ifndef MON_WIN_SOCK
+#ifndef __WINSOCK__
 	if( errSock == EINPROGRESS ){
 		// RJVB 20100315: connexion en cours: donnons un peu de temps au processus:
 	  int ne;
 	  struct timeval tv;
-	  extern void TestEtatAttente(SOCK s, BOOL *r, BOOL *w, BOOL *e, TIMEVAL *temps );
+	  extern void TestSocketStateWait(SOCK s, BOOL *r, BOOL *w, BOOL *e, TIMEVAL *temps );
 		tv.tv_sec = 0;
 		tv.tv_usec = 1000; // 1ms
 		for( ne= 0, wr= 0; ne< 5 && !wr; ne++ ){
-			TestEtatAttente( s, &rd, &wr, &ee, &tv );
+			TestSocketStateWait( s, &rd, &wr, &ee, &tv );
 		}
 		if( wr ){
 		  int res = connect( s, (SOCKADDR*)&fsock, sizeof(SOCKADDR_IN) );
@@ -245,24 +245,24 @@ BOOL ConnexionAuServeur(SOCK s, unsigned short port, char *nom, char *numeroIP, 
 	}
 #endif
 
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 	if( errSock != WSAEWOULDBLOCK && errSock != WSAEISCONN && errSock != WSAECONNREFUSED )
 #else
 	if( errSock != EWOULDBLOCK && errSock != EISCONN && errSock != ECONNREFUSED )
 #endif
 	{
-		fprintf( stderr "socket connection error %d: %s(%u)\n", s, errSockText(errSock), errSock );
+		fprintf( stderr, "socket connection error %d: %s(%u)\n", s, errSockText(errSock), errSock );
 		*fatale = TRUE;
 		return FALSE;
 	}
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 	else if( errSock == WSAEISCONN )
 #else
 	else if( errSock == EISCONN )
 #endif
 	{
-		ETAT_SOCK EtatSock = {TRUE, TRUE};
-		MajEtatS( s , EtatSock );
+		STATE_SOCK EtatSock = {TRUE, TRUE};
+		UpdateSocketState( s , EtatSock );
 		return TRUE;
 	}
 	else{
@@ -274,26 +274,26 @@ BOOL ConnexionAuServeur(SOCK s, unsigned short port, char *nom, char *numeroIP, 
 		// (cf. http://www.developerweb.net/forum/showpost.php?s=7dab7e2fb139d5b08f54ef2ca1ad11eb&p=19547&postcount=2)
 		while( !(wr || ne> 5 || e == 0) ){
 			e--;
-			TestEtat( s, &rd, &wr, &ee, timeOutms );
+			TestSocketState( s, &rd, &wr, &ee, timeOutms );
 			if( ee ){
 				ne += 1;
 			}
 			if( timeOutms <= 0 ){
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 				Sleep(200); // anciennement _sleep
 #else
 				usleep(200000);
 #endif
 			}
 			else if( timeOutms > 10 ){
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 				Sleep(timeOutms/10); // anciennement _sleep
 #else
 				usleep(timeOutms*100);
 #endif
 			}
 			else{
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 				Sleep(timeOutms); // anciennement _sleep
 #else
 				usleep(timeOutms*1000);
@@ -303,8 +303,8 @@ BOOL ConnexionAuServeur(SOCK s, unsigned short port, char *nom, char *numeroIP, 
 
 		if( wr ){
 			// ça marche ! 
-			ETAT_SOCK EtatSock = {TRUE, TRUE};
-			MajEtatS(s, EtatSock);
+			STATE_SOCK EtatSock = {TRUE, TRUE};
+			UpdateSocketState(s, EtatSock);
 			*fatale = FALSE;
 			return TRUE;
 		}
@@ -312,7 +312,7 @@ BOOL ConnexionAuServeur(SOCK s, unsigned short port, char *nom, char *numeroIP, 
 #ifdef MATLAB_MEX_FILE
 			ssPrintf( "sock=%d rd=%d wr=%d ee=%d\n", s, rd, wr, ee );
 #endif
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 			fprintf( stderr, "ee=%d, error=%ld\n", ee, (long) WSAGetLastError() );
 #endif
 			*fatale = TRUE;
@@ -321,14 +321,14 @@ BOOL ConnexionAuServeur(SOCK s, unsigned short port, char *nom, char *numeroIP, 
 		*fatale = FALSE;
 		return FALSE;
 	}
-} // ConnexionAuServeur;
+} // ConnectToServer;
 
-void FermeConnexionAuServeur(SOCK *s)
+void CloseConnectionToServer(SOCK *s)
 {
 	short e;
 	long res;
 	struct{ short l_onoff, l_linger; } lin;
-	ETAT_SOCK etatSock = {FALSE, FALSE};
+	STATE_SOCK etatSock = {FALSE, FALSE};
 
 //  il n'existe pas de moyen pour le serveur de détecter une connexion
 //	si celle ci n'a pas été fermée 
@@ -338,13 +338,13 @@ void FermeConnexionAuServeur(SOCK *s)
 		lin.l_onoff = 1;
 		lin.l_linger = 0;
 		res = setsockopt( *s, SOL_SOCKET, SO_LINGER, (char*)&lin, sizeof(lin) );
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 		e = closesocket(*s);
 #else
 		e = close(*s);
 #endif
 		if( e != 0 ){
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 			errSock = WSAGetLastError();
 #else
 			errSock = geterrno();
@@ -353,53 +353,53 @@ void FermeConnexionAuServeur(SOCK *s)
 				fprintf( stderr, "socket closing error %s", errSockText(errSock) );
 			}
 		}
-		MajEtatS( *s, etatSock );
+		UpdateSocketState( *s, etatSock );
 		*s = sock_nulle;
 	}
-} // FermeConnexionAuServeur;
+} // CloseConnectionToServer;
 
-void FermeClient(SOCK *s)
+void CloseClient(SOCK *s)
 {
 	short res;
-	ETAT_SOCK etatSock = {FALSE, FALSE};
+	STATE_SOCK etatSock = {FALSE, FALSE};
 
 	if(*s != sock_nulle ){
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 		res = closesocket(*s);
 #else
 		res = close(*s);
 #endif
-		MajEtatS( *s, etatSock );
+		UpdateSocketState( *s, etatSock );
 		*s = sock_nulle;
 	}
-} // FermeClient;
+} // CloseClient;
 
 
-BOOL EtabliServeur( SOCK *s, unsigned short port )
+BOOL CreateServer( SOCK *s, unsigned short port )
 {
-	return( EtabliClientOuServeur( s, port, TRUE ) );
+	return( CreateClientOrServer( s, port, TRUE ) );
 }
 
 // RJVB 20100314
-BOOL AttenteConnexionDunClient( SOCK s, int timeOutms, BOOL blocking, SOCK *ss )
+BOOL WaitForClientConnection( SOCK s, int timeOutms, BOOL blocking, SOCK *ss )
 { BOOL rd, wr, ee;
 
-	if( s == sock_nulle || !EstDsEtatS(s, ouverte) ){
+	if( s == sock_nulle || !LookupSocketState(s, opened) ){
 		return FALSE;
 	}
 	do{
-		TestEtat( s, &rd, &wr, &ee, timeOutms );
+		TestSocketState( s, &rd, &wr, &ee, timeOutms );
 		if( rd ){
 		  struct sockaddr fsock;
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 		  unsigned int flen = sizeof(fsock);
 #else
 		  socklen_t flen = sizeof(fsock);
 #endif
 			*ss = accept( s, &fsock, &flen );
 			if( *ss != sock_nulle ){
-			  ETAT_SOCK EtatSock = {TRUE, TRUE};
-				MajEtatS( *ss, EtatSock);
+			  STATE_SOCK EtatSock = {TRUE, TRUE};
+				UpdateSocketState( *ss, EtatSock);
 				{ int oui = 1;
 					if( setsockopt( s, SOL_SOCKET, SO_REUSEADDR, &oui, sizeof(oui)) ){
 						errSock = geterrno();
@@ -408,7 +408,7 @@ BOOL AttenteConnexionDunClient( SOCK s, int timeOutms, BOOL blocking, SOCK *ss )
 				return TRUE;
 			}
 			else{
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 				errSock = WSAGetLastError();
 #else
 				errSock = geterrno();
@@ -424,60 +424,60 @@ BOOL AttenteConnexionDunClient( SOCK s, int timeOutms, BOOL blocking, SOCK *ss )
 	return FALSE;
 }
 
-void FinIP()
+void EndIP()
 {
 	short e, res;
 
 	for(e = 0; e < max_sock; e++)
 	{
-		if(ts[e].e.ouverte == TRUE){
-#ifdef MON_WIN_SOCK
+		if(ts[e].e.opened == TRUE){
+#ifdef __WINSOCK__
 			res = closesocket(ts[e].s);
 #else
 			res = close(ts[e].s);
 #endif
-			ts[e].e.ouverte = FALSE;
-			ts[e].e.connecte = FALSE;
+			ts[e].e.opened = FALSE;
+			ts[e].e.connected = FALSE;
 			fprintf( stderr, "closing %d\n", ts[e].s);
 		}
 	}
 
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 	if(isInitialised)
 	{
 		if( WSACleanup() == 0 ){
 			isInitialised = FALSE;
 		}
 		else{
-			fprintf( stderr, "FinIP error\n");
+			fprintf( stderr, "EndIP error\n");
 		}
 	}
 #endif
 
-} // FinIP;
+} // EndIP;
 
 
-BOOL EstDsEtatS(SOCK s, ETATS ee)
+BOOL LookupSocketState(SOCK s, STATES ee)
 {
 	short i;
 
 	for(i = 0; i < max_sock; i++){
 		if(ts[i].s == s){
 			switch( ee ){
-				case connecte :
-					return ts[i].e.connecte;
+				case connected :
+					return ts[i].e.connected;
 					break;
 
-				case ouverte : 
-					return ts[i].e.ouverte;
+				case opened : 
+					return ts[i].e.opened;
 					break;
 			}
 		}
 	}
 	return FALSE;
-} // EstDsEtatS;
+} // LookupSocketState;
 
-void TestEtatAttente(SOCK s, BOOL *r, BOOL *w, BOOL *e, TIMEVAL *temps )
+void TestSocketStateWait(SOCK s, BOOL *r, BOOL *w, BOOL *e, TIMEVAL *temps )
 {
 	short trouve;
 	fd_set readFds, writeFds, exceptFds;
@@ -497,14 +497,14 @@ void TestEtatAttente(SOCK s, BOOL *r, BOOL *w, BOOL *e, TIMEVAL *temps )
 	*r = FD_ISSET(s, &readFds) != 0; 
 	*w = FD_ISSET(s, &writeFds) != 0;
 	*e = FD_ISSET(s, &exceptFds) != 0;
-} // anciennement TestEtat;
+} // anciennement TestSocketState;
 
-void TestEtat(SOCK s, BOOL *r, BOOL *w, BOOL *e, int timeOutms)
+void TestSocketState(SOCK s, BOOL *r, BOOL *w, BOOL *e, int timeOutms)
 { TIMEVAL temps;
 
 	temps.tv_sec = timeOutms / 1000;
 	temps.tv_usec = (timeOutms - temps.tv_sec * 1000) * 1000; 
-	TestEtatAttente( s, r, w, e, &temps );
+	TestSocketStateWait( s, r, w, e, &temps );
 }
 
 // RJVB 20100317: char *msg --> void *msg
@@ -521,7 +521,7 @@ BOOL SendNetMessage(SOCK s, void *msg, short serviceLen, short msgLen, int timeO
 		return FALSE;
 	}
 
-	if( s == sock_nulle || !EstDsEtatS(s, connecte) ){
+	if( s == sock_nulle || !LookupSocketState(s, connected) ){
 		return FALSE;
 	}
 
@@ -553,7 +553,7 @@ BOOL SendNetMessage(SOCK s, void *msg, short serviceLen, short msgLen, int timeO
 		if( e < 0 ){
 			errSock = geterrno();
 			// errno contient la description de l'erreur 
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 			if( errSock != WSAEWOULDBLOCK )
 #else
 			if( errSock != EWOULDBLOCK )
@@ -584,7 +584,7 @@ int BasicSendNetMessage(SOCK s, void *msg, short msgLen, int timeOutms, BOOL blo
 	
 // on vise a ne pas passer du temps sur des operations que celui qui nous appelle pourrait
 // faire, dans cette fonction:	
-//	if( s == sock_nulle || !EstDsEtatS(s, connecte) )
+//	if( s == sock_nulle || !LookupSocketState(s, connected) )
 //		return FALSE;
 	
 	errSock = 0;
@@ -611,7 +611,7 @@ int BasicSendNetMessage(SOCK s, void *msg, short msgLen, int timeOutms, BOOL blo
 		if( e < 0 ){
 			errSock = geterrno();
 			// errno contient la description de l'erreur 
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 			if( errSock != WSAEWOULDBLOCK )
 #else
 			if( errSock != EWOULDBLOCK )
@@ -646,7 +646,7 @@ BOOL ReceiveNetMessage(SOCK s, void *Srvce, short serviceLen, void *Msg, short m
 	fd_set readFds;
 	TIMEVAL temps;
 
-	if( s == sock_nulle || !EstDsEtatS(s, connecte) ){
+	if( s == sock_nulle || !LookupSocketState(s, connected) ){
 		return FALSE;
 	}
 
@@ -689,7 +689,7 @@ BOOL ReceiveNetMessage(SOCK s, void *Srvce, short serviceLen, void *Msg, short m
 		if(len < 0){
 			errSock = geterrno();
 
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 			if( errSock != WSAEWOULDBLOCK )
 #else
 			if( errSock != EWOULDBLOCK )
@@ -759,7 +759,7 @@ int BasicReceiveNetMessage(SOCK s, void *Msg, short msgLen, int timeOutms, BOOL 
 		
 		if(len < 0){
 			errSock = geterrno();
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 			if( errSock != WSAEWOULDBLOCK )
 #else
 			if( errSock != EWOULDBLOCK )
@@ -789,12 +789,12 @@ int BasicReceiveNetMessage(SOCK s, void *Msg, short msgLen, int timeOutms, BOOL 
 /*
 	répond vrai si IP est présent et que le port n'est pas déjà utilisé
 */
-BOOL PortEstInutilise(unsigned short port)
+BOOL IsPortAvailable(unsigned short port)
 {
 	short e;
 	SOCK s;
 	SOCKADDR_IN lsock;
-	BOOL inutilise;
+	BOOL unused;
 	long res;
 
 	s = socket(AF_INET, SOCK_STREAM, 0);
@@ -809,17 +809,17 @@ BOOL PortEstInutilise(unsigned short port)
 	e = bind(s, (SOCKADDR*)&lsock, sizeof(SOCKADDR_IN));
 
 	if( e != 0 ){
-		inutilise = FALSE;
+		unused = FALSE;
 	}
 	else{
-		inutilise = TRUE;
+		unused = TRUE;
 	}
 
-#ifdef MON_WIN_SOCK
+#ifdef __WINSOCK__
 	res = closesocket(s);
 #else
 	res = close(s);
 #endif
-	return inutilise;
-}// PortEstInutilise;
+	return unused;
+}// IsPortAvailable;
 

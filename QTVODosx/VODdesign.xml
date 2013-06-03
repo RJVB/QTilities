@@ -3,10 +3,14 @@
 <vod.design>
 	<frequency fps=12.5 />
 	<scale factor=1 />
-	<UTC zone=1 DST=True />
+	<UTC zone=1 DST=False />
 	<channels
-		forward=2
-		pilot=3
-		left=1
-		right=4 />
+		forward=1
+		pilot=1
+		left=3
+		right=4 flipLeftRight=False />
+	<transcoding.mp4
+		codec=copy
+		bitrate=1100k
+		split=True />
 </vod.design>

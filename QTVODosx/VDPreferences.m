@@ -27,7 +27,9 @@ static void doNSLog( NSString *format, ... )
 VODDescription globalVDPreferences = {
 	12.5, 1.0, 1.0,
 	FALSE, TRUE, FALSE, TRUE,
-	{ 1, 2, 3, 4}
+	{ 1, 2, 3, 4}, FALSE,
+	"copy", "2000k",
+	FALSE
 };
 
 static VDPreferencesController *VDPrefsWin = NULL;
@@ -83,12 +85,17 @@ static char *channelName(int channel)
 @synthesize previousCell;
 @end
 
+static VDPreferencesController *prefsController = NULL;
+
 @implementation VDPreferencesController
 
 - (id) init
 {
 //	NSLog( @"[%@ %@] - [super initWithWindowNibName...]", NSStringFromClass([self class]), NSStringFromSelector(_cmd) );
 	self = [super initWithWindowNibName:@"VDPreferences"];
+	if( !prefsController ){
+		prefsController = self;
+	}
 	return self;
 }
 
@@ -108,6 +115,7 @@ static char *channelName(int channel)
 	[[self window] setWindowController:self];
 	[[self window] orderFront:sender];
 	[self update:YES];
+	[[self window] setTitle:@"VODdesign"];
 	VDPrefsWin = self;
 }
 
@@ -447,6 +455,9 @@ static char *channelName(int channel)
 			[contents appendString:@"</vod.design>\n"];
 			// write the contents to the requested file, creating/replacing it as necessary:
 			ret = [contents writeToFile:fName atomically:NO encoding:NSUTF8StringEncoding error:NULL];
+			if( ret ){
+				[[self window] setTitle:fName];
+			}
 		}
 	}
 	if( ret ){
@@ -471,3 +482,43 @@ void UpdateVDPrefsWin(BOOL updateChannelDisplay)
 		[VDPrefsWin update:updateChannelDisplay];
 	}
 }
+
+@implementation VDPreferencesLoader
+
+// this is the callback invoked when we open an XML file.
+- (BOOL)readFromURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError
+{ BOOL ret = NO;
+	if( [typeName isEqual:@"XMLPropertyList"] ){
+		{ QTVOD *qv = [QTVOD alloc];
+			VODDescription d;
+			if( [qv nsReadDefaultVODDescription:[absoluteURL path] toDescription:&d] == noErr ){
+				doNSLog( @"Read settings from %@", absoluteURL );
+				globalVDPreferences = d;
+				{ VDPreferencesController *vd;
+					// either use the existing preferences window, or create a new instance:
+					if( prefsController ){
+						vd = prefsController;
+					}
+					else{
+						vd = [[[VDPreferencesController alloc] init] retain];
+					}
+					[[vd window] display];
+					[vd showWindow:NULL];
+					[[vd window] setTitle:[absoluteURL path]];
+					// add preference window controller to the NSDocument instance we just opened.
+					// It's this bit of magic that will close the document (and thus allow the file
+					// to be reloaded) when we close the preference window.
+					[self addWindowController:vd];
+					ret = YES;
+				}
+			}
+			[qv release];
+		}
+	}
+	return ret;
+}
+
+@synthesize addToRecentMenu;
+
+@end
+

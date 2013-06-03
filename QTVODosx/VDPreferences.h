@@ -9,18 +9,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-typedef struct VODChannels {
-	int forward, pilot, left, right;
-} VODChannels;
-
-typedef struct VODDescription {
-	double frequency, scale, timeZone;
-	BOOL DST, useVMGI, log, flipLeftRight;
-	VODChannels channels;
-	BOOL changed;
-	char *codec, *bitRate;
-	BOOL splitQuad;
-} VODDescription;
+#import "QTVODcomm.h"
 
 extern VODDescription globalVDPreferences;
 
@@ -73,6 +62,11 @@ extern VODDescription globalVDPreferences;
 
 extern void UpdateVDPrefsWin(BOOL updateChannelDisplay);
 
+@interface VDPreferencesLoader : NSDocument {
+	short addToRecentMenu;
+}
+@property short addToRecentMenu;
+@end
 
 #define _VDPREFERENCES_H
 #endif
