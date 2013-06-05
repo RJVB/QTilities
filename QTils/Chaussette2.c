@@ -111,6 +111,9 @@ BOOL CreateClientOrServer(SOCK *s, unsigned short port, BOOL serveur, BOOL useTC
 #endif
   STATE_SOCK etatSock;
 
+	if( !s ){
+		return FALSE;
+	}
 	if( useTCP ){
 		*s = socket( AF_INET, SOCK_STREAM, 0 );
 	}
@@ -187,7 +190,7 @@ BOOL CreateClient(SOCK *s, unsigned short port, BOOL useTCP)
 	return CreateClientOrServer( s, port, FALSE, useTCP );
 }
 
-BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *address, int timeOutms, BOOL *fatal)
+BOOL ConnectToServer(SOCK s, unsigned short port, const char *nom, const char *address, int timeOutms, BOOL *fatal)
 {
 	short e;
 	SOCKADDR_IN fsock;
@@ -258,7 +261,7 @@ BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *address, int 
 	if( errSock != EWOULDBLOCK && errSock != EISCONN && errSock != ECONNREFUSED )
 #endif
 	{
-		fprintf( stderr, "socket connection error %d: %s(%u)\n", s, errSockText(errSock), errSock );
+		fprintf( stderr, "socket connection error %d: %s(%ld)\n", s, errSockText(errSock), errSock );
 		*fatal = TRUE;
 		return FALSE;
 	}
@@ -370,7 +373,7 @@ void CloseClient(SOCK *s)
 	short res;
 	STATE_SOCK etatSock = {FALSE, FALSE};
 
-	if(*s != NULLSOCKET ){
+	if( s && *s != NULLSOCKET ){
 #ifdef __WINSOCK__
 		res = closesocket(*s);
 #else
@@ -420,7 +423,7 @@ BOOL WaitForClientConnection( SOCK s, int timeOutms, BOOL blocking, SOCK *ss )
 #else
 				errSock = geterrno();
 #endif
-				fprintf( stderr, "accept() error %d (%s)\n", errSock, errSockText(errSock) );
+				fprintf( stderr, "accept() error %ld (%s)\n", errSock, errSockText(errSock) );
 			}
 		}
 		if( !blocking ){
@@ -566,7 +569,7 @@ BOOL SendNetMessage(SOCK s, void *msg, short serviceLen, short msgLen, int timeO
 			if( errSock != EWOULDBLOCK )
 #endif
 			{
-				fprintf( stderr, "send error %d (%s)\n", errSock, errSockText(errSock) );
+				fprintf( stderr, "send error %ld (%s)\n", errSock, errSockText(errSock) );
 				return FALSE;
 			}
 		}
@@ -581,7 +584,7 @@ BOOL SendNetMessage(SOCK s, void *msg, short serviceLen, short msgLen, int timeO
 } // SendNetMessage;
 
 // RJVB 20100317:
-int BasicSendNetMessage(SOCK s, void *msg, short msgLen, int timeOutms, BOOL blocking)
+BOOL BasicSendNetMessage(SOCK s, void *msg, short msgLen, int timeOutms, BOOL blocking)
 {
 	short e;
 	short trouve;
@@ -609,7 +612,8 @@ int BasicSendNetMessage(SOCK s, void *msg, short msgLen, int timeOutms, BOOL blo
 				break;
 			}
 			if( !blocking ){
-				return chunks;
+//				return chunks;
+				return TRUE;
 			}
 		} while( 1 );
 		
@@ -624,7 +628,7 @@ int BasicSendNetMessage(SOCK s, void *msg, short msgLen, int timeOutms, BOOL blo
 			if( errSock != EWOULDBLOCK )
 #endif
 			{
-				fprintf( stderr, "send error %d (%s)\n", errSock, errSockText(errSock) );
+				fprintf( stderr, "send error %ld (%s)\n", errSock, errSockText(errSock) );
 				return FALSE;
 			}
 		}
@@ -636,7 +640,8 @@ int BasicSendNetMessage(SOCK s, void *msg, short msgLen, int timeOutms, BOOL blo
 			}
 		}
 	}
-	return chunks;
+//	return chunks;
+	return TRUE;
 } // BasicSendNetMessage;
 
 // RJVB 20100317: pourquoi srvce etait-ce un char* au lieu d'un short* ?!
@@ -702,7 +707,7 @@ BOOL ReceiveNetMessage(SOCK s, void *Srvce, short serviceLen, void *Msg, short m
 			if( errSock != EWOULDBLOCK )
 #endif
 			{
-				fprintf( stderr, "receive error %d (%s) : ", errSock, errSockText(errSock) );
+				fprintf( stderr, "receive error %ld (%s) : ", errSock, errSockText(errSock) );
 				fflush( stderr );
 				return FALSE;
 			}

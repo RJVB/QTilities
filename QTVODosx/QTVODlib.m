@@ -26,7 +26,6 @@ char *assocDataFileName = NULL;
 SOCK sServer = NULLSOCKET;
 NSInputStream *nsReadServer = NULL;
 NSOutputStream *nsWriteServer = NULL;
-static int readErrors = 0;
 
 static void NSnoLog( NSString *format, ... )
 {
@@ -62,27 +61,25 @@ static void doNSLog( NSString *format, ... )
 		case NSStreamEventHasBytesAvailable:{
 		  uint8_t *buffer;
 		  NSUInteger count;
+		  NetMessage Msg, *msg = NULL;
 			if( [theStream getBuffer:&buffer length:&count] ){
-				QTils_Log( __FILE__, __LINE__, @"stream %@ has %u bytes available", theStream, count );
+					QTils_Log( __FILE__, __LINE__, @"stream %@ has %u bytes available", theStream, count );
 				if( count == sizeof(NetMessage) ){
-					NetMessageToLogMsg( "[nsReadServer getBuffer:]", NULL, (NetMessage*) buffer );
+					msg = (NetMessage*) buffer;
 				}
 			}
 			else{
 			  NSInteger read;
-			  NetMessage msg;
-				read = [theStream read:(uint8_t*)&msg maxLength:sizeof(msg)];
-//				QTils_Log( __FILE__, __LINE__, @"stream %@ NSStreamEventHasBytesAvailable, returns NO, read=%d of %d",
-//						theStream, read, sizeof(msg) );
-				if( read == sizeof(msg) ){
-					NetMessageToLogMsg( "[nsReadServer read:]", NULL, &msg );
+				read = [theStream read:(uint8_t*)&Msg maxLength:sizeof(Msg)];
+				if( read == sizeof(Msg) ){
+					msg = &Msg;
 				}
 				else if( read < 0 ){
-					if( readErrors > 3 ){
+					if( ReceiveErrors > 3 ){
 						read = 0;
 					}
 					else{
-						readErrors += 1;
+						ReceiveErrors += 1;
 					}
 				}
 				if( !read ){
@@ -90,12 +87,24 @@ static void doNSLog( NSString *format, ... )
 				  NSError *error = [theStream streamError];
 					QTils_Log( __FILE__, __LINE__,
 							@"Stream closed remotely or too many (%d) errors (last '%@'; status=%d): closing channel",
-							readErrors, error, status );
+							ReceiveErrors, error, status );
 					CloseCommClient(&sServer);
 					PostMessage( "QTVOD", lastSSLogMsg );
 				}
-				else if( msg.flags.type == qtvod_Quit ){
-					[[NSApplication sharedApplication] terminate:theStream];
+			}
+			if( msg ){
+				if( msg->size != sizeof(NetMessage) || msg->protocol != NETMESSAGE_PROTOCOL ){
+					QTils_LogMsgEx( "%s: ignoring NetMessage with size %hu!=%hu and/or protocol %hu!=%hu",
+								__FUNCTION__,
+								msg->size, sizeof(NetMessage), msg->protocol, NETMESSAGE_PROTOCOL );
+				}
+				else{
+					NetMessageToLogMsg( __FUNCTION__, NULL, msg );
+					msg->flags.category = qtvod_Confirmation;
+					SendMessageToNet( sServer, msg, SENDTIMEOUT, FALSE, __FUNCTION__ );
+					if( msg->flags.type == qtvod_Quit ){
+						[[NSApplication sharedApplication] terminate:theStream];
+					}
 				}
 			}
 			break;
@@ -106,6 +115,15 @@ static void doNSLog( NSString *format, ... )
 }
 @end
 
+void SendErrorHandler( size_t errors )
+{
+	if( errors > 5 ){
+		CloseCommClient(&sServer);
+		QTils_Log( __FILE__, __LINE__, @"%u message sending errors (last %d '%s'): closing communications channel",
+				errors, errSock, errSockText(errSock) );
+		PostMessage( "QTVOD", lastSSLogMsg );
+	}
+}
 
 // called from the application's applicationShouldTerminate handler:
 void commsCleanUp()
@@ -141,6 +159,8 @@ void commsInit()
 		[nsReadServer open]; [nsWriteServer open];
 		QTils_Log( __FILE__, __LINE__, @"Created NSStream pair (%@,%@)", nsReadServer, nsWriteServer );
 		errSock = 0;
+		SendErrors = ReceiveErrors = 0;
+		HandleSendErrors = SendErrorHandler;
 	}
 }
 

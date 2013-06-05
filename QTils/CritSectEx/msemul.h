@@ -69,7 +69,7 @@
 #ifndef __forceinline
 #	define __forceinline	inline
 #endif
-#ifndef __OBJC__
+#if !defined(__OBJC__) && !defined(BOOL)
 #	define	BOOL		bool
 #endif
 

@@ -71,7 +71,7 @@
 		D6E9CE151549F1B500F5F828 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6E9CE141549F1B500F5F828 /* QTKit.framework */; };
 		D6E9CE531549F5A000F5F828 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6E9CE521549F5A000F5F828 /* QuickTime.framework */; };
 		D6F5718C175CDFFA000CE71F /* Chaussette2.c in Sources */ = {isa = PBXBuildFile; fileRef = D6868AD417453D7A00A87874 /* Chaussette2.c */; };
-		D6F571EC175CE893000CE71F /* QTVODcomm.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F571EB175CE893000CE71F /* QTVODcomm.c */; };
+		D6F571EC175CE893000CE71F /* QTVODcomm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6F571EB175CE893000CE71F /* QTVODcomm.cpp */; };
 		D6F5751D175DF294000CE71F /* QTVODlib.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F5751C175DF294000CE71F /* QTVODlib.m */; };
 /* End PBXBuildFile section */
 
@@ -255,7 +255,7 @@
 		D6E9CE141549F1B500F5F828 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		D6E9CE521549F5A000F5F828 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
 		D6F571D8175CE68B000CE71F /* QTVODcomm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTVODcomm.h; sourceTree = "<group>"; };
-		D6F571EB175CE893000CE71F /* QTVODcomm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = QTVODcomm.c; sourceTree = "<group>"; };
+		D6F571EB175CE893000CE71F /* QTVODcomm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTVODcomm.cpp; sourceTree = "<group>"; };
 		D6F5751B175DF294000CE71F /* QTVODlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTVODlib.h; sourceTree = "<group>"; };
 		D6F5751C175DF294000CE71F /* QTVODlib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTVODlib.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -351,7 +351,7 @@
 				D651F5C814168965007169F9 /* QTVOD.m */,
 				D63359051428D548007C36EE /* QTVODController.m */,
 				D68FAFAD1422033B003CB551 /* VDPreferences.m */,
-				D6F571EB175CE893000CE71F /* QTVODcomm.c */,
+				D6F571EB175CE893000CE71F /* QTVODcomm.cpp */,
 				D6F5751C175DF294000CE71F /* QTVODlib.m */,
 			);
 			name = Source;
@@ -717,7 +717,7 @@
 				D68FAFAF1422033B003CB551 /* VDPreferences.m in Sources */,
 				D63359061428D548007C36EE /* QTVODController.m in Sources */,
 				D6F5718C175CDFFA000CE71F /* Chaussette2.c in Sources */,
-				D6F571EC175CE893000CE71F /* QTVODcomm.c in Sources */,
+				D6F571EC175CE893000CE71F /* QTVODcomm.cpp in Sources */,
 				D6F5751D175DF294000CE71F /* QTVODlib.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

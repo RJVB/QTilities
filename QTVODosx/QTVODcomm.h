@@ -57,12 +57,12 @@ typedef struct StaticVODDescription {
 	VODDESCRIPTIONCOMMON2
 } GCC_PACKED StaticVODDescription;
 
-typedef enum NetMessageClass
+typedef enum NetMessageCategory
 #ifdef MSC_VER
 	: char
 #endif
 	{ qtvod_NoClass = 0,
-		qtvod_Command, qtvod_Confirmation, qtvod_Notification, qtvod_Subscription } GCC_PACKED NetMessageClass;
+		qtvod_Command, qtvod_Confirmation, qtvod_Notification, qtvod_Subscription } GCC_PACKED NetMessageCategory;
 typedef enum NetMessageType
 #ifdef MSC_VER
 	: char
@@ -87,7 +87,7 @@ typedef struct NetMessage {
 	// !NB! GCC_PACKED is NOT recursive, it should be specified on sub-structures too!!
 	struct {
 		NetMessageType		type;
-		NetMessageClass	class;
+		NetMessageCategory	category;
 	} GCC_PACKED flags;
 	struct {
 		// a message can carry 2 double fl.point values;
@@ -108,8 +108,17 @@ typedef struct NetMessage {
 #endif
 } GCC_PACKED NetMessage;
 
+typedef void	(*CommErrorHandler)(size_t);
+
 #ifdef _MSC_VER
 #	pragma pack(pop)
+#endif
+
+extern size_t ReceiveErrors, SendErrors;
+extern CommErrorHandler HandleSendErrors, HandleReceiveErrors;
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 extern VODDescription *VODDescriptionFromStatic( StaticVODDescription *descr, VODDescription *target );
@@ -117,14 +126,24 @@ extern StaticVODDescription *VODDescriptionToStatic( VODDescription *descr, Stat
 
 extern BOOL InitCommClient( SOCK *s, char *address, unsigned short serverPortNr, unsigned short clientPortNr, int timeOutMS );
 extern void CloseCommClient( SOCK *clnt );
+extern BOOL InitCommServer( SOCK *srv, unsigned short portNr );
+extern BOOL ServerCheckForClient( SOCK srv, SOCK *clnt, int timeOutMs, BOOL block );
+extern void CloseCommServer( SOCK *srv, SOCK *clnt );
+
+extern BOOL SendMessageToNet( SOCK ss, NetMessage *msg, int timeOutMs, BOOL block, const char *caller );
 
 //! returns a pointer to a static String256
 extern char *NetMessageToString(NetMessage *msg);
-extern void NetMessageToLogMsg( char *title, char *caption, NetMessage *msg );
+extern void NetMessageToLogMsg( const char *title, const char *caption, NetMessage *msg );
+
+#ifdef __cplusplus
+}
+#endif
 
 #define SENDTIMEOUT	2
 #define ServerPortNr	5351
 #define ClientPortNr	4351
+#define NETMESSAGE_PROTOCOL	3
 
 #define _QTVODCOMM_H
 #endif

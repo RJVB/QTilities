@@ -13,6 +13,7 @@
 #include <string.h>
 #include "QTVODcomm.h"
 #include "QTilities.h"
+#include "CritSectEx/CritSectEx.h"
 
 typedef struct VDCommon1 {
 	VODDESCRIPTIONCOMMON1
@@ -20,6 +21,12 @@ typedef struct VDCommon1 {
 typedef struct VDCommon2 {
 	VODDESCRIPTIONCOMMON2
 } VDCommon2;
+
+static CritSectEx *SendMutex = NULL;
+static CritSectEx *ReceiveMutex = NULL;
+
+size_t SendErrors = 0, ReceiveErrors = 0;
+CommErrorHandler HandleSendErrors = NULL, HandleReceiveErrors = NULL;
 
 VODDescription *VODDescriptionFromStatic( StaticVODDescription *descr, VODDescription *target )
 {
@@ -68,6 +75,12 @@ BOOL InitCommClient( SOCK *clnt, char *address, unsigned short serverPortNr, uns
 		QTils_LogMsgEx( "Client socket opened on port %hu", clientPortNr );
 		if( ConnectToServer( *clnt, serverPortNr, "", address, timeOutMS, &fatal ) ){
 			QTils_LogMsgEx( "Connected to server \"%s:%hu\"", address, serverPortNr );
+			if( !SendMutex ){
+				SendMutex = new CritSectEx(4000);
+			}
+			if( !ReceiveMutex ){
+				ReceiveMutex = new CritSectEx(4000);
+			}
 			ret = TRUE;
 		}
 		else{
@@ -79,7 +92,7 @@ BOOL InitCommClient( SOCK *clnt, char *address, unsigned short serverPortNr, uns
 	}
 	else{
 		QTils_LogMsgEx( "Failure opening client socket on port %hu (err=%d \"%s\")",
-					clientPortNr, err, errSockText(err) );
+					clientPortNr, errSock, errSockText(errSock) );
 	}
 	return ret;
 }
@@ -89,12 +102,116 @@ void CloseCommClient( SOCK *clnt )
 	if( *clnt != NULLSOCKET ){
 		CloseConnectionToServer(clnt);
 		CloseClient(clnt);
+		delete SendMutex; SendMutex = NULL;
+		delete ReceiveMutex; ReceiveMutex = NULL;
 	}
+}
+
+BOOL InitCommServer( SOCK *srv, unsigned short portNr )
+{ BOOL ret;
+	if( srv && InitIP() && CreateServer( srv, portNr, TRUE ) ){
+		QTils_LogMsgEx( "Server socket opened on port %hu", portNr );
+		if( !SendMutex ){
+			SendMutex = new CritSectEx(4000);
+		}
+		if( !ReceiveMutex ){
+			ReceiveMutex = new CritSectEx(4000);
+		}
+		ret = TRUE;
+	}
+	else{
+		QTils_LogMsgEx( "Failure opening server socket on port %hu (err=%d \"%s\")",
+					portNr, errSock, errSockText(errSock) );
+		ret = FALSE;
+	}
+	return ret;
+}
+
+BOOL ServerCheckForClient( SOCK srv, SOCK *clnt, int timeOutMs, BOOL block )
+{ BOOL ret = FALSE;
+	if( srv != NULLSOCKET && clnt && *clnt == NULLSOCKET ){
+		if( WaitForClientConnection( srv, timeOutMs, block, clnt ) ){
+			QTils_LogMsg( "A client has connected" );
+			ret = TRUE;
+		}
+	}
+	return ret;
+}
+
+void CloseCommServer( SOCK *srv, SOCK *clnt )
+{
+	CloseServer(clnt);
+	CloseServer(srv);
+	delete SendMutex; SendMutex = NULL;
+	delete ReceiveMutex; ReceiveMutex = NULL;
+}
+
+BOOL SendMessageToNet( SOCK ss, NetMessage *msg, int timeOutMs, BOOL block, const char *caller )
+{ BOOL ret = FALSE;
+	if( msg ){
+	  CritSectEx::Scope scope(SendMutex);
+		errSock = 0;
+		msg->size = sizeof(*msg);
+		msg->protocol = NETMESSAGE_PROTOCOL;
+#ifdef COMMTIMING
+		msg->sentTime = HRTime_Time();
+#endif
+		ret = BasicSendNetMessage( ss, msg, sizeof(NetMessage), timeOutMs, block );
+		if( ret ){
+			NetMessageToLogMsg( caller, "(sent)", msg );
+		}
+		else{
+			NetMessageToLogMsg( caller, "(failure)", msg );
+			if( errSock ){
+				SendErrors += 1;
+				if( HandleSendErrors ){
+					HandleSendErrors(SendErrors);
+				}
+			}
+		}
+	}
+	return ret;
+}
+
+static inline void receiveError()
+{
+	ReceiveErrors += 1;
+	if( HandleReceiveErrors ){
+		HandleReceiveErrors(ReceiveErrors);
+	}
+}
+
+BOOL ReceiveMessageFromNet( SOCK ss, NetMessage *msg, int timeOutMs, BOOL block, const char *caller )
+{ BOOL ret = FALSE;
+	if( msg ){
+	  CritSectEx::Scope scope(ReceiveMutex);
+		ret = BasicReceiveNetMessage( ss, msg, sizeof(NetMessage), timeOutMs, block );
+		if( ret ){
+			if( msg->size != sizeof(NetMessage) || msg->protocol != NETMESSAGE_PROTOCOL ){
+				QTils_LogMsgEx(
+							"ReceiveMessageFromNet: ignoring NetMessage with size %hu!=%hu and/or protocol %hu!=%hu",
+							msg->size, sizeof(NetMessage), msg->protocol, NETMESSAGE_PROTOCOL );
+				ret = FALSE;
+				receiveError();
+			}
+#ifdef COMMTIMING
+			msg->recdTime = HRTime_Time();
+#endif
+		}
+		else{
+			if( errSock ){
+				NetMessageToLogMsg( caller, "Receive error)", msg );
+				receiveError();
+				errSock = 0;
+			}
+		}
+	}
+	return ret;
 }
 
 char *NetMessageToString(NetMessage *msg)
 { static String256 str;
-  char *c;
+  const char *c;
 	if( !msg ){
 		return NULL;
 	}
@@ -172,7 +289,7 @@ char *NetMessageToString(NetMessage *msg)
 			c = "<??>";
 			break;
 	}
-	switch( msg->flags.class ){
+	switch( msg->flags.category ){
 		case qtvod_Command:
 			snprintf( str, sizeof(str), "%s (command)", c );
 			break;
@@ -196,8 +313,8 @@ char *NetMessageToString(NetMessage *msg)
 	return str;
 }
 
-void NetMessageToLogMsg( char *title, char *caption, NetMessage *msg )
-{ char *tType;
+void NetMessageToLogMsg( const char *title, const char *caption, NetMessage *msg )
+{ const char *tType;
 	if( msg ){
 		tType = (msg->data.boolean)? "(abs)" : "(rel)";
 	}

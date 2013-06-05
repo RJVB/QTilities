@@ -89,11 +89,15 @@ extern int sendTimeOut, receiveTimeOut;
 
 //prototypes des fonctions ---------------------------------------
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern BOOL InitIP();
 
 extern BOOL CreateClient(SOCK *s, unsigned short port, BOOL useTCP);
 
-extern BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *address, int timeOutms, BOOL *fatale);
+extern BOOL ConnectToServer(SOCK s, unsigned short port, const char *nom, const char *address, int timeOutms, BOOL *fatale);
 
 extern void CloseClient(SOCK *s);
 #define CloseServer(s)	CloseClient(s)
@@ -110,7 +114,7 @@ extern void CloseConnectionToServer(SOCK *s);
 
 extern BOOL SendNetMessage(SOCK s, void *msg, short serviceLen, short msgLen, int timeOutms, BOOL blocking);
 // envoi d'un message sans partie service; retourne le nombre de trames utilisees.
-extern int BasicSendNetMessage(SOCK s, void *msg, short msgLen, int timeOutms, BOOL blocking);
+extern BOOL BasicSendNetMessage(SOCK s, void *msg, short msgLen, int timeOutms, BOOL blocking);
 
 // si Srvce et Msg font partie d'une meme structure envoyee par SendNetMessage(), attention a serviceLen
 // (qui doit prendre en compte les eventuels octets de 'padding' entre Srvce et Msg dans la structure) et
@@ -127,5 +131,9 @@ extern BOOL WaitForClientConnection( SOCK s, int timeOutms, BOOL blocking, SOCK 
 extern BOOL IsPortAvailable(unsigned short port);
 
 extern char *errSockText(long errID);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
