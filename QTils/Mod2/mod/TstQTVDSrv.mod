@@ -52,6 +52,7 @@ VAR
 	fName : URLString;
 	descrFichierVOD : VODDescription;
 	startTimeAbs, Duration, prevCurrentTime : Real64;
+	str : URLString;
 
 	ArgsChan : ChanId;
 
@@ -269,6 +270,43 @@ BEGIN
 			fName := "";
 			QTils.LogMsg( "No arguments specified" );
 	END;
+	QTils.sprintf( str, "qtvod_NoClass=%d qtvod_Command=%d qtvod_NoType=%d qtvod_Open=%d qtvod_Quit=%d size NMC,NMT=%d,%d\r\n",
+		 qtvod_NoClass, qtvod_Command, qtvod_NoType, qtvod_Open, qtvod_Quit,
+		 VAL(INTEGER,SIZE(NetMessageClass)), VAL(INTEGER,SIZE(NetMessageType)) );
+	WriteString( str );
+	QTils.sprintf( str, "size Str64=%d URLString=%d VODDescription=%d VODChannels=%d ErrCode=%d NetMessage=%d\r\n",
+		VAL(INTEGER,SIZE(Str64)), VAL(INTEGER,SIZE(URLString)),
+		VAL(INTEGER,SIZE(VODDescription)), VAL(INTEGER,SIZE(descrFichierVOD.channels)), VAL(INTEGER,SIZE(ErrCode)), VAL(INTEGER,SIZE(NetMessage)) );
+	WriteString( str );
+	QTils.sprintf( str, "@freq,scale,timeZone=%lu,%lu,%lu @@DST,useVMGI,log,flip=%lu,%lu,%lu,%lu @channels=%lu,%lu,%lu,%lu @codec,bitrate=%lu,%lu @split=%lu\r\n",
+		CAST(UInt32,ADR(descrFichierVOD.frequency))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.scale))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.timeZone))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.DST))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.useVMGI))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.log))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.flipLeftRight))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.channels.forward))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.channels.pilot))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.channels.left))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.channels.right))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.codec))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.bitRate))-CAST(UInt32,ADR(descrFichierVOD)),
+		CAST(UInt32,ADR(descrFichierVOD.splitQuad))-CAST(UInt32,ADR(descrFichierVOD)) );
+	WriteString( str );
+	QTils.sprintf( str, "@size=%lu @protocol=%lu @f.type,class=%lu,%lu @d.val1,val2=%lu,%lu @d.iVal1,boolean=%lu,%lu @d.URN=%lu @d.descr=%lu @d.error=%lu\r\n",
+		CAST(UInt32,ADR(reply.size))-CAST(UInt32,ADR(reply)),
+		CAST(UInt32,ADR(reply.protocol))-CAST(UInt32,ADR(reply)),
+		CAST(UInt32,ADR(reply.flags.type))-CAST(UInt32,ADR(reply)),
+		CAST(UInt32,ADR(reply.flags.class))-CAST(UInt32,ADR(reply)),
+		CAST(UInt32,ADR(reply.data.val1))-CAST(UInt32,ADR(reply)),
+		CAST(UInt32,ADR(reply.data.val2))-CAST(UInt32,ADR(reply)),
+		CAST(UInt32,ADR(reply.data.iVal1))-CAST(UInt32,ADR(reply)),
+		CAST(UInt32,ADR(reply.data.boolean))-CAST(UInt32,ADR(reply)),
+		CAST(UInt32,ADR(reply.data.URN))-CAST(UInt32,ADR(reply)),
+		CAST(UInt32,ADR(reply.data.description))-CAST(UInt32,ADR(reply)),
+		CAST(UInt32,ADR(reply.data.error))-CAST(UInt32,ADR(reply)) );
+	WriteString( str );
 	IF InitCommServer(srv, ServerPortNr)
 		THEN
 			clntTimer := StartTimeEx();

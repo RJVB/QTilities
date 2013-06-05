@@ -24,10 +24,10 @@ static void doNSLog( NSString *format, ... )
 #	define NSLog	NSnoLog
 #endif
 
-VODDescription globalVDPreferences = {
+GlobalPreferencesStruct globalVD = {
 	12.5, 1.0, 1.0,
 	FALSE, TRUE, FALSE, TRUE,
-	{ 1, 2, 3, 4}, FALSE,
+	{ 1, 2, 3, 4},
 	"copy", "2000k",
 	FALSE
 };
@@ -62,10 +62,10 @@ static char *channelName(int channel)
 {
 
 	if( VDPrefsWin && ([VDPrefsWin window] == self) ){
-		if( globalVDPreferences.changed ){
+		if( globalVD.changed ){
 			[VDPrefsWin savePreferences:NULL];
 		}
-		globalVDPreferences.changed = NO;
+		globalVD.changed = NO;
 		VDPrefsWin = NULL;
 		NSLog( @"[%@ %@%@] : closing prefs window",
 			 NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender
@@ -102,6 +102,9 @@ static VDPreferencesController *prefsController = NULL;
 - (void)dealloc
 {
 //	NSLog( @"[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd) );
+	if( windowTitle ){
+		[windowTitle release];
+	}
 	[super dealloc];
 }
 
@@ -115,7 +118,9 @@ static VDPreferencesController *prefsController = NULL;
 	[[self window] setWindowController:self];
 	[[self window] orderFront:sender];
 	[self update:YES];
-	[[self window] setTitle:@"VODdesign"];
+	if( sender ){
+		[self setTitle:@"VODdesign"];
+	}
 	VDPrefsWin = self;
 }
 
@@ -179,21 +184,21 @@ static VDPreferencesController *prefsController = NULL;
 }
 
 - (void) update:(BOOL)updateChannelDisplay
-{ NSNumber *scale = [NSNumber numberWithDouble:globalVDPreferences.scale];
-	[dstButton setState:(globalVDPreferences.DST)? NSOnState : NSOffState];
-	[flLRButton setState:(globalVDPreferences.flipLeftRight)? NSOnState : NSOffState];
-	[splitButton setState:(globalVDPreferences.splitQuad)? NSOnState : NSOffState];
-	[self setComboBox:freqPopup toDoubleVal:globalVDPreferences.frequency];
-	[self setComboBox:tzPopup toDoubleVal:globalVDPreferences.timeZone];
+{ NSNumber *scale = [NSNumber numberWithDouble:globalVD.preferences.scale];
+	[dstButton setState:(globalVD.preferences.DST)? NSOnState : NSOffState];
+	[flLRButton setState:(globalVD.preferences.flipLeftRight)? NSOnState : NSOffState];
+	[splitButton setState:(globalVD.preferences.splitQuad)? NSOnState : NSOffState];
+	[self setComboBox:freqPopup toDoubleVal:globalVD.preferences.frequency];
+	[self setComboBox:tzPopup toDoubleVal:globalVD.preferences.timeZone];
 	[scaleTextField setObjectValue:scale];
-	if( globalVDPreferences.codec ){
-		[codecTextField setObjectValue:[NSString stringWithUTF8String:globalVDPreferences.codec]];
+	if( globalVD.preferences.codec ){
+		[codecTextField setObjectValue:[NSString stringWithUTF8String:globalVD.preferences.codec]];
 	}
 	else{
 		[codecTextField setObjectValue:@""];
 	}
-	if( globalVDPreferences.bitRate ){
-		[bitRateTextField setObjectValue:[NSString stringWithUTF8String:globalVDPreferences.bitRate]];
+	if( globalVD.preferences.bitRate ){
+		[bitRateTextField setObjectValue:[NSString stringWithUTF8String:globalVD.preferences.bitRate]];
 	}
 	else{
 		[bitRateTextField setObjectValue:@""];
@@ -201,12 +206,12 @@ static VDPreferencesController *prefsController = NULL;
 	// figure out how to @#$# keep the stepper synchronised with the text field if the latter is changed!
 	[scaleStepperCell takeDoubleValueFrom:scale];
 	if( updateChannelDisplay ){
-		[self setMatrixForQuadrant:globalVDPreferences.channels.forward toChannel:fwWin];
-		[self setMatrixForQuadrant:globalVDPreferences.channels.pilot toChannel:pilotWin];
-		[self setMatrixForQuadrant:globalVDPreferences.channels.left toChannel:leftWin];
-		[self setMatrixForQuadrant:globalVDPreferences.channels.right toChannel:rightWin];
+		[self setMatrixForQuadrant:globalVD.preferences.channels.forward toChannel:fwWin];
+		[self setMatrixForQuadrant:globalVD.preferences.channels.pilot toChannel:pilotWin];
+		[self setMatrixForQuadrant:globalVD.preferences.channels.left toChannel:leftWin];
+		[self setMatrixForQuadrant:globalVD.preferences.channels.right toChannel:rightWin];
 	}
-	[[self window] setDocumentEdited:globalVDPreferences.changed];
+	[[self window] setDocumentEdited:globalVD.changed];
 }
 
 - (void)freqPopupChanged:sender
@@ -217,8 +222,8 @@ static VDPreferencesController *prefsController = NULL;
 	}
 	NSLog( @"[%@ %@%@] -> (%@)%@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender,
 		 NSStringFromClass([[it objectValueOfSelectedItem] class]), nsval );
-	globalVDPreferences.frequency = [nsval doubleValue];
-	globalVDPreferences.changed = YES;
+	globalVD.preferences.frequency = [nsval doubleValue];
+	globalVD.changed = YES;
 	[self update:YES];
 }
 
@@ -230,62 +235,62 @@ static VDPreferencesController *prefsController = NULL;
 	}
 	NSLog( @"[%@ %@%@] -> (%@)%@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender,
 		 NSStringFromClass([[it objectValueOfSelectedItem] class]), nsval );
-	globalVDPreferences.timeZone = [nsval doubleValue];
-	globalVDPreferences.changed = YES;
+	globalVD.preferences.timeZone = [nsval doubleValue];
+	globalVD.changed = YES;
 	[self update:YES];
 }
 
 - (void)dstButtonChanged:sender
 {
 	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender );
-	globalVDPreferences.DST = ([dstButton state] == NSOnState);
-	globalVDPreferences.changed = YES;
+	globalVD.preferences.DST = ([dstButton state] == NSOnState);
+	globalVD.changed = YES;
 	[self update:YES];
 }
 
 - (void)flLRButtonChanged:sender
 {
 	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender );
-	globalVDPreferences.flipLeftRight = ([flLRButton state] == NSOnState);
-	globalVDPreferences.changed = YES;
+	globalVD.preferences.flipLeftRight = ([flLRButton state] == NSOnState);
+	globalVD.changed = YES;
 	[self update:YES];
 }
 
 - (void)splitButtonChanged:sender
 {
 	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender );
-	globalVDPreferences.splitQuad = ([splitButton state] == NSOnState);
-	globalVDPreferences.changed = YES;
+	globalVD.preferences.splitQuad = ([splitButton state] == NSOnState);
+	globalVD.changed = YES;
 	[self update:YES];
 }
 
 - (void)codecTextFieldChanged:sender
 {
 	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender );
-	if( globalVDPreferences.codec ){
-		QTils_free(globalVDPreferences.codec);
+	if( globalVD.preferences.codec ){
+		QTils_free(globalVD.preferences.codec);
 	}
-	globalVDPreferences.codec = QTils_strdup([[codecTextField stringValue] UTF8String]);
-	globalVDPreferences.changed = YES;
+	globalVD.preferences.codec = QTils_strdup([[codecTextField stringValue] UTF8String]);
+	globalVD.changed = YES;
 	[self update:YES];
 }
 
 - (void)bitRateTextFieldChanged:sender
 {
 	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender );
-	if( globalVDPreferences.bitRate ){
-		QTils_free(globalVDPreferences.bitRate);
+	if( globalVD.preferences.bitRate ){
+		QTils_free(globalVD.preferences.bitRate);
 	}
-	globalVDPreferences.bitRate = QTils_strdup([[bitRateTextField stringValue] UTF8String]);
-	globalVDPreferences.changed = YES;
+	globalVD.preferences.bitRate = QTils_strdup([[bitRateTextField stringValue] UTF8String]);
+	globalVD.changed = YES;
 	[self update:YES];
 }
 
 - (void)scaleTextFieldChanged:sender
 {
 	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), sender );
-	globalVDPreferences.scale = [scaleTextField doubleValue];
-	globalVDPreferences.changed = YES;
+	globalVD.preferences.scale = [scaleTextField doubleValue];
+	globalVD.changed = YES;
 	[self update:YES];
 }
 
@@ -302,8 +307,8 @@ static VDPreferencesController *prefsController = NULL;
 	// update the global variable (we'd have to use a function to update a static struct and return
 	// a pointer to that).
 	[scaleTextField takeDoubleValueFrom:sender];
-	globalVDPreferences.scale = [scaleTextField doubleValue];
-	globalVDPreferences.changed = YES;
+	globalVD.preferences.scale = [scaleTextField doubleValue];
+	globalVD.changed = YES;
 	[self update:YES];
 }
 
@@ -311,19 +316,19 @@ static VDPreferencesController *prefsController = NULL;
 {
 	switch( channel ){
 		case fwWin:
-			globalVDPreferences.channels.forward = qd;
+			globalVD.preferences.channels.forward = qd;
 			NSLog( @"setChannel:Forward fromQuadrant:%d]", qd );
 			break;
 		case pilotWin:
-			globalVDPreferences.channels.pilot = qd;
+			globalVD.preferences.channels.pilot = qd;
 			NSLog( @"setChannel:Pilot fromQuadrant:%d]", qd );
 			break;
 		case leftWin:
-			globalVDPreferences.channels.left = qd;
+			globalVD.preferences.channels.left = qd;
 			NSLog( @"setChannel:Left fromQuadrant:%d]", qd );
 			break;
 		case rightWin:
-			globalVDPreferences.channels.right = qd;
+			globalVD.preferences.channels.right = qd;
 			NSLog( @"setChannel:Right fromQuadrant:%d]", qd );
 			break;
 		default:
@@ -352,7 +357,7 @@ static VDPreferencesController *prefsController = NULL;
 //		[self setChannel:[sel tag] fromQuadrant:1];
 //		[self getChMatrixSettings];
 		[self setChannel:[sel tag] fromQuadrant:1];
-		globalVDPreferences.changed = YES;
+		globalVD.changed = YES;
 		[self update:NO];
 		ch1Matrix.previousCell = sel;
 	}
@@ -368,7 +373,7 @@ static VDPreferencesController *prefsController = NULL;
 //		[self setChannel:[sel tag] fromQuadrant:2];
 //		[self getChMatrixSettings];
 		[self setChannel:[sel tag] fromQuadrant:2];
-		globalVDPreferences.changed = YES;
+		globalVD.changed = YES;
 		[self update:NO];
 		ch2Matrix.previousCell = sel;
 	}
@@ -384,7 +389,7 @@ static VDPreferencesController *prefsController = NULL;
 //		[self setChannel:[sel tag] fromQuadrant:3];
 //		[self getChMatrixSettings];
 		[self setChannel:[sel tag] fromQuadrant:3];
-		globalVDPreferences.changed = YES;
+		globalVD.changed = YES;
 		[self update:NO];
 		ch3Matrix.previousCell = sel;
 	}
@@ -400,7 +405,7 @@ static VDPreferencesController *prefsController = NULL;
 //		[self setChannel:[sel tag] fromQuadrant:4];
 //		[self getChMatrixSettings];
 		[self setChannel:[sel tag] fromQuadrant:4];
-		globalVDPreferences.changed = YES;
+		globalVD.changed = YES;
 		[self update:NO];
 		ch4Matrix.previousCell = sel;
 	}
@@ -434,36 +439,50 @@ static VDPreferencesController *prefsController = NULL;
 			[contents setString:@"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
 				"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
 				"<vod.design>\n" ];
-			[contents appendFormat:@"\t<frequency fps=%g />\n", globalVDPreferences.frequency];
-			[contents appendFormat:@"\t<scale factor=%g />\n", globalVDPreferences.scale];
-			[contents appendFormat:@"\t<UTC zone=%g DST=%s />\n", globalVDPreferences.timeZone,
-								(globalVDPreferences.DST)? "True" : "False" ];
+			[contents appendFormat:@"\t<frequency fps=%g />\n", globalVD.preferences.frequency];
+			[contents appendFormat:@"\t<scale factor=%g />\n", globalVD.preferences.scale];
+			[contents appendFormat:@"\t<UTC zone=%g DST=%s />\n", globalVD.preferences.timeZone,
+								(globalVD.preferences.DST)? "True" : "False" ];
 			[contents appendString:@"\t<channels\n"];
-			[contents appendFormat:@"\t\tforward=%d\n", globalVDPreferences.channels.forward];
-			[contents appendFormat:@"\t\tpilot=%d\n", globalVDPreferences.channels.pilot];
-			[contents appendFormat:@"\t\tleft=%d\n", globalVDPreferences.channels.left];
-			[contents appendFormat:@"\t\tright=%d flipLeftRight=%s />\n", globalVDPreferences.channels.right,
-								(globalVDPreferences.flipLeftRight)? "True" : "False" ];
+			[contents appendFormat:@"\t\tforward=%d\n", globalVD.preferences.channels.forward];
+			[contents appendFormat:@"\t\tpilot=%d\n", globalVD.preferences.channels.pilot];
+			[contents appendFormat:@"\t\tleft=%d\n", globalVD.preferences.channels.left];
+			[contents appendFormat:@"\t\tright=%d flipLeftRight=%s />\n", globalVD.preferences.channels.right,
+								(globalVD.preferences.flipLeftRight)? "True" : "False" ];
 			[contents appendString:@"\t<transcoding.mp4\n"];
-			if( globalVDPreferences.codec && *globalVDPreferences.codec ){
-				[contents appendFormat:@"\t\tcodec=%s\n", globalVDPreferences.codec ];
+			if( globalVD.preferences.codec && *globalVD.preferences.codec ){
+				[contents appendFormat:@"\t\tcodec=%s\n", globalVD.preferences.codec ];
 			}
-			if( globalVDPreferences.bitRate && *globalVDPreferences.bitRate ){
-				[contents appendFormat:@"\t\tbitrate=%s\n", globalVDPreferences.bitRate ];
+			if( globalVD.preferences.bitRate && *globalVD.preferences.bitRate ){
+				[contents appendFormat:@"\t\tbitrate=%s\n", globalVD.preferences.bitRate ];
 			}
-			[contents appendFormat:@"\t\tsplit=%s />\n", (globalVDPreferences.splitQuad)? "True" : "False" ];
+			[contents appendFormat:@"\t\tsplit=%s />\n", (globalVD.preferences.splitQuad)? "True" : "False" ];
 			[contents appendString:@"</vod.design>\n"];
 			// write the contents to the requested file, creating/replacing it as necessary:
 			ret = [contents writeToFile:fName atomically:NO encoding:NSUTF8StringEncoding error:NULL];
 			if( ret ){
-				[[self window] setTitle:fName];
+				[self setTitle:fName];
 			}
 		}
 	}
 	if( ret ){
-		globalVDPreferences.changed = NO;
+		globalVD.changed = NO;
 	}
 	return ret;
+}
+
+- (void) setTitle:(NSString*)title
+{
+	if( windowTitle ){
+		[windowTitle release];
+	}
+	windowTitle = [title retain];
+	[[self window] setTitle:windowTitle];
+}
+
+- (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName
+{
+	return (windowTitle)? windowTitle : displayName;
 }
 
 @synthesize splitButton;
@@ -489,31 +508,34 @@ void UpdateVDPrefsWin(BOOL updateChannelDisplay)
 - (BOOL)readFromURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError
 { BOOL ret = NO;
 	if( [typeName isEqual:@"XMLPropertyList"] ){
-		{ QTVOD *qv = [QTVOD alloc];
-			VODDescription d;
-			if( [qv nsReadDefaultVODDescription:[absoluteURL path] toDescription:&d] == noErr ){
-				doNSLog( @"Read settings from %@", absoluteURL );
-				globalVDPreferences = d;
-				{ VDPreferencesController *vd;
-					// either use the existing preferences window, or create a new instance:
-					if( prefsController ){
-						vd = prefsController;
-					}
-					else{
-						vd = [[[VDPreferencesController alloc] init] retain];
-					}
-					[[vd window] display];
-					[vd showWindow:NULL];
-					[[vd window] setTitle:[absoluteURL path]];
-					// add preference window controller to the NSDocument instance we just opened.
-					// It's this bit of magic that will close the document (and thus allow the file
-					// to be reloaded) when we close the preference window.
-					[self addWindowController:vd];
-					ret = YES;
-				}
-			}
-			[qv release];
+	  QTVOD *qv = [QTVOD alloc];
+	  VODDescription d;
+		if( prefsController ){
+			[prefsController close];
 		}
+		if( [qv nsReadDefaultVODDescription:[absoluteURL path] toDescription:&d] == noErr ){
+			doNSLog( @"Read settings from %@", [absoluteURL path] );
+			globalVD.preferences = d;
+			{ VDPreferencesController *vd;
+				// either use the existing preferences window, or create a new instance:
+				if( prefsController ){
+					vd = prefsController;
+				}
+				else{
+					vd = [[[VDPreferencesController alloc] init] retain];
+				}
+				[[vd window] display];
+				[vd showWindow:NULL];
+				// add preference window controller to the NSDocument instance we just opened.
+				// It's this bit of magic that will close the document (and thus allow the file
+				// to be reloaded) when we close the preference window.
+				[self addWindowController:vd];
+				[vd setDocument:self];
+				[vd setTitle:[absoluteURL path]];
+				ret = YES;
+			}
+		}
+		[qv release];
 	}
 	return ret;
 }
@@ -522,3 +544,9 @@ void UpdateVDPrefsWin(BOOL updateChannelDisplay)
 
 @end
 
+__attribute__((constructor))
+static void initialiser( int argc, char** argv, char** envp )
+{
+	globalVD.preferences.codec = QTils_strdup(globalVD.preferences.codec);
+	globalVD.preferences.bitRate = QTils_strdup(globalVD.preferences.bitRate);
+}

@@ -72,6 +72,7 @@
 		D6E9CE531549F5A000F5F828 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6E9CE521549F5A000F5F828 /* QuickTime.framework */; };
 		D6F5718C175CDFFA000CE71F /* Chaussette2.c in Sources */ = {isa = PBXBuildFile; fileRef = D6868AD417453D7A00A87874 /* Chaussette2.c */; };
 		D6F571EC175CE893000CE71F /* QTVODcomm.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F571EB175CE893000CE71F /* QTVODcomm.c */; };
+		D6F5751D175DF294000CE71F /* QTVODlib.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F5751C175DF294000CE71F /* QTVODlib.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -225,6 +226,7 @@
 		D660422A141F566C0011DBC6 /* QTVODcomm.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; lineEnding = 2; name = QTVODcomm.def; path = ../QTils/Mod2/def/QTVODcomm.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		D660422B141F566C0011DBC6 /* QTVODlib.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; lineEnding = 2; name = QTVODlib.def; path = ../QTils/Mod2/def/QTVODlib.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		D660422C141F567C0011DBC6 /* QTVODlib.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.mod; lineEnding = 2; name = QTVODlib.mod; path = ../QTils/Mod2/mod/QTVODlib.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D6717208175F7ADF00F3C4F3 /* TstQTVDSrv.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.mod; name = TstQTVDSrv.mod; path = ../QTils/Mod2/mod/TstQTVDSrv.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		D676F0210BC419C8008693F8 /* QTAMovieView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTAMovieView.h; sourceTree = "<group>"; };
 		D676F0220BC419C8008693F8 /* QTAMovieView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTAMovieView.m; sourceTree = "<group>"; };
 		D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "QTMovieSink-106.xcodeproj"; path = "../QTMovieSink-106.xcodeproj"; sourceTree = SOURCE_ROOT; };
@@ -254,6 +256,8 @@
 		D6E9CE521549F5A000F5F828 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
 		D6F571D8175CE68B000CE71F /* QTVODcomm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTVODcomm.h; sourceTree = "<group>"; };
 		D6F571EB175CE893000CE71F /* QTVODcomm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = QTVODcomm.c; sourceTree = "<group>"; };
+		D6F5751B175DF294000CE71F /* QTVODlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTVODlib.h; sourceTree = "<group>"; };
+		D6F5751C175DF294000CE71F /* QTVODlib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTVODlib.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -348,6 +352,7 @@
 				D63359051428D548007C36EE /* QTVODController.m */,
 				D68FAFAD1422033B003CB551 /* VDPreferences.m */,
 				D6F571EB175CE893000CE71F /* QTVODcomm.c */,
+				D6F5751C175DF294000CE71F /* QTVODlib.m */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -461,6 +466,7 @@
 				D63359041428D548007C36EE /* QTVODController.h */,
 				D68FAFAE1422033B003CB551 /* VDPreferences.h */,
 				D6F571D8175CE68B000CE71F /* QTVODcomm.h */,
+				D6F5751B175DF294000CE71F /* QTVODlib.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -479,6 +485,7 @@
 				D660422C141F567C0011DBC6 /* QTVODlib.mod */,
 				D6604227141F566C0011DBC6 /* QTVODcomm.mod */,
 				D6604226141F566C0011DBC6 /* QTVODm2.mod */,
+				D6717208175F7ADF00F3C4F3 /* TstQTVDSrv.mod */,
 			);
 			name = QTVODm2;
 			sourceTree = "<group>";
@@ -711,6 +718,7 @@
 				D63359061428D548007C36EE /* QTVODController.m in Sources */,
 				D6F5718C175CDFFA000CE71F /* Chaussette2.c in Sources */,
 				D6F571EC175CE893000CE71F /* QTVODcomm.c in Sources */,
+				D6F5751D175DF294000CE71F /* QTVODlib.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -921,6 +929,10 @@
 				GCC_PREFIX_HEADER = QTVOD.pch;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../QTils,
+				);
 				INFOPLIST_FILE = English.lproj/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PREBINDING = NO;
@@ -939,10 +951,13 @@
 				GCC_ENABLE_PASCAL_STRINGS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = QTVOD.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = org.macports.clangxx.3.3;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = ..;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../QTils,
+				);
 				INFOPLIST_FILE = English.lproj/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LLVM_LTO = NO;
@@ -963,6 +978,10 @@
 				GCC_PREFIX_HEADER = QTVOD.pch;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../QTils,
+				);
 				INFOPLIST_FILE = English.lproj/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = QTVOD;
@@ -1169,6 +1188,10 @@
 				GCC_PREFIX_HEADER = QTVOD.pch;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../QTils,
+				);
 				INFOPLIST_FILE = English.lproj/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PREBINDING = NO;

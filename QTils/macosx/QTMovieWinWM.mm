@@ -1014,6 +1014,7 @@ int QTils_Log(const char *fileName, int lineNr, NSString *format, ... )
 #else
 	ret = NSLogvprintf2( fileName, lineNr, NULL, LoggerActive(NULL), NULL, NULL, 0, format, ap );
 #endif
+	snprintf( lastSSLogMsg, sizeof(lastSSLogMsg), [[[NSString alloc] initWithFormat:format arguments:ap] UTF8String] );
 	va_end(ap);
 	return ret;
 }

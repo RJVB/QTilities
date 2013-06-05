@@ -202,10 +202,10 @@ typedef enum QTVODwinIDs {
 - (void)showPreferences:sender;
 @end
 
-@interface QTVODApplicationDelegate : NSObject {
+@interface QTVODApplicationDelegate : NSObject<NSApplicationDelegate> {
 }
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender;
-
+- (void) applicationWillFinishLaunching:(NSNotification*)notice;
 @end
 
 #	define _QTVODWINDOW_H

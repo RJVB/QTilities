@@ -69,7 +69,7 @@ static QTils_Allocators *__init_QTils_Allocator__( QTils_Allocators *qa,
 							    void* (*mallocPtr)(size_t), void* (*callocPtr)(size_t,size_t),
 							    void* (*reallocPtr)(void*, size_t), void (*freePtr)(void **) )
 {
-	assert(malloc);
+	assert(mallocPtr);
 	if( !qa ){
 		qa = (*mallocPtr)( sizeof(QTils_Allocators) );
 	}

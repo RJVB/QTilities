@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <vod.design>
 	<frequency fps=12.5 />
-	<scale factor=1 />
+	<scale factor=2 />
 	<UTC zone=1 DST=False />
 	<channels
 		forward=1

@@ -14,6 +14,7 @@
 #import "../QTils/QTilities.h"
 #import "QTVODWindow.h"
 #import "QTVOD.h"
+#import "QTVODlib.h"
 #import "VDPreferences.h"
 
 @implementation NSApplication (toggleLogging)
@@ -35,8 +36,8 @@ extern BOOL QTils_LogSetActive(BOOL);
 	if( doLogging ){
 		[[NSWorkspace sharedWorkspace] launchApplication:@"NSLogger"];
 	}
-	QTils_LogMsgEx( "toggleLogging: logging now %s\n", (doLogging)? "ON" : "OFF" );
 	QTils_LogSetActive(doLogging);
+	QTils_LogMsgEx( "toggleLogging: logging now %s\n", (doLogging)? "ON" : "OFF" );
 	if( sender != self ){
 		DoLoggingMI = sender;
 	}
@@ -75,13 +76,22 @@ extern BOOL QTils_LogSetActive(BOOL);
 		}
 		[QTVODList release];
 		QTVODList = nil;
-		CloseQT();
 	}
+	commsCleanUp();
+	CloseQT();
 	if( nsXMLVD ){
 		[nsXMLVD release];
 	}
 	return NSTerminateNow;
 }
+
+- (void) applicationWillFinishLaunching:(NSNotification*)notice
+{ extern int *_NSGetArgc();
+  extern char ***_NSGetArgv();
+	ParseArgs( *_NSGetArgc(), *_NSGetArgv() );
+	UpdateVDPrefsWin(YES);
+}
+
 @end
 
 // From http://developer.apple.com/library/mac/#documentation/Carbon/Conceptual/ProvidingUserAssitAppleHelp/registering_help/registering_help.html%23//apple_ref/doc/uid/TP30000903-CH207-CHDGHHDF :
@@ -121,12 +131,17 @@ static void freep( void **p)
 	}
 }
 
+__attribute__((constructor))
+static void initialiser()
+{
+	init_QTils_Allocator( malloc, calloc, realloc, freep );
+}
+
 int main(int argc, char *argv[])
 { extern Boolean QTMWInitialised;
 	QTils_MessagePumpIsInActive = TRUE;
 	QTils_LogSetActive(doLogging);
 	if( !QTMWInitialised ){
-		init_QTils_Allocator( malloc, calloc, realloc, freep );
 		InitQTMovieWindows();
 	}
 	RegisterMyHelpBook();
@@ -134,10 +149,11 @@ int main(int argc, char *argv[])
 	  VODDescription d;
 		if( [qv ReadDefaultVODDescription:"VODdesign.xml" toDescription:&d] == noErr ){
 			NSLog( @"Read settings from VODdesign.xml" );
-			globalVDPreferences = d;
+			globalVD.preferences = d;
 		}
 		[qv release];
 	}
-	[NSApp setDelegate:[[[QTVODApplicationDelegate alloc] init] autorelease] ];
+	[[NSApplication sharedApplication] setDelegate:[[[QTVODApplicationDelegate alloc] init] autorelease] ];
+
 	return NSApplicationMain( argc, (const char **) argv );
 }

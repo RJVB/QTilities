@@ -71,7 +71,7 @@ BOOL InitIP()
 	for( e = 0; e < max_sock; e++ ){
 		ts[e].e.opened = FALSE;
 		ts[e].e.connected = FALSE;
-		ts[e].s = sock_nulle;
+		ts[e].s = NULLSOCKET;
 	}
 
 	carChaussette = ' ';
@@ -91,7 +91,7 @@ void UpdateSocketState(SOCK s, STATE_SOCK newState)
 	}
 
 	for( i = 0; i < max_sock; i++ ){
-		if( ts[i].s == sock_nulle ){
+		if( ts[i].s == NULLSOCKET ){
 			ts[i].s = s;
 			ts[i].e = newState;
 			return;
@@ -103,7 +103,7 @@ void UpdateSocketState(SOCK s, STATE_SOCK newState)
 
 // RJVB 20100314: etablir client ou serveur revient a presque la meme chose, donc une seule fonction
 // avec juste quelques lignes dediees semble plus elegant que 2 copies largement identiques.
-BOOL CreateClientOrServer(SOCK *s, unsigned short port, BOOL serveur )
+BOOL CreateClientOrServer(SOCK *s, unsigned short port, BOOL serveur, BOOL useTCP )
 { SOCKADDR_IN lsock;
   short e;
 #ifdef __WINSOCK__
@@ -111,9 +111,14 @@ BOOL CreateClientOrServer(SOCK *s, unsigned short port, BOOL serveur )
 #endif
   STATE_SOCK etatSock;
 
-	*s = socket( AF_INET, SOCKET_PROTOCOL, 0 );
+	if( useTCP ){
+		*s = socket( AF_INET, SOCK_STREAM, 0 );
+	}
+	else{
+		*s = socket( AF_INET, SOCK_DGRAM, 0 );
+	}
 
-	if( *s == sock_nulle ){
+	if( *s == NULLSOCKET ){
 		fprintf( stderr, "socket error (%s)\n", errSockText(geterrno()) );
 		return FALSE;
 	}
@@ -145,14 +150,14 @@ BOOL CreateClientOrServer(SOCK *s, unsigned short port, BOOL serveur )
 		}
 	}
 	
-#if SOCKET_PROTOCOL != SOCK_DRAM
-	if( serveur ){
-		if( listen( *s, 3 ) ){
-			fprintf( stderr, "listen error (%s)\n", errSockText(geterrno()));
-			return FALSE;
+	if( useTCP ){
+		if( serveur ){
+			if( listen( *s, 3 ) ){
+				fprintf( stderr, "listen error (%s)\n", errSockText(geterrno()));
+				return FALSE;
+			}
 		}
 	}
-#endif
 
 	// set non-blocking socket
 #ifdef __WINSOCK__
@@ -177,12 +182,12 @@ BOOL CreateClientOrServer(SOCK *s, unsigned short port, BOOL serveur )
 
 } // anciennement EtabliClient
 
-BOOL CreateClient(SOCK *s, unsigned short port)
+BOOL CreateClient(SOCK *s, unsigned short port, BOOL useTCP)
 {
-	return CreateClientOrServer( s, port, FALSE );
+	return CreateClientOrServer( s, port, FALSE, useTCP );
 }
 
-BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *numeroIP, int timeOutms, BOOL *fatale)
+BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *address, int timeOutms, BOOL *fatal)
 {
 	short e;
 	SOCKADDR_IN fsock;
@@ -190,12 +195,12 @@ BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *numeroIP, int
 	BOOL rd, wr, ee;
 	rd = wr = ee = 0;
 
-	if( s == sock_nulle || !LookupSocketState(s, opened) ){
-		*fatale = TRUE;
+	if( s == NULLSOCKET || !LookupSocketState(s, opened) ){
+		*fatal = TRUE;
 		return FALSE;
 	}
 
-	if( numeroIP[0] == 0 ){
+	if( address[0] == 0 ){
 		ptrEntree = gethostbyname(nom);
 		if( ptrEntree == 0 ){
   			return FALSE;
@@ -204,7 +209,7 @@ BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *numeroIP, int
 		fsock.sin_addr.s_addr = inet_addr(ptrEntree->h_addr);
 	}
 	else{
-		fsock.sin_addr.s_addr = inet_addr(numeroIP);
+		fsock.sin_addr.s_addr = inet_addr(address);
 	}
 
 	fsock.sin_port = htons(port);
@@ -239,7 +244,9 @@ BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *numeroIP, int
 		  int res = connect( s, (SOCKADDR*)&fsock, sizeof(SOCKADDR_IN) );
 			errSock = geterrno();
 			if( res && errSock != EISCONN ){
-				fprintf( stderr, "Erreur de gestion de \"connexion en cours\" %s\n", errSockText(errSock) );
+				fprintf( stderr, "Error during connection (EINPROGRESS): %s\n", errSockText(errSock) );
+				// 20130605:
+				wr = 0;
 			}
 		}
 	}
@@ -252,7 +259,7 @@ BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *numeroIP, int
 #endif
 	{
 		fprintf( stderr, "socket connection error %d: %s(%u)\n", s, errSockText(errSock), errSock );
-		*fatale = TRUE;
+		*fatal = TRUE;
 		return FALSE;
 	}
 #ifdef __WINSOCK__
@@ -305,7 +312,7 @@ BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *numeroIP, int
 			// ça marche ! 
 			STATE_SOCK EtatSock = {TRUE, TRUE};
 			UpdateSocketState(s, EtatSock);
-			*fatale = FALSE;
+			*fatal = FALSE;
 			return TRUE;
 		}
 		else{
@@ -315,10 +322,10 @@ BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *numeroIP, int
 #ifdef __WINSOCK__
 			fprintf( stderr, "ee=%d, error=%ld\n", ee, (long) WSAGetLastError() );
 #endif
-			*fatale = TRUE;
+			*fatal = TRUE;
 			return FALSE;
 		}
-		*fatale = FALSE;
+		*fatal = FALSE;
 		return FALSE;
 	}
 } // ConnectToServer;
@@ -333,7 +340,7 @@ void CloseConnectionToServer(SOCK *s)
 //  il n'existe pas de moyen pour le serveur de détecter une connexion
 //	si celle ci n'a pas été fermée 
 
-	if( *s != sock_nulle ){
+	if( *s != NULLSOCKET ){
 		res = shutdown( *s, 2 );
 		lin.l_onoff = 1;
 		lin.l_linger = 0;
@@ -354,7 +361,7 @@ void CloseConnectionToServer(SOCK *s)
 			}
 		}
 		UpdateSocketState( *s, etatSock );
-		*s = sock_nulle;
+		*s = NULLSOCKET;
 	}
 } // CloseConnectionToServer;
 
@@ -363,28 +370,28 @@ void CloseClient(SOCK *s)
 	short res;
 	STATE_SOCK etatSock = {FALSE, FALSE};
 
-	if(*s != sock_nulle ){
+	if(*s != NULLSOCKET ){
 #ifdef __WINSOCK__
 		res = closesocket(*s);
 #else
 		res = close(*s);
 #endif
 		UpdateSocketState( *s, etatSock );
-		*s = sock_nulle;
+		*s = NULLSOCKET;
 	}
 } // CloseClient;
 
 
-BOOL CreateServer( SOCK *s, unsigned short port )
+BOOL CreateServer( SOCK *s, unsigned short port, BOOL useTCP )
 {
-	return( CreateClientOrServer( s, port, TRUE ) );
+	return( CreateClientOrServer( s, port, TRUE, useTCP ) );
 }
 
 // RJVB 20100314
 BOOL WaitForClientConnection( SOCK s, int timeOutms, BOOL blocking, SOCK *ss )
 { BOOL rd, wr, ee;
 
-	if( s == sock_nulle || !LookupSocketState(s, opened) ){
+	if( s == NULLSOCKET || !LookupSocketState(s, opened) ){
 		return FALSE;
 	}
 	do{
@@ -397,7 +404,7 @@ BOOL WaitForClientConnection( SOCK s, int timeOutms, BOOL blocking, SOCK *ss )
 		  socklen_t flen = sizeof(fsock);
 #endif
 			*ss = accept( s, &fsock, &flen );
-			if( *ss != sock_nulle ){
+			if( *ss != NULLSOCKET ){
 			  STATE_SOCK EtatSock = {TRUE, TRUE};
 				UpdateSocketState( *ss, EtatSock);
 				{ int oui = 1;
@@ -417,10 +424,10 @@ BOOL WaitForClientConnection( SOCK s, int timeOutms, BOOL blocking, SOCK *ss )
 			}
 		}
 		if( !blocking ){
-			*ss = sock_nulle;
+			*ss = NULLSOCKET;
 			return FALSE;
 		}
-	} while( *ss != sock_nulle );
+	} while( *ss != NULLSOCKET );
 	return FALSE;
 }
 
@@ -479,19 +486,19 @@ BOOL LookupSocketState(SOCK s, STATES ee)
 
 void TestSocketStateWait(SOCK s, BOOL *r, BOOL *w, BOOL *e, TIMEVAL *temps )
 {
-	short trouve;
+	short found;
 	fd_set readFds, writeFds, exceptFds;
 
 	FD_ZERO(&readFds);
 	FD_ZERO(&writeFds);
 	FD_ZERO(&exceptFds);
-	if( s != sock_nulle ){
+	if( s != NULLSOCKET ){
 		FD_SET(s, &writeFds);
 		FD_SET(s, &readFds);
 		FD_SET(s, &exceptFds);
 		// RJVB 20100219: 1e argument select() doit etre 1 plus la valeur max. des descripteurs
 		// de socket associes aux 3 fd_set, donc ici s+1 et non pas 16:
-		trouve = select(/*16*/ s+1, &readFds, &writeFds, &exceptFds, temps);
+		found = select(/*16*/ s+1, &readFds, &writeFds, &exceptFds, temps);
 //		fprintf( stderr, "select->%d (%s)\n", trouve, errSockText(errno));
 	}
 	*r = FD_ISSET(s, &readFds) != 0; 
@@ -521,7 +528,7 @@ BOOL SendNetMessage(SOCK s, void *msg, short serviceLen, short msgLen, int timeO
 		return FALSE;
 	}
 
-	if( s == sock_nulle || !LookupSocketState(s, connected) ){
+	if( s == NULLSOCKET || !LookupSocketState(s, connected) ){
 		return FALSE;
 	}
 
@@ -584,7 +591,7 @@ int BasicSendNetMessage(SOCK s, void *msg, short msgLen, int timeOutms, BOOL blo
 	
 // on vise a ne pas passer du temps sur des operations que celui qui nous appelle pourrait
 // faire, dans cette fonction:	
-//	if( s == sock_nulle || !LookupSocketState(s, connected) )
+//	if( s == NULLSOCKET || !LookupSocketState(s, connected) )
 //		return FALSE;
 	
 	errSock = 0;
@@ -646,7 +653,7 @@ BOOL ReceiveNetMessage(SOCK s, void *Srvce, short serviceLen, void *Msg, short m
 	fd_set readFds;
 	TIMEVAL temps;
 
-	if( s == sock_nulle || !LookupSocketState(s, connected) ){
+	if( s == NULLSOCKET || !LookupSocketState(s, connected) ){
 		return FALSE;
 	}
 
@@ -799,7 +806,7 @@ BOOL IsPortAvailable(unsigned short port)
 
 	s = socket(AF_INET, SOCK_STREAM, 0);
 	
-	if( s == sock_nulle ){
+	if( s == NULLSOCKET ){
 		return FALSE;
 	}
 

@@ -15,14 +15,14 @@
 	#include <arpa/inet.h>
 	#include <errno.h>
 	#include <netdb.h>
-	#define sock_nulle -1
+	#define NULLSOCKET -1
 	#define SOCK int
 	#define geterrno() errno
 	#define SOCKADDR_IN struct sockaddr_in
 	#define SOCKADDR struct sockaddr
 	#define HOSTENT struct hostent
 	#define TIMEVAL struct timeval
-	#ifndef BOOL
+	#if !defined(BOOL) && !defined(__OBJC__)
 		#define BOOL	unsigned char
 	#endif
 	#ifndef TRUE
@@ -36,7 +36,7 @@
 		#define __WINSOCK__
 	#endif
 	#include <winsock.h>
-	#define sock_nulle INVALID_SOCKET
+	#define NULLSOCKET INVALID_SOCKET
 	#define SOCK SOCKET
 	//redefinition de la fonction de winsock
 	#define geterrno() h_errno
@@ -91,9 +91,9 @@ extern int sendTimeOut, receiveTimeOut;
 
 extern BOOL InitIP();
 
-extern BOOL CreateClient(SOCK *s, unsigned short port);
+extern BOOL CreateClient(SOCK *s, unsigned short port, BOOL useTCP);
 
-extern BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *numeroIP, int timeOutms, BOOL *fatale);
+extern BOOL ConnectToServer(SOCK s, unsigned short port, char *nom, char *address, int timeOutms, BOOL *fatale);
 
 extern void CloseClient(SOCK *s);
 #define CloseServer(s)	CloseClient(s)
@@ -121,7 +121,7 @@ extern BOOL ReceiveNetMessage(SOCK s, void *Srvce, short serviceLen, void *Msg, 
 // reception d'un message sans partie service; retourne le nombre de trames utilisees.
 extern int BasicReceiveNetMessage(SOCK s, void *Msg, short msgLen, int timeOutms, BOOL blocking );
 
-extern BOOL CreateServer( SOCK *s, unsigned short port );
+extern BOOL CreateServer( SOCK *s, unsigned short port, BOOL useTCP );
 extern BOOL WaitForClientConnection( SOCK s, int timeOutms, BOOL blocking, SOCK *ss );
 
 extern BOOL IsPortAvailable(unsigned short port);

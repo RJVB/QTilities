@@ -754,7 +754,8 @@ QTLSext size_t QTils_LogMsg( const char *msg );
  */
 QTLSext size_t QTils_vLogMsgEx( const char *msg, va_list ap );
 QTLSext size_t QTils_LogMsgEx( const char *msg, ... );
-
+extern char lastSSLogMsg[2048];
+	
 /*!
 	a version of sprintf() that allocates the necessary buffer to hold the result, and
 	returns the number of characters in the resulting buffer. Uses CFStringCreateWithFormatAndArguments

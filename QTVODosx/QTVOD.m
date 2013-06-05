@@ -273,7 +273,7 @@ void ReadXMLDoc( const char *fName, XMLDoc xmldoc, VODDescription *descr )
 		nsXMLVD = [[NSVODDescription createWithDescription:&xmlVD] retain];
 	}
 	@synchronized(nsXMLVD){
-		xmlVD = globalVDPreferences;
+		xmlVD = globalVD.preferences;
 		while( XMLRootElementContentKind( xmldoc, elm ) != xmlContentTypeInvalid ){
 			if( XMLContentOfElementOfRootElement( xmldoc, elm, &theContent ) ){
 				ReadXMLContent( fName, theContent, xml_design_parser, sizeof(xml_design_parser)/sizeof(XML_Record), &elm );
@@ -1487,8 +1487,8 @@ void timeCallBack( QTCallBack cbRegister, long data )
 		winlist[sysWin] = &sysOwned;
 
 		xmlParser = nil;
-		theDescription = globalVDPreferences;
-		theDescription.changed = NO;
+		theDescription = globalVD.preferences;
+		descriptionChanged = NO;
 		fullMovieChanged = NO;
 		ULCorner.horizontal = ULCorner.vertical = 0;
 		theURL = NULL;
@@ -2084,9 +2084,9 @@ void timeCallBack( QTCallBack cbRegister, long data )
 		}
 	}
 
-	if( globalVDPreferences.changed ){
-		theDescription = globalVDPreferences;
-		theDescription.changed = NO;
+	if( globalVD.changed ){
+		theDescription = globalVD.preferences;
+		descriptionChanged = NO;
 		recreateChannelViews = YES;
 	}
 	else{
@@ -2099,7 +2099,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 		// check if there is a recording-specific prefs file:
 		e3 = [self nsReadDefaultVODDescription:[NSString stringWithFormat:@"%@-design.xml", [theURL path]] toDescription:&theDescription];
 		if( e1 == noErr || e2 == noErr || e3 == noErr ){
-			globalVDPreferences = theDescription;
+			globalVD.preferences = theDescription;
 			UpdateVDPrefsWin(TRUE);
 		}
 		recreateChannelViews = NO;
@@ -2268,7 +2268,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 	}
 
 	[self register_windows];
-	[self PlaceWindows:nil withScale:1.0];
+	[self PlaceWindows:nil withScale:theDescription.scale];
 
 	if( err == noErr ){
 		err = LastQTError();

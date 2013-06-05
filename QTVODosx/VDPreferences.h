@@ -11,7 +11,12 @@
 
 #import "QTVODcomm.h"
 
-extern VODDescription globalVDPreferences;
+typedef struct GlobalPreferencesStruct {
+	VODDescription preferences;
+	BOOL changed;
+} GlobalPreferencesStruct;
+
+extern GlobalPreferencesStruct globalVD;
 
 @interface NSAMatrix : NSMatrix {
 	NSButton *previousCell;
@@ -28,6 +33,7 @@ extern VODDescription globalVDPreferences;
 	IBOutlet NSStepperCell		*scaleStepperCell;
 
 	IBOutlet NSAMatrix			*ch1Matrix, *ch2Matrix, *ch3Matrix, *ch4Matrix;
+	NSString					*windowTitle;
 }
 
 - (void)update:(BOOL)updateChannelDisplay;
@@ -49,6 +55,8 @@ extern VODDescription globalVDPreferences;
 - (void)ch4MatrixChanged:sender;
 
 - (BOOL) savePreferences:(const char*)prefsFileName;
+- (void) setTitle:(NSString*)title;
+- (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName;
 
 @property (retain,readonly) NSButton		*dstButton;
 @property (retain,readonly) NSButton		*flLRButton;

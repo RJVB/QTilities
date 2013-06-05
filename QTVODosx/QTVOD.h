@@ -48,6 +48,7 @@ typedef struct TimeInterval {
 	NSString *theDirPath, *assocDataFile;
 	ComponentInstance xmlParser;
 	VODDescription theDescription;
+	BOOL descriptionChanged;
 	Cartesian ULCorner;
 	TimeInterval theTimeInterval;
 	BOOL fullMovieChanged, finalCloseVideo, shouldBeClosed, fullMovieIsSplit;
