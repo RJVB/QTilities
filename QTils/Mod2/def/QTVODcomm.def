@@ -26,6 +26,7 @@ TYPE
 
 	URLString = ARRAY[0..1024] OF CHAR;
 	Str64 = ARRAY[0..64] OF CHAR;
+	URLStringPtr = POINTER TO URLString;
 
 	VODDescription	=
 		RECORD
@@ -179,6 +180,7 @@ VAR
 
 CONST
 
+	URLString_nulle = CAST(URLStringPtr,0);
 	SENDTIMEOUT = 2;
 	CommErrorHandler_nulle = CAST(CommErrorHandler,0);
 	(* 0x5351 == 'QS' : Quicktime Server *)

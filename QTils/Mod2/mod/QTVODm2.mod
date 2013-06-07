@@ -57,7 +57,7 @@ VAR
 	idx, n, l, m : UInt32;
 	movieDescription : VODDescription;
 	msgNet, Netreply : NetMessage;
-	handlingIdleAction, cyclingNetPump, isCompleteReset : BOOLEAN;
+	handlingIdleAction, cyclingNetPump, isCompleteReset, openFileRequest : BOOLEAN;
 	msgTimer : Real64;
 	ipAddress : ARRAY[0..63] OF CHAR;
 	err : ErrCode;
@@ -517,6 +517,9 @@ BEGIN
 				SetWindowPos( wih^^.theView, HWND_TOP, 0,0,0,0, SWP_NOMOVE BOR SWP_NOSIZE );
 		| 'b', 'B':
 				SetWindowPos( wih^^.theView, HWND_BOTTOM, 0,0,0,0, SWP_NOMOVE BOR SWP_NOSIZE );
+		| 'o', 'O':
+				Assign("", movie);
+				openFileRequest := TRUE;
 		ELSE
 			(* noop *)
 	END;
@@ -747,6 +750,7 @@ BEGIN
 
 	handlingIdleAction := FALSE;
 	cyclingNetPump := FALSE;
+	openFileRequest := FALSE;
 	Sortie := CompareKeystroke;
 	HandleSendErrors := SendErrorHandler;
 	HandleReceiveErrors := ReceiveErrorHandler;
@@ -914,6 +918,15 @@ BEGIN
 						END;
 						SendMessageToNet( sServeur, Netreply, SENDTIMEOUT, FALSE, "QTVODm2 - reset" );
 						resetRequest := FALSE;
+				END;
+				IF openFileRequest
+					THEN
+						openFileRequest := FALSE;
+						OpenVideo(movie, movieDescription);
+						IF numQTWM > 0
+							THEN
+								QTils.DisposeQTMovieWindow(logoWin);
+						END;
 				END;
 				IF (numQTWM < 0) AND (logoWin = NIL)
 					THEN
