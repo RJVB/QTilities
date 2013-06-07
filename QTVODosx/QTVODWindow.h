@@ -8,6 +8,16 @@
 
 #ifndef _QTVODWINDOW_H
 
+typedef enum QTVODwinIDs {
+	fwWin = 0,
+	pilotWin = 1,
+	leftWin = 2,
+	rightWin = 3,
+	tcWin = 4,
+	sysWin = 5, maxQTWM } QTVODwinIDs;
+
+#ifdef __OBJC__
+
 #import <AppKit/AppKit.h>
 #import <Cocoa/Cocoa.h>
 #import "QTAMovieView.h"
@@ -20,14 +30,6 @@
 #define SLOG(format,...)	NSLog(@"SLOG: File=%s line=%d proc=%s " format, strrchr("/" __FILE__,'/')+1, __LINE__, __PRETTY_FUNCTION__, ## __VA_ARGS__)
 
 typedef enum {FSRegular, FSSpanning, FSMosaic } FSStyle;
-
-typedef enum QTVODwinIDs {
-	fwWin = 0,
-	pilotWin = 1,
-	leftWin = 2,
-	rightWin = 3,
-	tcWin = 4,
-	sysWin = 5, maxQTWM } QTVODwinIDs;
 
 // no reason to use QTAMovieView ...
 #define QTAMovieView	QTMovieView
@@ -207,6 +209,8 @@ typedef enum QTVODwinIDs {
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender;
 - (void) applicationWillFinishLaunching:(NSNotification*)notice;
 @end
+
+#endif // __OBJC__
 
 #	define _QTVODWINDOW_H
 #endif // _QTVODWINDOW_H

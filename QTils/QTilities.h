@@ -453,7 +453,11 @@ QTLSext ErrCode LastQTError();
 	typedef HWND NativeWindow;
 	typedef DWORD NativeError;
 #else
-	typedef struct NSWindow* NativeWindow;
+#	ifdef __OBJC__
+	typedef NSWindow* NativeWindow;
+#	else
+		typedef struct NSWindow* NativeWindow;
+#	endif
 	typedef long NativeError;
 #endif
 typedef NativeWindow*	NativeWindowPtr;
@@ -534,7 +538,11 @@ typedef struct QTMovieWindows {
 #	else
 	struct NSQTMovieWindow *theNSQTMovieWindow;
 #	endif
+#	ifdef __OBJC__
+	QTMovieView *theMovieView;		//!< receives a pointer to the QTMovieView showing our Movie
+#else
 	struct QTMovieView *theMovieView;	//!< receives a pointer to the QTMovieView showing our Movie
+#endif
 	void *NSMCActionList;			//!< pointer to a C++ map associating MCAction values with user-specified callbacks into
 								//!< an ObjC class "owning" the QTMovieWindowH
 								//!<

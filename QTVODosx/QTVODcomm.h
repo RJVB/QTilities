@@ -121,7 +121,7 @@ extern CommErrorHandler HandleSendErrors, HandleReceiveErrors;
 extern "C" {
 #endif
 
-extern VODDescription *VODDescriptionFromStatic( StaticVODDescription *descr, VODDescription *target );
+extern VODDescription *VODDescriptionFromStatic( VODDescription *target, StaticVODDescription *descr );
 extern StaticVODDescription *VODDescriptionToStatic( VODDescription *descr, StaticVODDescription *target );
 
 extern BOOL InitCommClient( SOCK *s, char *address, unsigned short serverPortNr, unsigned short clientPortNr, int timeOutMS );
@@ -135,6 +135,30 @@ extern BOOL SendMessageToNet( SOCK ss, NetMessage *msg, int timeOutMs, BOOL bloc
 //! returns a pointer to a static String256
 extern char *NetMessageToString(NetMessage *msg);
 extern void NetMessageToLogMsg( const char *title, const char *caption, NetMessage *msg );
+
+extern void msgOpenFile( NetMessage *msg, const char *URL, VODDescription *descr );
+extern void msgPlayMovie(NetMessage *msg);
+extern void msgStopMovie(NetMessage *msg);
+extern void msgCloseMovie(NetMessage *msg);
+extern void msgResetQTVOD( NetMessage *msg, BOOL complete );
+extern void msgQuitQTVOD(NetMessage *msg);
+extern void msgGotoTime( NetMessage *msg, double t, BOOL absolute );
+extern void msgGetTime( NetMessage *msg, BOOL absolute );
+extern void msgGetTimeSubscription( NetMessage *msg, double interval, BOOL absolute );
+extern void msgGetStartTime(NetMessage *msg);
+extern void msgGetDuration(NetMessage *msg);
+extern void msgGetChapter( NetMessage *msg, int32_t idx );
+extern void msgNewChapter( NetMessage *msg, const char *title, double startTime, double duration, BOOL absolute );
+extern void msgMarkIntervalTime( NetMessage *msg, BOOL reset );
+extern void msgGetLastInterval(NetMessage *msg);
+
+extern BOOL replyCurrentTime( NetMessage *reply, NetMessageCategory cat, QTMovieWindowH wih, BOOL absolute );
+extern BOOL replyStartTime( NetMessage *reply, NetMessageCategory cat, QTMovieWindowH wih );
+extern BOOL replyDuration( NetMessage *reply, NetMessageCategory cat, QTMovieWindowH wih );
+extern BOOL replyLastInterVal( NetMessage *reply, NetMessageCategory cat );
+
+extern void SendNetCommandOrNotification( SOCK ss, NetMessageType type, NetMessageCategory cat );
+extern void SendNetErrorNotification( SOCK ss, const char *txt, ErrCode err );
 
 #ifdef __cplusplus
 }

@@ -12,7 +12,9 @@
 #include <stddef.h>
 #include <string.h>
 #include "QTVODcomm.h"
+#include "QTVOD.h"
 #include "QTilities.h"
+#include "NaN.h"
 #include "CritSectEx/CritSectEx.h"
 
 typedef struct VDCommon1 {
@@ -28,7 +30,7 @@ static CritSectEx *ReceiveMutex = NULL;
 size_t SendErrors = 0, ReceiveErrors = 0;
 CommErrorHandler HandleSendErrors = NULL, HandleReceiveErrors = NULL;
 
-VODDescription *VODDescriptionFromStatic( StaticVODDescription *descr, VODDescription *target )
+VODDescription *VODDescriptionFromStatic( VODDescription *target, StaticVODDescription *descr )
 {
 	if( descr ){
 		if( target ){
@@ -148,7 +150,7 @@ void CloseCommServer( SOCK *srv, SOCK *clnt )
 
 BOOL SendMessageToNet( SOCK ss, NetMessage *msg, int timeOutMs, BOOL block, const char *caller )
 { BOOL ret = FALSE;
-	if( msg ){
+	if( msg && ss != NULLSOCKET ){
 	  CritSectEx::Scope scope(SendMutex);
 		errSock = 0;
 		msg->size = sizeof(*msg);
@@ -183,7 +185,7 @@ static inline void receiveError()
 
 BOOL ReceiveMessageFromNet( SOCK ss, NetMessage *msg, int timeOutMs, BOOL block, const char *caller )
 { BOOL ret = FALSE;
-	if( msg ){
+	if( msg && ss != NULLSOCKET ){
 	  CritSectEx::Scope scope(ReceiveMutex);
 		ret = BasicReceiveNetMessage( ss, msg, sizeof(NetMessage), timeOutMs, block );
 		if( ret ){
@@ -369,11 +371,11 @@ void NetMessageToLogMsg( const char *title, const char *caption, NetMessage *msg
 			break;
 		case qtvod_Err:
 			if( caption && *caption ){
-				QTils_LogMsgEx( "%s %s: %s \"%s\" erreur=%d",
+				QTils_LogMsgEx( "%s %s: %s \"%s\" error=%d",
 							title, caption, NetMessageToString(msg), msg->data.URN, msg->data.error );
 			}
 			else{
-				QTils_LogMsgEx( "%s: %s \"%s\" erreur=%d",
+				QTils_LogMsgEx( "%s: %s \"%s\" error=%d",
 							title, NetMessageToString(msg), msg->data.URN, msg->data.error );
 			}
 			break;
@@ -415,5 +417,199 @@ void NetMessageToLogMsg( const char *title, const char *caption, NetMessage *msg
 		default:
 			QTils_LogMsgEx( "%s: <??>", (title)? title : "<??>" );
 			break;
+	}
+}
+
+#pragma mark Message construction functions
+
+#ifdef COMMTIMING
+#	define MSGINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=qtvod##c , msg->sentTime=-1
+#else
+#	define MSGINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=qtvod_##c
+#endif
+
+void msgOpenFile( NetMessage *msg, const char *URL, VODDescription *descr )
+{
+	if( msg && URL && descr ){
+		MSGINIT( msg, Open, Command );
+		strncpy( msg->data.URN, URL, sizeof(msg->data.URN) );
+		msg->data.URN[sizeof(msg->data.URN)-1] = '\0';
+		VODDescriptionToStatic( descr, &msg->data.description );
+	}
+}
+
+void msgPlayMovie(NetMessage *msg)
+{
+	MSGINIT( msg, Start, Command );
+}
+
+void msgStopMovie(NetMessage *msg)
+{
+	MSGINIT( msg, Stop, Command );
+}
+
+void msgCloseMovie(NetMessage *msg)
+{
+	MSGINIT( msg, Close, Command );
+}
+
+void msgResetQTVOD( NetMessage *msg, BOOL complete )
+{
+	MSGINIT( msg, Reset, Command );
+	msg->data.boolean = complete;
+}
+
+void msgQuitQTVOD(NetMessage *msg)
+{
+	MSGINIT( msg, Quit, Command );
+}
+
+void msgGotoTime( NetMessage *msg, double t, BOOL absolute )
+{
+	MSGINIT( msg, GotoTime, Command );
+	msg->data.val1 = t;
+	msg->data.boolean = absolute;
+}
+
+void msgGetTime( NetMessage *msg, BOOL absolute )
+{
+	MSGINIT( msg, GetTime, Command );
+	msg->data.boolean = absolute;
+}
+
+void msgGetTimeSubscription( NetMessage *msg, double interval, BOOL absolute )
+{
+	MSGINIT( msg, GetTimeSubscription, Command );
+	msg->data.val1 = interval;
+	msg->data.boolean = absolute;
+}
+
+void msgGetStartTime(NetMessage *msg)
+{
+	MSGINIT( msg, GetStartTime, Command );
+}
+
+void msgGetDuration(NetMessage *msg)
+{
+	MSGINIT( msg, GetDuration, Command );
+}
+
+void msgGetChapter( NetMessage *msg, int32_t idx )
+{
+	MSGINIT( msg, GetChapter, Command );
+	if( idx < 0 ){
+		strcpy( msg->data.URN, "<list all>" );
+	}
+	else{
+		strcpy( msg->data.URN, "<in retrieval>" );
+	}
+	msg->data.iVal1 = idx;
+	set_NaN(msg->data.val1);
+	set_NaN(msg->data.val2);
+	msg->data.boolean = FALSE;
+}
+
+void msgNewChapter( NetMessage *msg, const char *title, double startTime, double duration, BOOL absolute )
+{
+	MSGINIT( msg, NewChapter, Command );
+	strncpy( msg->data.URN, title, sizeof(msg->data.URN) );
+	msg->data.URN[sizeof(msg->data.URN)-1] = '\0';
+	msg->data.iVal1 = -999;
+	msg->data.val1 = startTime;
+	msg->data.val2 = duration;
+	msg->data.boolean = absolute;
+}
+
+void msgMarkIntervalTime( NetMessage *msg, BOOL reset )
+{
+	MSGINIT( msg, MarkIntervalTime, Command );
+	msg->data.boolean = reset;
+}
+
+void msgGetLastInterval(NetMessage *msg)
+{
+	MSGINIT( msg, GetLastInterval, Command );
+}
+
+#pragma mark Reply message construction functions
+
+#ifdef COMMTIMING
+#	define REPLYINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=c , msg->sentTime=-1
+#else
+#	define REPLYINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=c
+#endif
+
+BOOL replyCurrentTime( NetMessage *reply, NetMessageCategory cat, QTMovieWindowH wih, BOOL absolute )
+{ double t;
+	if( QTMovieWindowGetTime( wih, &t, absolute ) == noErr ){
+		REPLYINIT( reply, CurrentTime, cat );
+		reply->data.val1 = t;
+		if( absolute ){
+			reply->data.val2 = (*wih)->info->TCframeRate;
+		}
+		else{
+			reply->data.val2 = (*wih)->info->frameRate;
+		}
+		reply->data.boolean = absolute;
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL replyStartTime( NetMessage *reply, NetMessageCategory cat, QTMovieWindowH wih )
+{
+	if( QTMovieWindowH_isOpen(wih) ){
+		REPLYINIT( reply, StartTime, cat );
+		reply->data.val1 = (*wih)->info->startTime;
+		reply->data.val2 = (*wih)->info->TCframeRate;
+		reply->data.boolean = TRUE;
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL replyDuration( NetMessage *reply, NetMessageCategory cat, QTMovieWindowH wih )
+{
+	if( QTMovieWindowH_isOpen(wih) ){
+		REPLYINIT( reply, Duration, cat );
+		reply->data.val1 = (*wih)->info->duration;
+		reply->data.val2 = (*wih)->info->frameRate;
+		// duration is always a relative time (i.e. w.r.t. the movie onset)
+		reply->data.boolean = FALSE;
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL replyLastInterVal( NetMessage *reply, NetMessageCategory cat )
+{
+	REPLYINIT( reply, LastInterval, cat );
+	reply->data.val1 = theLastTimeInterval.dt;
+	// an interval is always relative:
+	reply->data.boolean = FALSE;
+	return TRUE;
+}
+
+#pragma mark Transceiving functions
+
+void SendNetCommandOrNotification( SOCK ss, NetMessageType type, NetMessageCategory cat )
+{ NetMessage msg;
+	if( ss != NULLSOCKET ){
+		msg.flags.type = type;
+		msg.flags.category = cat;
+		SendMessageToNet( ss, &msg, SENDTIMEOUT, FALSE, "SendNetCommandOrNotification" );
+	}
+}
+
+void SendNetErrorNotification( SOCK ss, const char *txt, ErrCode err )
+{ NetMessage msg;
+	if( ss != NULLSOCKET ){
+		MSGINIT( (&msg), Err, Notification );
+		if( *txt ){
+			strncpy( msg.data.URN, txt, sizeof(msg.data.URN) );
+			msg.data.URN[sizeof(msg.data.URN)-1] = '\0';
+		}
+		msg.data.error = err;
+		SendMessageToNet( ss, &msg, SENDTIMEOUT, FALSE, "SendNetErrorNotification" );
 	}
 }

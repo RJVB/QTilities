@@ -18,8 +18,8 @@
 #include "QTVODlib.h"
 #include "QTilities.h"
 
-extern int QTils_Log(const char *fileName, int lineNr, NSString *format, ... );
-extern BOOL QTils_LogSetActive(BOOL);
+extern "C" int QTils_Log(const char *fileName, int lineNr, NSString *format, ... );
+extern "C" BOOL QTils_LogSetActive(BOOL);
 
 char *ipAddress = NULL;
 char *assocDataFileName = NULL;
@@ -45,6 +45,21 @@ static void doNSLog( NSString *format, ... )
 #ifndef DEBUG
 #	define NSLog	NSnoLog
 #endif
+
+inline QTVOD *getActiveQTVOD()
+{ NSWindow *active = NULL;
+	if( !(active = [NSApp keyWindow]) && [[NSApp orderedWindows] count] ){
+		active = [[NSApp orderedWindows] objectAtIndex:0];
+	}
+	if( active ){
+	  QTVODWindow *activeDocument = (QTVODWindow*) [[active windowController] document];
+//		QTils_Log( __FILE__, __LINE__, @"Active document: %@", activeDocument );
+		if( activeDocument ){
+			return [activeDocument getQTVOD];
+		}
+	}
+	return NULL;
+}
 
 @interface QTVODStreamDelegate : NSObject<NSStreamDelegate>{
 }
@@ -88,7 +103,7 @@ static void doNSLog( NSString *format, ... )
 					QTils_Log( __FILE__, __LINE__,
 							@"Stream closed remotely or too many (%d) errors (last '%@'; status=%d): closing channel",
 							ReceiveErrors, error, status );
-					CloseCommClient(&sServer);
+					commsCleanUp();
 					PostMessage( "QTVOD", lastSSLogMsg );
 				}
 			}
@@ -99,12 +114,8 @@ static void doNSLog( NSString *format, ... )
 								msg->size, sizeof(NetMessage), msg->protocol, NETMESSAGE_PROTOCOL );
 				}
 				else{
-					NetMessageToLogMsg( __FUNCTION__, NULL, msg );
-					msg->flags.category = qtvod_Confirmation;
-					SendMessageToNet( sServer, msg, SENDTIMEOUT, FALSE, __FUNCTION__ );
-					if( msg->flags.type == qtvod_Quit ){
-						[[NSApplication sharedApplication] terminate:theStream];
-					}
+//					NetMessageToLogMsg( __FUNCTION__, NULL, msg );
+					ReplyNetMsg(msg);
 				}
 			}
 			break;
@@ -118,18 +129,90 @@ static void doNSLog( NSString *format, ... )
 void SendErrorHandler( size_t errors )
 {
 	if( errors > 5 ){
-		CloseCommClient(&sServer);
 		QTils_Log( __FILE__, __LINE__, @"%u message sending errors (last %d '%s'): closing communications channel",
 				errors, errSock, errSockText(errSock) );
+		CloseCommClient(&sServer);
+		[nsWriteServer close];
+		[nsWriteServer release];
+		nsWriteServer = NULL;
 		PostMessage( "QTVOD", lastSSLogMsg );
 	}
+}
+
+#ifdef COMMTIMING
+#	define MSGINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=qtvod##c , msg->sentTime=-1
+#	define REPLYINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=c , msg->sentTime=-1
+#else
+#	define MSGINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=qtvod_##c
+#	define REPLYINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=c
+#endif
+
+BOOL SendMessageToNet( NSOutputStream *ss, NetMessage *msg, const char *caller )
+{ BOOL ret = FALSE;
+	if( msg && ss ){
+		@synchronized(ss){
+			errSock = 0;
+			msg->size = sizeof(*msg);
+			msg->protocol = NETMESSAGE_PROTOCOL;
+#ifdef COMMTIMING
+			msg->sentTime = HRTime_Time();
+#endif
+			ret = ([ss write:(const uint8_t*)msg maxLength:(NSUInteger)sizeof(NetMessage)] == sizeof(NetMessage));
+			if( ret ){
+				NetMessageToLogMsg( caller, "(sent)", msg );
+			}
+			else{
+				NetMessageToLogMsg( caller, "(failure)", msg );
+				if( errSock ){
+					SendErrors += 1;
+					if( HandleSendErrors ){
+						HandleSendErrors(SendErrors);
+					}
+				}
+			}
+		}
+	}
+	return ret;
+}
+
+void SendNetCommandOrNotification( NSOutputStream *ss, NetMessageType type, NetMessageCategory cat )
+{ NetMessage msg;
+	if( ss ){
+		msg.flags.type = type;
+		msg.flags.category = cat;
+		SendMessageToNet( ss, &msg, "SendNetCommandOrNotification" );
+	}
+}
+
+void SendNetErrorNotification( NSOutputStream *ss, const char *txt, ErrCode err )
+{ NetMessage msg;
+	if( ss ){
+		MSGINIT( (&msg), Err, Notification );
+		if( *txt ){
+			strncpy( msg.data.URN, txt, sizeof(msg.data.URN) );
+			msg.data.URN[sizeof(msg.data.URN)-1] = '\0';
+		}
+		msg.data.error = err;
+		SendMessageToNet( ss, &msg, "SendNetErrorNotification" );
+	}
+}
+
+BOOL replyCurrentTime( NetMessage *reply, NetMessageCategory cat, QTVOD *qv, BOOL absolute )
+{
+	if( reply && qv ){
+		REPLYINIT( reply, CurrentTime, cat );
+		reply->data.val1 = [qv getTime:absolute];
+		reply->data.val2 = [qv frameRate:absolute];
+		reply->data.boolean = absolute;
+		return TRUE;
+	}
+	return FALSE;
 }
 
 // called from the application's applicationShouldTerminate handler:
 void commsCleanUp()
 { id delg;
 	if( sServer != NULLSOCKET ){
-//		SendNetCommandOrNotification( sServeur, qtvod_Quit, qtvod_Notification );
 		CloseCommClient(&sServer);
 	}
 	[nsReadServer close];
@@ -151,13 +234,16 @@ void commsCleanUp()
 void commsInit()
 {
 	InitCommClient( &sServer, ipAddress, ServerPortNr, ClientPortNr, 50 );
+//	CFStreamCreatePairWithSocketToHost( NULL, (CFStringRef) [NSString stringWithUTF8String:ipAddress], ServerPortNr,
+//								(CFReadStreamRef*) &nsReadServer, (CFWriteStreamRef*) &nsWriteServer );
 	if( sServer != NULLSOCKET ){
-		CFStreamCreatePairWithSocket( NULL, sServer, (void*) &nsReadServer, (void*) &nsWriteServer );
+		CFStreamCreatePairWithSocket( NULL, sServer, (CFReadStreamRef*) &nsReadServer, (CFWriteStreamRef*) &nsWriteServer );
 		[nsReadServer retain]; [nsWriteServer retain];
 		[nsReadServer setDelegate:[[QTVODStreamDelegate alloc] init] ];
 		[nsReadServer scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 		[nsReadServer open]; [nsWriteServer open];
-		QTils_Log( __FILE__, __LINE__, @"Created NSStream pair (%@,%@)", nsReadServer, nsWriteServer );
+		QTils_Log( __FILE__, __LINE__, @"Created NSStream pair (%@,%@), status=(%d,%d)",
+				nsReadServer, nsWriteServer, [nsReadServer streamStatus], [nsWriteServer streamStatus] );
 		errSock = 0;
 		SendErrors = ReceiveErrors = 0;
 		HandleSendErrors = SendErrorHandler;
@@ -168,7 +254,7 @@ void ParseArgs( int argc, char *argv[] )
 { int arg;
   __block BOOL argError = NO;
   char *valueStr;
-  BOOL (^CheckOptArg)(int, char*, char**) = ^ BOOL (int idx, char *pattern, char **value ){
+  BOOL (^CheckOptArg)(int, const char*, char**) = ^ BOOL (int idx, const char *pattern, char **value ){
     BOOL ret = NO;
     size_t len = (pattern)? strlen(pattern) : 0;
 	  if( len && strncmp( argv[idx], pattern, len ) == 0 ){
@@ -283,4 +369,112 @@ void ParseArgs( int argc, char *argv[] )
 		}
 		arg++;
 	}
+}
+
+ErrCode ReplyNetMsg(NetMessage *msg)
+{ ErrCode err;
+  double t;
+  int32_t idx, n;
+  BOOL sendDefaultReply;
+  NetMessage Netreply;
+  QTVOD *qv;
+
+	QTils_LogMsgEx( "Received NetMessage '%s'", NetMessageToString(msg) );
+
+	if( msg->flags.category != qtvod_Command ){
+		return noErr;
+	}
+
+	msg->data.error = noErr;
+	Netreply = *msg;
+	Netreply.flags.category = qtvod_Confirmation;
+	sendDefaultReply = TRUE;
+
+	switch( msg->flags.type ){
+		case qtvod_Close:
+			[getActiveQTVOD() CloseVideo:YES];
+			break;
+		case qtvod_Reset:
+			if( (qv = getActiveQTVOD()) ){
+				err = [qv ResetVideo:msg->data.boolean];
+				if( err == noErr ){
+					Netreply.data.val1 = [qv getTime:NO];
+					Netreply.data.val2 = [qv frameRate:NO];
+				}
+				else{
+					SendNetErrorNotification( nsWriteServer /*sServer*/, NetMessageToString(msg), err );
+					msgCloseMovie(&Netreply);
+					[qv close];
+					Netreply.flags.category = qtvod_Notification;
+				}
+			}
+			else{
+				err = errWindowNotFound;
+				SendNetErrorNotification( nsWriteServer /*sServer*/, NetMessageToString(msg), err );
+			}
+			msg->data.error = err;
+			break;
+		case qtvod_Quit:
+			[[NSApplication sharedApplication] terminate:nsReadServer];
+			break;
+		case qtvod_Open:{
+		  NSURL *absoluteURL = [NSURL URLWithString:[NSString stringWithUTF8String:msg->data.URN]];
+			if( absoluteURL ){
+				if( (qv = getActiveQTVOD()) ){
+					[qv CloseVideo:YES];
+					VODDescriptionFromStatic( &globalVD.preferences, &msg->data.description );
+					globalVD.changed = YES;
+					if( [qv readFromURL:absoluteURL ofType:@"" error:nil] ){
+						Netreply.data.description.frequency = msg->data.description.frequency = [qv frameRate:NO];
+					}
+					else{
+						err = [qv openErr];
+						SendNetErrorNotification( nsWriteServer /*sServer*/, msg->data.URN, err );
+						[qv close];
+						return err;
+					}
+				}
+				else{
+				  NSError *outError = NULL;
+					qv = [QTVOD createWithAbsoluteURL:absoluteURL ofType:@"" forDocument:nil error:&outError];
+					if( qv && !outError ){
+						Netreply.data.description.frequency = msg->data.description.frequency = [qv frameRate:NO];
+					}
+					else if( outError ){
+						err = [outError code];
+						SendNetErrorNotification( nsWriteServer /*sServer*/, msg->data.URN, err );
+						[outError release];
+						return err;
+					}
+					
+				}
+			}
+			else{
+				QTils_LogMsgEx( "Could not create NSURL from URN='%s'", msg->data.URN );
+				err = fnfErr;
+				SendNetErrorNotification( nsWriteServer /*sServer*/, msg->data.URN, err );
+				return err;
+			}
+			msg->data.error = err;
+			break;
+		}
+		case qtvod_Stop:
+			break;
+		case qtvod_Start:
+			break;
+		case qtvod_GetTime:
+			if( (qv = getActiveQTVOD()) ){
+				replyCurrentTime( &Netreply, qtvod_Confirmation, qv, msg->data.boolean );
+			}
+			else{
+				SendNetErrorNotification( nsWriteServer, NetMessageToString(msg), errWindowNotFound );
+				return errWindowNotFound;
+			}
+			break;
+	}
+	if( sendDefaultReply ){
+		SendMessageToNet( nsWriteServer /*sServer*/, &Netreply, "QTVOD::ReplyNetMsg - client" );
+	}
+	msg->flags.category = qtvod_Confirmation;
+	return msg->data.error;
 }

@@ -74,7 +74,7 @@ extern "C" {
 				}
 #			endif
 #		endif
-#		define	Log(d,f,...)	NSLogprintf(basename(__FILE__),__LINE__,__FUNCTION__,LoggerActive(NULL),\
+#		define	Log(d,f,...)	NSLogprintf(basename((char*)__FILE__),__LINE__,__FUNCTION__,LoggerActive(NULL),\
 								(f), ##__VA_ARGS__)
 #		define	qtLogPtr		LoggerActive(NULL)
 #	endif // _PC_LOG_ACTIVE

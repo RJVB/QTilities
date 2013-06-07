@@ -22,6 +22,7 @@
 #import "../QTils/macosx/NSQTWindow.h"
 #import "../QTils/QTilities.h"
 #import "QTVOD.h"
+#import "QTVODlib.h"
 
 extern void register_QTMovieWindowH( QTMovieWindowH, NativeWindow );
 extern void unregister_QTMovieWindowH_from_NativeWindow(NativeWindow);
@@ -242,8 +243,9 @@ static void doNSLog( NSString *format, ... )
 
 - (void)dealloc
 { QTVOD *qv;
-	if( (qv = [self getQTVOD]) && qv.sysOwned == self ){
-		[self setQTVOD:nil];
+	qv = [self getQTVOD];
+	[self setQTVOD:nil];
+	if( qv && qv.sysOwned == self ){
 		// don't let QTVOD refer to us anymore:
 		qv->sysOwned = nil;
 		[qv closeAndRelease];
@@ -1429,8 +1431,11 @@ static unsigned int fullScreenViews= 0;
 #include <unistd.h>
 
 - (void) setQTVOD:(id)it
-{
-	theQTVOD = it;
+{ QTVOD *prev = theQTVOD;
+	theQTVOD = [it retain];
+	if( prev ){
+		[prev release];
+	}
 }
 
 - (id) getQTVOD
@@ -1858,48 +1863,13 @@ static unsigned int fullScreenViews= 0;
 	){
 		active = 1;
 
-#if 0
-		if( ([absPath hasSuffix:@".VOD" caseSensitive:YES]
-			|| [absPath hasSuffix:@".IEF" caseSensitive:YES]
-			|| [absPath hasSuffix:@".qi2m" caseSensitive:YES])
-		){ extern NSURL *pruneExtensions( NSURL *URL );
-		  NSURL *baseURL = pruneExtensions(absoluteURL);
-		  NSFileManager *nfs = [[[NSFileManager alloc] init] autorelease];
-		  NSString *cacheMov = [NSString stringWithFormat:@"%@.mov", [baseURL path]];
-			if( [nfs isReadableFileAtPath:cacheMov] ){
-				absoluteURL = [NSURL fileURLWithPath:cacheMov];
-			}
-			else if( ![absPath hasSuffix:@".VOD" caseSensitive:YES] ){
-				cacheMov = [NSString stringWithFormat:@"%@.VOD", [baseURL path]];
-				// don't test, let the system handle any errors:
-				absoluteURL = [NSURL fileURLWithPath:cacheMov];
-			}
-		}
-
-		addToRecentDocs = YES;
-		// our own state variable:
-		addToRecentMenu = 1;
-		[self readFromURL:absoluteURL ofType:typeName error:outError];
-		addToRecentDocs = addRecent;
-
-		qtVOD = [[QTVOD alloc] init];
-		// anchor the sys-owned window:
-		qtVOD.sysOwned = self;
-		[self setQTVOD:(struct QTVOD*)qtVOD];
-		if( [absPath hasSuffix:@".IEF" caseSensitive:YES] ){
-			qtVOD.assocDataFile = [absPath retain];
-		}
-		else{
-			qtVOD.assocDataFile = [[NSString stringWithString:@"*FromVODFile*"] retain];
-		}
-		if( [qtVOD readFromURL:absoluteURL ofType:typeName error:outError] && !*outError ){
-			shouldBeInvisible = YES;
-			[QTVODList addObject:qtVOD];
-		}
-#else
 		{ NSString *aDFile;
 			if( [absPath hasSuffix:@".IEF" caseSensitive:YES] ){
 				aDFile = absPath;
+			}
+			else if( assocDataFileName ){
+				aDFile = [NSString stringWithUTF8String:assocDataFileName];
+				QTils_free(assocDataFileName);
 			}
 			else{
 				// createWithAbsoluteURL retains the assocDataFile for us
@@ -1907,8 +1877,6 @@ static unsigned int fullScreenViews= 0;
 			}
 			qtVOD = [QTVOD createWithAbsoluteURL:absoluteURL ofType:typeName forDocument:self withAssocDataFile:aDFile error:outError];
 			if( qtVOD && !*outError ){
-				[qtVOD retain];
-				[self setQTVOD:qtVOD];
 				shouldBeInvisible = YES;
 			}
 		}
@@ -1935,7 +1903,6 @@ static unsigned int fullScreenViews= 0;
 		addToRecentMenu = 1;
 		[self readFromURL:absoluteURL ofType:typeName error:outError];
 		addToRecentDocs = addRecent;
-#endif
 		active = 0;
 	}
 	else{
@@ -2330,8 +2297,8 @@ static unsigned int fullScreenViews= 0;
 		NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), nswin );
 	}
 	if( (qv = [self getQTVOD]) ){
+		[self setQTVOD:nil];
 		if( qv.sysOwned == self || qv.sysOwned == nil ){
-			[self setQTVOD:nil];
 			// don't let QTVOD refer to us anymore:
 			qv->sysOwned = nil;
 			[qv closeAndRelease];

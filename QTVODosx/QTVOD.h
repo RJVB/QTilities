@@ -8,11 +8,17 @@
 
 #ifndef _QTVOD_H
 
-#import <Cocoa/Cocoa.h>
-#import <QTKit/QTKit.h>
+#ifdef __OBJC__
+#	import <Cocoa/Cocoa.h>
+#	import <QTKit/QTKit.h>
+#endif
+
 #import "QTVODWindow.h"
-#import "QTVODController.h"
-#import "VDPreferences.h"
+
+#ifdef __OBJC__
+#	import "QTVODController.h"
+#	import "VDPreferences.h"
+#endif
 #import "../QTils/QTilities.h"
 
 extern BOOL addToRecentDocs;
@@ -28,6 +34,7 @@ typedef struct TimeInterval {
 #define QTMWH(idx)		((WINLIST(idx))?((*winlist[(idx)])->qtmwH):NULL)
 #define QTVDOC(wih)		((wih && (*wih) && (*wih)->user_data)?((QTVOD*)(*wih)->user_data):NULL)
 
+#ifdef __OBJC__
 @interface QTVOD : NSDocument {
 	BOOL hasBeenClosed, beingClosed;
 	BOOL handlingPlayAction, handlingTimeAction, handlingCloseAction;
@@ -43,6 +50,7 @@ typedef struct TimeInterval {
 	Cartesian Wpos[maxQTWM], Wsize[maxQTWM];
 	short numQTMW;
 	Movie fullMovie;
+	ErrCode openErr;
 
 	NSURL *theURL;
 	NSString *theDirPath, *assocDataFile;
@@ -59,6 +67,8 @@ typedef struct TimeInterval {
 + (QTVOD*) createWithAbsoluteURL:(NSURL*)aURL ofType:(NSString*)typeName
 	forDocument:(QTVODWindow*)sO withAssocDataFile:(NSString*)aDFile
 	error:(NSError **)outError;
++ (QTVOD*) createWithAbsoluteURL:(NSURL*)aURL ofType:(NSString*)typeName
+	forDocument:(QTVODWindow*)sO error:(NSError **)outError;
 
 - (void) closeAndRelease;
 
@@ -104,6 +114,7 @@ typedef struct TimeInterval {
 @property BOOL shouldBeClosed;
 @property (readonly) NSString *assocDataFile;
 @property (readonly) TimeInterval theTimeInterval;
+@property ErrCode openErr;
 @end
 
 @interface NSString (hasSuffix)
@@ -111,6 +122,10 @@ typedef struct TimeInterval {
 @end
 
 extern NSMutableArray *QTVODList;
+
+#endif //__OBJC__
+
+extern TimeInterval theLastTimeInterval;
 
 #define _QTVOD_H
 #endif

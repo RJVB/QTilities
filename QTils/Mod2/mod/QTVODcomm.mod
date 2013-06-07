@@ -637,7 +637,8 @@ BEGIN
 			reply.flags.type := qtvod_StartTime;
 			reply.flags.class := class;
 			reply.data.val1 := wih^^.info^.startTime;
-			reply.data.val2 := wih^^.info^.frameRate;
+			(* 20130606: reply TCframeRate because absolute mode, just like replyCurrentTime! *)
+			reply.data.val2 := wih^^.info^.TCframeRate;
 			(* relative startTime is always 0 so querying it makes no sense... *)
 			reply.data.boolean := TRUE;
 			RETURN TRUE;

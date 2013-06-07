@@ -13,9 +13,21 @@
 
 extern char *ipAddress;
 extern SOCK sServer;
+extern char *assocDataFileName;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern void commsCleanUp();
 extern void ParseArgs( int argc, char *argv[] );
+
+extern QTVOD *getActiveQTVOD();
+extern ErrCode ReplyNetMsg(NetMessage *msg);
+
+#ifdef __cplusplus
+}
+#endif
 
 #define _QTVODLIB_H
 #endif

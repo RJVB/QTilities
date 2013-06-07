@@ -7,6 +7,7 @@
 //
 
 #import "QTVOD.h"
+#import "QTVODlib.h"
 
 #import <stdio.h>
 #import <stdlib.h>
@@ -973,6 +974,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 			if( *QTMWH(i) ){
 				(*QTMWH(i))->user_data = (void*) self;
 			}
+			[*winlist[i] setQTVOD:self];
 		}
 	}
 //	if( tcWih ){
@@ -1450,6 +1452,8 @@ void timeCallBack( QTCallBack cbRegister, long data )
 
 @end
 
+TimeInterval theLastTimeInterval;
+
 @implementation QTVOD
 
 + (QTVOD*) createWithAbsoluteURL:(NSURL*)aURL ofType:(NSString*)typeName
@@ -1463,11 +1467,53 @@ void timeCallBack( QTCallBack cbRegister, long data )
 		qv->sysOwned = sO;
 		qv->assocDataFile = [aDFile retain];
 		if( ![qv readFromURL:aURL ofType:typeName error:outError] ){
+			*outError = [NSError errorWithDomain:@"[QTVOD readFromURL:ofType:error:]" code:[qv openErr] userInfo:nil];
 			[self release];
 			return nil;
 		}
 		else{
 			[QTVODList addObject:self];
+			if( sO && !*outError ){
+				[sO setQTVOD:[self retain]];
+			}
+		}
+	}
+	return [self autorelease];
+}
+
++ (QTVOD*) createWithAbsoluteURL:(NSURL*)aURL ofType:(NSString*)typeName
+	forDocument:(QTVODWindow*)sO error:(NSError **)outError
+{
+	self = [[self alloc] init];
+	if( self ){
+	  QTVOD *qv = (QTVOD*) self;
+	  NSString *absPath = [aURL path];
+	  NSString *aDFile;
+		if( [absPath hasSuffix:@".IEF" caseSensitive:YES] ){
+			aDFile = absPath;
+		}
+		else if( assocDataFileName ){
+			aDFile = [NSString stringWithUTF8String:assocDataFileName];
+			QTils_free(assocDataFileName);
+		}
+		else{
+			// createWithAbsoluteURL retains the assocDataFile for us
+			aDFile = @"*FromVODFile*";
+		}
+
+		// avoid warnings about accessing instance variables by using a local instance of ourselves...
+		qv->sysOwned = sO;
+		qv->assocDataFile = [aDFile retain];
+		if( ![qv readFromURL:aURL ofType:typeName error:outError] ){
+			*outError = [NSError errorWithDomain:@"[QTVOD readFromURL:ofType:error:]" code:[qv openErr] userInfo:nil];
+			[self release];
+			return nil;
+		}
+		else{
+			[QTVODList addObject:self];
+			if( sO && !*outError ){
+				[sO setQTVOD:[self retain]];
+			}
 		}
 	}
 	return [self autorelease];
@@ -1807,6 +1853,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 		[self CalcTimeInterval:NO reset:YES];
 		theTimeInterval.wallTimeLapse = HRTime_Time();
 		[self StartVideoExceptFor:NULL];
+		theLastTimeInterval = theTimeInterval;
 	}
 	else if( theTimeInterval.benchMarking || theTimeInterval.wasBenchMarking ){
 		theTimeInterval.wallTimeLapse = HRTime_Time() - theTimeInterval.wallTimeLapse;
@@ -1818,6 +1865,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 		[self CalcTimeInterval:YES reset:NO];
 		theTimeInterval.benchMarking = NO;
 		theTimeInterval.wasBenchMarking = NO;
+		theLastTimeInterval = theTimeInterval;
 	}
 	return ret;
 }
@@ -1842,6 +1890,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 				theTimeInterval.timeStampA[0] = '\0';
 			}
 			theTimeInterval.timeB = -1.0;
+			theLastTimeInterval = theTimeInterval;
 		}
 		else{
 			theTimeInterval.timeB = t;
@@ -1904,6 +1953,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 			theTimeInterval.timeA = theTimeInterval.timeB;
 			strcpy( theTimeInterval.timeStampA, theTimeInterval.timeStampB );
 			theTimeInterval.timeB = -1.0;
+			theLastTimeInterval = theTimeInterval;
 			ret = YES;
 		}
 	}
@@ -2067,11 +2117,11 @@ void timeCallBack( QTCallBack cbRegister, long data )
 }
 
 - (ErrCode) OpenVideo:(NSString *)typeName error:(NSError **)outError
-{ ErrCode err = noErr;
-  char *fName = NULL;
+{ char *fName = NULL;
   NSString *fn = nil;
   static BOOL inOpenVideo = NO;
 
+	openErr = noErr;
 	if( !theURL || ![[theURL path] length] ){
 		// present an open file dialog
 		fName = AskFileName( "Please choose a video or movie to open" );
@@ -2119,7 +2169,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 	fn = [NSString stringWithFormat:@"%@.mov", [theURL path]];
 	fName = (char*) [fn UTF8String];
 	QTils_LogMsgEx( "Trying video cache: OpenMovieFromURL(%s)", fName );
-	if( !recreateChannelViews && (err = OpenMovieFromURL( &fullMovie, 1, NULL, fName, NULL, NULL )) == noErr ){
+	if( !recreateChannelViews && (openErr = OpenMovieFromURL( &fullMovie, 1, NULL, fName, NULL, NULL )) == noErr ){
 		QTils_LogMsg( "all-channel cache movie opened" );
 	}
 	else{
@@ -2130,25 +2180,25 @@ void timeCallBack( QTCallBack cbRegister, long data )
 		   && theDescription.channels.left <= 0 && theDescription.channels.right <= 0
 		){
 			QTils_LogMsgEx( "Trying video source: OpenMovieFromURL(%s)", fName );
-			if( (err = OpenMovieFromURL( &fullMovie, 1, NULL, fName, NULL, NULL )) == noErr ){
+			if( (openErr = OpenMovieFromURL( &fullMovie, 1, NULL, fName, NULL, NULL )) == noErr ){
 				// succeeded in importing the source .VOD file with the default parameters
 				fn = [NSString stringWithFormat:@"%@.mov", [theURL path]];
 				fName = (char*) [fn UTF8String];
-				err = SaveMovieAsRefMov( fName, fullMovie );
+				openErr = SaveMovieAsRefMov( fName, fullMovie );
 				CloseMovie(&fullMovie);
-				if( err == noErr ){
+				if( openErr == noErr ){
 					QTils_LogMsgEx( "Created cache movie '%s'", fName );
-					err = OpenMovieFromURL( &fullMovie, 1, NULL, fName, NULL, NULL );
+					openErr = OpenMovieFromURL( &fullMovie, 1, NULL, fName, NULL, NULL );
 				}
 				else{
-					QTils_LogMsgEx( "Error in SaveMovieAsRefMov(): %d", err );
+					QTils_LogMsgEx( "Error in SaveMovieAsRefMov(): %d", openErr );
 					PostMessage( fName, lastSSLogMsg );
 				}
 			}
 		}
 		else{
-			err = [self ImportMovie:theURL withDescription:&theDescription];
-			if( err != noErr ){
+			openErr = [self ImportMovie:theURL withDescription:&theDescription];
+			if( openErr != noErr ){
 			  const char *es, *ec;
 				es = MacErrorString( LastQTError(), &ec );
 				if( es ){
@@ -2157,7 +2207,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 				}
 				else{
 					QTils_LogMsgEx( "Error in ImportMovie: %d (%d)\n"
-								"Maybe the recording exists neither in .mov nor in .VOD?!\n", LastQTError(), err );
+								"Maybe the recording exists neither in .mov nor in .VOD?!\n", LastQTError(), openErr );
 				}
 				PostMessage( fName, lastSSLogMsg );
 			}
@@ -2169,17 +2219,17 @@ void timeCallBack( QTCallBack cbRegister, long data )
 			recreateChannelViews = YES;
 		}
 	}
-	if( err != noErr ){
-		if( err == couldNotResolveDataRef && !inOpenVideo ){
+	if( openErr != noErr ){
+		if( openErr == couldNotResolveDataRef && !inOpenVideo ){
 			inOpenVideo = YES;
 			[theURL release];
 			theURL = nil;
-			err = [self OpenVideo:typeName error:outError];
+			openErr = [self OpenVideo:typeName error:outError];
 			inOpenVideo = NO;
-			return err;
+			return openErr;
 		}
 		else{
-			return err;
+			return openErr;
 		}
 	}
 
@@ -2270,14 +2320,14 @@ void timeCallBack( QTCallBack cbRegister, long data )
 	[self register_windows];
 	[self PlaceWindows:nil withScale:theDescription.scale];
 
-	if( err == noErr ){
-		err = LastQTError();
+	if( openErr == noErr ){
+		openErr = LastQTError();
 	}
 
-	if( err == noErr ){
+	if( openErr == noErr ){
 		[self CreateQI2MFromDesign];
 	}
-	return err;
+	return openErr;
 }
 
 - (void) CloseVideo:(BOOL)final
@@ -2555,4 +2605,5 @@ void timeCallBack( QTCallBack cbRegister, long data )
 @synthesize fullMovieChanged, shouldBeClosed;
 @synthesize assocDataFile;
 @synthesize theTimeInterval;
+@synthesize openErr;
 @end
