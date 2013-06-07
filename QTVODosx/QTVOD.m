@@ -15,6 +15,7 @@
 #import <libgen.h>
 #import <string.h>
 #import <math.h>
+#import "timing.h"
 
 extern BOOL doLogging;
 
@@ -899,7 +900,6 @@ BOOL addToRecentDocs = YES;
 - (int) movieAnyAction:(QTMovieWindowH)wih withParams:(void*)params
 { short action = (params)? *((short*)params) : 0;
   double t;
-  extern double HRTime_Time();
   static char active = 0;
 	if( (*wih)->isPlaying && !active ){
 		active = 1;
@@ -917,7 +917,6 @@ void timeCallBack( QTCallBack cbRegister, long data )
 { QTMovieWindowH wih = (QTMovieWindowH) data;
   double t;
   static double pt = 0;
-  extern double HRTime_Time();
 	if( wih && (*wih) && (*wih)->self == *wih && (*wih)->theView ){
 		if( (*wih)->isPlaying ){
 			QTMovieWindowGetTime(wih, &t, 0);
@@ -1545,6 +1544,9 @@ TimeInterval theLastTimeInterval;
 		numQTMW = 0;
 		hasBeenClosed = NO;
 		beingClosed = NO;
+		memset( &timeSubscr, 0, sizeof(timeSubscr) );
+		timeSubscr.lastMovieTime = timeSubscr.lastForcedMovieTime = -1;
+		cbRegister = NULL;
     }
     // Allocate QTVODList when we're going to need it
     if( !QTVODList ){
@@ -1765,6 +1767,14 @@ TimeInterval theLastTimeInterval;
 			[WINLIST(w) UpdateDrawer];
 		}
 	}
+	if( cbRegister && timeSubscr.lastForcedMovieTime != t ){
+		[self PumpSubscriptions:NULL forcePump:YES];
+	}
+	else if( sServer != NULLSOCKET ){
+	  NetMessage msg;
+		replyCurrentTime( &msg, qtvod_Notification, (ref)? ref : QTMWH(fwWin), absolute );
+		SendMessageToNet( sServer, &msg, SENDTIMEOUT, NO, __FUNCTION__ );
+	}
 }
 
 - (void) SetTimes:(double)t rates:(float)rate withRefWindow:(QTMovieWindowH)ref absolute:(BOOL)absolute
@@ -1779,6 +1789,14 @@ TimeInterval theLastTimeInterval;
 			[movie setAttribute:[NSNumber numberWithFloat:rate] forKey:QTMoviePreferredRateAttribute];
 			[WINLIST(w) UpdateDrawer];
 		}
+	}
+	if( cbRegister && timeSubscr.lastForcedMovieTime != t ){
+		[self PumpSubscriptions:NULL forcePump:YES];
+	}
+	else if( sServer != NULLSOCKET ){
+	  NetMessage msg;
+		replyCurrentTime( &msg, qtvod_Notification, (ref)? ref : QTMWH(fwWin), absolute );
+		SendMessageToNet( sServer, &msg, SENDTIMEOUT, NO, __FUNCTION__ );
 	}
 }
 
@@ -1829,6 +1847,56 @@ TimeInterval theLastTimeInterval;
 		if( WINLIST(w) && QTMWH(w) != excl ){
 			[[WINLIST(w) theMovieView] stepBackward:WINLIST(w)];
 			[WINLIST(w) UpdateDrawer];
+		}
+	}
+}
+
+void PumpSubscriptions( QTCallBack cb, long refCon )
+{ QTVOD *qv = (QTVOD*) refCon;
+	[qv PumpSubscriptions:cb forcePump:NO];
+}
+
+- (void) PumpSubscriptions:(QTCallBack)cb forcePump:(BOOL)forcePump
+{ QTMovieWindowH wih = QTMWH(fwWin);
+  double subscrTimer, dt;
+  NetMessage msg;
+	if( (!cb || cb == cbRegister) && QTMovieWindowH_Check(wih) ){
+		subscrTimer = HRTime_Time();
+		dt = subscrTimer - timeSubscr.lastSentTime;
+		if( timeSubscr.sendInterval > 0 || forcePump ){
+			replyCurrentTime( &msg, qtvod_Subscription, wih, timeSubscr.absolute );
+			if( msg.data.val1 != timeSubscr.lastMovieTime || forcePump ){
+				timeSubscr.lastMovieTime = msg.data.val1;
+				SendMessageToNet( sServer, &msg, SENDTIMEOUT, NO, "QTVOD - currentTime subscription" );
+				timeSubscr.lastSentTime = subscrTimer;
+			}
+		}
+		TimedCallBackRegisterFunctionInTime( (*wih)->theMovie, cbRegister, timeSubscr.sendInterval,
+									 PumpSubscriptions, (long) self, CALLBACK_WITH_INTERRUPTS );
+	}
+}
+
+- (void) setTimeSubscrInterval:(double)dt absolute:(BOOL)absolute
+{ QTMovieWindowH wih = QTMWH(fwWin);
+	timeSubscr.sendInterval = dt;
+	timeSubscr.absolute = absolute;
+	timeSubscr.lastSentTime = HRTime_Time();
+	timeSubscr.lastMovieTime = -1.0;
+	if( QTMovieWindowH_Check(wih) ){
+		if( dt > 0 ){
+			if( !cbRegister ){
+				NewTimedCallBackRegisterForMovie( (*wih)->theMovie, &cbRegister, CALLBACK_WITH_INTERRUPTS );
+			}
+			TimedCallBackRegisterFunctionInTime( (*wih)->theMovie, cbRegister, dt, PumpSubscriptions,
+										 (long) self, CALLBACK_WITH_INTERRUPTS );
+		}
+		else{
+			if( cbRegister ){
+				TimedCallBackRegisterFunctionInTime( (*wih)->theMovie, cbRegister, dt, NULL,
+											 (long) self, CALLBACK_WITH_INTERRUPTS );
+				DisposeCallBackRegister(cbRegister);
+				cbRegister = NULL;
+			}
 		}
 	}
 }
@@ -2606,4 +2674,6 @@ TimeInterval theLastTimeInterval;
 @synthesize assocDataFile;
 @synthesize theTimeInterval;
 @synthesize openErr;
+@synthesize theDescription;
+@synthesize timeSubscr;
 @end

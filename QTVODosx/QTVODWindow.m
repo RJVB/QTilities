@@ -409,7 +409,7 @@ static void doNSLog( NSString *format, ... )
 			if( wi->theView ){
 				register_QTMovieWindowH( qtmwH, wi->theView );
 			}
-			wi->theMovieView = (struct QTMovieView*) movieView;
+			wi->theMovieView = movieView;
 			wi->theMC = [m quickTimeMovieController];
 			// the NSQTMovieWindow interface in the QTils framework is an elaboration of our own
 			// QTMovieWindow interface: it offers the same selectors so we can initialise wi->theNSQTMovieWindow
@@ -1878,6 +1878,13 @@ static unsigned int fullScreenViews= 0;
 			qtVOD = [QTVOD createWithAbsoluteURL:absoluteURL ofType:typeName forDocument:self withAssocDataFile:aDFile error:outError];
 			if( qtVOD && !*outError ){
 				shouldBeInvisible = YES;
+				if( sServer != NULLSOCKET ){
+				  NetMessage msg;
+				  VODDescription descr = [qtVOD theDescription];
+					msgOpenFile( &msg, [absPath UTF8String], &descr );
+					msg.flags.category = qtvod_Notification;
+					SendMessageToNet( sServer, &msg, SENDTIMEOUT, NO, __FUNCTION__ );
+				}
 			}
 		}
 

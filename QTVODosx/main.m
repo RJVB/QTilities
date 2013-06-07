@@ -57,6 +57,12 @@ extern BOOL QTils_LogSetActive(BOOL);
 @implementation QTVODApplicationDelegate
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 { extern NSObject *nsXMLVD;
+	if( sServer != NULLSOCKET ){
+	  NetMessage msg;
+		msgQuitQTVOD(&msg);
+		msg.flags.category = qtvod_Notification;
+		SendMessageToNet( sServer, &msg, SENDTIMEOUT, NO, __FUNCTION__ );
+	}
 	if( QTVODList ){
 #ifdef DEBUG
 	  int N = [QTVODList count], n = 0;

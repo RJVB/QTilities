@@ -48,18 +48,23 @@ static void doNSLog( NSString *format, ... )
 
 inline QTVOD *getActiveQTVOD()
 { NSWindow *active = NULL;
+	// obtain the app's key window, or else the frontmost window
 	if( !(active = [NSApp keyWindow]) && [[NSApp orderedWindows] count] ){
 		active = [[NSApp orderedWindows] objectAtIndex:0];
 	}
+	// if an eligible window was obtained, retrieve the corresponding document (a QTVODWindow)
 	if( active ){
 	  QTVODWindow *activeDocument = (QTVODWindow*) [[active windowController] document];
 //		QTils_Log( __FILE__, __LINE__, @"Active document: %@", activeDocument );
 		if( activeDocument ){
+			// the actual document we're interested in here is the QTVOD collection:
 			return [activeDocument getQTVOD];
 		}
 	}
 	return NULL;
 }
+
+#pragma mark input stream delegate
 
 @interface QTVODStreamDelegate : NSObject<NSStreamDelegate>{
 }
@@ -68,10 +73,12 @@ inline QTVOD *getActiveQTVOD()
 
 @implementation QTVODStreamDelegate
 
+// this is the function that gets invoked when there is data available on the input socket
 - (void) stream:(NSInputStream*)theStream handleEvent:(NSStreamEvent)theEvent
 {
 	switch( theEvent ){
 		case NSStreamEventEndEncountered:
+			commsCleanUp();
 			break;
 		case NSStreamEventHasBytesAvailable:{
 		  uint8_t *buffer;
@@ -149,7 +156,7 @@ void SendErrorHandler( size_t errors )
 
 BOOL SendMessageToNet( NSOutputStream *ss, NetMessage *msg, const char *caller )
 { BOOL ret = FALSE;
-	if( msg && ss ){
+	if( msg && ss && [ss hasSpaceAvailable] ){
 		@synchronized(ss){
 			errSock = 0;
 			msg->size = sizeof(*msg);
@@ -204,6 +211,31 @@ BOOL replyCurrentTime( NetMessage *reply, NetMessageCategory cat, QTVOD *qv, BOO
 		reply->data.val1 = [qv getTime:absolute];
 		reply->data.val2 = [qv frameRate:absolute];
 		reply->data.boolean = absolute;
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL replyStartTime( NetMessage *reply, NetMessageCategory cat, QTVOD *qv )
+{
+	if( reply && qv ){
+		REPLYINIT( reply, StartTime, cat );
+		reply->data.val1 = [qv startTime];
+		reply->data.val2 = [qv frameRate:NO];
+		reply->data.boolean = TRUE;
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL replyDuration( NetMessage *reply, NetMessageCategory cat, QTVOD *qv )
+{
+	if( reply && qv ){
+		REPLYINIT( reply, Duration, cat );
+		reply->data.val1 = [qv duration];
+		reply->data.val2 = [qv frameRate:NO];
+		// duration is always a relative time (i.e. w.r.t. the movie onset)
+		reply->data.boolean = FALSE;
 		return TRUE;
 	}
 	return FALSE;
@@ -459,8 +491,24 @@ ErrCode ReplyNetMsg(NetMessage *msg)
 			break;
 		}
 		case qtvod_Stop:
+			if( (qv = getActiveQTVOD()) ){
+				[qv StopVideoExceptFor:NULL];
+				msg->data.val1 = Netreply.data.val1 = [qv getTime:NO];
+				msg->data.boolean = Netreply.data.boolean = 0;
+			}
+			else{
+				msg->data.error = err= errWindowNotFound;
+			}
 			break;
 		case qtvod_Start:
+			if( (qv = getActiveQTVOD()) ){
+				[qv StartVideoExceptFor:NULL];
+				msg->data.val1 = Netreply.data.val1 = [qv getTime:NO];
+				msg->data.boolean = Netreply.data.boolean = 0;
+			}
+			else{
+				msg->data.error = err= errWindowNotFound;
+			}
 			break;
 		case qtvod_GetTime:
 			if( (qv = getActiveQTVOD()) ){
@@ -470,6 +518,51 @@ ErrCode ReplyNetMsg(NetMessage *msg)
 				SendNetErrorNotification( nsWriteServer, NetMessageToString(msg), errWindowNotFound );
 				return errWindowNotFound;
 			}
+			break;
+		case qtvod_GetTimeSubscription:
+			if( (qv = getActiveQTVOD()) ){
+				[qv setTimeSubscrInterval:msg->data.val1 absolute:msg->data.boolean];
+			}
+			else{
+				msg->data.error = err= errWindowNotFound;
+			}
+			break;
+		case qtvod_GotoTime:
+			if( (qv = getActiveQTVOD()) ){
+				[qv SetTimes:msg->data.val1 withRefWindow:NULL absolute:msg->data.boolean];
+				if( [qv getTime:msg->data.boolean] != msg->data.val1 ){
+					msg->data.error = Netreply.data.error = err = 1;
+				}
+			}
+			else{
+				msg->data.error = err= errWindowNotFound;
+			}
+			break;
+		case qtvod_GetStartTime:
+			if( (qv = getActiveQTVOD()) ){
+				replyStartTime( &Netreply, qtvod_Confirmation, qv );
+			}
+			else{
+				SendNetErrorNotification( nsWriteServer, NetMessageToString(msg), errWindowNotFound );
+				return errWindowNotFound;
+			}
+			break;
+		case qtvod_GetDuration:
+			if( (qv = getActiveQTVOD()) ){
+				replyDuration( &Netreply, qtvod_Confirmation, qv );
+			}
+			else{
+				SendNetErrorNotification( nsWriteServer, NetMessageToString(msg), errWindowNotFound );
+				return errWindowNotFound;
+			}
+			break;
+		case qtvod_GetChapter:
+			break;
+		case qtvod_NewChapter:
+			break;
+		case qtvod_MarkIntervalTime:
+			break;
+		case qtvod_GetLastInterval:
 			break;
 	}
 	if( sendDefaultReply ){

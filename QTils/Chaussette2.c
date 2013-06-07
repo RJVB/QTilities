@@ -247,7 +247,7 @@ BOOL ConnectToServer(SOCK s, unsigned short port, const char *nom, const char *a
 		  int res = connect( s, (SOCKADDR*)&fsock, sizeof(SOCKADDR_IN) );
 			errSock = geterrno();
 			if( res && errSock != EISCONN ){
-				fprintf( stderr, "Error during connection (EINPROGRESS): %s\n", errSockText(errSock) );
+				fprintf( stderr, "Error during connection process (EINPROGRESS): %s\n", errSockText(errSock) );
 				// 20130605:
 				wr = 0;
 			}
@@ -258,7 +258,7 @@ BOOL ConnectToServer(SOCK s, unsigned short port, const char *nom, const char *a
 #ifdef __WINSOCK__
 	if( errSock != WSAEWOULDBLOCK && errSock != WSAEISCONN && errSock != WSAECONNREFUSED )
 #else
-	if( errSock != EWOULDBLOCK && errSock != EISCONN && errSock != ECONNREFUSED )
+	if( errSock != EWOULDBLOCK && errSock != EISCONN /*&& errSock != ECONNREFUSED*/ )
 #endif
 	{
 		fprintf( stderr, "socket connection error %d: %s(%ld)\n", s, errSockText(errSock), errSock );

@@ -34,6 +34,11 @@ typedef struct TimeInterval {
 #define QTMWH(idx)		((WINLIST(idx))?((*winlist[(idx)])->qtmwH):NULL)
 #define QTVDOC(wih)		((wih && (*wih) && (*wih)->user_data)?((QTVOD*)(*wih)->user_data):NULL)
 
+typedef struct CurrentTimeSubscription {
+	double sendInterval, lastSentTime, lastMovieTime, lastForcedMovieTime;
+	BOOL absolute, forcePump;
+} CurrentTimeSubscription;
+
 #ifdef __OBJC__
 @interface QTVOD : NSDocument {
 	BOOL hasBeenClosed, beingClosed;
@@ -62,6 +67,7 @@ typedef struct TimeInterval {
 	BOOL fullMovieChanged, finalCloseVideo, shouldBeClosed, fullMovieIsSplit;
 	VODChannels splitCamTrack;
 	QTCallBack cbRegister;
+	CurrentTimeSubscription timeSubscr;	
 }
 
 + (QTVOD*) createWithAbsoluteURL:(NSURL*)aURL ofType:(NSString*)typeName
@@ -87,6 +93,8 @@ typedef struct TimeInterval {
 - (void) StopVideoExceptFor:(QTVODWindow*)excl;
 - (void) StepForwardExceptFor:(QTMovieWindowH)excl;
 - (void) StepBackwardExceptFor:(QTMovieWindowH)excl;
+- (void) PumpSubscriptions:(QTCallBack)cb forcePump:(BOOL)forcePump;
+- (void) setTimeSubscrInterval:(double)dt absolute:(BOOL)absolute;
 - (BOOL) BenchmarkPlaybackRate;
 - (BOOL) CalcTimeInterval:(BOOL)display reset:(BOOL)reset;
 - (void) PlaceWindows:(Cartesian*)ulCorner withScale:(double)scale;
@@ -115,6 +123,8 @@ typedef struct TimeInterval {
 @property (readonly) NSString *assocDataFile;
 @property (readonly) TimeInterval theTimeInterval;
 @property ErrCode openErr;
+@property (readonly) VODDescription theDescription;
+@property CurrentTimeSubscription timeSubscr;
 @end
 
 @interface NSString (hasSuffix)
