@@ -155,6 +155,8 @@ extern void msgGetLastInterval(NetMessage *msg);
 extern BOOL replyCurrentTime( NetMessage *reply, NetMessageCategory cat, QTMovieWindowH wih, BOOL absolute );
 extern BOOL replyStartTime( NetMessage *reply, NetMessageCategory cat, QTMovieWindowH wih );
 extern BOOL replyDuration( NetMessage *reply, NetMessageCategory cat, QTMovieWindowH wih );
+extern BOOL replyChapter( NetMessage *reply, NetMessageCategory cat, const char *title, int32_t idx,
+			   double startTime, double duration );
 extern BOOL replyLastInterVal( NetMessage *reply, NetMessageCategory cat );
 
 extern void SendNetCommandOrNotification( SOCK ss, NetMessageType type, NetMessageCategory cat );

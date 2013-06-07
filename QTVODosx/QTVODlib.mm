@@ -556,8 +556,48 @@ ErrCode ReplyNetMsg(NetMessage *msg)
 				return errWindowNotFound;
 			}
 			break;
-		case qtvod_GetChapter:
+		case qtvod_GetChapter:{
+		  char *chapText = NULL;
+			if( (qv = getActiveQTVOD()) && [qv fullMovie] ){
+				if( msg->data.iVal1 < 0 ){
+				  Movie m = [qv fullMovie];
+				  long N = GetMovieChapterCount(m);
+					QTils_Log( __FILE__, __LINE__, @"Sending %@'s %ld chapters", [[qv theURL] path], N );
+					for( long i = 0 ; i < N ; i++ ){
+						err = GetMovieIndChapter( m, i, &t, &chapText );
+						if( err == noErr && chapText ){
+							// lazy: we don't transmit the chapter duration...
+							replyChapter( &Netreply, qtvod_Confirmation, chapText, i, t, 0.0 );
+							SendMessageToNet( nsWriteServer, &Netreply, "QTVOD::ReplyNetMsg - client" );
+							QTils_free(chapText);
+						}
+						else{
+							msg->data.error = err;
+							SendNetErrorNotification( nsWriteServer, NetMessageToString(msg), err );
+						}
+					}
+					sendDefaultReply = NO;
+				}
+				else{
+					err = GetMovieIndChapter( [qv fullMovie], (long) msg->data.iVal1, &t, &chapText );
+					if( err == noErr && chapText ){
+						// lazy: we don't transmit the chapter duration...
+						replyChapter( &Netreply, qtvod_Confirmation, chapText, msg->data.iVal1, t, 0.0 );
+						QTils_free(chapText);
+					}
+					else{
+						msg->data.error = err;
+						SendNetErrorNotification( nsWriteServer, NetMessageToString(msg), err );
+						return err;
+					}
+				}
+			}
+			else{
+				msg->data.error = err= errWindowNotFound;
+				SendNetErrorNotification( nsWriteServer, NetMessageToString(msg), errWindowNotFound );
+			}
 			break;
+		}
 		case qtvod_NewChapter:
 			break;
 		case qtvod_MarkIntervalTime:

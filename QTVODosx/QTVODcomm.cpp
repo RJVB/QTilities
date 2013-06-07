@@ -581,6 +581,23 @@ BOOL replyDuration( NetMessage *reply, NetMessageCategory cat, QTMovieWindowH wi
 	return FALSE;
 }
 
+BOOL replyChapter( NetMessage *reply, NetMessageCategory cat, const char *title, int32_t idx,
+			   double startTime, double duration )
+{
+	if( title && *title && startTime >= 0 && duration >= 0 ){
+		REPLYINIT( reply, Chapter, cat );
+		strncpy( reply->data.URN, title, sizeof(reply->data.URN) );
+		reply->data.URN[sizeof(reply->data.URN) - 1] = '\0';
+		reply->data.iVal1 = idx;
+		reply->data.val1 = startTime;
+		reply->data.val2 = duration;
+		// durations are always relative:
+		reply->data.boolean = FALSE;
+		return TRUE;
+	}
+	return FALSE;
+}
+
 BOOL replyLastInterVal( NetMessage *reply, NetMessageCategory cat )
 {
 	REPLYINIT( reply, LastInterval, cat );

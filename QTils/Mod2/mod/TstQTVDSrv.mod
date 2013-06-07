@@ -85,7 +85,7 @@ END CheckQuit;
 PROCEDURE TraiteMsgDeQTVODm2( VAR msg, reply : NetMessage ) : ErrCode;
 VAR
 	ft : MovieFrameTime;
-	reply2 : NetMessage;
+	reply2, reply3 : NetMessage;
 	txt : ARRAY[0..127] OF CHAR;
 BEGIN
 	QTils.LogMsgEx( 'Msg Net serveur "%s"', NetMessageToString(msg) );
@@ -100,6 +100,7 @@ BEGIN
 	(* par defaut on ne renvoie aucun message: *)
 	reply.flags.type := qtvod_NoType;
 	reply2.flags.type := qtvod_NoType;
+	reply3.flags.type := qtvod_NoType;
 
 	CASE msg.flags.type OF
 
@@ -122,6 +123,7 @@ BEGIN
 				(* on veut aussi connaître la durée et l'heure de début de l'enregistrement: *)
 				msgGetStartTime(reply);
 				msgGetDuration(reply2);
+				msgGetChapter(reply3, -1);
 
 		| qtvod_Start,
 		qtvod_Stop, qtvod_MovieFinished :
@@ -164,6 +166,10 @@ BEGIN
 				WriteString( QTils.lastSSLogMsg^ ) ; WriteLn;
 				Duration := msg.data.val1;
 
+		| qtvod_Chapter :
+				NetMessageToLogMsg( "Chapitre", "TstQTVDSrv", msg );
+				WriteString( QTils.lastSSLogMsg^ ) ; WriteLn;				
+
 		ELSE
 			(* noop *)
 	END;
@@ -176,6 +182,10 @@ BEGIN
 	IF ( reply2.flags.type <> qtvod_NoType )
 		THEN
 			SendMessageToNet( s, reply2, SENDTIMEOUT, FALSE, "TraiteMsgDeQTVODm2" );
+	END;
+	IF ( reply3.flags.type <> qtvod_NoType )
+		THEN
+			SendMessageToNet( s, reply3, SENDTIMEOUT, FALSE, "TraiteMsgDeQTVODm2" );
 	END;
 
 	RETURN msg.data.error;
@@ -270,6 +280,7 @@ BEGIN
 			fName := "";
 			QTils.LogMsg( "No arguments specified" );
 	END;
+(*
 	QTils.sprintf( str, "qtvod_NoClass=%d qtvod_Command=%d qtvod_NoType=%d qtvod_Open=%d qtvod_Quit=%d size NMC,NMT=%d,%d\r\n",
 		 qtvod_NoClass, qtvod_Command, qtvod_NoType, qtvod_Open, qtvod_Quit,
 		 VAL(INTEGER,SIZE(NetMessageClass)), VAL(INTEGER,SIZE(NetMessageType)) );
@@ -307,6 +318,7 @@ BEGIN
 		CAST(UInt32,ADR(reply.data.description))-CAST(UInt32,ADR(reply)),
 		CAST(UInt32,ADR(reply.data.error))-CAST(UInt32,ADR(reply)) );
 	WriteString( str );
+*)
 	IF InitCommServer(srv, ServerPortNr)
 		THEN
 			clntTimer := StartTimeEx();
