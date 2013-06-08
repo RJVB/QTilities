@@ -406,7 +406,6 @@ void ParseArgs( int argc, char *argv[] )
 ErrCode ReplyNetMsg(NetMessage *msg)
 { ErrCode err;
   double t;
-  int32_t idx, n;
   BOOL sendDefaultReply;
   NetMessage Netreply;
   QTVOD *qv;
@@ -559,6 +558,7 @@ ErrCode ReplyNetMsg(NetMessage *msg)
 		case qtvod_GetChapter:{
 		  char *chapText = NULL;
 			if( (qv = getActiveQTVOD()) && [qv fullMovie] ){
+				// val1 = chapterStartTime, val2 = chapterDuration, iVal1 = chapterNumber, URN = chapterTitle
 				if( msg->data.iVal1 < 0 ){
 				  Movie m = [qv fullMovie];
 				  long N = GetMovieChapterCount(m);
@@ -594,15 +594,92 @@ ErrCode ReplyNetMsg(NetMessage *msg)
 			}
 			else{
 				msg->data.error = err= errWindowNotFound;
-				SendNetErrorNotification( nsWriteServer, NetMessageToString(msg), errWindowNotFound );
+				SendNetErrorNotification( nsWriteServer, NetMessageToString(msg), err );
 			}
 			break;
 		}
 		case qtvod_NewChapter:
+			if( (qv = getActiveQTVOD()) && [qv fullMovie] ){
+			  Movie m = [qv fullMovie];
+				// val1 = chapterStartTime, val2 = chapterDuration
+				if( msg->data.val1 < 0 || msg->data.val1 > GetMovieDurationSeconds(m) ){
+					msg->data.error = err= invalidTime;
+					SendNetErrorNotification( sServer, NetMessageToString(msg), err );
+					return err;
+				}
+				else if( msg->data.val1 + msg->data.val2 > GetMovieDurationSeconds(m) ){
+					msg->data.error = err= invalidDuration;
+					SendNetErrorNotification( sServer, NetMessageToString(msg), err );
+					return err;
+				}
+				else{
+					// we add the new chapter to the TC channel for it to show up in the interface
+					if( QTMovieWindowH_Check([[qv TC] qtmwH]) ){
+						err = MovieAddChapter( [[[qv TC] getMovie] quickTimeMovie], 0,
+										  msg->data.URN, msg->data.val1, msg->data.val2 );
+					}
+					// we also add it to the fullMovie, so that an invitation is posted to save
+					// the movie before closing it.
+					err = MovieAddChapter( m, 0,
+									  msg->data.URN, msg->data.val1, msg->data.val2 );
+					if( err == noErr ){
+					  long N = GetMovieChapterCount(m);
+					  char *txt = NULL;
+						// success, now find the index of the new chapter:
+						sendDefaultReply = NO;
+						for( long idx = 0 ; idx < N ; idx++ ){
+							if( (err = GetMovieIndChapter( m, idx, &Netreply.data.val1, &txt )) == noErr
+							   && txt && strcmp( txt, msg->data.URN ) == 0
+							){
+								// found it, prepare the reply message
+								replyChapter( &Netreply, qtvod_Confirmation, txt, idx, Netreply.data.val1, 0.0 );
+								// make sure it gets sent
+								sendDefaultReply = YES;
+								idx = N;
+							}
+							QTils_free(txt);
+						}
+					}
+					else{
+						msg->data.error = err;
+						SendNetErrorNotification( sServer, NetMessageToString(msg), err );
+						return err;
+					}
+				}
+			}
+			else{
+				msg->data.error = err= errWindowNotFound;
+				SendNetErrorNotification( nsWriteServer, NetMessageToString(msg), errWindowNotFound );
+			}
 			break;
 		case qtvod_MarkIntervalTime:
+			if( (qv = getActiveQTVOD()) ){
+				[qv CalcTimeInterval:NO reset:msg->data.boolean];
+				if( QTMovieWindowGetTime( [[qv TC] qtmwH], &Netreply.data.val1, 0 ) == noErr ){
+					msg->data.val1 = Netreply.data.val1;
+				}
+				else{
+					msg->data.val1 = Netreply.data.val1 = 0;
+				}
+				msg->data.boolean = Netreply.data.boolean = NO;
+			}
+			else{
+				msg->data.error = err= errWindowNotFound;
+				SendNetErrorNotification( nsWriteServer, NetMessageToString(msg), errWindowNotFound );
+			}
 			break;
 		case qtvod_GetLastInterval:
+			if( (qv = getActiveQTVOD()) ){
+				replyLastInterval( &Netreply, qtvod_Confirmation, [qv theTimeInterval].dt );
+				sendDefaultReply = YES;
+			}
+			else{
+				msg->data.error = err= errWindowNotFound;
+				SendNetErrorNotification( nsWriteServer, NetMessageToString(msg), errWindowNotFound );
+			}
+			break;
+		default:
+			// noop
 			break;
 	}
 	if( sendDefaultReply ){

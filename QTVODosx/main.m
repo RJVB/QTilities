@@ -34,7 +34,17 @@ extern BOOL QTils_LogSetActive(BOOL);
 {
 	doLogging = !doLogging;
 	if( doLogging ){
-		[[NSWorkspace sharedWorkspace] launchApplication:@"NSLogger"];
+		if( [[NSWorkspace sharedWorkspace] launchApplication:@"NSLogger"] ){
+			fprintf( stderr, "Waiting for NSLogger ..." ); fflush(stderr);
+			while( ![[[[NSWorkspace sharedWorkspace] activeApplication] objectForKey:@"NSApplicationName"]
+				    isEqualToString:@"NSLogger"]
+			){
+				PumpMessages(YES);
+			}
+			fputs( " NSLogger running\n", stderr );
+		}
+		// bring us back to the front:
+		[NSApp activateIgnoringOtherApps:YES];
 	}
 	QTils_LogSetActive(doLogging);
 	QTils_LogMsgEx( "toggleLogging: logging now %s\n", (doLogging)? "ON" : "OFF" );

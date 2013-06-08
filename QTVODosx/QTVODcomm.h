@@ -157,7 +157,7 @@ extern BOOL replyStartTime( NetMessage *reply, NetMessageCategory cat, QTMovieWi
 extern BOOL replyDuration( NetMessage *reply, NetMessageCategory cat, QTMovieWindowH wih );
 extern BOOL replyChapter( NetMessage *reply, NetMessageCategory cat, const char *title, int32_t idx,
 			   double startTime, double duration );
-extern BOOL replyLastInterVal( NetMessage *reply, NetMessageCategory cat );
+extern BOOL replyLastInterval( NetMessage *reply, NetMessageCategory cat, double dt );
 
 extern void SendNetCommandOrNotification( SOCK ss, NetMessageType type, NetMessageCategory cat );
 extern void SendNetErrorNotification( SOCK ss, const char *txt, ErrCode err );

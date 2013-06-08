@@ -598,10 +598,10 @@ BOOL replyChapter( NetMessage *reply, NetMessageCategory cat, const char *title,
 	return FALSE;
 }
 
-BOOL replyLastInterVal( NetMessage *reply, NetMessageCategory cat )
+BOOL replyLastInterval( NetMessage *reply, NetMessageCategory cat, double dt )
 {
 	REPLYINIT( reply, LastInterval, cat );
-	reply->data.val1 = theLastTimeInterval.dt;
+	reply->data.val1 = dt;
 	// an interval is always relative:
 	reply->data.boolean = FALSE;
 	return TRUE;
