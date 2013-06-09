@@ -20,6 +20,7 @@ static const classForCode_t classForCodeData__[] = {
 	{ @"QTVODTerminologyWindow", 'cwin' },
 	{ @"QTVODTerminologyDocument", 'docu' },
 	{ @"QTVODTerminologyQtMovieView", 'QTMV' },
+	{ @"QTVODTerminologyQTVODScripting", 'SCRP' },
 	{ nil, 0 } 
 };
 
@@ -516,6 +517,53 @@ static const codeForPropertyName_t codeForPropertyNameData__[] = {
 - (void) moveTo:(SBObject *)to
 {
 	[self sendEvent:'core' id:'move' parameters:'insh', to, 0];
+}
+
+
+@end
+
+
+@implementation QTVODTerminologyQTVODScripting
+
+
+- (void) closeSaving:(QTVODTerminologySaveOptions)saving savingIn:(NSURL *)savingIn
+{
+	[self sendEvent:'core' id:'clos' parameters:'savo', [NSAppleEventDescriptor descriptorWithEnumCode:saving], 'kfil', savingIn, 0];
+}
+
+- (void) saveIn:(NSURL *)in_ as:(id)as
+{
+	[self sendEvent:'core' id:'save' parameters:'kfil', in_, 'fltp', as, 0];
+}
+
+- (void) printWithProperties:(NSDictionary *)withProperties printDialog:(BOOL)printDialog
+{
+	[self sendEvent:'aevt' id:'pdoc' parameters:'prdt', withProperties, 'pdlg', [NSNumber numberWithBool:printDialog], 0];
+}
+
+- (void) delete
+{
+	[self sendEvent:'core' id:'delo' parameters:0];
+}
+
+- (void) duplicateTo:(SBObject *)to withProperties:(NSDictionary *)withProperties
+{
+	[self sendEvent:'core' id:'clon' parameters:'insh', to, 'prdt', withProperties, 0];
+}
+
+- (void) moveTo:(SBObject *)to
+{
+	[self sendEvent:'core' id:'move' parameters:'insh', to, 0];
+}
+
+- (void) connectToServerAddress:(NSString *)address
+{
+	[self sendEvent:'QVOD' id:'srvr' parameters:'ADDR', address, 0];
+}
+
+- (void) toggleLogging
+{
+	[self sendEvent:'QVOD' id:'tlog' parameters:0];
 }
 
 

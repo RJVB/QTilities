@@ -140,5 +140,12 @@
 				<cocoa key="FileName"/>
 			</parameter>
 		</command>
+		<command name="connectToServer" code="QVODsrvr" description="connects to the specified server">
+			<cocoa class="ConnectToServerScriptCommand"/>
+			<direct-parameter description="the address to connect to" type="text"/>
+		</command>
+		<command name="toggleLogging" code="QVODtlog" description="toggles the logging facility">
+			<cocoa class="ToggleLoggingScriptCommand"/>
+		</command>
 	</suite>
 </dictionary>

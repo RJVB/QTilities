@@ -21,7 +21,6 @@
 extern "C" int QTils_Log(const char *fileName, int lineNr, NSString *format, ... );
 extern "C" BOOL QTils_LogSetActive(BOOL);
 
-char *ipAddress = NULL;
 char *assocDataFileName = NULL;
 SOCK sServer = NULLSOCKET;
 NSInputStream *nsReadServer = NULL;
@@ -255,15 +254,12 @@ void commsCleanUp()
 	[nsReadServer release];
 	[nsWriteServer close];
 	[nsWriteServer release];
-	if( ipAddress ){
-		QTils_free(ipAddress);
-	}
 	if( assocDataFileName ){
 		QTils_free(assocDataFileName);
 	}
 }
 
-void commsInit()
+void commsInit(const char *ipAddress)
 {
 	InitCommClient( &sServer, ipAddress, ServerPortNr, ClientPortNr, 50 );
 //	CFStreamCreatePairWithSocketToHost( NULL, (CFStringRef) [NSString stringWithUTF8String:ipAddress], ServerPortNr,
@@ -313,12 +309,11 @@ void ParseArgs( int argc, char *argv[] )
 		}
 		else if( strncmp( argv[arg], "-client", 7 ) == 0 ){
 			if( argv[arg][7] == '=' ){
-				ipAddress = QTils_strdup(&argv[arg][8]);
+				commsInit(&argv[arg][8]);
 			}
 			else{
-				ipAddress = QTils_strdup("127.0.0.1");
+				commsInit("127.0.0.1");
 			}
-			commsInit();
 		}
 		else if( CheckOptArg( arg, "-assocData", &valueStr ) ){
 			if( *valueStr ){
@@ -688,3 +683,55 @@ ErrCode ReplyNetMsg(NetMessage *msg)
 	msg->flags.category = qtvod_Confirmation;
 	return msg->data.error;
 }
+
+#pragma mark ---- toplevel AppleScript commands:
+
+// these are commands ("verbs") sent to the application, unrelated and independant to/of any open
+// documents.
+// The online docs suggest that it ought to be possible to define those additional "Standard Suite" commands
+// the same way as the other commands are handled, I'd say via specific selectors added to the NSApplication
+// instance. The instructions aren't explicit enough though, and my attempts either replace the standard
+// suite commands (i.e. nothing works anymore) or do nothing.
+// Hence this less elegant approach, via command-specific subclasses of the NSScriptCommand class.
+
+@interface ConnectToServerScriptCommand : NSScriptCommand
+@end
+
+@implementation ConnectToServerScriptCommand
+
+-(id)performDefaultImplementation
+{ NSDictionary *args = [self evaluatedArguments];
+  NSString *address;
+	NSLog(@"connectToServer %@ (%@)", self, NSStringFromClass([self class]) );
+	address = [args objectForKey:@""];
+	if( address ){
+		commsCleanUp();
+		commsInit([address UTF8String]);
+		if( errSock != 0 || sServer == NULLSOCKET ){
+			[self setScriptErrorNumber:errSock];
+			[self setScriptErrorString:[NSString stringWithFormat:@"InitCommClient(%@) returned error '%s'",
+								   address, errSockText(errSock)]];
+		}
+	}
+	else{
+		[self setScriptErrorNumber:paramErr];
+		[self setScriptErrorString:@"Parameter Error: expecting an IP4 address string!"];
+	}
+	return nil;
+}
+
+@end
+
+@interface ToggleLoggingScriptCommand : NSScriptCommand
+@end
+
+@implementation ToggleLoggingScriptCommand
+
+-(id)performDefaultImplementation
+{
+	NSLog(@"toggleLogging %@ (%@)", self, NSStringFromClass([self class]) );
+	[[NSApplication sharedApplication] toggleLogging:NULL];
+	return nil;
+}
+
+@end

@@ -265,6 +265,8 @@
 		D6704EBF121AFDB6004B5459 /* winixdefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = winixdefs.h; path = ../../winixdefs.h; sourceTree = "<group>"; };
 		D67ACE641416129D00E99EA2 /* QTils-emb.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "QTils-emb.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D67ACE651416129D00E99EA2 /* QTils-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "QTils-Info copy.plist"; path = "../../QTils-Info copy.plist"; sourceTree = "<group>"; };
+		D67B56D61764897C005E4C86 /* QTilsversion.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rc; name = QTilsversion.rc; path = QTils/QTilsversion.rc; sourceTree = SOURCE_ROOT; };
+		D67B56D817648A19005E4C86 /* QTils.manifest */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = QTils.manifest; sourceTree = "<group>"; };
 		D68788F7129A87ED009ACD66 /* QTilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 2; name = QTilities.h; path = QTils/QTilities.h; sourceTree = "<group>"; };
 		D68788F8129A87ED009ACD66 /* QTMovieWin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; name = QTMovieWin.c; path = QTils/QTMovieWin.c; sourceTree = "<group>"; };
 		D6878985129ACB17009ACD66 /* Lists.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Lists.h; path = QTils/Lists.h; sourceTree = "<group>"; };
@@ -485,13 +487,13 @@
 		D65F63AF12C3C837009A3D72 /* macosx */ = {
 			isa = PBXGroup;
 			children = (
+				D65F63E212C3CC3F009A3D72 /* gcygwin */,
 				D6B25773175B88C20090F55F /* Logging */,
 				D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */,
 				D65F639512C3C7A4009A3D72 /* QTils-Info.plist */,
 				D6DD1BF6131A97B70063BBFE /* empty.mov */,
 				D6EC1D5812EF058300B53DBC /* AskFileName.m */,
 				D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.mm */,
-				D65F63E212C3CC3F009A3D72 /* gcygwin */,
 				D6FEC29D141A1C230005D2B9 /* NSQTWindow.h */,
 				D6FEC29E141A1C230005D2B9 /* NSQTWindow.m */,
 				D6FEC296141A1B0B0005D2B9 /* NSQTMovieView.h */,
@@ -632,6 +634,8 @@
 		D6B9CC5E12A5086E00B99C73 /* mswin */ = {
 			isa = PBXGroup;
 			children = (
+				D67B56D61764897C005E4C86 /* QTilsversion.rc */,
+				D67B56D817648A19005E4C86 /* QTils.manifest */,
 				D6CE60501347AF45002E166B /* MacErrorTable.h */,
 				D663BD351328FFA5007DFF5C /* QTVOD2-dev-installer.nsi */,
 				D663BD331328DF96007DFF5C /* QTVOD2-installer.nsi */,

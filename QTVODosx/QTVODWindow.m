@@ -1584,6 +1584,8 @@ static unsigned int fullScreenViews= 0;
 	return nil;
 }
 
+#pragma mark -------------------
+
 - (NSNumber*) duration
 { double t;
   QTVOD *qv = [self getQTVOD];

@@ -28,5 +28,8 @@ extern int SwitchCocoaToMultiThreadedMode();
 #	ifdef __cplusplus
 	}
 #	endif
+
+#define LOGGING_OPTIONS	kLoggerOption_BrowseBonjour|kLoggerOption_CaptureSystemConsole
+
 #define _NSLOGGERCLIENT_H
 #endif

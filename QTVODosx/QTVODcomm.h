@@ -124,7 +124,7 @@ extern "C" {
 extern VODDescription *VODDescriptionFromStatic( VODDescription *target, StaticVODDescription *descr );
 extern StaticVODDescription *VODDescriptionToStatic( VODDescription *descr, StaticVODDescription *target );
 
-extern BOOL InitCommClient( SOCK *s, char *address, unsigned short serverPortNr, unsigned short clientPortNr, int timeOutMS );
+extern BOOL InitCommClient( SOCK *s, const char *address, unsigned short serverPortNr, unsigned short clientPortNr, int timeOutMS );
 extern void CloseCommClient( SOCK *clnt );
 extern BOOL InitCommServer( SOCK *srv, unsigned short portNr );
 extern BOOL ServerCheckForClient( SOCK srv, SOCK *clnt, int timeOutMs, BOOL block );

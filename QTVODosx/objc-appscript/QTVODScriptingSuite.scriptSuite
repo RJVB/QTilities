@@ -13,6 +13,20 @@
 			<key>Superclass</key>
 			<string>item</string>
 		</dict>
+		<key>QTVODApplicationDelegate</key>
+		<dict>
+			<key>AppleEventCode</key>
+			<string>SCRP</string>
+			<key>Superclass</key>
+			<string>item</string>
+			<key>SupportedCommands</key>
+			<dict>
+				<key>QTVODScriptingSuite.ConnectToServer</key>
+				<string>handleConnectToServerScriptCommand:</string>
+				<key>QTVODScriptingSuite.ToggleLogging</key>
+				<string>handleToggleLoggingScriptCommand:</string>
+			</dict>
+		</dict>
 		<key>QTVODWindow</key>
 		<dict>
 			<key>AppleEventCode</key>
@@ -232,6 +246,30 @@
 				<string>QTVODScriptingSuite.QTVODWindow</string>
 			</dict>
 		</dict>
+		<key>ConnectToServer</key>
+		<dict>
+			<key>AppleEventClassCode</key>
+			<string>QVOD</string>
+			<key>AppleEventCode</key>
+			<string>srvr</string>
+			<key>Arguments</key>
+			<dict>
+				<key>address</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>ADDR</string>
+					<key>Type</key>
+					<string>NSString</string>
+				</dict>
+			</dict>
+			<key>CommandClass</key>
+			<string>NSScriptCommand</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Type</key>
+				<string>QTVODScriptingSuite.QTVODApplicationDelegate</string>
+			</dict>
+		</dict>
 		<key>MarkTimeInterval</key>
 		<dict>
 			<key>AppleEventClassCode</key>
@@ -371,6 +409,20 @@
 			<dict>
 				<key>Type</key>
 				<string>QTVODScriptingSuite.QTVODWindow</string>
+			</dict>
+		</dict>
+		<key>ToggleLogging</key>
+		<dict>
+			<key>AppleEventClassCode</key>
+			<string>QVOD</string>
+			<key>AppleEventCode</key>
+			<string>tlog</string>
+			<key>CommandClass</key>
+			<string>NSScriptCommand</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Type</key>
+				<string>QTVODScriptingSuite.QTVODApplicationDelegate</string>
 			</dict>
 		</dict>
 	</dict>

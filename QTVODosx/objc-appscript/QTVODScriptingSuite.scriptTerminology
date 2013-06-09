@@ -13,6 +13,15 @@
 			<key>PluralName</key>
 			<string>qtMovieViews</string>
 		</dict>
+		<key>QTVODApplicationDelegate</key>
+		<dict>
+			<key>Description</key>
+			<string>QTVOD top level scripting object</string>
+			<key>Name</key>
+			<string>QTVODScripting</string>
+			<key>PluralName</key>
+			<string>QTVODScriptings</string>
+		</dict>
 		<key>QTVODWindow</key>
 		<dict>
 			<key>Attributes</key>
@@ -174,6 +183,28 @@
 				<string></string>
 			</dict>
 		</dict>
+		<key>ConnectToServer</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>address</key>
+				<dict>
+					<key>Description</key>
+					<string>server IP4 address</string>
+					<key>Name</key>
+					<string>address</string>
+				</dict>
+			</dict>
+			<key>Description</key>
+			<string>connects to the specified server</string>
+			<key>Name</key>
+			<string>connectToServer</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Description</key>
+				<string></string>
+			</dict>
+		</dict>
 		<key>MarkTimeInterval</key>
 		<dict>
 			<key>Arguments</key>
@@ -289,6 +320,18 @@
 			<string>stop playing</string>
 			<key>Name</key>
 			<string>stop</string>
+			<key>UnnamedArgument</key>
+			<dict>
+				<key>Description</key>
+				<string></string>
+			</dict>
+		</dict>
+		<key>ToggleLogging</key>
+		<dict>
+			<key>Description</key>
+			<string>toggles the logging facility</string>
+			<key>Name</key>
+			<string>toggleLogging</string>
 			<key>UnnamedArgument</key>
 			<dict>
 				<key>Description</key>

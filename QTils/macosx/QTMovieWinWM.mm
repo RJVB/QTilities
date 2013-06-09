@@ -519,7 +519,7 @@ QTMovieWindowH OpenQTMovieInWindow( const char *theURL, int controllerVisible )
 	}
 
 	if( !theURL || !*theURL ){
-		theURL = AskFileName( "Please choose a video or movie to display" );
+		theURL = AskFileName( (char*) "Please choose a video or movie to display" );
 	}
 
 	if( !theURL || !*theURL ){
@@ -996,6 +996,7 @@ BOOL QTils_LogActive()
 BOOL QTils_LogSetActive(BOOL active)
 {
 	if( active ){
+		LoggerSetOptions( NULL, LOGGING_OPTIONS );
 		LoggerStart(NULL);
 	}
 	else{

@@ -11,7 +11,6 @@
 
 #include "Chaussette2.h"
 
-extern char *ipAddress;
 extern SOCK sServer;
 extern char *assocDataFileName;
 
@@ -20,6 +19,7 @@ extern "C" {
 #endif
 
 extern void commsCleanUp();
+extern void commsInit(const char *ipAddress);
 extern void ParseArgs( int argc, char *argv[] );
 
 extern QTVOD *getActiveQTVOD();

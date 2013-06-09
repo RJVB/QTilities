@@ -59,6 +59,9 @@ extern "C" {
 #		define	Log(d,f,...)	__QTPCLog((d),__FILE__,__LINE__,(char*)(f), ##__VA_ARGS__)
 #		define	qtLogPtr		qtLogName()
 #	else // !_PC_LOG_ACTIVE
+#		ifdef __OBJC__
+#			include "macosx/LoggerClient.h"
+#		endif
 #		include "macosx/NSLoggerClient.h"
 #		ifndef NSLOGGER_WAS_HERE
 #			ifdef __cplusplus

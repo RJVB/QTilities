@@ -557,6 +557,33 @@ resource 'aete' (0, "QTVOD Terminology") {
 				"the name of the file to parse",
 				required,
 				singleItem, notEnumerated, Reserved13
+			},
+
+			"connectToServer",
+			"connects to the specified server",
+			'QVOD', 'srvr',
+			reply_none__,
+			'SCRP',
+			"",
+			directParamRequired,
+			singleItem, notEnumerated, Reserved13,
+			{
+				"address", 'ADDR', 'TEXT',
+				"server IP4 address",
+				required,
+				singleItem, notEnumerated, Reserved13
+			},
+
+			"toggleLogging",
+			"toggles the logging facility",
+			'QVOD', 'tlog',
+			reply_none__,
+			'SCRP',
+			"",
+			directParamRequired,
+			singleItem, notEnumerated, Reserved13,
+			{
+
 			}
 		},
 		{
@@ -645,7 +672,15 @@ resource 'aete' (0, "QTVOD Terminology") {
 			},
 			{
 			},
-			"qtMovieViews", 'QTMV', plural__
+			"qtMovieViews", 'QTMV', plural__,
+
+			"QTVODScripting", 'SCRP',
+			"QTVOD top level scripting object",
+			{
+			},
+			{
+			},
+			"QTVODScriptings", 'SCRP', plural__
 		},
 		{
 			/* Comparisons */

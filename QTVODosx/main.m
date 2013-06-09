@@ -17,7 +17,7 @@
 #import "QTVODlib.h"
 #import "VDPreferences.h"
 
-@implementation NSApplication (toggleLogging)
+@implementation NSApplication (QTVOD)
 
 NSMenuItem *DoLoggingMI = NULL;
 BOOL doLogging = NO;
@@ -53,6 +53,30 @@ extern BOOL QTils_LogSetActive(BOOL);
 	}
 	[self updateMenus];
 }
+
+//- (id) handleConnectToServerScriptCommand:(NSScriptCommand*) command
+//{ NSDictionary *args = [command arguments];
+//  NSString *address;
+//	NSLog(@"connectToServer %@ (%@)", command, NSStringFromClass([command class]) );
+//	address = [args objectForKey:@"address"];
+//	if( address ){
+//		commsCleanUp();
+//		commsInit([address UTF8String]);
+//	}
+//	if( errSock != 0 || sServer == NULLSOCKET ){
+//		[command setScriptErrorNumber:errSock];
+//		[command setScriptErrorString:@"InitCommClient returned an error"];
+//	}
+//	return nil;
+//}
+//
+//- (id) handleToggleLoggingScriptCommand:(NSScriptCommand*) command
+//{ 
+//	NSLog(@"toggleLogging %@ (%@)", command, NSStringFromClass([command class]) );
+//	[self toggleLogging:NULL];
+//	return nil;
+//}
+//
 @end
 
 //@implementation NSApplication (showPreferences)
@@ -107,6 +131,29 @@ extern BOOL QTils_LogSetActive(BOOL);
 	ParseArgs( *_NSGetArgc(), *_NSGetArgv() );
 	UpdateVDPrefsWin(YES);
 }
+
+//- (id) handleConnectToServerScriptCommand:(NSScriptCommand*) command
+//{ NSDictionary *args = [command arguments];
+//  NSString *address;
+//	NSLog(@"connectToServer %@ (%@)", command, NSStringFromClass([command class]) );
+//	address = [args objectForKey:@"address"];
+//	if( address ){
+//		commsCleanUp();
+//		commsInit([address UTF8String]);
+//	}
+//	if( errSock != 0 || sServer == NULLSOCKET ){
+//		[command setScriptErrorNumber:errSock];
+//		[command setScriptErrorString:@"InitCommClient returned an error"];
+//	}
+//	return nil;
+//}
+//
+//- (id) handleToggleLoggingScriptCommand:(NSScriptCommand*) command
+//{ 
+//	NSLog(@"toggleLogging %@ (%@)", command, NSStringFromClass([command class]) );
+//	[[NSApplication sharedApplication] toggleLogging:NULL];
+//	return nil;
+//}
 
 @end
 

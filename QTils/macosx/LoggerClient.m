@@ -410,7 +410,7 @@ void LoggerStop(Logger *logger)
 	{
 		if (logger->workerThread != NULL)
 		{
-            LoggerStopGrabbingConsoleTo(logger);
+			LoggerStopGrabbingConsoleTo(logger);
 			logger->quit = YES;
 			pthread_join(logger->workerThread, NULL);
 		}
@@ -1048,6 +1048,7 @@ static void LoggerLogFromFile(int fd)
 	}
 }
 
+static int loggerConsoleGrabbing = 0;
 static void * LoggerConsoleGrabThread(void * context)
 {
 	AUTORELEASE_POOL_BEGIN
@@ -1085,13 +1086,12 @@ static void * LoggerConsoleGrabThread(void * context)
 		}
 
 		/* Drop the message if there are no listeners. I don't know how to cancel the redirection. */
-		if (numActiveConsoleGrabbers == 0)
-			continue;
-
-		if (FD_ISSET(fdout, &set))
-			LoggerLogFromFile(fdout);
-		if (FD_ISSET(fderr, &set ))
-			LoggerLogFromFile(fderr);
+		if( numActiveConsoleGrabbers > 0 && loggerConsoleGrabbing ){
+			if (FD_ISSET(fdout, &set))
+				LoggerLogFromFile(fdout);
+			if (FD_ISSET(fderr, &set ))
+				LoggerLogFromFile(fderr);
+		}
 	}
 	AUTORELEASE_POOL_END
 	return NULL;
@@ -1111,6 +1111,7 @@ static void LoggerStartConsoleRedirection()
 			dup2(sConsolePipes[3], 2 /*stderr*/);
 	}
 
+	loggerConsoleGrabbing = 1;
 	pthread_create(&consoleGrabThread, NULL, &LoggerConsoleGrabThread, NULL);
 }
 
@@ -1144,6 +1145,8 @@ static void LoggerStopGrabbingConsoleTo(Logger *logger)
 		consoleGrabbersListLength = 0;
 		free(consoleGrabbersList);
 		consoleGrabbersList = NULL;
+		// RJVB 20130607
+		loggerConsoleGrabbing = 0;
 	}
 	else
 	{ unsigned grabberIndex;

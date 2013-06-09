@@ -70,7 +70,7 @@ StaticVODDescription *VODDescriptionToStatic( VODDescription *descr, StaticVODDe
 	return NULL;
 }
 
-BOOL InitCommClient( SOCK *clnt, char *address, unsigned short serverPortNr, unsigned short clientPortNr, int timeOutMS )
+BOOL InitCommClient( SOCK *clnt, const char *address, unsigned short serverPortNr, unsigned short clientPortNr, int timeOutMS )
 { BOOL fatal, ret = FALSE;
   int err;
 	if( InitIP() && CreateClient( clnt, clientPortNr, TRUE ) ){

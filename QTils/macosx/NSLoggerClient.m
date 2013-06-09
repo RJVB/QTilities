@@ -14,8 +14,6 @@
 #import "NSLoggerClient.h"
 #import "LoggerClient.h"
 
-#define LOGGING_OPTIONS	kLoggerOption_BrowseBonjour/*|kLoggerOption_CaptureSystemConsole*/
-
 int NSLogvprintf( const char *fileName, int lineNumber, const char *functionName, int doLog,
 				   const char *item_name, void *avc, int level, const char *format, va_list ap )
 { NSString *string;

@@ -197,7 +197,8 @@ typedef enum {FSRegular, FSSpanning, FSMosaic } FSStyle;
 @property short addToRecentMenu;
 @end
 
-@interface NSApplication (toggleLogging)
+@interface NSApplication (QTVOD)
+- (void)updateMenus;
 - (void)toggleLogging:sender;
 @end
 @interface NSApplication (showPreferences)
@@ -208,6 +209,8 @@ typedef enum {FSRegular, FSSpanning, FSMosaic } FSStyle;
 }
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender;
 - (void) applicationWillFinishLaunching:(NSNotification*)notice;
+//- (id) handleConnectToServerScriptCommand:(NSScriptCommand*) command;
+//- (id) handleToggleLoggingScriptCommand:(NSScriptCommand*) command;
 @end
 
 #endif // __OBJC__

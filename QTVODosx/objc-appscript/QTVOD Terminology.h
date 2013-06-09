@@ -6,7 +6,7 @@
 #import <ScriptingBridge/ScriptingBridge.h>
 
 
-@class QTVODTerminologyApplication, QTVODTerminologyDocument, QTVODTerminologyWindow, QTVODTerminologyDocument, QTVODTerminologyQtMovieView;
+@class QTVODTerminologyApplication, QTVODTerminologyDocument, QTVODTerminologyWindow, QTVODTerminologyDocument, QTVODTerminologyQtMovieView, QTVODTerminologyQTVODScripting;
 
 enum QTVODTerminologySaveOptions {
 	QTVODTerminologySaveOptionsYes = 'yes ' /* Save the file. */,
@@ -129,6 +129,20 @@ typedef enum QTVODTerminologyPrintingErrorHandling QTVODTerminologyPrintingError
 - (void) delete;  // Delete an object.
 - (void) duplicateTo:(SBObject *)to withProperties:(NSDictionary *)withProperties;  // Copy an object.
 - (void) moveTo:(SBObject *)to;  // Move an object to a new location.
+
+@end
+
+// QTVOD top level scripting object
+@interface QTVODTerminologyQTVODScripting : SBObject
+
+- (void) closeSaving:(QTVODTerminologySaveOptions)saving savingIn:(NSURL *)savingIn;  // Close a document.
+- (void) saveIn:(NSURL *)in_ as:(id)as;  // Save a document.
+- (void) printWithProperties:(NSDictionary *)withProperties printDialog:(BOOL)printDialog;  // Print a document.
+- (void) delete;  // Delete an object.
+- (void) duplicateTo:(SBObject *)to withProperties:(NSDictionary *)withProperties;  // Copy an object.
+- (void) moveTo:(SBObject *)to;  // Move an object to a new location.
+- (void) connectToServerAddress:(NSString *)address;  // connects to the specified server
+- (void) toggleLogging;  // toggles the logging facility
 
 @end
 
