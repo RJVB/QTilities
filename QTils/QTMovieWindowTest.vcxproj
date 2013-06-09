@@ -130,8 +130,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>false</SuppressStartupBanner>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>CompileAsC</CompileAs>
       <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>

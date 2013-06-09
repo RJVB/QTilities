@@ -8,6 +8,7 @@
 		</requestedPrivileges>
 	</security>
 	</trustInfo>
+	<description>QT Video player for Brigade VOD recordings made with IFSTTAR bikes</description>
 	<dependency>
 		<dependentAssembly>
 			<assemblyIdentity type="Win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0"

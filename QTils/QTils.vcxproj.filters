@@ -133,4 +133,9 @@
       <Filter>Resource Files</Filter>
     </Resource>
   </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="mswin\QTils.dll.manifest">
+      <Filter>Resource Files</Filter>
+    </Manifest>
+  </ItemGroup>
 </Project>

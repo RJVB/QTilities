@@ -62,12 +62,15 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">$(ProjectName)-dev</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)-debug</TargetName>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">false</GenerateManifest>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProgramFiles)\QuickTime SDK\CIncludes;$(ProgramFiles)\QuickTime SDK\RIncludes;C:\Libs\SS_Log_bin;..;.;.\gmsvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_SS_LOG_ACTIVE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SS_LOG_ACTIVE;DEBUG;ISOLATION_AWARE_ENABLED=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -82,7 +85,7 @@
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmlclient.lib;cvclient.lib;SS_Log.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmlclient.lib;cvclient.lib;SS_Log.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(ProgramFiles)\QuickTime SDK\Libraries;C:\Libs\SS_Log_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -92,6 +95,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalManifestDependencies>
+      </AdditionalManifestDependencies>
+      <ManifestFile>$(SolutionDir)\mswin\QTils.manifest</ManifestFile>
     </Link>
     <PostBuildEvent>
       <Command>copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)$(TargetName)$(TargetExt)
@@ -122,9 +128,10 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>CompileAsC</CompileAs>
+      <PreprocessorDefinitions>_WINDLL;ISOLATION_AWARE_ENABLED=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmlclient.lib;cvclient.lib;SS_Log.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmlclient.lib;cvclient.lib;SS_Log.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(ProgramFiles)\QuickTime SDK\Libraries;C:\Libs\SS_Log_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -134,6 +141,9 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalManifestDependencies>
+      </AdditionalManifestDependencies>
+      <ManifestFile>$(SolutionDir)\mswin\QTils.manifest</ManifestFile>
     </Link>
     <PostBuildEvent>
       <Command>copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)$(TargetName)$(TargetExt)
@@ -152,7 +162,7 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <AdditionalIncludeDirectories>$(ProgramFiles)\QuickTime SDK\CIncludes;$(ProgramFiles)\QuickTime SDK\RIncludes;C:\Libs\SS_Log_bin;..;.;.\gmsvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_SS_LOG_ACTIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SS_LOG_ACTIVE;ISOLATION_AWARE_ENABLED=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -168,7 +178,7 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmlclient.lib;cvclient.lib;SS_Log.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmlclient.lib;cvclient.lib;SS_Log.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(ProgramFiles)\QuickTime SDK\Libraries;C:\Libs\SS_Log_bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -180,6 +190,9 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalManifestDependencies>
+      </AdditionalManifestDependencies>
+      <ManifestFile>$(SolutionDir)\mswin\QTils.manifest</ManifestFile>
     </Link>
     <PostBuildEvent>
       <Command>copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)$(TargetName)$(TargetExt)
@@ -277,6 +290,9 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="mswin\QTils.dll.manifest" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

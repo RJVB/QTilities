@@ -6,8 +6,10 @@
  */
 
 #include <winver.h>
+#include <windows.h>
 
-/* CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "Application.manifest" */
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "mswin\QTils.dll.manifest"
+ISOLATIONAWARE_MANIFEST_RESOURCE_ID RT_MANIFEST "mswin\QTils.dll.manifest"
 
 VS_VERSION_INFO VERSIONINFO
   FILEVERSION    1,21
@@ -27,7 +29,7 @@ BEGIN
             VALUE "InternalName", "QTilities\0"
             VALUE "OriginalFilename", "QTils\0"
             VALUE "CompanyName", "INRETS/IFSTTAR - LEPSIS\0"
-            VALUE "LegalCopyright", "Copyright (C) RJVB/LEPSIS 2010,2011,2012\0"
+            VALUE "LegalCopyright", "Copyright (C) RJVB/LEPSIS 2010,2011,2012,2013\0"
         END
     END
     BLOCK "VarFileInfo"

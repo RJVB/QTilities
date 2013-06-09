@@ -269,11 +269,21 @@ void CloseMovies(int final)
 	}
 }
 
+void StopMovies()
+{ int i;
+	for( i = 0 ; i < MaxnumQTMW ; i++ ){
+		if( winlist[i] ){
+			QTMovieWindowStop( winlist[i] );
+		}
+	}
+}
+
 int quitRequest = FALSE;
 int movieKeyUp(QTMovieWindowH wi, void *params )
 { EventRecord *evt = (EventRecord*) params;
 	if( evt ){
 		if( evt->message == 'q' || evt->message == 'Q' ){
+			StopMovies();
 			quitRequest = TRUE;
 			return TRUE;
 		}

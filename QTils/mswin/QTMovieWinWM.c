@@ -27,6 +27,8 @@ IDENTIFY("QTMovieWinWM: QuickTime utilities: MSWin32 part of the toolkit");
 #include <string.h>
 
 #include <Windows.h>
+#include <commctrl.h>
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 #include <QTML.h>
 #include <ImageCodec.h>
@@ -1067,6 +1069,7 @@ char M2LogEntity[MAX_PATH];
 
 short InitQTMovieWindows( void *hInst )
 { WNDCLASS wc;
+  INITCOMMONCONTROLSEX icc;
   BOOL ret;
   struct BGRA{
 	  BYTE blue, green, red, alpha;
@@ -1125,6 +1128,18 @@ short InitQTMovieWindows( void *hInst )
 	}
 	else{
 		ghInst = (HINSTANCE) hInst;
+	}
+
+	// Initialise common controls.
+	icc.dwSize = sizeof(icc);
+	icc.dwICC = ICC_WIN95_CLASSES|ICC_PROGRESS_CLASS|ICC_BAR_CLASSES|ICC_STANDARD_CLASSES;
+	if( !InitCommonControlsEx(&icc) ){
+		FormatMessage( FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_FROM_SYSTEM,
+				   NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), (LPSTR) errbuf, sizeof(errbuf), NULL
+		);
+		if( qtLogPtr ){
+			Log( qtLogPtr, "InitCommonControlsEx error %d:\"%s\" in InitQTMovieWindows()\n", GetLastError(), errbuf );
+		}
 	}
 
 	// Fill in window class structure with parameters that describe
