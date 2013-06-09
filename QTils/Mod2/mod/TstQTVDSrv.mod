@@ -38,7 +38,7 @@ FROM ElapsedTime IMPORT
 
 FROM QTVODcomm IMPORT *;
 FROM QTilsM2 IMPORT
-	UInt32, Real64, ErrCode, noErr, QTils, MovieFrameTime;
+	UInt32, Real64, ErrCode, noErr, QTils, MovieFrameTime, PostMessage;
 FROM POSIXm2 IMPORT *;
 
 VAR
@@ -112,6 +112,7 @@ BEGIN
 				WriteString( "Exit!" ) ; WriteLn;
 				finished := TRUE;
 				clientQuit := TRUE;
+				PostMessage( "TstQTVDSrv", "Player client is quitting, so are we" );
 
 		| qtvod_Open :
 				NetMessageToLogMsg( "Fichier ouvert", "TstQTVDSrv", msg );
@@ -168,7 +169,7 @@ BEGIN
 
 		| qtvod_Chapter :
 				NetMessageToLogMsg( "Chapitre", "TstQTVDSrv", msg );
-				WriteString( QTils.lastSSLogMsg^ ) ; WriteLn;				
+				WriteString( QTils.lastSSLogMsg^ ) ; WriteLn;
 
 		ELSE
 			(* noop *)

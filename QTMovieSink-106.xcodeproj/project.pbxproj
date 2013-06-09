@@ -266,7 +266,7 @@
 		D67ACE641416129D00E99EA2 /* QTils-emb.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "QTils-emb.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D67ACE651416129D00E99EA2 /* QTils-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "QTils-Info copy.plist"; path = "../../QTils-Info copy.plist"; sourceTree = "<group>"; };
 		D67B56D61764897C005E4C86 /* QTilsversion.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rc; name = QTilsversion.rc; path = QTils/QTilsversion.rc; sourceTree = SOURCE_ROOT; };
-		D67B56D817648A19005E4C86 /* QTils.manifest */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = QTils.manifest; sourceTree = "<group>"; };
+		D67B56D817648A19005E4C86 /* QTils.dll.manifest */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = QTils.dll.manifest; sourceTree = "<group>"; };
 		D68788F7129A87ED009ACD66 /* QTilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 2; name = QTilities.h; path = QTils/QTilities.h; sourceTree = "<group>"; };
 		D68788F8129A87ED009ACD66 /* QTMovieWin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; name = QTMovieWin.c; path = QTils/QTMovieWin.c; sourceTree = "<group>"; };
 		D6878985129ACB17009ACD66 /* Lists.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Lists.h; path = QTils/Lists.h; sourceTree = "<group>"; };
@@ -635,7 +635,7 @@
 			isa = PBXGroup;
 			children = (
 				D67B56D61764897C005E4C86 /* QTilsversion.rc */,
-				D67B56D817648A19005E4C86 /* QTils.manifest */,
+				D67B56D817648A19005E4C86 /* QTils.dll.manifest */,
 				D6CE60501347AF45002E166B /* MacErrorTable.h */,
 				D663BD351328FFA5007DFF5C /* QTVOD2-dev-installer.nsi */,
 				D663BD331328DF96007DFF5C /* QTVOD2-installer.nsi */,
