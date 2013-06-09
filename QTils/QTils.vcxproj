@@ -263,6 +263,7 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
     <ClInclude Include="Lists.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Logging.h" />
+    <ClInclude Include="mswin\resource.h" />
     <ClInclude Include="QTilities.h" />
     <ClInclude Include="mswin\QTilsIconXOR128x128.h" />
     <ClInclude Include="mswin\QTilsIconXOR48x48.h" />

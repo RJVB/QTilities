@@ -35,7 +35,7 @@ extern "C"
 //#define strdup(s)			_strdup((s))
 #define strncasecmp(a,b,n)	_strnicmp((a),(b),(n))
 #define strcasecmp(a,b)		_stricmp((a),(b))
-	
+
 
 #define _WININIX_H
 

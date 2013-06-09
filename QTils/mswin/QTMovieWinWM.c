@@ -141,6 +141,8 @@ QTMovieWindowH QTMovieWindowHFromNativeWindow( NativeWindow hWnd )
 	return gwi;
 }
 
+static HICON SmallIconHandle = NULL;
+
 /*!
 	the event handler that is specific to our window class:
  */
@@ -179,8 +181,11 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 	}
 
 	switch( message ){
-#ifdef DEBUG
 		case WM_CREATE:
+			if( SmallIconHandle ){
+				SendMessage( hWnd, WM_SETICON, ICON_SMALL, (LPARAM) SmallIconHandle );
+			}
+#ifdef DEBUG
 			if( !wi && (wi = QTMovieWindowHFromNativeWindow(hWnd)) ){
 				(*wi)->handlingEvent += 1;
 			}
@@ -190,8 +195,8 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 			else{
 				Log( qtLogPtr, "WM_CREATE QT window %p=???\n", hWnd );
 			}
-			break;
 #endif
+			break;
 		case WM_PAINT:{
 #ifdef AllowQTMLDoubleBuffering
 		  HRGN winUpdateRgn;
@@ -1062,13 +1067,14 @@ void GetMaxBounds(Rect *maxRect)
 }
 
 #include "QTilsIconXOR48x48.h"
+#include "resource.h"
 
 #ifdef _SS_LOG_ACTIVE
 char M2LogEntity[MAX_PATH];
 #endif
 
 short InitQTMovieWindows( void *hInst )
-{ WNDCLASS wc;
+{ WNDCLASSEX wc;
   INITCOMMONCONTROLSEX icc;
   BOOL ret;
   struct BGRA{
@@ -1145,6 +1151,7 @@ short InitQTMovieWindows( void *hInst )
 	// Fill in window class structure with parameters that describe
 	// the window.
 	memset( &wc, 0, sizeof(wc) );
+	wc.cbSize = sizeof(wc);
 	wc.style = CS_GLOBALCLASS | CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc = (WNDPROC)QTMWProc;
 	wc.cbClsExtra = 0;
@@ -1185,12 +1192,17 @@ short InitQTMovieWindows( void *hInst )
 						  maskBits, iconXBits
 		);
 	}
+	if( hInst ){
+		wc.hIconSm = SmallIconHandle = (HICON) LoadImage( hInst, MAKEINTRESOURCE(IDI_WINICON), IMAGE_ICON, 16, 16, 0 );
+	}
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 //	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 	wc.lpszClassName = (LPCSTR) QTMWClass;
+// testing
+	wc.lpszMenuName  = MAKEINTRESOURCE(IDR_MYMENU);
 
 	// Register the window class and return success/failure code.
-	ret = RegisterClass(&wc);
+	ret = RegisterClassEx(&wc);
 	if( !ret ){
 		FormatMessage( FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_FROM_SYSTEM,
 				   NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), (LPSTR) errbuf, sizeof(errbuf), NULL

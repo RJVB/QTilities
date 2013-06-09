@@ -7,6 +7,7 @@
 
 #include <winver.h>
 #include <windows.h>
+#include "mswin\resource.h"
 
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "mswin\QTils.dll.manifest"
 ISOLATIONAWARE_MANIFEST_RESOURCE_ID RT_MANIFEST "mswin\QTils.dll.manifest"
@@ -37,6 +38,26 @@ BEGIN
         VALUE "Translation", 0x40C, 1200
     END
 END
+
+IDI_ICON ICON		"QTils.ico"
+IDI_WINICON ICON	"mswin\QTils16x16.ico"
+
+/* testing - see http://www.winprog.org/tutorial/menus.html */
+/*
+IDR_MYMENU MENU
+BEGIN
+	POPUP "&File"
+	BEGIN
+		MENUITEM "E&xit", ID_FILE_EXIT
+	END
+
+	POPUP "&Stuff"
+	BEGIN
+		MENUITEM "&Go", ID_STUFF_GO
+		MENUITEM "G&o somewhere else", 0, GRAYED
+	END
+END
+*/
 
 /*
 VERSIONINFO Resource

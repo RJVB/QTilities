@@ -113,6 +113,9 @@
     <ClInclude Include="winixdefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mswin\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gmsvc\google\dense_hash_map">
