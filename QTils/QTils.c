@@ -2271,7 +2271,7 @@ ErrCode CreateMovieStorageFromURL( const char *URL, OSType creator, ScriptCode s
 		);
 		if( err == noErr ){
 #ifndef QTMOVIESINK
-			InitQTMovieWindowHFromMovie( NewQTMovieWindowH(), URL, *newMovie,
+			InitQTMovieWindowHFromMovie( AllocQTMovieWindowH(), URL, *newMovie,
 								   *dataRef, *dataRefType, *outDataHandler, 0, &wihErr
 			);
 #endif
@@ -2296,8 +2296,8 @@ const char *lastMovieOpenedURL = NULL;
 // Given the file <URL>, open it as a QuickTime movie. The function returns the Movie object (in-memory "handle")
 // and the reference/type pair if requested. flags should be 0 or 1. <id> refers to the file's movie resource(s)
 // and should be 0 or NULL.
-ErrCode OpenMovieFromURL( Movie *newMovie, short flags, short *id,
-					const char *URL, Handle *dataRef, OSType *dataRefType )
+ErrCode OpenMovieFromURLWithQTMovieWindowH( Movie *newMovie, short flags, short *id,
+					const char *URL, QTMovieWindowH wih, Handle *dataRef, OSType *dataRefType )
 { ErrCode err;
   const char *orgURL = URL;
   Handle ldataRef;
@@ -2335,7 +2335,7 @@ ErrCode OpenMovieFromURL( Movie *newMovie, short flags, short *id,
 		}
 #endif
 #ifndef QTMOVIESINK
-		InitQTMovieWindowHFromMovie( NewQTMovieWindowH(), URL, *newMovie,
+		InitQTMovieWindowHFromMovie( (wih)? wih : AllocQTMovieWindowH(), URL, *newMovie,
 							   *dataRef, *dataRefType, ldataHandler, *id, &wihErr
 		);
 #endif
@@ -2347,9 +2347,16 @@ ErrCode OpenMovieFromURL( Movie *newMovie, short flags, short *id,
 	return err;
 }
 
-ErrCode OpenMovieFromURL_Mod2( Movie *newMovie, short flags, char *URL, int ulen )
+ErrCode OpenMovieFromURL( Movie *newMovie, short flags, short *id,
+					const char *URL, Handle *dataRef, OSType *dataRefType )
+{
+	return OpenMovieFromURLWithQTMovieWindowH( newMovie, flags, id, URL, NULL, dataRef, dataRefType );
+}
+
+ErrCode OpenMovieFromURLWithQTMovieWindowH_Mod2( Movie *newMovie, short flags,
+									   char *URL, int ulen, QTMovieWindowH wih )
 { ErrCode ret;
-	ret = OpenMovieFromURL( newMovie, flags, NULL, URL, NULL, NULL );
+	ret = OpenMovieFromURLWithQTMovieWindowH( newMovie, flags, NULL, URL, wih, NULL, NULL );
 	if( !*URL ){
 		if( lastMovieOpenedURL ){
 			strncpy( URL, lastMovieOpenedURL, ulen );
@@ -2359,7 +2366,20 @@ ErrCode OpenMovieFromURL_Mod2( Movie *newMovie, short flags, char *URL, int ulen
 	return ret;
 }
 
-ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memRef, OSType contentType )
+ErrCode OpenMovieFromURL_Mod2( Movie *newMovie, short flags, char *URL, int ulen )
+{ ErrCode ret;
+	ret = OpenMovieFromURLWithQTMovieWindowH( newMovie, flags, NULL, URL, NULL, NULL, NULL );
+	if( !*URL ){
+		if( lastMovieOpenedURL ){
+			strncpy( URL, lastMovieOpenedURL, ulen );
+			URL[ulen-1] = '\0';
+		}
+	}
+	return ret;
+}
+
+ErrCode OpenMovieFromMemoryDataRefWithQTMovieWindowH( Movie *newMovie,
+										   MemoryDataRef *memRef, OSType contentType, QTMovieWindowH wih )
 { ErrCode err = couldntGetRequiredComponent;
   DataHandler ldataHandler = NULL;
   ErrCode wihErr;
@@ -2381,8 +2401,7 @@ ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memRef, OSTy
 	}
 #ifndef QTMOVIESINK
 	if( err == noErr ){
-	  QTMovieWindowH wih = NULL;
-		wih = InitQTMovieWindowHFromMovie( NewQTMovieWindowH(), memRef->virtURL, *newMovie,
+		wih = InitQTMovieWindowHFromMovie( (wih)? wih : AllocQTMovieWindowH(), memRef->virtURL, *newMovie,
 							   memRef->dataRef, memRef->dataRefType, ldataHandler, 1, &wihErr
 		);
 		if( wih ){
@@ -2391,6 +2410,11 @@ ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memRef, OSTy
 	}
 #endif
 	return err;
+}
+
+ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memRef, OSType contentType )
+{
+	return OpenMovieFromMemoryDataRefWithQTMovieWindowH( newMovie, memRef, contentType, NULL );
 }
 
 // Saves the given movie in a file. If noDialog is False, or fname is NULL or points to an empty string,
@@ -4019,11 +4043,15 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 		dmbase->DisposeMemoryDataRef = DisposeMemoryDataRef;
 		dmbase->MemoryDataRefFromString = MemoryDataRefFromString;
 		dmbase->OpenMovieFromMemoryDataRef = OpenMovieFromMemoryDataRef;
+		dmbase->OpenMovieFromMemoryDataRefWithQTMovieWindowH = OpenMovieFromMemoryDataRefWithQTMovieWindowH;
+		dmbase->InitQTMovieWindowH = InitQTMovieWindowH;
 		dmbase->OpenQTMovieFromMemoryDataRefInWindow = OpenQTMovieFromMemoryDataRefInWindow;
+		dmbase->DisplayMovieInQTMovieWindowH = DisplayMovieInQTMovieWindowH_Mod2;
 		dmbase->OpenQTMovieWindowWithMovie = OpenQTMovieWindowWithMovie_Mod2;
 		dmbase->OpenQTMovieWindowWithQTMovieSink = OpenQTMovieWindowWithQTMovieSink;
 
 		dmbase->OpenMovieFromURL = OpenMovieFromURL;
+		dmbase->OpenMovieFromURLWithQTMovieWindowH = OpenMovieFromURLWithQTMovieWindowH;
 		dmbase->HasMovieChanged = HasMovieChanged_Mod2;
 		dmbase->SaveMovie = SaveMovie;
 		dmbase->SaveMovieAsRefMov = SaveMovieAsRefMov;
@@ -4118,6 +4146,7 @@ size_t initDMBaseQTils_Mod2( LibQTilsBase *dmbase )
 		// NEVER To be used from C!!
 		dmbase->MemoryDataRefFromString = (void*) MemoryDataRefFromString_Mod2;
 		dmbase->OpenMovieFromURL = (void*) OpenMovieFromURL_Mod2;
+		dmbase->OpenMovieFromURLWithQTMovieWindowH = (void*) OpenMovieFromURLWithQTMovieWindowH_Mod2;
 		dmbase->HasMovieChanged = (void*) HasMovieChanged_Mod2;
 		dmbase->SaveMovieAsRefMov = (void*) SaveMovieAsRefMov_Mod2;
 		dmbase->SaveMovieAs = (void*) SaveMovieAs_Mod2;

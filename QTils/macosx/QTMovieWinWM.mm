@@ -358,16 +358,29 @@ int DrainQTMovieWindowPool( QTMovieWindowH WI )
 
 QTMovieWindowH lastQTWMH = NULL;
 
-QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
-									    Handle dataRef, OSType dataRefType, int controllerVisible )
+QTMovieWindowH InitQTMovieWindowH( short width, short height )
 { QTMovieWindows *wi = NULL;
   QTMovieWindowH wih = NULL;
-  ErrCode err;
-	if( (wih = QTMovieWindowH_from_Movie(theMovie)) || (wih = NewQTMovieWindowH()) ){
+
+	if( wih = AllocQTMovieWindowH() ){
 		wi = *wih;
+		wi->theNSQTMovieWindow = [[NSQTMovieWindow alloc] init];
+		[wi->theNSQTMovieWindow setTitleWithCString:"QTMovieWindowH"];
+		wi->theView = [wi->theNSQTMovieWindow theWindow];
+		register_QTMovieWindowH( wih, wi->theView );
+		PumpMessages(FALSE);
 	}
+	return wih;
+}
+
+QTMovieWindowH _DisplayMovieInQTMovieWindowH_( Movie theMovie, QTMovieWindowH wih, const char *theURL, short resId,
+									    Handle dataRef, OSType dataRefType, int controllerVisible,
+									    ErrCode *err, const char *caller )
+{ QTMovieWindows *wi = NULL;
+  QTMovieWindowH owih = QTMovieWindowH_from_Movie(theMovie);
 
 	if( Handle_Check(wih) && (*wih)->self == *wih ){
+		wi = *wih;
 		if( theURL && (!wi->theURL || strcmp(theURL, wi->theURL)) ){
 			wi->theURL = (const char*) QTils_strdup(theURL);
 		}
@@ -380,20 +393,26 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 		wi->theMovie = theMovie;
 		GetMovieBox( wi->theMovie, &wi->theMovieRect );
 		MacOffsetRect( &wi->theMovieRect, -wi->theMovieRect.left, -wi->theMovieRect.top );
-		wi->theNSQTMovieWindow = [[NSQTMovieWindow alloc] initWithQTWMandPool:wih];
-		if( wi->theNSQTMovieWindow ){
+		if( !wi->theNSQTMovieWindow ){
+			wi->theNSQTMovieWindow = [[NSQTMovieWindow alloc] initWithQTWM:wih];
+		}
+		else if( wi->theNSQTMovieWindow ){
+			[wi->theNSQTMovieWindow initWithQTWM:wih];
+		}
+		if( wi->theNSQTMovieWindow || QTMovieWindowHFromNativeWindow(wi->theView) != wih){
 			wi->theView = [wi->theNSQTMovieWindow theWindow];
 			wi->theMovieView = [wi->theNSQTMovieWindow theMovieView];
 			PumpMessages(FALSE);
 			// do what it takes to attach the movie to our new window:
-			err = noErr;
-			if( err != noErr ){
-				Log( qtLogPtr, "OpenQTMovieInWindow(): error %d opening \"%s\"\n", err, theURL );
+			*err = noErr;
+			if( *err != noErr ){
+				Log( qtLogPtr, "%s(): error %d opening \"%s\"\n", caller, *err, theURL );
 				CloseQTMovieWindow(wih);
 				DisposeQTMovieWindow(wih);
 				wi = NULL, wih = NULL;
 			}
 			else{
+			  DataHandler dh = NULL;
 				// RJVB 20110316: prepare movie for fast starting. Do it here to let the Movie Toolbox
 				// make best use of the time we spend initialising other things.
 				{ TimeValue timeNow;
@@ -404,25 +423,45 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 					if( wi->dataRefType == 'URL ' || wi->dataRefType == ' LRU'
 					   || wi->dataRefType == 'url ' || wi->dataRefType == ' lru'
 					){
-						Log( qtLogPtr, "OpenQTMovieInWindow('%s') - prerolling a streaming movie may take some time!\n",
-						    theURL
+						Log( qtLogPtr, "%s('%s') - prerolling a streaming movie may take some time!\n",
+						    caller, theURL
 						);
 					}
 					pErr = PrePrerollMovie( theMovie, timeNow, playRate, NULL, NULL );
 					if( pErr != noErr ){
-						Log( qtLogPtr, "OpenQTMovieInWindow('%s') - PrePrerollMovie returned %d\n",
-						    theURL, pErr
+						Log( qtLogPtr, "%s('%s') - PrePrerollMovie returned %d\n",
+						    caller, theURL, pErr
 						);
 					}
 					pErr = PrerollMovie( theMovie, timeNow, playRate );
 					if( pErr != noErr ){
-						Log( qtLogPtr, "OpenQTMovieInWindow('%s') - PrerollMovie returned %d\n",
-						    theURL, pErr
+						Log( qtLogPtr, "%s('%s') - PrerollMovie returned %d\n",
+						    caller, theURL, pErr
 						);
 					}
 				}
+				if( owih && owih != wih ){
+				  QTMovieWindows *owi = (*owih);
+					if( !wi->dataRef ){
+						dataRef = owi->dataRef;
+						dataRefType = owi->dataRefType;
+						dh = owi->dataHandler;
+						owi->dataRef = NULL;
+						owi->dataHandler = NULL;
+					}
+					if( !wi->MCActionList ){
+						wi->MCActionList = owi->MCActionList;
+						owi->MCActionList = NULL;
+					}
+					if( !wi->theMC ){
+						wi->theMC = owi->theMC;
+						owi->theMC = NULL;
+					}
+					unregister_QTMovieWindowH_for_Movie(theMovie);
+					owi->theMovie = NULL;
+				}
 				if( dataRef && wi->dataRef != dataRef ){
-					InitQTMovieWindowHFromMovie( wih, NULL, theMovie, dataRef, dataRefType, NULL, resId, &err );
+					InitQTMovieWindowHFromMovie( wih, NULL, theMovie, dataRef, dataRefType, dh, resId, err );
 				}
 				wi->theViewPtr = &wi->theView;
 				register_QTMovieWindowH( wih, wi->theView );
@@ -452,14 +491,14 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 				wi->loadState = GetMovieLoadState(wi->theMovie);
 				{ MovieFrameTime ft;
 					secondsToFrameTime( wi->theInfo.startTime, wi->theInfo.TCframeRate, &ft );
-					Log( qtLogPtr, "OpenQTMovieInWindow(\"%s\"): %gs @ %gHz/%gHz starts %02d:%02d:%02d;%d loadState=%d\n",
-					    wi->theURL, wi->theInfo.duration, wi->theInfo.frameRate, wi->theInfo.TCframeRate,
+					Log( qtLogPtr, "%s(\"%s\"): %gs @ %gHz/%gHz starts %02d:%02d:%02d;%d loadState=%d\n",
+					    caller, wi->theURL, wi->theInfo.duration, wi->theInfo.frameRate, wi->theInfo.TCframeRate,
 					    ft.hours, ft.minutes, ft.seconds, ft.frames,
 					    wi->loadState
 					);
 				}
-				Log( qtLogPtr, "OpenQTMovieInWindow(): movie=%p MC=%p wih,wi=%p,%p(%p) registered with QTMovieView=%p in process %u:%u\n",
-				    wi->theMovie, wi->theMC,
+				Log( qtLogPtr, "%s(): movie=%p MC=%p wih,wi=%p,%p(%p) registered with QTMovieView=%p in process %u:%u\n",
+				    caller, wi->theMovie, wi->theMC,
 				    wih, wi, wi->theView, GetNativeWindowPort(wi->theView),
 				    getpid(), (unsigned int) pthread_self()
 				);
@@ -476,6 +515,41 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 		PumpMessages(FALSE);
 	}
 	return wih;
+}
+
+ErrCode DisplayMovieInQTMovieWindowH( Movie theMovie, QTMovieWindowH *wih, char *theURL, int visibleController )
+{ ErrCode err;
+	if( theMovie && wih && *wih ){
+		if( theURL && !*theURL ){
+			theURL = NULL;
+		}
+		*wih = _DisplayMovieInQTMovieWindowH_( theMovie, *wih, theURL, 1, NULL, 0, visibleController,
+									   &err, "DisplayMovieInQTMovieWindowH" );
+	}
+	return err;
+}
+
+ErrCode DisplayMovieInQTMovieWindowH_Mod2( Movie theMovie, QTMovieWindowH *wih, char *theURL, int ulen, int visibleController )
+{ ErrCode err;
+	if( theMovie && wih && *wih ){
+		if( theURL && !*theURL ){
+			theURL = NULL;
+		}
+		*wih = _DisplayMovieInQTMovieWindowH_( theMovie, *wih, theURL, 1, NULL, 0, visibleController,
+									 &err, "DisplayMovieInQTMovieWindowH" );
+	}
+	return err;
+}
+
+QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
+									    Handle dataRef, OSType dataRefType, int visibleController )
+{ QTMovieWindowH wih = NULL;
+  ErrCode err;
+	if( !(wih = QTMovieWindowH_from_Movie(theMovie)) ){
+		wih = AllocQTMovieWindowH();
+	}
+	return _DisplayMovieInQTMovieWindowH_( theMovie, wih, theURL, resId, dataRef, dataRefType, visibleController,
+								   &err, "OpenQTMovieWindowWithMovie" );
 }
 
 QTMovieWindowH OpenQTMovieWindowWithMovie_Mod2( Movie theMovie, char *theURL, int ulen, int visibleController )

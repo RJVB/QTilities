@@ -58,6 +58,8 @@
 		D64B62DF15823B7400FCA20C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
 		D64B62E215823B8E00FCA20C /* QTils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639412C3C7A4009A3D72 /* QTils.framework */; };
 		D64B62E915823BBF00FCA20C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63EFD75131CF5BE005B6423 /* QuartzCore.framework */; };
+		D65CA958176758E700D82B7A /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65CA957176758E700D82B7A /* AppKit.framework */; };
+		D65CA959176758E700D82B7A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
 		D65F639A12C3C7F5009A3D72 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
 		D65F639E12C3C80C009A3D72 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639D12C3C80C009A3D72 /* QTKit.framework */; };
 		D65F63A212C3C815009A3D72 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F63A112C3C815009A3D72 /* QuickTime.framework */; };
@@ -241,6 +243,7 @@
 		D64CFEC4129ED62900AD4351 /* QTMovieWindowTest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; name = QTMovieWindowTest.c; path = QTils/QTMovieWindowTest.c; sourceTree = "<group>"; };
 		D65191B012199F490077C8D3 /* QTMovieSink-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QTMovieSink-Info.plist"; sourceTree = "<group>"; };
 		D6574F4E131E7AC600A2DDE4 /* runDoxygen.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = runDoxygen.sh; sourceTree = "<group>"; };
+		D65CA957176758E700D82B7A /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		D65F639412C3C7A4009A3D72 /* QTils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = QTils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D65F639512C3C7A4009A3D72 /* QTils-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "QTils-Info.plist"; path = "../../QTils-Info.plist"; sourceTree = "<group>"; };
 		D65F639912C3C7F5009A3D72 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -390,6 +393,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D67AD1861416274900E99EA2 /* QTils-emb.framework in Frameworks */,
+				D65CA958176758E700D82B7A /* AppKit.framework in Frameworks */,
+				D65CA959176758E700D82B7A /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -412,6 +417,7 @@
 				D6912C15132E54C300CD5E78 /* QTMovieWindowTest.app-Info.plist */,
 				D64B62CB15823A2400FCA20C /* qtest2r.app-Info.plist */,
 				D6B257A4175B89D30090F55F /* SystemConfiguration.framework */,
+				D65CA957176758E700D82B7A /* AppKit.framework */,
 			);
 			name = "FreeImage-testAPI";
 			sourceTree = "<group>";

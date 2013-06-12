@@ -537,8 +537,14 @@ QTCompressionQualities	=
 			(* crée un Movie à partir des données de type 'contentType' (par exemple FOUR_CHAR_CODE("QI2M"))
 			 * contenues dans memRef *)
 			OpenMovieFromMemoryDataRef : PROCEDURE( VAR (*newMovie*) Movie, (*memRef*) VAR MemoryDataRef, (*contentType*) OSType ):ErrCode [CDECL];
+			OpenMovieFromMemoryDataRefWithQTMovieWindowH : PROCEDURE( VAR Movie,
+							VAR (*memRef*) MemoryDataRef, (*contentType*)OSType, (*wih*)QTMovieWindowH):ErrCode [CDECL];
+			(* initialise un handle QTMovieWindowH avec une fenêtre vide de la taille donnée *)
+			InitQTMovieWindowH : PROCEDURE( (*width*) Int16, (*height*) Int16 ):QTMovieWindowH [CDECL];
 			OpenQTMovieFromMemoryDataRefInWindow : PROCEDURE( (*memRef*) VAR MemoryDataRef, (*contentType*) OSType,
 				(*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
+			(* ouvre theMovie dans le QTMovieWindowH obtenu précédemment avec InitQTMovieWindowH() *)
+			DisplayMovieInQTMovieWindowH : PROCEDURE( (*theMovie*)Movie, VAR (*wih*) QTMovieWindowH, (*theURL*)ARRAY OF CHAR, (*avecControleur*) Int32 ):ErrCode [CDECL];
 			OpenQTMovieWindowWithMovie : PROCEDURE( (*theMovie*)Movie, (*theURL*) ARRAY OF CHAR, (*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
 			OpenQTMovieWindowWithQTMovieSink : PROCEDURE( VAR (*qms*) QTMovieSinks, (*addTCTrack*) Int32, (*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
 
@@ -546,6 +552,8 @@ QTCompressionQualities	=
 			 * ouvrir le Movie en mode active. NB: ce Movie ne sera pas affichée dans une fenêtre! *)
 			OpenMovieFromURL : PROCEDURE(VAR Movie, (*flags*) Int16,
 									(*fileName*) ARRAY OF CHAR):ErrCode [CDECL];
+			OpenMovieFromURLWithQTMovieWindowH : PROCEDURE( VAR Movie, (*flags*)Int16,
+									(*fileName*) ARRAY OF CHAR, (*wih*) QTMovieWindowH):ErrCode [CDECL];
 			HasMovieChanged : PROCEDURE(Movie):UInt16 [CDECL];
 			(* enregistre Movie dans son fichier sur disque *)
 			SaveMovie : PROCEDURE(Movie):ErrCode [CDECL];

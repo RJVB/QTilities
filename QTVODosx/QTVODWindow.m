@@ -331,8 +331,8 @@ static void doNSLog( NSString *format, ... )
 		  ErrCode wihErr;
 		  extern QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theURL, Movie theMovie,
 								  Handle dataRef, OSType dataRefType, DataHandler dh, short resId, ErrCode *err );
-		  extern QTMovieWindowH NewQTMovieWindowH();
-			qtmwH = InitQTMovieWindowHFromMovie( NewQTMovieWindowH(),
+		  extern QTMovieWindowH AllocQTMovieWindowH();
+			qtmwH = InitQTMovieWindowHFromMovie( AllocQTMovieWindowH(),
 					[[m attributeForKey:QTMovieFileNameAttribute] cStringUsingEncoding:NSUTF8StringEncoding],
 					[m quickTimeMovie], NULL, 'prox', NULL, -1, &wihErr
 			);

@@ -243,6 +243,7 @@ int movieClose(QTMovieWindowH wi, void *params )
 		// winlist[ (*wi)->idx ] = NULL;
 		if( (*wi)->idx == 1 ){
 			DisposeCallBackRegister(cbRegister);
+			cbRegister = NULL;
 		}
 		DisposeQTMovieWindow(wi);
 		return TRUE;
@@ -436,7 +437,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 
 int main( int argc, char* argv[] )
 { int i, n;
-  QTMovieWindowH wi;
+  QTMovieWindowH wi, ewi;
   unsigned long nMsg = 0, nPumps = 0;
   OSType otype;
   char *ostr;
@@ -446,6 +447,10 @@ int main( int argc, char* argv[] )
   long searchOffset;
   char *foundText = NULL;
   char *qi2mString = NULL;
+
+#ifdef __APPLE_CC__
+	NSApplicationLoad();
+#endif
 
 	otype = 'TVOD';
 	ostr = OSTStr(otype);
@@ -571,6 +576,7 @@ int main( int argc, char* argv[] )
 				xmlErr = DisposeXMLParser( &xmlParser, NULL, 1 );
 			}
 		}
+		ewi = InitQTMovieWindowH( 100, 100 );
 		if( argc == 1 ){
 			// OpeQTMovieInWindow() will present a dialog if a NULL URL is passed in
 			wi = OpenQTMovieInWindow( NULL, 1 );
@@ -601,22 +607,33 @@ int main( int argc, char* argv[] )
 					  MemoryDataRef memRef;
 					  ErrCode err;
 						fprintf( stderr, "Importing \"%s\"\n", qi2mString );
-#if 0
-						err = MemoryDataRefFromString( qi2mString, "inMemory.qi2m", &memRef );
-						QTils_LogMsgEx( "Importing movie from (qi2m) dataRef %p\n", memRef.dataRef );
-						err = OpenMovieFromMemoryDataRef( &theMovie, &memRef, 'QI2M' );
-						fprintf( stderr, "Imported movie %p='%s' with err=%d\n", theMovie, memRef.virtURL, err );
-//						QTils_LogMsgEx( "Imported movie with code %d\n", err );
-						if( err == noErr ){
-							CloseQTMovieWindow(wi);
-							fprintf( stderr, "Closed the original window\n" );
-//							wi = OpenQTMovieFromMemoryDataRefInWindow( &memRef, 'QI2M', 1 );
-							wi = OpenQTMovieWindowWithMovie( theMovie, memRef.virtURL, 1, NULL, 0, 1 );
-							if( wi ){
-								fprintf( stderr, "Imported/displayed movie %p with wi=%p, code %d\n", theMovie, wi, LastQTError() );
-							}
-							else{
-								fprintf( stderr, "Error importin/displaying movie %p with wi=%p, code %d\n", theMovie, wi, LastQTError() );
+#if 1
+						if( i == 1 ){
+							err = MemoryDataRefFromString( qi2mString, "inMemory.qi2m", &memRef );
+							QTils_LogMsgEx( "Importing movie from (qi2m) dataRef %p\n", memRef.dataRef );
+							err = OpenMovieFromMemoryDataRefWithQTMovieWindowH( &theMovie, &memRef, 'QI2M', ewi );
+							fprintf( stderr, "Imported movie %p='%s' with err=%d\n", theMovie, memRef.virtURL, err );
+//							QTils_LogMsgEx( "Imported movie with code %d\n", err );
+							if( err == noErr ){
+								CloseQTMovieWindow(wi);
+								fprintf( stderr, "Closed the original window\n" );
+//								wi = OpenQTMovieFromMemoryDataRefInWindow( &memRef, 'QI2M', 1 );
+								if( ewi ){
+									err = DisplayMovieInQTMovieWindowH( theMovie, &ewi, (char*) memRef.virtURL, 1 );
+									if( err == noErr ){
+										wi = ewi;
+										ewi = NULL;
+									}
+								}
+								else{
+									wi = OpenQTMovieWindowWithMovie( theMovie, memRef.virtURL, 1, NULL, 0, 1 );
+								}
+								if( wi ){
+									fprintf( stderr, "Imported/displayed movie %p with wi=%p, code %d\n", theMovie, wi, LastQTError() );
+								}
+								else{
+									fprintf( stderr, "Error importin/displaying movie %p with wi=%p, code %d\n", theMovie, wi, LastQTError() );
+								}
 							}
 						}
 #endif
@@ -628,8 +645,8 @@ int main( int argc, char* argv[] )
 //							DisposeMemoryDataRef(&memRef);
 //						}
 					}
+					register_wi(wi);
 				}
-				register_wi(wi);
 				if( i == 1 ){
 					(*wi)->idx = 1;
 					if( !cbRegister ){
@@ -842,9 +859,10 @@ int main( int argc, char* argv[] )
 			DisposeQTMovieWindow( winlist[i] );
 			winlist[i] = NULL;
 		}
-
-		free(winlist);
-
+		DisposeQTMovieWindow(ewi);
+		if( winlist ){
+			free(winlist);
+		}
 		fprintf( stderr, "Handled %lu messages in %lu pumpcycles\n", nMsg, nPumps );
 
 		CloseQT();
