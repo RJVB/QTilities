@@ -591,8 +591,9 @@ typedef struct QTMovieWindows {
 #endif // _QTILS_C
 /*!
 	check if a QTMovieWindowH references a valid QTMovieWindow with an open window
+	20130613: check for theViewPtr instead of theView!
  */
-#define QTMovieWindowH_isOpen(wih)	(QTMovieWindowH_Check(wih) && (*wih)->theView)
+#define QTMovieWindowH_isOpen(wih)	(QTMovieWindowH_Check(wih) && (*wih)->theViewPtr)
 
 /*!
 	public, exported names for the supported QuickTime MovieController actions

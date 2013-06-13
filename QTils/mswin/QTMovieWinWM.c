@@ -62,6 +62,8 @@ IDENTIFY("QTMovieWinWM: QuickTime utilities: MSWin32 part of the toolkit");
 static char errbuf[512];
 
 static HINSTANCE ghInst = NULL;
+static BOOL tlsQTOSet = FALSE;
+static DWORD tlsQTOpenedKey = 0;
 
 char ProgrammeName[MAX_PATH];
 #ifdef _SS_LOG_ACTIVE
@@ -677,12 +679,13 @@ static QTMovieWindowH _DisplayMovieInQTMovieWindowH_( Movie theMovie, QTMovieWin
 		CloseQTMovieWindow(wih);
 		DisposeQTMovieWindow(wih);
 		wi = NULL, wih = NULL;
+		*err = paramErr;
 	}
 	return wih;
 }
 
 ErrCode DisplayMovieInQTMovieWindowH( Movie theMovie, QTMovieWindowH *wih, char *theURL, int visibleController )
-{ ErrCode err;
+{ ErrCode err = paramErr;
 	if( theMovie && wih && *wih ){
 		if( theURL && !*theURL ){
 			theURL = NULL;
@@ -694,10 +697,14 @@ ErrCode DisplayMovieInQTMovieWindowH( Movie theMovie, QTMovieWindowH *wih, char 
 }
 
 ErrCode DisplayMovieInQTMovieWindowH_Mod2( Movie theMovie, QTMovieWindowH *wih, char *theURL, int ulen, int visibleController )
-{ ErrCode err;
-	if( theMovie && wih && *wih ){
+{ ErrCode err = paramErr;
+	if( theMovie && wih ){
 		if( theURL && !*theURL ){
 			theURL = NULL;
+		}
+		if( !*wih && !(*wih = QTMovieWindowH_from_Movie(theMovie)) ){
+			*wih = AllocQTMovieWindowH();
+			Log( qtLogPtr, "DisplayMovieInQTMovieWindowH_Mod2: AllocQTMovieWindow() returned *wih=%p", *wih );
 		}
 		*wih = _DisplayMovieInQTMovieWindowH_( theMovie, *wih, theURL, 1, NULL, 0, visibleController,
 									   &err, "DisplayMovieInQTMovieWindowH" );
@@ -1131,14 +1138,16 @@ static ErrCode lOpenQT()
 	return err;
 }
 
-static BOOL QTOpened = FALSE;
+#define QTOpened	TlsGetValue(tlsQTOpenedKey)
+static BOOL QTOpenedTrue = TRUE;
 
 ErrCode OpenQT()
 { ErrCode err;
+	// fixme: use a thread-specific value instead of a global variable
 	if( !QTOpened ){
 		err = lOpenQT();
 		if( err == noErr ){
-			QTOpened = TRUE;
+			TlsSetValue( tlsQTOpenedKey, &QTOpenedTrue );
 		}
 	}
 	else{
@@ -1154,7 +1163,7 @@ void CloseQT()
 	if( QTOpened ){
 		ExitMovies();
 		TerminateQTML();
-		QTOpened = FALSE;
+		TlsSetValue( tlsQTOpenedKey, NULL );
 	}
 }
 
@@ -1319,6 +1328,9 @@ short InitQTMovieWindows( void *hInst )
 	}
 	if( maskBits ){
 		QTils_free(maskBits);
+	}
+	if( !tlsQTOSet ){
+		tlsQTOpenedKey = TlsAlloc();
 	}
 	return ret;
 }

@@ -514,6 +514,12 @@ QTMovieWindowH _DisplayMovieInQTMovieWindowH_( Movie theMovie, QTMovieWindowH wi
 		}
 		PumpMessages(FALSE);
 	}
+	else{
+		CloseQTMovieWindow(wih);
+		DisposeQTMovieWindow(wih);
+		wi = NULL, wih = NULL;
+		*err = paramErr;
+	}
 	return wih;
 }
 
@@ -531,9 +537,12 @@ ErrCode DisplayMovieInQTMovieWindowH( Movie theMovie, QTMovieWindowH *wih, char 
 
 ErrCode DisplayMovieInQTMovieWindowH_Mod2( Movie theMovie, QTMovieWindowH *wih, char *theURL, int ulen, int visibleController )
 { ErrCode err;
-	if( theMovie && wih && *wih ){
+	if( theMovie && wih ){
 		if( theURL && !*theURL ){
 			theURL = NULL;
+		}
+		if( !*wih && !(*wih = QTMovieWindowH_from_Movie(theMovie)) ){
+			*wih = AllocQTMovieWindowH();
 		}
 		*wih = _DisplayMovieInQTMovieWindowH_( theMovie, *wih, theURL, 1, NULL, 0, visibleController,
 									 &err, "DisplayMovieInQTMovieWindowH" );

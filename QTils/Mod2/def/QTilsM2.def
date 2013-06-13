@@ -866,6 +866,7 @@ VAR
 (* QT initialisation procedure: as of 20110112 this is no longer done at module initialisation time! *)
 PROCEDURE QTilsAvailable() : BOOLEAN;
 PROCEDURE OpenQT() : ErrCode;
+PROCEDURE CloseQT();
 PROCEDURE QTOpened() : BOOLEAN;
 PROCEDURE QTOpenError() : ErrCode;
 
