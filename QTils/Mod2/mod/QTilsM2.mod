@@ -220,7 +220,7 @@ PROCEDURE dlsym(handle : HANDLE; symbol : ARRAY OF CHAR; VAR valid : BOOLEAN) : 
 		IF procAdr = CAST(FARPROC, NIL)
 			THEN
 				valid := FALSE;
-				PostMessage("Fonction introuvable dans QTils.dll", symbol);
+				PostMessage("Fonction introuvable dans la dll", symbol);
 			ELSE
 				(*valid := NOT(IsBadCodePtr(procAdr));*)
 				(* IsBadCodePtr should no longer be used! *)
@@ -739,6 +739,7 @@ PROCEDURE LoadQTilsDLL() : BOOLEAN;
 VAR
 	name : Str255;
 	msg : ARRAY[0..1024] OF CHAR;
+	wsLib : HANDLE;
 BEGIN
 %IF WIN32 %THEN
 	(* on charge la dll QTils *)

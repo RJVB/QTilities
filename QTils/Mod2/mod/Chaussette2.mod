@@ -54,13 +54,13 @@ FROM SYSTEM IMPORT
 	ADDRESS,
 %END
 	CAST,
-	ADR, BYTE, WORD, DWORD, TSIZE;
+	ADR, ADDRESS, BYTE, WORD, DWORD, TSIZE;
 
 %IF WIN32 %THEN
 	FROM WINX IMPORT
-		NULL_HWND;
+		NULL_HWND, NULL_HANDLE;
 	FROM WIN32 IMPORT
-		BOOL, WINT(*, LPSTR*);
+		HANDLE, LoadLibrary, FreeLibrary, BOOL, WINT(*, LPSTR*);
 	FROM WINUSER IMPORT
 		MessageBox, MB_OK;
 
@@ -79,6 +79,7 @@ FROM SYSTEM IMPORT
 		WSADATA, WSAGetLastError, WSAStartup, WSACleanup,
 		setsockopt, SOL_SOCKET, SO_LINGER, SO_REUSEADDR,
 		WSAEWOULDBLOCK, WSAEISCONN, WSAECONNREFUSED,
+		WSANETWORKEVENTS, WSAEVENT,
 		FIONBIO;
 %ELSE
 	FROM Terminal IMPORT
@@ -94,10 +95,10 @@ FROM ElapsedTime IMPORT
 
 IMPORT Socket;
 
-(*
+(* dlsym was already there in QTilsM2 which is needed anyway *)
 FROM QTilsM2 IMPORT
-	QTils, BoolStr;
-*)
+	dlsym, PostMessage;
+
 
 %IF %NOT WIN16 %THEN
 
@@ -115,6 +116,9 @@ VAR
 	estInitialise : BOOLEAN;
 	i : Int16;
 	dateUDP, dtUDP, tempsUDPOkPred : CARDINAL32;
+%IF WIN32 %THEN
+	wsLib : HANDLE;
+%END
 
 (*--------------------------------------------------------------------------*)
 
@@ -1712,6 +1716,18 @@ BEGIN
 	RETURN FALSE;
 END lSortie;
 
+PROCEDURE getsym( lib : HANDLE; VAR adr : ADDRESS; name : ARRAY OF CHAR ) : BOOLEAN;
+VAR
+	valid : BOOLEAN;
+BEGIN
+	adr := CAST(ADDRESS, dlsym( lib, name, valid ));
+	IF NOT valid
+		THEN
+			adr := NIL;
+	END;
+	RETURN valid;
+END getsym;
+
 BEGIN
 
 	Sortie := lSortie;
@@ -1729,13 +1745,35 @@ BEGIN
 	fd_set_vide := BITSET{0..max_sock};
 %END
 
+(* 20130614 RJVB *)
+%IF WIN32 %THEN
+	wsLib := LoadLibrary("ws2_32.dll");
+	IF wsLib = NULL_HANDLE
+		THEN
+			PostMessage( "ws2_32.dll", "load failure" );
+		ELSIF NOT getsym( wsLib, CAST(ADDRESS,WSAEnumNetworkEvents), "WSAEnumNetworkEvents" )
+			THEN
+				PostMessage( "WSAEnumNetworkEvents", "load failure" );
+		ELSIF NOT getsym( wsLib, CAST(ADDRESS,WSACreateEvent), "WSACreateEvent" )
+			THEN
+				PostMessage( "WSACreateEvent", "load failure" );
+		ELSIF NOT getsym( wsLib, CAST(ADDRESS,WSAEventSelect), "WSAEventSelect" )
+			THEN
+				PostMessage( "WSAEventSelect", "load failure" );
+	END;
+%END
+
 FINALLY
 
 	IF estInitialise
 		THEN
 			FinIP
-	END
-
+	END;
+	IF wsLib <> NULL_HANDLE
+		THEN
+			FreeLibrary(wsLib);
+			wsLib := NULL_HANDLE;
+	END;
 %END
 
 END Chaussette2.
