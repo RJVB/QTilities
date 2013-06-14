@@ -26,6 +26,7 @@ IDENTIFY("QTMovieWinWM: QuickTime utilities: MSWin32 part of the toolkit");
 #include <errno.h>
 #include <string.h>
 
+#include <winsock2.h>
 #include <Windows.h>
 #include <commctrl.h>
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
@@ -70,6 +71,43 @@ char ProgrammeName[MAX_PATH];
 char M2LogEntity[64];
 #endif
 
+static WSAReadHandler SocketReadHandler = NULL;
+static HANDLE *inputEventObjects = NULL;
+static DWORD numInputEventObjects = 0;
+
+WSAReadHandler SetSocketAsyncReadHandler( WSAReadHandler handler )
+{ WSAReadHandler prev = SocketReadHandler;
+	SocketReadHandler = handler;
+	return prev;
+}
+
+ErrCode SetSocketAsyncReadForWindow( SOCKET s, HWND win )
+{
+	if( WSAAsyncSelect( s, win, 'READ', FD_READ ) == SOCKET_ERROR ){
+		return WSAGetLastError();
+	}
+	else{
+		return noErr;
+	}
+}
+
+ErrCode CreateSocketEventObject( SOCKET s, HANDLE *obj, DWORD mask )
+{
+	if( s == -1 ){
+		return paramErr;
+	}
+	if( !*obj ){
+		*obj = WSACreateEvent();
+	}
+	if( *obj ){
+		WSAEventSelect( s, *obj, mask );
+		return noErr;
+	}
+	else{
+		return GetLastError();
+	}
+}
+
 // a minimal message pump which can be called regularly to make sure MSWindows event messages
 // get handled.
 unsigned int PumpMessages(int force)
@@ -82,7 +120,26 @@ unsigned int PumpMessages(int force)
 	}
 	FlushLog( qtLogPtr );
 	if( force ){
-		ok = GetMessage( &msg, NULL, 0, 0 );
+		if( numInputEventObjects ){
+		  DWORD idx;
+			if( (idx = MsgWaitForMultipleObjects( numInputEventObjects, inputEventObjects,
+							  FALSE, INFINITE, QS_POSTMESSAGE)) == WAIT_OBJECT_0 + numInputEventObjects
+			){
+				ok = PeekMessage( &msg, NULL, 0, 0, PM_REMOVE );
+			}
+			else if( idx == WAIT_FAILED || idx >= WAIT_ABANDONED_0 ){
+				FormatMessage( FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_FROM_SYSTEM,
+					NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), (LPSTR) errbuf, sizeof(errbuf), NULL
+				);
+				Log( qtLogPtr, errbuf );
+			}
+			else{
+				// inputEventObjects[idx - WAIT_OBJECT_0]
+			}
+		}
+		else{
+			ok = GetMessage( &msg, NULL, 0, 0 );
+		}
 	}
 	else{
 		ok = PeekMessage( &msg, NULL, 0, 0, PM_REMOVE );
@@ -313,6 +370,11 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 					controllerBox.bottom += (short)heightAdjust;
 					MCSetControllerBoundsRect( (*wi)->theMC, &controllerBox);
 				}
+			}
+			break;
+		case 'READ':
+			if( SocketReadHandler ){
+				(*SocketReadHandler)( (SOCKET) wParam, WSAGETSELECTEVENT(lParam), WSAGETSELECTERROR(lParam) );
 			}
 			break;
 	}

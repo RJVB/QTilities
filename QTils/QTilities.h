@@ -28,7 +28,7 @@ extern "C"
 #	endif
 #endif
 
-#if defined(_WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
 #	ifdef _QTILS_C
 #		define QTLSext __declspec(dllexport)
 #	else
@@ -482,6 +482,10 @@ QTLSext ErrCode LastQTError();
 #endif
 typedef NativeWindow*	NativeWindowPtr;
 typedef NativeWindowPtr* NativeWindowH;
+
+#ifdef _WINDOWS_
+	typedef void (*WSAReadHandler)(unsigned int*, unsigned int, long);
+#endif
 
 /*!
 	informational variables that (may) have more restrictive alignment requirements,

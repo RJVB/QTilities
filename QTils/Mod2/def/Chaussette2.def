@@ -19,6 +19,8 @@ IMPORT TypeConv; (* SOCK, sock_nulle *)
 
 %IF WIN32 %THEN
 IMPORT WINSOCK2;
+FROM WINSOCK2 IMPORT
+	WSANETWORKEVENTS, WSAEVENT;
 %ELSE
 IMPORT UnixSock, UNIX;
 %END
@@ -465,5 +467,16 @@ PROCEDURE PortEstInutilise(
 PROCEDURE MajEtatS(
 	s : SOCK;
 	nvelEtat : ETAT_SOCK);
+
+%IF WIN32 %THEN
+VAR
+	(* 20130614: quelques extensions de Winsock2 qui ne sont pas accessibles au 'linker' bien que
+		définies dans winsock2.def (?!)
+	*)
+	WSACreateEvent : PROCEDURE():WSAEVENT [CDECL];
+	WSAEventSelect : PROCEDURE( WINSOCK2.SOCKET, WSAEVENT, INTEGER):INTEGER [CDECL];
+	WSAEnumNetworkEvents : PROCEDURE( WINSOCK2.SOCKET, WSAEVENT, VAR WSANETWORKEVENTS ):INTEGER [CDECL];
+
+%END
 
 END Chaussette2.

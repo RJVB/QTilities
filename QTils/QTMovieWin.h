@@ -114,6 +114,10 @@ int DrainQTMovieWindowPool( QTMovieWindowH WI );
 	void SetQTMovieTimeValue( struct NSQTMovieWindow *theNSQTMovieWindow, TimeValue tVal, TimeValue tScale );
 #endif
 
+#if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
+	ErrCode CreateSocketEventObject( unsigned int *s, void **obj, unsigned int mask );
+#endif	
+
 #if !defined(USE_QTHANDLES) || TARGET_OS_WIN32
 #	define Handle_Check(x)	((x) && *(x))
 #else

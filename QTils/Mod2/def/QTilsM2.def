@@ -17,7 +17,9 @@ FROM SYSTEM IMPORT
 	IMPORT Windows;
 	FROM Windows IMPORT
 %END
-		HWND, DWORD;
+		HWND, DWORD, HANDLE;
+FROM WINSOCK2 IMPORT
+	SOCKET;
 
 CONST
 
@@ -882,5 +884,7 @@ PROCEDURE PostMessage( title, message : ARRAY OF CHAR ): CARDINAL;
 PROCEDURE PostYesNoDialog( title, message : ARRAY OF CHAR ): BOOLEAN;
 
 PROCEDURE ShowQTilsLogo(): QTMovieWindowH;
+
+PROCEDURE dlsym(handle : HANDLE; symbol : ARRAY OF CHAR; VAR valid : BOOLEAN) : PROC;
 
 END QTilsM2.

@@ -37,14 +37,22 @@ FROM POSIXm2 IMPORT
 	POSIX, POSIXAvailable;
 
 FROM WIN32 IMPORT
-	Sleep, STARTUPINFO, GetStartupInfo;
+	HANDLE, Sleep, STARTUPINFO, GetStartupInfo, WAIT_OBJECT_0, WAIT_FAILED, WAIT_TIMEOUT,
+	WAIT_ABANDONED_0, INFINITE, DWORD, GetLastError, CloseHandle;
+FROM WINSOCK2 IMPORT
+	WSANETWORKEVENTS, FD_READ,
+	FD_READ_BIT;
+FROM WINX IMPORT
+	NULL_HANDLE;
 
 FROM WINUSER IMPORT
-	SetWindowPos, HWND_BOTTOM, HWND_TOP, SWP_NOMOVE, SWP_NOSIZE;
+	SetWindowPos, HWND_BOTTOM, HWND_TOP, SWP_NOMOVE, SWP_NOSIZE, QS_POSTMESSAGE,
+	MsgWaitForMultipleObjects;
 
 <*/VALIDVERSION:CHAUSSETTE2*>
 %IF CHAUSSETTE2 %THEN
 	FROM Chaussette2 IMPORT
+		WSAEventSelect, WSACreateEvent, WSAEnumNetworkEvents,
 %ELSE
 	FROM Chaussette IMPORT
 %END
@@ -63,6 +71,11 @@ VAR
 	err : ErrCode;
 	logoWin : QTMovieWindowH;
 	startupInfo : STARTUPINFO;
+	socketEventObject : HANDLE;
+%IF CHAUSSETTE2 %THEN
+	sockEvents : ARRAY[0..1] OF HANDLE;
+	socketEvent : WSANETWORKEVENTS;
+%END
 
 PROCEDURE SendErrorHandler( errors : CARDINAL );
 VAR
@@ -74,6 +87,14 @@ BEGIN
 			MSWinErrorString( errSock, errStr );
 			QTils.LogMsgEx( "%u message sending errors (last %d '%s'): closing communications channel",
 				errors, errSock, errStr );
+			IF socketEventObject <> NULL_HANDLE
+				THEN
+					CloseHandle(socketEventObject);
+					socketEventObject := NULL_HANDLE;
+%IF CHAUSSETTE2 %THEN
+					sockEvents[0] := NULL_HANDLE;
+%END
+			END;
 			PostMessage( "QTVODm2", "Connexion au serveur fermée!" );
 	END;
 END SendErrorHandler;
@@ -88,6 +109,14 @@ BEGIN
 			MSWinErrorString( errSock, errStr );
 			QTils.LogMsgEx( "%u message reception errors (last %d '%s'): closing communications channel",
 				errors, errSock, errStr );
+			IF socketEventObject <> NULL_HANDLE
+				THEN
+					CloseHandle(socketEventObject);
+					socketEventObject := NULL_HANDLE;
+%IF CHAUSSETTE2 %THEN
+					sockEvents[0] := NULL_HANDLE;
+%END
+			END;
 			PostMessage( "QTVODm2", "Trop d'erreurs de communication avec le serveur!" );
 			quitRequest := TRUE;
 	END;
@@ -475,6 +504,44 @@ BEGIN
 	RETURN n;
 END PumpNetMessages;
 
+PROCEDURE PumpMessages(force : Int32) : UInt32;
+VAR
+	n : UInt32;
+	idx : DWORD;
+	errStr : Str255;
+BEGIN
+	n := 0;
+	IF socketEventObject = NULL_HANDLE
+		THEN
+			n := QTils.PumpMessages(force);
+		ELSE
+			(* normalement on attendrait sur INFINITE millisecs, mais QuickTime n'aime pas ça *)
+			idx := MsgWaitForMultipleObjects( 1, sockEvents, FALSE, 250, QS_POSTMESSAGE );
+			IF (idx = WAIT_OBJECT_0 + 1) OR (idx = WAIT_TIMEOUT)
+				THEN
+					(*
+						soit on a reçu un message, soit il est temps de faire un PeekMessage explicite
+						pour plaire à QuickTime
+					*)
+					n := QTils.PumpMessages(0);
+				ELSIF (idx = WAIT_FAILED) OR (idx >= WAIT_ABANDONED_0)
+					THEN
+						MSWinErrorString( GetLastError(), errStr );
+						QTils.LogMsgEx( "MsgWaitForMultipleObjects() error: %s", errStr );
+				ELSE
+%IF CHAUSSETTE2 %THEN
+					WSAEnumNetworkEvents( sServeur, socketEventObject, socketEvent );
+					IF ((socketEvent.lNetworkEvents BAND FD_READ) = FD_READ)
+						AND (socketEvent.iErrorCode[FD_READ_BIT] = 0)
+						THEN
+							PumpNetMessages(0);
+					END;
+%END
+			END;
+	END;
+	RETURN n;
+END PumpMessages;
+
 PROCEDURE movieIdle(wih : QTMovieWindowH; params : ADDRESS ) : Int32 [CDECL];
 VAR
 	dt : Real64;
@@ -483,7 +550,7 @@ BEGIN
 	IF cyclingNetPump OR (sServeur = sock_nulle) OR (dt < 100.0)
 		THEN
 			RETURN 0;
-		END;
+	END;
 	handlingIdleAction := TRUE;
 	PumpNetMessagesOnce(0);
 	handlingIdleAction := FALSE;
@@ -574,6 +641,14 @@ BEGIN
 						Assign( "127.0.0.1", ipAddress );
 				END;
 				InitCommClient( sServeur, ipAddress, ServerPortNr, ClientPortNr, 50 );
+%IF CHAUSSETTE2 %THEN
+				IF sServeur <> sock_nulle
+					THEN
+						socketEventObject := WSACreateEvent();
+						WSAEventSelect( sServeur, socketEventObject, FD_READ );
+						sockEvents[0] := socketEventObject;
+				END;
+%END
 			ELSIF CheckOptArg( arg, "-assocData" )
 				THEN
 					IF LENGTH(POSIX.Arg(arg+1)) > 0
@@ -722,6 +797,7 @@ BEGIN
 				THEN
 					SetTimes( t, qtwmH[fwWin], 0 );
 			END;
+		PumpNetMessagesOnce(0);
 		QTils.PumpMessages(0);
 	ELSE
 		(* probably reached end of movie, but we stop benchmarking on any other error too *)
@@ -755,6 +831,7 @@ BEGIN
 	HandleSendErrors := SendErrorHandler;
 	HandleReceiveErrors := ReceiveErrorHandler;
 	logoWin := NIL;
+	socketEventObject := NULL_HANDLE;
 
 	(* QTOpened est TRUE si QTilsM2 s'est initialisé correctement, sinon, QuickTime n'est pas disponible: *)
 	IF QTOpened()
@@ -874,18 +951,22 @@ BEGIN
 						 *)
 						IF ( QTils.get_MCAction(qtwmH[fwWin], MCAction.Idle) = NULL_MCActionCallback )
 							THEN
-								IF (qtwmH[fwWin] <> NULL_QTMovieWindowH)
+								IF (qtwmH[fwWin] <> NULL_QTMovieWindowH) AND (socketEventObject = NULL_HANDLE)
 									THEN
 										QTils.register_MCAction( qtwmH[fwWin], MCAction.Idle, movieIdle );
 										QTils.LogMsgEx( 'QTVODm2::movieIdle installée pour "%s"', qtwmH[fwWin]^^.theURL^ );
 								END;
 						END;
-
-						PumpNetMessages(250);
-						n := n + QTils.PumpMessages(0);
+						IF socketEventObject <> NULL_HANDLE
+							THEN
+								n := n + PumpMessages(1);
+							ELSE
+								PumpNetMessages(250);
+								n := n + QTils.PumpMessages(0);
 %IF %NOT CHAUSSETTE2 %THEN
-						Sleep(250);
+								Sleep(250);
 %END
+						END;
 					ELSE
 						n := n + QTils.PumpMessages(1);
 				END;
@@ -960,7 +1041,13 @@ BEGIN
 	END;
 
 FINALLY
-
+	IF socketEventObject <> NULL_HANDLE
+		THEN
+			CloseHandle(socketEventObject);
+%IF CHAUSSETTE2 %THEN
+			sockEvents[0] := NULL_HANDLE;
+%END
+	END;
 	IF sServeur <> sock_nulle
 		THEN
 			(*
