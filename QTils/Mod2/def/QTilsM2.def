@@ -17,7 +17,9 @@ FROM SYSTEM IMPORT
 	IMPORT Windows;
 	FROM Windows IMPORT
 %END
-		HWND, DWORD;
+		HWND, DWORD, HANDLE;
+FROM WINSOCK2 IMPORT
+	SOCKET;
 
 CONST
 
@@ -537,8 +539,14 @@ QTCompressionQualities	=
 			(* crée un Movie à partir des données de type 'contentType' (par exemple FOUR_CHAR_CODE("QI2M"))
 			 * contenues dans memRef *)
 			OpenMovieFromMemoryDataRef : PROCEDURE( VAR (*newMovie*) Movie, (*memRef*) VAR MemoryDataRef, (*contentType*) OSType ):ErrCode [CDECL];
+			OpenMovieFromMemoryDataRefWithQTMovieWindowH : PROCEDURE( VAR Movie,
+							VAR (*memRef*) MemoryDataRef, (*contentType*)OSType, (*wih*)QTMovieWindowH):ErrCode [CDECL];
+			(* initialise un handle QTMovieWindowH avec une fenêtre vide de la taille donnée *)
+			InitQTMovieWindowH : PROCEDURE( (*width*) Int16, (*height*) Int16 ):QTMovieWindowH [CDECL];
 			OpenQTMovieFromMemoryDataRefInWindow : PROCEDURE( (*memRef*) VAR MemoryDataRef, (*contentType*) OSType,
 				(*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
+			(* ouvre theMovie dans le QTMovieWindowH obtenu précédemment avec InitQTMovieWindowH() *)
+			DisplayMovieInQTMovieWindowH : PROCEDURE( (*theMovie*)Movie, VAR (*wih*) QTMovieWindowH, (*theURL*)ARRAY OF CHAR, (*avecControleur*) Int32 ):ErrCode [CDECL];
 			OpenQTMovieWindowWithMovie : PROCEDURE( (*theMovie*)Movie, (*theURL*) ARRAY OF CHAR, (*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
 			OpenQTMovieWindowWithQTMovieSink : PROCEDURE( VAR (*qms*) QTMovieSinks, (*addTCTrack*) Int32, (*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
 
@@ -546,6 +554,8 @@ QTCompressionQualities	=
 			 * ouvrir le Movie en mode active. NB: ce Movie ne sera pas affichée dans une fenêtre! *)
 			OpenMovieFromURL : PROCEDURE(VAR Movie, (*flags*) Int16,
 									(*fileName*) ARRAY OF CHAR):ErrCode [CDECL];
+			OpenMovieFromURLWithQTMovieWindowH : PROCEDURE( VAR Movie, (*flags*)Int16,
+									(*fileName*) ARRAY OF CHAR, (*wih*) QTMovieWindowH):ErrCode [CDECL];
 			HasMovieChanged : PROCEDURE(Movie):UInt16 [CDECL];
 			(* enregistre Movie dans son fichier sur disque *)
 			SaveMovie : PROCEDURE(Movie):ErrCode [CDECL];
@@ -858,6 +868,7 @@ VAR
 (* QT initialisation procedure: as of 20110112 this is no longer done at module initialisation time! *)
 PROCEDURE QTilsAvailable() : BOOLEAN;
 PROCEDURE OpenQT() : ErrCode;
+PROCEDURE CloseQT();
 PROCEDURE QTOpened() : BOOLEAN;
 PROCEDURE QTOpenError() : ErrCode;
 
@@ -873,5 +884,7 @@ PROCEDURE PostMessage( title, message : ARRAY OF CHAR ): CARDINAL;
 PROCEDURE PostYesNoDialog( title, message : ARRAY OF CHAR ): BOOLEAN;
 
 PROCEDURE ShowQTilsLogo(): QTMovieWindowH;
+
+PROCEDURE dlsym(handle : HANDLE; symbol : ARRAY OF CHAR; VAR valid : BOOLEAN) : PROC;
 
 END QTilsM2.

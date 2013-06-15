@@ -66,7 +66,7 @@ int _QTMovieWindowH_Check_( QTMovieWindowH wih )
 	a QTMovieWindow handle can either be allocated through a specific QuickTime function,
 	or via a very simple, generic mechanism.
  */
-QTMovieWindowH NewQTMovieWindowH()
+QTMovieWindowH AllocQTMovieWindowH()
 { QTMovieWindowH wih;
   QTMovieWindows *wi;
 #ifdef USE_QTHANDLES
@@ -74,6 +74,7 @@ QTMovieWindowH NewQTMovieWindowH()
 	if( (wih = (QTMovieWindowH) NewHandleClear( sizeof(QTMovieWindows) )) ){
 		wi = *wih;
 		wi->self = wi;
+		wi->info = &wi->theInfo;
 	}
 #else
 	// a simple approach to create a handle: a pointer to a member of the structure that
@@ -82,6 +83,7 @@ QTMovieWindowH NewQTMovieWindowH()
 	if( wi ){
 		wi->self = wi;
 		wih = &wi->self;
+		wi->info = &wi->theInfo;
 	}
 	else{
 		wih = NULL;
@@ -90,6 +92,10 @@ QTMovieWindowH NewQTMovieWindowH()
 	return wih;
 }
 
+/*!
+	NB: InitQTMovieWindowHFromMovie - From means the QTMovieWindowH struct is initialised with data from
+	(= concerning) the given movie. This function does nothing graphics/display related.
+ */
 QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theURL, Movie theMovie,
 								  Handle dataRef, OSType dataRefType, DataHandler dh, short resId, ErrCode *err )
 { QTMovieWindows *wi;

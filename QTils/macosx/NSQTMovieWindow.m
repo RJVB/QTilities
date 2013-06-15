@@ -15,6 +15,20 @@
 
 @implementation NSQTMovieWindow
 
+- (id) init
+{
+	if( [super init] && self && !nibLoaded ){
+		if( ![NSBundle loadNibNamed:@"NSQTMovieWindow" owner:self] ){
+			NSLog( @"%@ failed to load 'NSQTMovieWindow' nib!", self );
+		}
+		else{
+			nibLoaded = YES;
+		}
+	}
+	[self setTitleWithCString:"NSQTMovieWindow"];
+	return self;
+}
+
 - (void) dealloc
 {
 	Log( qtLogPtr, "[%@ dealloc]", self );
@@ -67,18 +81,18 @@
 	return self;
 }
 
-- (id) initWithQTWMandPool:(struct QTMovieWindows**)wih
+- (id) initWithQTWM:(struct QTMovieWindows**)wih
 { QTMovieWindows *wi = *wih;
   NSRect mrect;
   NSString *URLString;
   NSURL *theURL;
   NSError *err = nil;
-	// load up the nib
-	if( self /* && !movieView */ ){
-		if( ![NSBundle loadNibNamed:@"NSQTMovieWindow" owner:self] ){
-			NSLog( @"%@ failed to load 'NSQTMovieWindow' nib!", self );
-		}
-	}
+	// load up the nib - done for us by [self init] called through initWithContentsOfURL -> initWithType !
+//	if( self /* && !movieView */ ){
+//		if( ![NSBundle loadNibNamed:@"NSQTMovieWindow" owner:self] ){
+//			NSLog( @"%@ failed to load 'NSQTMovieWindow' nib!", self );
+//		}
+//	}
 	URLString = [NSString stringWithCString:wi->theURL encoding:NSUTF8StringEncoding];
 	if( strncasecmp( wi->theURL, "file://", 7 ) && strncasecmp( wi->theURL, "http://", 7) ){
 	  NSString *fileURL = @"file://";

@@ -5,6 +5,9 @@ IMPLEMENTATION MODULE QTVODlib;
 <*/VALIDVERSION:USECHANNELVIEWIMPORTFILES,COMMTIMING,NOTOUTCOMMENTED,USE_TIMEDCALLBACK,CCV_IN_BACKGROUND*>
 
 FROM SYSTEM IMPORT
+%IF StonyBrook %THEN
+		SOURCEFILE, SOURCELINE,
+%END
 	CAST, ADR, ADDRESS;
 
 FROM WholeStr IMPORT
@@ -78,8 +81,9 @@ TYPE
 			scale : Real64;
 			chName : ARRAY[0..63] OF CHAR;
 			fName : URLString;
-			wihReturn : QTMovieWindowH;
+			wih : QTMovieWindowH;
 %IF CCV_IN_BACKGROUND %THEN
+			done : BOOLEAN;
 			thread : Thread;
 			mutex : CRITICAL_SECTION;
 %END
@@ -1191,6 +1195,35 @@ VAR
 %END
 	res : OpenResults;
 	wih : QTMovieWindowH;
+
+	PROCEDURE logHere(lineNr : CARDINAL);
+	BEGIN
+%IF CCV_IN_BACKGROUND %THEN
+		IF CCV_IN_BACKGROUND
+			THEN
+				QTils.LogMsgEx( "CCDWorker '%s'#%d @line %u", CDp^.source, CDp^.channel, lineNr );
+		END;
+%END
+	END logHere;
+	PROCEDURE lock();
+	BEGIN
+%IF CCV_IN_BACKGROUND %THEN
+		IF CCV_IN_BACKGROUND
+			THEN
+				EnterCriticalSection(CDp^.mutex);
+		END;
+%END
+	END lock;
+	PROCEDURE unlock();
+	BEGIN
+%IF CCV_IN_BACKGROUND %THEN
+		IF CCV_IN_BACKGROUND
+			THEN
+				LeaveCriticalSection(CDp^.mutex);
+		END;
+%END
+	END unlock;
+
 BEGIN
 
 	CDp := args;
@@ -1198,8 +1231,8 @@ BEGIN
 %IF CCV_IN_BACKGROUND %THEN
 	IF CCV_IN_BACKGROUND
 		THEN
-			EnterCriticalSection(CDp^.mutex);
 			QTils.LogMsgEx( "CCDWorker started on '%s'#%d", CDp^.source, CDp^.channel );
+			OpenQT();
 	END;
 %END
 
@@ -1214,16 +1247,20 @@ BEGIN
 			(* on retourne à l'ancien comportement *)
 			POSIX.sprintf( CDp^.fName, "%s-%s.mov", CDp^.source, CDp^.chName );
 	END;
-	IF NOT recreateChannelViews
+	IF (NOT recreateChannelViews)
+		AND (QTils.OpenMovieFromURLWithQTMovieWindowH( theMovie, 1, CDp^.fName, CDp^.wih ) = noErr)
 		THEN
 			(* si la vue sur <CDp^.channel> existe déjà en cache (fichier .mov), on l'ouvre directement dans
 			 * une fenêtre *)
 			IF ( (CDp^.channel = 5) OR (CDp^.channel = 6) )
 				THEN
-					wih := QTils.OpenQTMovieInWindow( CDp^.fName, 1 );
+					(* wih := QTils.OpenQTMovieInWindow( CDp^.fName, 1 ); *)
+					err := QTils.DisplayMovieInQTMovieWindowH( theMovie, CDp^.wih, CDp^.fName, 1 );
 				ELSE
-					wih := QTils.OpenQTMovieInWindow( CDp^.fName, vues_avec_controleur );
+					(* wih := QTils.OpenQTMovieInWindow( CDp^.fName, vues_avec_controleur ); *)
+					err := QTils.DisplayMovieInQTMovieWindowH( theMovie, CDp^.wih, CDp^.fName, vues_avec_controleur );
 			END;
+			wih := CDp^.wih;
 		ELSE
 			wih := NULL_QTMovieWindowH;
 	END;
@@ -1286,7 +1323,7 @@ BEGIN
 					WriteString( fp, '</import>' ); WriteLn(fp);
 					Close(fp);
 					(* fichier .qi2m créé, on l'ouvre maintenant, d'abord sans fenêtre *)
-					err := QTils.OpenMovieFromURL( theMovie, 1, CDp^.fName );
+					err := QTils.OpenMovieFromURLWithQTMovieWindowH( theMovie, 1, CDp^.fName, CDp^.wih );
 					IF err = noErr
 						THEN
 							(* on prépare le movie pour être affiché *)
@@ -1296,10 +1333,13 @@ BEGIN
 							END;
 							IF ( (CDp^.channel = 5) OR (CDp^.channel = 6) )
 								THEN
-									wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", 1 );
+									(* wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", 1 ); *)
+									err := QTils.DisplayMovieInQTMovieWindowH( theMovie, CDp^.wih, "", 1 );
 								ELSE
-									wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", vues_avec_controleur );
+									(* wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", vues_avec_controleur ); *)
+									err := QTils.DisplayMovieInQTMovieWindowH( theMovie, CDp^.wih, "", vues_avec_controleur );
 							END;
+							wih := CDp^.wih;
 					END;
 %IF NOTOUTCOMMENTED %THEN
 					IF ( (CDp^.channel = 5) OR (CDp^.channel = 6) )
@@ -1371,7 +1411,7 @@ BEGIN
 					IF err = noErr
 						THEN
 							(* le MemoryDataRef a été créé, on l'ouvre maintenant, d'abord dans un .mov *)
-							err := QTils.OpenMovieFromMemoryDataRef( theMovie, memRef, FOUR_CHAR_CODE('QI2M') );
+							err := QTils.OpenMovieFromMemoryDataRefWithQTMovieWindowH( theMovie, memRef, FOUR_CHAR_CODE('QI2M'), CDp^.wih );
 							IF err = noErr
 								THEN
 									IF PrepareChannelCacheMovie( theMovie, CDp^.description.channels, CDp^.channel )
@@ -1380,10 +1420,13 @@ BEGIN
 									END;
 									IF ( (CDp^.channel = 5) OR (CDp^.channel = 6) )
 										THEN
-											wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", 1 );
+											(* wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", 1 ); *)
+											QTils.DisplayMovieInQTMovieWindowH( theMovie, CDp^.wih, "", 1 );
 										ELSE
-											wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", vues_avec_controleur );
+											(* wih := QTils.OpenQTMovieWindowWithMovie( theMovie, "", vues_avec_controleur ); *)
+											QTils.DisplayMovieInQTMovieWindowH( theMovie, CDp^.wih, "", vues_avec_controleur );
 									END;
+									wih := CDp^.wih;
 							END;
 							IF ( wih = NULL_QTMovieWindowH )
 								THEN
@@ -1418,18 +1461,21 @@ BEGIN
 		QTils.SetMoviePlayHints( wih^^.theMovie, hintsPlayingEveryFrame, 1 );
 	END;
 
-	CDp^.wihReturn := wih;
+	(* CDp^.wih := wih; *)
 %IF CCV_IN_BACKGROUND %THEN
+	lock();
+	CDp^.done := TRUE;
+	unlock();
 	IF CCV_IN_BACKGROUND
 		THEN
 			QTils.LogMsgEx( "CCDWorker finished with '%s'#%d", CDp^.source, CDp^.channel );
-			LeaveCriticalSection(CDp^.mutex);
+			(*unlock();*)
 			(* windows created on a background thread need their own message pump ... *)
 			WHILE ( (QTils.QTMovieWindowH_Check(wih)) AND (NOT quitRequest) ) DO
 				QTils.PumpMessages(1);
 			END;
-			QTils.DisposeQTMovieWindow(wih);
 			QTils.PumpMessages(0);
+			CloseQT();
 	END;
 %END
 	RETURN VAL(CARDINAL, (wih <> NULL_QTMovieWindowH) );
@@ -1438,7 +1484,10 @@ END CCDWorker;
 PROCEDURE CreateChannelView( VAR CD : ChannelDescription ) : QTMovieWindowH;
 VAR
 BEGIN
+	(*CD.wih := QTils.InitQTMovieWindowH( 360, 288 );*)
+	CD.wih := NULL_QTMovieWindowH;
 %IF CCV_IN_BACKGROUND %THEN
+	CD.done := FALSE;
 	IF CCV_IN_BACKGROUND
 		THEN
 			IF CreateThread( CD.thread, CCDWorker, ADR(CD), 0, TRUE )
@@ -1446,15 +1495,15 @@ BEGIN
 					RETURN NULL_QTMovieWindowH;
 				ELSE
 					CCDWorker( ADR(CD) );
-					RETURN CD.wihReturn;
+					RETURN CD.wih;
 			END;
 		ELSE
 			CCDWorker( ADR(CD) );
-			RETURN CD.wihReturn;
+			RETURN CD.wih;
 	END;
 %ELSE
 	CCDWorker( ADR(CD) );
-	RETURN CD.wihReturn;
+	RETURN CD.wih;
 %END
 END CreateChannelView;
 
@@ -1588,6 +1637,28 @@ VAR
 	w : CARDINAL;
 	err : ErrCode;
 	isVODFile : BOOLEAN;
+
+%IF CCV_IN_BACKGROUND %THEN
+	PROCEDURE CheckNotDone(w : CARDINAL) : BOOLEAN;
+	VAR
+		done : BOOLEAN;
+	BEGIN
+		IF CCV_IN_BACKGROUND
+			THEN
+				EnterCriticalSection(channelDesc[w].mutex);
+				done := channelDesc[w].done;
+				LeaveCriticalSection(channelDesc[w].mutex);
+			ELSE
+				done := channelDesc[w].done;
+		END;
+		IF done
+			THEN
+				QTils.LogMsgEx( "Channel #%d is ready", w );
+		END;
+		RETURN NOT done;
+	END CheckNotDone;
+%END
+
 BEGIN
 
 	err := noErr;
@@ -1782,20 +1853,29 @@ BEGIN
 %IF CCV_IN_BACKGROUND %THEN
 	IF CCV_IN_BACKGROUND
 		THEN
+			QTils.LogMsg("Waiting for windows to open");
 			(* loop until all background threads are ready to roll on *)
+(*
 			FOR w := 0 TO maxQTWM DO
 				EnterCriticalSection( channelDesc[w].mutex );
 				LeaveCriticalSection( channelDesc[w].mutex );
+				QTils.LogMsgEx( "Channel #%d is ready", w );
 				QTils.PumpMessages(0);
 			END;
+*)
+			WHILE CheckNotDone(fwWin) OR CheckNotDone(pilotWin) OR CheckNotDone(leftWin)
+				OR CheckNotDone(rightWin) OR CheckNotDone(tcWin) DO
+					QTils.PumpMessages(1);
+			END;
+			QTils.LogMsg("Done!");
 	END;
 %END
 
-	qtwmH[fwWin] := channelDesc[fwWin].wihReturn;
-	qtwmH[pilotWin] := channelDesc[pilotWin].wihReturn;
-	qtwmH[leftWin] := channelDesc[leftWin].wihReturn;
-	qtwmH[rightWin] := channelDesc[rightWin].wihReturn;
-	qtwmH[tcWin] := channelDesc[tcWin].wihReturn;
+	qtwmH[fwWin] := channelDesc[fwWin].wih;
+	qtwmH[pilotWin] := channelDesc[pilotWin].wih;
+	qtwmH[leftWin] := channelDesc[leftWin].wih;
+	qtwmH[rightWin] := channelDesc[rightWin].wih;
+	qtwmH[tcWin] := channelDesc[tcWin].wih;
 
 	(* enregistrement des fonctions de gestion d'actions et MAJ de numQTMW *)
 	FOR w := 0 TO maxQTWM	DO
@@ -2402,28 +2482,22 @@ BEGIN
 	CCV_IN_BACKGROUND := FALSE;
 %END
 	FOR wIdx := 0 TO maxQTWM DO
-		channelDesc[wIdx].wihReturn := NULL_QTMovieWindowH;
+		channelDesc[wIdx].wih := NULL_QTMovieWindowH;
 		channelDesc[wIdx].fName := "";
 %IF CCV_IN_BACKGROUND %THEN
 		channelDesc[wIdx].thread := NIL;
-		IF CCV_IN_BACKGROUND
-			THEN
-				InitializeCriticalSectionAndSpinCount( channelDesc[wIdx].mutex, 4000 );
-		END;
+		InitializeCriticalSectionAndSpinCount( channelDesc[wIdx].mutex, 4000 );
 %END
 	END;
 
 FINALLY
 
 %IF CCV_IN_BACKGROUND %THEN
-	IF CCV_IN_BACKGROUND
-		THEN
-			FOR wIdx := 0 TO maxQTWM DO
-				DeleteCriticalSection(channelDesc[wIdx].mutex);
-				IF channelDesc[wIdx].thread <> NIL
-					THEN
-						KillThread( channelDesc[wIdx].thread, 0 );
-				END;
+	FOR wIdx := 0 TO maxQTWM DO
+		DeleteCriticalSection(channelDesc[wIdx].mutex);
+		IF channelDesc[wIdx].thread <> NIL
+			THEN
+				KillThread( channelDesc[wIdx].thread, 0 );
 		END;
 	END;
 %END

@@ -128,7 +128,8 @@ const char *GetMacOSStatusErrStrings(ErrCode err, const char **comment)
  */
 void register_QTMovieWindowH( QTMovieWindowH qtwmH, NativeWindow hwnd )
 {
-	if( qtwmH ){
+	// 20130612: check for hwnd too
+	if( qtwmH && hwnd ){
 		if( q2nw_initialised ){
 			qtwmh2hwnd[qtwmH] = hwnd;
 		}

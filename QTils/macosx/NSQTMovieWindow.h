@@ -22,16 +22,17 @@
 	NSURL *URL;
 	QTMovie *qtMovie;
 	NSSize movieSize;
-	BOOL resizesVertically;
+	BOOL resizesVertically, nibLoaded;
 	struct QTMovieWindows **qtmwH;
 }
 
+- (id) init;
 - (void) close;
 
 - (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)type;
 - (BOOL)setQTMovieFromMovie:(Movie)theMovie;
 - (id)initWithContentsOfURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError;
-- (id) initWithQTWMandPool:(struct QTMovieWindows**)wih;
+- (id) initWithQTWM:(struct QTMovieWindows**)wih;
 - (NSSize)windowSizeForMovieSize:(NSSize)s;
 - (NSSize) windowContentSizeForMovieSize:(NSSize)s;
 - (NSRect)windowRectForMovieRect:(NSRect)r;

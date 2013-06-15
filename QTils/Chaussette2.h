@@ -35,7 +35,7 @@
 	#ifndef __WINSOCK__
 		#define __WINSOCK__
 	#endif
-	#include <winsock.h>
+	#include <winsock2.h>
 	#define NULLSOCKET INVALID_SOCKET
 	#define SOCK SOCKET
 	//redefinition de la fonction de winsock

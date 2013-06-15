@@ -67,16 +67,18 @@ QTLSext ErrCode GetMetaDataStringFromTrack_Mod2( Movie theMovie, long theTrack,
 QTLSext ErrCode GetMetaDataStringFromMovie_Mod2( Movie theMovie, AnnotationKeys key,
 							char *value, int vlen, char *lang, int llen );
 
+QTLSext ErrCode OpenMovieFromURLWithQTMovieWindowH_Mod2( Movie *newMovie, short flags, char *URL, int ulen, QTMovieWindowH wih );
 QTLSext ErrCode OpenMovieFromURL_Mod2( Movie *newMovie, short flags, char *URL, int ulen );
 QTLSext ErrCode SaveMovieAsRefMov_Mod2( const char *dstURL, int ulen, Movie theMovie );
 QTLSext ErrCode SaveMovieAs_Mod2( char *fname, int flen, Movie theMovie, int noDialog );
 QTLSext size_t QTils_LogMsg_Mod2( const char *msg, int mlen );
 QTLSext size_t QTils_LogMsgEx_Mod2( const char *msg, int mlen, va_list ap );
-QTLSext QTMovieWindowH NewQTMovieWindowH();
+QTLSext QTMovieWindowH AllocQTMovieWindowH();
 QTLSext QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theURL, Movie theMovie,
 								  Handle dataRef, OSType dataRefType, DataHandler dh, short resId, ErrCode *err );
 QTLSext void DisposeQTMovieWindow( QTMovieWindowH WI );
 QTLSext void DisposeQTMovieWindow_Mod2( QTMovieWindowH *WI );
+QTLSext ErrCode DisplayMovieInQTMovieWindowH_Mod2( Movie theMovie, QTMovieWindowH *wih, char *theURL, int ulen, int visibleController );
 QTLSext QTMovieWindowH OpenQTMovieInWindow_Mod2( const char *theURL, int ulen, int withController );
 QTLSext QTMovieWindowH OpenQTMovieWindowWithMovie_Mod2( Movie theMovie, char *theURL, int ulen, int visibleController );
 
@@ -111,6 +113,10 @@ int DrainQTMovieWindowPool( QTMovieWindowH WI );
 	void SetQTMovieTime( struct NSQTMovieWindow *theNSQTMovieWindow, TimeRecord *trec );
 	void SetQTMovieTimeValue( struct NSQTMovieWindow *theNSQTMovieWindow, TimeValue tVal, TimeValue tScale );
 #endif
+
+#if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
+	ErrCode CreateSocketEventObject( unsigned int *s, void **obj, unsigned int mask );
+#endif	
 
 #if !defined(USE_QTHANDLES) || TARGET_OS_WIN32
 #	define Handle_Check(x)	((x) && *(x))

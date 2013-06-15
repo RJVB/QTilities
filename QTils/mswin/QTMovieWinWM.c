@@ -26,6 +26,7 @@ IDENTIFY("QTMovieWinWM: QuickTime utilities: MSWin32 part of the toolkit");
 #include <errno.h>
 #include <string.h>
 
+#include <winsock2.h>
 #include <Windows.h>
 #include <commctrl.h>
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
@@ -62,6 +63,50 @@ IDENTIFY("QTMovieWinWM: QuickTime utilities: MSWin32 part of the toolkit");
 static char errbuf[512];
 
 static HINSTANCE ghInst = NULL;
+static BOOL tlsQTOSet = FALSE;
+static DWORD tlsQTOpenedKey = 0;
+
+char ProgrammeName[MAX_PATH];
+#ifdef _SS_LOG_ACTIVE
+char M2LogEntity[64];
+#endif
+
+static WSAReadHandler SocketReadHandler = NULL;
+static HANDLE *inputEventObjects = NULL;
+static DWORD numInputEventObjects = 0;
+
+WSAReadHandler SetSocketAsyncReadHandler( WSAReadHandler handler )
+{ WSAReadHandler prev = SocketReadHandler;
+	SocketReadHandler = handler;
+	return prev;
+}
+
+ErrCode SetSocketAsyncReadForWindow( SOCKET s, HWND win )
+{
+	if( WSAAsyncSelect( s, win, 'READ', FD_READ ) == SOCKET_ERROR ){
+		return WSAGetLastError();
+	}
+	else{
+		return noErr;
+	}
+}
+
+ErrCode CreateSocketEventObject( SOCKET s, HANDLE *obj, DWORD mask )
+{
+	if( s == -1 ){
+		return paramErr;
+	}
+	if( !*obj ){
+		*obj = WSACreateEvent();
+	}
+	if( *obj ){
+		WSAEventSelect( s, *obj, mask );
+		return noErr;
+	}
+	else{
+		return GetLastError();
+	}
+}
 
 // a minimal message pump which can be called regularly to make sure MSWindows event messages
 // get handled.
@@ -75,7 +120,26 @@ unsigned int PumpMessages(int force)
 	}
 	FlushLog( qtLogPtr );
 	if( force ){
-		ok = GetMessage( &msg, NULL, 0, 0 );
+		if( numInputEventObjects ){
+		  DWORD idx;
+			if( (idx = MsgWaitForMultipleObjects( numInputEventObjects, inputEventObjects,
+							  FALSE, INFINITE, QS_POSTMESSAGE)) == WAIT_OBJECT_0 + numInputEventObjects
+			){
+				ok = PeekMessage( &msg, NULL, 0, 0, PM_REMOVE );
+			}
+			else if( idx == WAIT_FAILED || idx >= WAIT_ABANDONED_0 ){
+				FormatMessage( FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_FROM_SYSTEM,
+					NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), (LPSTR) errbuf, sizeof(errbuf), NULL
+				);
+				Log( qtLogPtr, errbuf );
+			}
+			else{
+				// inputEventObjects[idx - WAIT_OBJECT_0]
+			}
+		}
+		else{
+			ok = GetMessage( &msg, NULL, 0, 0 );
+		}
 	}
 	else{
 		ok = PeekMessage( &msg, NULL, 0, 0, PM_REMOVE );
@@ -198,6 +262,7 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 #endif
 			break;
 		case WM_PAINT:{
+		  WindowRef wr = GetNativeWindowPort(hWnd);
 #ifdef AllowQTMLDoubleBuffering
 		  HRGN winUpdateRgn;
 #endif //AllowQTMLDoubleBuffering
@@ -209,30 +274,32 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 				Log( qtLogPtr, "Paint QT window %p=#%u\n", hWnd, (*wi)->idx );
 #endif
 			}
+			if( wr ){
 #ifdef AllowQTMLDoubleBuffering
-			if( UseQTMLDoubleBuffering ){
-				winUpdateRgn = CreateRectRgn(0,0,0,0);
-				// Get the Windows update region
-				GetUpdateRgn( hWnd, winUpdateRgn, FALSE );
-			}
+				if( UseQTMLDoubleBuffering ){
+					winUpdateRgn = CreateRectRgn(0,0,0,0);
+					// Get the Windows update region
+					GetUpdateRgn( hWnd, winUpdateRgn, FALSE );
+				}
 #endif // AllowQTMLDoubleBuffering
-			// Call BeginPaint/EndPaint to clear the update region
-			hdc = BeginPaint( hWnd, &ps );
-			EndPaint( hWnd, &ps );
+				// Call BeginPaint/EndPaint to clear the update region
+				hdc = BeginPaint( hWnd, &ps );
+				EndPaint( hWnd, &ps );
 
 #ifdef AllowQTMLDoubleBuffering
-			if( wi && UseQTMLDoubleBuffering ){
-				// Add to the dirty region of the port any region
-				// that Windows says needs updating. This allows the
-				// union of the two to be copied from the back buffer
-				// to the screen on the next flush.
-				QTMLAddNativeRgnToDirtyRgn( GetNativeWindowPort(hWnd), winUpdateRgn );
-				DeleteObject( winUpdateRgn );
+				if( wi && (*wi)->theMovie && UseQTMLDoubleBuffering ){
+					// Add to the dirty region of the port any region
+					// that Windows says needs updating. This allows the
+					// union of the two to be copied from the back buffer
+					// to the screen on the next flush.
+					QTMLAddNativeRgnToDirtyRgn( wr, winUpdateRgn );
+					DeleteObject( winUpdateRgn );
 
-				// Flush the entire dirty region to the screen
-				QTMLFlushPortDirtyRgn( GetNativeWindowPort(hWnd) );
-			}
+					// Flush the entire dirty region to the screen
+					QTMLFlushPortDirtyRgn( wr );
+				}
 #endif // AllowQTMLDoubleBuffering
+			}
 			break;
 		}
 		case WM_CLOSE:{
@@ -303,6 +370,11 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 					controllerBox.bottom += (short)heightAdjust;
 					MCSetControllerBoundsRect( (*wi)->theMC, &controllerBox);
 				}
+			}
+			break;
+		case 'READ':
+			if( SocketReadHandler ){
+				(*SocketReadHandler)( (SOCKET) wParam, WSAGETSELECTEVENT(lParam), WSAGETSELECTERROR(lParam) );
 			}
 			break;
 	}
@@ -464,17 +536,50 @@ QTMovieWindowH InitQTMovieWindowHFromMovieInBG( BGContext *cx,
 	}
 }
 
-QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
-									    Handle dataRef, OSType dataRefType, int visibleController )
+QTMovieWindowH InitQTMovieWindowH( short width, short height )
 { QTMovieWindows *wi = NULL;
   QTMovieWindowH wih = NULL;
   ErrCode err;
 
-	if( (wih = QTMovieWindowH_from_Movie(theMovie)) || (wih = NewQTMovieWindowH()) ){
+	if( wih = AllocQTMovieWindowH() ){
 		wi = *wih;
+		if( width > 0 && height > 0 ){
+			// 20130612: SetRect( &wi->theMovieRect, 0, 0, width, height ) appears to write beyond
+			// the structure bounds??!
+			wi->theMovieRect.top = wi->theMovieRect.left = 0;
+			wi->theMovieRect.right = width;
+			wi->theMovieRect.bottom = height;
+		}
+		else{
+			width = height = CW_USEDEFAULT;
+		}
+		wi->theView = CreateWindowEx(
+				WS_EX_APPWINDOW|WS_EX_WINDOWEDGE, (LPCSTR) QTMWClass,
+				(LPCSTR) ProgrammeName, WS_OVERLAPPED|WS_CAPTION|WS_VISIBLE,
+				CW_USEDEFAULT, CW_USEDEFAULT, width, height,
+				0, 0, ghInst, NULL
+		);
+		if( wi->theView ){
+			PumpMessages(FALSE);
+			register_QTMovieWindowH( wih, wi->theView );
+			SetLastError(0);
+			if( !SetWindowLongPtr( wi->theView, GWL_USERDATA, (LONG_PTR) wih ) ){
+				err = GetLastError();
+			}
+			PumpMessages(FALSE);
+		}
 	}
+	return wih;
+}
+
+static QTMovieWindowH _DisplayMovieInQTMovieWindowH_( Movie theMovie, QTMovieWindowH wih, const char *theURL, short resId,
+									    Handle dataRef, OSType dataRefType, int visibleController,
+									    ErrCode *err, const char *caller )
+{ QTMovieWindows *wi = NULL;
+  QTMovieWindowH nwih = NULL, owih = QTMovieWindowH_from_Movie(theMovie);
 
 	if( Handle_Check(wih) && (*wih)->self == *wih ){
+		wi = *wih;
 		if( theURL && (!wi->theURL || strcmp(theURL, wi->theURL)) ){
 			wi->theURL = (const char*) QTils_strdup(theURL);
 		}
@@ -487,12 +592,17 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 		wi->theMovie = theMovie;
 		GetMovieBox( theMovie, &wi->theMovieRect );
 		MacOffsetRect( &wi->theMovieRect, -wi->theMovieRect.left, -wi->theMovieRect.top );
-		wi->theView = CreateWindowEx(
-				WS_EX_APPWINDOW|WS_EX_WINDOWEDGE, (LPCSTR) QTMWClass,
-				(LPCSTR) theURL, WS_OVERLAPPED|WS_CAPTION|WS_VISIBLE,
-				CW_USEDEFAULT, CW_USEDEFAULT, wi->theMovieRect.right, wi->theMovieRect.bottom,
-				0, 0, ghInst, NULL
-		);
+		if( !wi->theView || (nwih = QTMovieWindowHFromNativeWindow(wi->theView)) != wih ){
+			wi->theView = CreateWindowEx(
+					WS_EX_APPWINDOW|WS_EX_WINDOWEDGE, (LPCSTR) QTMWClass,
+					(LPCSTR) theURL, WS_OVERLAPPED|WS_CAPTION|WS_VISIBLE,
+					CW_USEDEFAULT, CW_USEDEFAULT, wi->theMovieRect.right, wi->theMovieRect.bottom,
+					0, 0, ghInst, NULL
+			);
+		}
+		else{
+			// no need to correct the geometry; QTMovieWindowSetGeometry() will called further down!
+		}
 		if( wi->theView ){
 		 CGrafPtr currentPort;
 		 GDHandle currentGDH;
@@ -503,20 +613,41 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 			CreatePortAssociation( wi->theView, NULL, 0);
 			// Set the port
 			SetGWorld((CGrafPtr)GetNativeWindowPort(wi->theView), nil);
-			err = noErr;
-			if( err != noErr ){
-				Log( qtLogPtr, "OpenQTMovieWindowWithMovie(): error %d opening \"%s\"\n", err, theURL );
+			*err = noErr;
+			if( *err != noErr ){
+				Log( qtLogPtr, "%s: error %d opening \"%s\"\n", caller, *err, theURL );
 				CloseQTMovieWindow(wih);
 				DisposeQTMovieWindow(wih);
 				wi = NULL, wih = NULL;
 			}
 			else{
 			  BGContext cx;
+			  DataHandler dh = NULL;
 				// final association between the new movie and its new window:
 				SetMovieGWorld( wi->theMovie, (CGrafPtr)GetNativeWindowPort(wi->theView), nil );
 				memset( &cx, 0, sizeof(cx) );
+				if( owih && owih != wih ){
+				  QTMovieWindows *owi = (*owih);
+					if( !wi->dataRef ){
+						dataRef = owi->dataRef;
+						dataRefType = owi->dataRefType;
+						dh = owi->dataHandler;
+						owi->dataRef = NULL;
+						owi->dataHandler = NULL;
+					}
+					if( !wi->MCActionList ){
+						wi->MCActionList = owi->MCActionList;
+						owi->MCActionList = NULL;
+					}
+					if( !wi->theMC ){
+						wi->theMC = owi->theMC;
+						owi->theMC = NULL;
+					}
+					unregister_QTMovieWindowH_for_Movie(theMovie);
+					owi->theMovie = NULL;
+				}
 				if( dataRef && wi->dataRef != dataRef ){
-					InitQTMovieWindowHFromMovie( wih, theURL, theMovie, dataRef, dataRefType, NULL, resId, &err );
+					InitQTMovieWindowHFromMovie( wih, theURL, theMovie, dataRef, dataRefType, dh, resId, err );
 				}
 
 				// RJVB 20110316: prepare movie for fast starting. Do it here to let the Movie Toolbox
@@ -529,20 +660,20 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 					if( wi->dataRefType == 'URL ' || wi->dataRefType == ' LRU'
 					   || wi->dataRefType == 'url ' || wi->dataRefType == ' lru'
 					){
-						Log( qtLogPtr, "OpenQTMovieWindowWithMovie('%s') - prerolling a streaming movie may take some time!\n",
-						    theURL
+						Log( qtLogPtr, "%s('%s') - prerolling a streaming movie may take some time!\n",
+						    caller, theURL
 						);
 					}
 					pErr = PrePrerollMovie( theMovie, timeNow, playRate, NULL, NULL );
 					if( pErr != noErr ){
-						Log( qtLogPtr, "OpenQTMovieWindowWithMovie('%s') - PrePrerollMovie returned %d\n",
-						    theURL, pErr
+						Log( qtLogPtr, "%s('%s') - PrePrerollMovie returned %d\n",
+						    caller, theURL, pErr
 						);
 					}
 					pErr = PrerollMovie( theMovie, timeNow, playRate );
 					if( pErr != noErr ){
-						Log( qtLogPtr, "OpenQTMovieWindowWithMovie('%s') - PrerollMovie returned %d\n",
-						    theURL, pErr
+						Log( qtLogPtr, "%s('%s') - PrerollMovie returned %d\n",
+						    caller, theURL, pErr
 						);
 					}
 				}
@@ -573,14 +704,14 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 				wi->loadState = GetMovieLoadState(wi->theMovie);
 				{ MovieFrameTime ft;
 					secondsToFrameTime( wi->theInfo.startTime, wi->theInfo.TCframeRate, &ft );
-					Log( qtLogPtr, "OpenQTMovieWindowWithMovie(\"%s\"): %gs @ %gHz/%gHz starts %02d:%02d:%02d;%d loadState=%d\n",
-					    wi->theURL, wi->theInfo.duration, wi->theInfo.frameRate, wi->theInfo.TCframeRate,
+					Log( qtLogPtr, "%s(\"%s\"): %gs @ %gHz/%gHz starts %02d:%02d:%02d;%d loadState=%d\n",
+					    caller, wi->theURL, wi->theInfo.duration, wi->theInfo.frameRate, wi->theInfo.TCframeRate,
 					    ft.hours, ft.minutes, ft.seconds, ft.frames,
 					    wi->loadState
 					);
 				}
-				Log( qtLogPtr, "OpenQTMovieWindowWithMovie(): movie=%p MC=%p wih,wi=%p,%p registered with HWND=%p in process %u:%u\n",
-				    wi->theMovie, wi->theMC,
+				Log( qtLogPtr, "%s(): movie=%p MC=%p wih,wi=%p,%p registered with HWND=%p in process %u:%u\n",
+				    caller, wi->theMovie, wi->theMC,
 				    wih, wi, wi->theView,
 				    GetCurrentProcessId(), GetCurrentThreadId()
 				);
@@ -606,7 +737,53 @@ QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, s
 		}
 		PumpMessages(FALSE);
 	}
+	else{
+		CloseQTMovieWindow(wih);
+		DisposeQTMovieWindow(wih);
+		wi = NULL, wih = NULL;
+		*err = paramErr;
+	}
 	return wih;
+}
+
+ErrCode DisplayMovieInQTMovieWindowH( Movie theMovie, QTMovieWindowH *wih, char *theURL, int visibleController )
+{ ErrCode err = paramErr;
+	if( theMovie && wih && *wih ){
+		if( theURL && !*theURL ){
+			theURL = NULL;
+		}
+		*wih = _DisplayMovieInQTMovieWindowH_( theMovie, *wih, theURL, 1, NULL, 0, visibleController,
+									   &err, "DisplayMovieInQTMovieWindowH" );
+	}
+	return err;
+}
+
+ErrCode DisplayMovieInQTMovieWindowH_Mod2( Movie theMovie, QTMovieWindowH *wih, char *theURL, int ulen, int visibleController )
+{ ErrCode err = paramErr;
+	if( theMovie && wih ){
+		if( theURL && !*theURL ){
+			theURL = NULL;
+		}
+		if( !*wih && !(*wih = QTMovieWindowH_from_Movie(theMovie)) ){
+			*wih = AllocQTMovieWindowH();
+			Log( qtLogPtr, "DisplayMovieInQTMovieWindowH_Mod2: AllocQTMovieWindow() returned *wih=%p", *wih );
+		}
+		*wih = _DisplayMovieInQTMovieWindowH_( theMovie, *wih, theURL, 1, NULL, 0, visibleController,
+									   &err, "DisplayMovieInQTMovieWindowH" );
+	}
+	return err;
+}
+
+QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
+									    Handle dataRef, OSType dataRefType, int visibleController )
+{ QTMovieWindowH wih = NULL;
+  ErrCode err;
+
+	if( !(wih = QTMovieWindowH_from_Movie(theMovie)) ){
+		wih = AllocQTMovieWindowH();
+	}
+	return _DisplayMovieInQTMovieWindowH_( theMovie, wih, theURL, resId, dataRef, dataRefType, visibleController,
+								 &err, "OpenQTMovieWindowWithMovie" );
 }
 
 QTMovieWindowH OpenQTMovieWindowWithMovie_Mod2( Movie theMovie, char *theURL, int ulen, int visibleController )
@@ -1023,14 +1200,16 @@ static ErrCode lOpenQT()
 	return err;
 }
 
-static BOOL QTOpened = FALSE;
+#define QTOpened	TlsGetValue(tlsQTOpenedKey)
+static BOOL QTOpenedTrue = TRUE;
 
 ErrCode OpenQT()
 { ErrCode err;
+	// fixme: use a thread-specific value instead of a global variable
 	if( !QTOpened ){
 		err = lOpenQT();
 		if( err == noErr ){
-			QTOpened = TRUE;
+			TlsSetValue( tlsQTOpenedKey, &QTOpenedTrue );
 		}
 	}
 	else{
@@ -1046,7 +1225,7 @@ void CloseQT()
 	if( QTOpened ){
 		ExitMovies();
 		TerminateQTML();
-		QTOpened = FALSE;
+		TlsSetValue( tlsQTOpenedKey, NULL );
 	}
 }
 
@@ -1069,10 +1248,6 @@ void GetMaxBounds(Rect *maxRect)
 #include "QTilsIconXOR48x48.h"
 #include "resource.h"
 
-#ifdef _SS_LOG_ACTIVE
-char M2LogEntity[MAX_PATH];
-#endif
-
 short InitQTMovieWindows( void *hInst )
 { WNDCLASSEX wc;
   INITCOMMONCONTROLSEX icc;
@@ -1082,30 +1257,28 @@ short InitQTMovieWindows( void *hInst )
   } *iconXBits;
   BYTE *maskBits = NULL;
 
+	// obtain programme name: cf. http://support.microsoft.com/kb/126571
+	if( __argv ){
+	  char *pName = strrchr(__argv[0], '\\'), *ext = strrchr(__argv[0], '.'), *c, *end;
+		c = ProgrammeName;
+		if( pName ){
+			pName++;
+		}
+		else{
+			pName = __argv[0];
+		}
+		end = &ProgrammeName[sizeof(ProgrammeName)-1];
+		while( pName < ext && c < end ){
+			*c++ = *pName++;
+		}
+		*c++ = '\0';
+	}
 #ifdef _SS_LOG_ACTIVE
 	if( !qtLogPtr ){
-	  int i;
-		// obtain programme name: cf. http://support.microsoft.com/kb/126571
-		if( __argv ){
-		  char *pName = strrchr(__argv[0], '\\'), *ext = strrchr(__argv[0], '.'), *c, *end;
-			c = M2LogEntity;
-			if( pName ){
-				pName++;
-			}
-			else{
-				pName = __argv[0];
-			}
-			end = &M2LogEntity[sizeof(M2LogEntity)-1];
-			while( pName < ext && c < end ){
-				*c++ = *pName++;
-			}
-			*c++ = '\0';
-		}
-		qtLogPtr = Initialise_Log( "QTils Log", M2LogEntity, 0 );
+		qtLogPtr = Initialise_Log( "QTils Log", ProgrammeName, 0 );
 //		for( i = 1 ; i < __argc && __argv ; i++ ){
 //			Log( qtLogPtr, "argv[%d] = '%s'\n", i, (__argv[i])? __argv[i] : "<NULL>" );
 //		}
-		// reuse M2LogEntity:
 		strcpy( M2LogEntity, "Modula-2" );
 		qtLog_Initialised = 1;
 	}
@@ -1217,6 +1390,9 @@ short InitQTMovieWindows( void *hInst )
 	}
 	if( maskBits ){
 		QTils_free(maskBits);
+	}
+	if( !tlsQTOSet ){
+		tlsQTOpenedKey = TlsAlloc();
 	}
 	return ret;
 }

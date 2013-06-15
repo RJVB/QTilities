@@ -28,7 +28,7 @@ extern "C"
 #	endif
 #endif
 
-#if defined(_WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
 #	ifdef _QTILS_C
 #		define QTLSext __declspec(dllexport)
 #	else
@@ -197,6 +197,13 @@ typedef struct TCTrackInfo {
 	typedef void				QTMovie;
 #endif // _QTKITDEFINES_H
 
+// forward type definitions
+typedef struct QTMovieWindows* QTMovieWindowPtr;
+/*!
+	most user manipulations will be on a QTMovieWindow handle, a pointer to a pointer to a QTMovieWindows structure
+ */
+typedef QTMovieWindowPtr* QTMovieWindowH;
+
 /*!
 	convert a Pascal string to a C string using a static buffer internal to the function
  */
@@ -236,6 +243,17 @@ QTLSext char *AskSaveFileName(char *title);
  */
 QTLSext const char *MacErrorString( ErrCode err, const char **errComment );
 
+/*!
+	open a movie from a file; pass NULL for dum1 & id, 0 or 1 for flags
+	@n
+	Given the file <URL>, open it as a QuickTime movie. The function returns the Movie object (in-memory "handle")
+	and the reference/type pair if requested. flags should be 0 or 1. <id> refers to the file's movie resource(s)
+	and should be 0 or NULL. Internally, an association is made with the given
+	(OR with a newly allocated and initialised - evidently windowless) QTMovieWindowH
+	object. This object can be retrieved via the QTMovieWindowH_from_Movie function.
+ */
+QTLSext ErrCode OpenMovieFromURLWithQTMovieWindowH( Movie *newMovie, short flags, short *id,
+						   const char *URL, QTMovieWindowH wih, Handle *dum1, OSType *type );
 /*!
 	open a movie from a file; pass NULL for dum1 & id, 0 or 1 for flags
 	@n
@@ -292,6 +310,8 @@ QTLSext void DisposeMemoryDataRef(MemoryDataRef *memRef);
 QTLSext ErrCode MemoryDataRefFromMemory( const char *string, size_t len, const char *virtURL, MemoryDataRef *memRef );
 QTLSext ErrCode MemoryDataRefFromString( const char *string, const char *virtURL, MemoryDataRef *memRef );
 QTLSext ErrCode OpenMovieFromMemoryDataRef( Movie *newMovie, MemoryDataRef *memRef, OSType contentType );
+QTLSext ErrCode OpenMovieFromMemoryDataRefWithQTMovieWindowH( Movie *newMovie,
+										   MemoryDataRef *memRef, OSType contentType, QTMovieWindowH wih );
 
 #if defined(__QUICKTIME__) || defined(__MOVIES__)
 	QTLSext void DisposeDataRef(Handle dataRef);
@@ -463,6 +483,10 @@ QTLSext ErrCode LastQTError();
 typedef NativeWindow*	NativeWindowPtr;
 typedef NativeWindowPtr* NativeWindowH;
 
+#ifdef _WINDOWS_
+	typedef void (*WSAReadHandler)(unsigned int*, unsigned int, long);
+#endif
+
 /*!
 	informational variables that (may) have more restrictive alignment requirements,
 	to avoid padding issues.
@@ -557,12 +581,6 @@ typedef struct QTMovieWindows {
 	struct QTMovieSinks *sourceQMS;
 } QTMovieWindows;
 
-typedef struct QTMovieWindows* QTMovieWindowPtr;
-/*!
-	most user manipulations will be on a QTMovieWindow handle, a pointer to a pointer to a QTMovieWindows structure
- */
-typedef QTMovieWindowPtr* QTMovieWindowH;
-
 /*!
 	check if a QTMovieWindowH references a valid QTMovieWindow
  */
@@ -577,8 +595,9 @@ typedef QTMovieWindowPtr* QTMovieWindowH;
 #endif // _QTILS_C
 /*!
 	check if a QTMovieWindowH references a valid QTMovieWindow with an open window
+	20130613: check for theViewPtr instead of theView!
  */
-#define QTMovieWindowH_isOpen(wih)	(QTMovieWindowH_Check(wih) && (*wih)->theView)
+#define QTMovieWindowH_isOpen(wih)	(QTMovieWindowH_Check(wih) && (*wih)->theViewPtr)
 
 /*!
 	public, exported names for the supported QuickTime MovieController actions
@@ -635,6 +654,7 @@ QTLSext short InitQTMovieWindows( void *Win32ApplicationInstance );
 #endif
 QTLSext void DisposeQTMovieWindow( QTMovieWindowH WI );
 QTLSext ErrCode CloseQTMovieWindow( QTMovieWindowH WI );
+QTLSext QTMovieWindowH InitQTMovieWindowH( short width, short height );
 /*!
 	open the movie with the specified URL in a movie window.
 	@param	theURL	filename or http URL
@@ -642,7 +662,11 @@ QTLSext ErrCode CloseQTMovieWindow( QTMovieWindowH WI );
  */
 QTLSext QTMovieWindowH OpenQTMovieInWindow( const char *theURL, int visibleController );
 QTLSext NativeWindowH NativeWindowHFromQTMovieWindowH( QTMovieWindowH wi );
+/*!
+	 creates a new QTMovieWindowH handle with an empty window of the specified dimensions 
+ */
 QTLSext QTMovieWindowH OpenQTMovieFromMemoryDataRefInWindow( MemoryDataRef *memRef, OSType contentType, int controllerVisible );
+QTLSext ErrCode DisplayMovieInQTMovieWindowH( Movie theMovie, QTMovieWindowH *wih, char *theURL, int visibleController );
 QTLSext QTMovieWindowH OpenQTMovieWindowWithMovie( Movie theMovie, const char *theURL, short resId,
 								    Handle dataRef, OSType dataRefType, int controllerVisible );
 QTLSext QTMovieWindowH OpenQTMovieWindowWithQTMovieSink( struct QTMovieSinks *qms, int addTCTrack, int controllerVisible );
@@ -1130,14 +1154,22 @@ typedef struct LibQTilsBase {
 	ErrCode (*MemoryDataRefFromString)( const char *string, const char *virtURL, MemoryDataRef *memRef );
 //	ErrCode (*MemoryDataRefFromStringPtr)( const char *string, size_t len, MemoryDataRef *memRef );
 	ErrCode (*OpenMovieFromMemoryDataRef)( Movie *newMovie, MemoryDataRef *memRef, OSType contentType );
+	ErrCode (*OpenMovieFromMemoryDataRefWithQTMovieWindowH)( Movie *newMovie,
+							MemoryDataRef *memRef, OSType contentType, QTMovieWindowH wih );
+	QTMovieWindowH (*InitQTMovieWindowH)( short width, short height );
 	QTMovieWindowH (*OpenQTMovieFromMemoryDataRefInWindow)( MemoryDataRef *memRef, OSType contentType, int controllerVisible );
+	ErrCode (*DisplayMovieInQTMovieWindowH)( Movie theMovie, QTMovieWindowH *wih, char *theURL, int ulen, int visibleController );
 	QTMovieWindowH (*OpenQTMovieWindowWithMovie)( Movie theMovie, char *theURL, int ulen, int visibleController );
 	QTMovieWindowH (*OpenQTMovieWindowWithQTMovieSink)( struct QTMovieSinks *qms, int addTCTrack, int controllerVisible );
 
 #if !defined(__QUICKTIME__) && !defined(__MOVIES__)
 	ErrCode (*OpenMovieFromURL)( Movie *newMovie, short flags, short *id, const char *URL, void *dum1, OSType *type );
+	ErrCode (*OpenMovieFromURLWithQTMovieWindowH)( Movie *newMovie, short flags, short *id,
+						   const char *URL, QTMovieWindowH wih, void *dum1, OSType *type );
 #else
 	ErrCode (*OpenMovieFromURL)( Movie *newMovie, short flags, short *id, const char *URL, Handle *dataRef, OSType *type );
+	ErrCode (*OpenMovieFromURLWithQTMovieWindowH)( Movie *newMovie, short flags, short *id,
+						   const char *URL, QTMovieWindowH wih, Handle *dum1, OSType *type );
 #endif
 	unsigned short (*HasMovieChanged)(Movie theMovie);
 	ErrCode (*SaveMovie)( Movie theMovie );

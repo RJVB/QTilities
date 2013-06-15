@@ -15,12 +15,12 @@ FROM Environment IMPORT
 
 %IF WIN32 %THEN
 	FROM WIN32 IMPORT
-		FARPROC,
+		FARPROC, DWORD,
 		(*IsBadCodePtr,*)
 		GetProcAddress,
 		HANDLE, FormatMessage,
 		FORMAT_MESSAGE_FROM_SYSTEM, FORMAT_MESSAGE_IGNORE_INSERTS, FORMAT_MESSAGE_MAX_WIDTH_MASK,
-		LoadLibrary, FreeLibrary;
+		LoadLibrary, FreeLibrary, TlsAlloc, TlsSetValue, TlsGetValue;
 	FROM WINX IMPORT
 		NULL_HANDLE;
 %END
@@ -107,13 +107,14 @@ TYPE
 
 VAR
 
-	lQTOpened : BOOLEAN;
+	lQTOpenedTrue : BOOLEAN;
 	lQTOpenError : ErrCode;
 	QTilsHandle : HANDLE;
 	QTilsC : LibQTilsBase;
 	DevMode : BOOLEAN;
 	ligneDeCmde : BOOLEAN;
 	QTilsDLL : Str255;
+	tlsQTOpenedKey : DWORD;
 
 PROCEDURE QTilsAvailable() : BOOLEAN;
 BEGIN
@@ -122,7 +123,7 @@ END QTilsAvailable;
 
 PROCEDURE QTOpened() : BOOLEAN;
 BEGIN
-	RETURN lQTOpened;
+	RETURN TlsGetValue(tlsQTOpenedKey) <> NIL;
 END QTOpened;
 
 PROCEDURE QTOpenError() : ErrCode;
@@ -219,7 +220,7 @@ PROCEDURE dlsym(handle : HANDLE; symbol : ARRAY OF CHAR; VAR valid : BOOLEAN) : 
 		IF procAdr = CAST(FARPROC, NIL)
 			THEN
 				valid := FALSE;
-				PostMessage("Fonction introuvable dans QTils.dll", symbol);
+				PostMessage("Fonction introuvable dans la dll", symbol);
 			ELSE
 				(*valid := NOT(IsBadCodePtr(procAdr));*)
 				(* IsBadCodePtr should no longer be used! *)
@@ -238,30 +239,27 @@ PROCEDURE OpenQT() : ErrCode;
 BEGIN
 	IF QTilsHandle <> NULL_HANDLE
 		THEN
-			IF lQTOpened
-				THEN
-					lQTOpenError := noErr;
-				ELSE
-					lQTOpenError := QTilsC.cOpenQT();
-			END;
+			lQTOpenError := noErr;
+			(* cOpenQT ne fait rien si déjà appelé dans ce thread *)
+			lQTOpenError := QTilsC.cOpenQT();
 		ELSE
 			lQTOpenError := 1;
 	END;
 	IF lQTOpenError = noErr
 		THEN
-			lQTOpened := TRUE;
+			TlsSetValue( tlsQTOpenedKey, ADR(lQTOpenedTrue) );
 		ELSE
-			lQTOpened := FALSE;
+			TlsSetValue( tlsQTOpenedKey, NIL );
 	END;
 	RETURN lQTOpenError;
 END OpenQT;
 
 PROCEDURE CloseQT;
 BEGIN
-	IF lQTOpened
+	IF TlsGetValue(tlsQTOpenedKey) <> NIL
 		THEN
 			QTilsC.cCloseQT;
-			lQTOpened := FALSE;
+			TlsSetValue( tlsQTOpenedKey, NIL );
 	END;
 END CloseQT;
 
@@ -300,7 +298,7 @@ END QTMovieWindowH_isOpen;
  *)
 PROCEDURE OpenQTMovieInWindow(theURL : ARRAY OF CHAR; withController : Int32) : QTMovieWindowH;
 BEGIN
-	IF lQTOpened
+	IF TlsGetValue(tlsQTOpenedKey) <> NIL
 		THEN
 			RETURN QTilsC.cOpenQTMovieInWindow(theURL, withController);
 			(* on doit stocker le resultat de l'appel dans une variable locale plutôt que
@@ -741,6 +739,7 @@ PROCEDURE LoadQTilsDLL() : BOOLEAN;
 VAR
 	name : Str255;
 	msg : ARRAY[0..1024] OF CHAR;
+	wsLib : HANDLE;
 BEGIN
 %IF WIN32 %THEN
 	(* on charge la dll QTils *)
@@ -825,6 +824,8 @@ END LoadQTilsDLL;
 
 BEGIN
 	GetCommandLine(ch);
+	tlsQTOpenedKey :=TlsAlloc();
+	lQTOpenedTrue := TRUE;
 	IF NOT Equal(ch, "")
 		THEN
 (*
@@ -887,8 +888,6 @@ BEGIN
 %ELSE
 	QTilsHandle := NULL_HANDLE;
 %END
-	(* lQTOpened doit toujours être FALSE tant qu'on n'a pas activé ("ouvert") QuickTime! *)
-	lQTOpened := FALSE;
 
 FINALLY
 

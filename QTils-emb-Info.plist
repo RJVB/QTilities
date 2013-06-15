@@ -15,11 +15,11 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2</string>
+	<string>1.25</string>
 	<key>CFBundleSignature</key>
 	<string>RJVB</string>
 	<key>CFBundleVersion</key>
-	<string>1.2</string>
+	<string>1.25</string>
 	<key>NSMainNibFile</key>
 	<string>NSQTMovieWindow</string>
 	<key>NSPrincipalClass</key>
