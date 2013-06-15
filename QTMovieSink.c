@@ -2677,7 +2677,7 @@ static char QTils_Logo[] = {
 	255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
 };
 
-static QTMovieWindowH qtLogoWin = NULL;
+QTMovieWindowH qtLogoWin = NULL;
 
 QTMovieWindowH ShowQTilsLogo()
 { QTMovieSinks *qms;

@@ -219,12 +219,15 @@ void DisposeQTMovieWindow( QTMovieWindowH WI )
 	if( Handle_Check(WI) /*&& (*WI)->self == *WI && QTMovieWindowH_from_Movie((*WI)->theMovie) */ ){
 	  QTMovieWindows *wi = *WI;
 #ifndef QTMOVIESINK
-		CloseQTMovieWindow(WI);
-		if( wi->sourceQMS ){
+	  extern QTMovieWindowH qtLogoWin;
+		if( CloseQTMovieWindow(WI) == noErr && wi->sourceQMS ){
 			wi->sourceQMS->privQT->theMovie = NULL;
 			wi->sourceQMS->privQT->theTrack = NULL;
 			wi->sourceQMS->privQT->dataRef = NULL;
 			close_QTMovieSink( &wi->sourceQMS, TRUE, NULL, TRUE, FALSE );
+			if( WI == qtLogoWin ){
+				qtLogoWin = NULL;
+			}
 		}
 #endif //QTMOVIESINK
 #if TARGET_OS_MAC
