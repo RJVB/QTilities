@@ -9,7 +9,7 @@
 #include <windows.h>
 #include "mswin\resource.h"
 
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "mswin\QTils.dll.manifest"
+/*CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "mswin\QTils.dll.manifest"*/
 ISOLATIONAWARE_MANIFEST_RESOURCE_ID RT_MANIFEST "mswin\QTils.dll.manifest"
 
 VS_VERSION_INFO VERSIONINFO
