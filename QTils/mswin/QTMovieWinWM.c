@@ -1185,7 +1185,7 @@ static ErrCode lOpenQT()
 		err = InitializeQTML(kInitializeQTMLEnableDoubleBufferedSurface);
 		Log( qtLogPtr, "InitializeQTML() in double buffering mode returned %d", err );
 	}
-	else{
+	if( !UseQTMLDoubleBuffering || err != noErr ){
 		err = InitializeQTML(0);
 		Log( qtLogPtr, "InitializeQTML() in default mode returned %d", err );
 	}
