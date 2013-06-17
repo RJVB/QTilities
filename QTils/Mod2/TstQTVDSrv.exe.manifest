@@ -14,5 +14,5 @@
       </requestedPrivileges>
     </security>
   </trustInfo>
-  <description>Video player for Brigade VOD recordings made with IFSTTAR bikes</description>
+  <description>example server for testing QTVODm2's comms protocol</description>
 </assembly>
