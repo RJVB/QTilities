@@ -322,16 +322,16 @@ static void doNSLog( NSString *format, ... )
 		}
 		[movie release];
 		if( m ){
+		  ErrCode wihErr;
+		  extern QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theURL, Movie theMovie,
+								  Handle dataRef, OSType dataRefType, DataHandler dh, short resId, ErrCode *err );
+		  extern QTMovieWindowH AllocQTMovieWindowH();
 			movie = [m retain];
 			if(movie){
 				[center addObserver:self selector:@selector(movieEnded:) name:QTMovieDidEndNotification object:movie];
 				[self installMovieCallBack];
 			}
 			ACSCcount = 0;
-		  ErrCode wihErr;
-		  extern QTMovieWindowH InitQTMovieWindowHFromMovie( QTMovieWindowH wih, const char *theURL, Movie theMovie,
-								  Handle dataRef, OSType dataRefType, DataHandler dh, short resId, ErrCode *err );
-		  extern QTMovieWindowH AllocQTMovieWindowH();
 			qtmwH = InitQTMovieWindowHFromMovie( AllocQTMovieWindowH(),
 					[[m attributeForKey:QTMovieFileNameAttribute] cStringUsingEncoding:NSUTF8StringEncoding],
 					[m quickTimeMovie], NULL, 'prox', NULL, -1, &wihErr

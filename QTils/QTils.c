@@ -1871,7 +1871,7 @@ void DisposeMemoryDataRef(MemoryDataRef *memRef)
 	bug in QuickTime.
  */
 ErrCode DataRefFromURL( const char **URL, Handle *dataRef, OSType *dataRefType )
-{ ErrCode err;
+{ ErrCode err = paramErr;
   CFStringRef URLRef = (CFStringRef) nil;
   int hasFullPath, freeAnchor = FALSE, isHTTP;
   char *theURL_anchor, *theURL = NULL;

@@ -17,7 +17,9 @@
 
 - (id) init
 {
-	if( [super init] && self && !nibLoaded ){
+	// 20130618:
+	self = [super init];
+	if( self && !nibLoaded ){
 		if( ![NSBundle loadNibNamed:@"NSQTMovieWindow" owner:self] ){
 			NSLog( @"%@ failed to load 'NSQTMovieWindow' nib!", self );
 		}
@@ -66,6 +68,7 @@
 					    disposeWhenDone:FALSE error:&nsErr]
 		];
 		success = (nsErr == nil && qtMovie != nil);
+		// release NSErr?
 	}
 
 	return success;

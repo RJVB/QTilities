@@ -13,7 +13,8 @@
 
 - (id) init
 {
-	[super init];
+	// 20130618:
+	self = [super init];
 	return self;
 }
 

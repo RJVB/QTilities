@@ -301,6 +301,7 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 					NSLog( @"%@ held wi->theMovie: setting wi->theMovie = NULL!", qm );
 					wi->theMovie = NULL;
 				}
+				// qm not owned here so shouldn't be released?
 				[qm release];
 				// theMovieView ought to (i.e. will probably) be released through the pool drain below
 				// (it was obtained through loading a NIB so shouldn't be released explicitly?)
@@ -320,7 +321,7 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 				unregister_QTMovieWindowH( WI );
 			}
 			if( wi->theNSQTMovieWindow ){
-			  struct NSQTMovieWindow *w = wi->theNSQTMovieWindow;
+			  NSQTMovieWindow *w = wi->theNSQTMovieWindow;
 				// theNSQTMovieWindow ought to be released through the pool drain below
 				// (it's set to autorelease!):
 				wi->theNSQTMovieWindow = NULL;
@@ -524,7 +525,7 @@ QTMovieWindowH _DisplayMovieInQTMovieWindowH_( Movie theMovie, QTMovieWindowH wi
 }
 
 ErrCode DisplayMovieInQTMovieWindowH( Movie theMovie, QTMovieWindowH *wih, char *theURL, int visibleController )
-{ ErrCode err;
+{ ErrCode err = paramErr;
 	if( theMovie && wih && *wih ){
 		if( theURL && !*theURL ){
 			theURL = NULL;
@@ -536,7 +537,7 @@ ErrCode DisplayMovieInQTMovieWindowH( Movie theMovie, QTMovieWindowH *wih, char 
 }
 
 ErrCode DisplayMovieInQTMovieWindowH_Mod2( Movie theMovie, QTMovieWindowH *wih, char *theURL, int ulen, int visibleController )
-{ ErrCode err;
+{ ErrCode err = paramErr;
 	if( theMovie && wih ){
 		if( theURL && !*theURL ){
 			theURL = NULL;
@@ -922,14 +923,14 @@ ErrCode QTMovieWindowGetGeometry( QTMovieWindowH wih, Cartesian *pos, Cartesian 
 	return err;
 }
 
-void SetQTMovieTime( struct NSQTMovieWindow *theNSQTMovieWindow, TimeRecord *trec )
+void SetQTMovieTime( NSQTMovieWindow *theNSQTMovieWindow, TimeRecord *trec )
 {
 	if( theNSQTMovieWindow && trec ){
 		[[(NSQTMovieWindow*)theNSQTMovieWindow theQTMovie] setCurrentTime:QTMakeTimeWithTimeRecord(*trec)];
 	}
 }
 
-void SetQTMovieTimeValue( struct NSQTMovieWindow *theNSQTMovieWindow, TimeValue tVal, TimeValue tScale )
+void SetQTMovieTimeValue( NSQTMovieWindow *theNSQTMovieWindow, TimeValue tVal, TimeValue tScale )
 {
 	if( theNSQTMovieWindow ){
 		[[(NSQTMovieWindow*)theNSQTMovieWindow theQTMovie] setCurrentTime:QTMakeTime((long long)tVal, tScale)];
@@ -1098,13 +1099,13 @@ int QTils_Log(const char *fileName, int lineNr, NSString *format, ... )
 #else
 	ret = NSLogvprintf2( fileName, lineNr, NULL, LoggerActive(NULL), NULL, NULL, 0, format, ap );
 #endif
-	snprintf( lastSSLogMsg, sizeof(lastSSLogMsg), [[[NSString alloc] initWithFormat:format arguments:ap] UTF8String] );
+	snprintf( lastSSLogMsg, sizeof(lastSSLogMsg), [[[[NSString alloc] initWithFormat:format arguments:ap] autorelease] UTF8String] );
 	va_end(ap);
 	return ret;
 }
 
 short InitQTMovieWindows()
-{ BOOL ret;
+{ BOOL ret = YES;
 
 	// NSApp is nil as long as [NSApplication sharedApplication] hasn't been called,
 	// and that probably means there's no autorelease pool? OTOH, simply calling

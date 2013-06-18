@@ -20,6 +20,8 @@ NSString * const kExportSettingsDefaultsName = @"Export Settings"; // NSDictiona
 
 - init
 {
+	// 20130618:
+	self = [super init];
 	return [self initWithQTMovie:nil];
 }
 

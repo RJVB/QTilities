@@ -110,8 +110,14 @@ QTLSext BOOL QTils_LogSetActive(BOOL active);
 QTMovieWindowH QTMovieWindowHFromNativeWindow( NativeWindow hWnd );
 int DrainQTMovieWindowPool( QTMovieWindowH WI );
 #if defined(_QTMOVIESINKQTSTUFF_H)
-	void SetQTMovieTime( struct NSQTMovieWindow *theNSQTMovieWindow, TimeRecord *trec );
-	void SetQTMovieTimeValue( struct NSQTMovieWindow *theNSQTMovieWindow, TimeValue tVal, TimeValue tScale );
+#	ifdef __OBJC__
+		@class NSQTMovieWindow;
+		void SetQTMovieTime( NSQTMovieWindow *theNSQTMovieWindow, TimeRecord *trec );
+		void SetQTMovieTimeValue( NSQTMovieWindow *theNSQTMovieWindow, TimeValue tVal, TimeValue tScale );
+#	else
+		void SetQTMovieTime( struct NSQTMovieWindow *theNSQTMovieWindow, TimeRecord *trec );
+		void SetQTMovieTimeValue( struct NSQTMovieWindow *theNSQTMovieWindow, TimeValue tVal, TimeValue tScale );
+#	endif
 #endif
 
 #if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)

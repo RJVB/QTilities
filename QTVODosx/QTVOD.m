@@ -1466,7 +1466,9 @@ TimeInterval theLastTimeInterval;
 		qv->sysOwned = sO;
 		qv->assocDataFile = [aDFile retain];
 		if( ![qv readFromURL:aURL ofType:typeName error:outError] ){
-			*outError = [NSError errorWithDomain:@"[QTVOD readFromURL:ofType:error:]" code:[qv openErr] userInfo:nil];
+			if( outError ){
+				*outError = [NSError errorWithDomain:@"[QTVOD readFromURL:ofType:error:]" code:[qv openErr] userInfo:nil];
+			}
 			[self release];
 			return nil;
 		}
@@ -1504,7 +1506,9 @@ TimeInterval theLastTimeInterval;
 		qv->sysOwned = sO;
 		qv->assocDataFile = [aDFile retain];
 		if( ![qv readFromURL:aURL ofType:typeName error:outError] ){
-			*outError = [NSError errorWithDomain:@"[QTVOD readFromURL:ofType:error:]" code:[qv openErr] userInfo:nil];
+			if( outError ){
+				*outError = [NSError errorWithDomain:@"[QTVOD readFromURL:ofType:error:]" code:[qv openErr] userInfo:nil];
+			}
 			[self release];
 			return nil;
 		}

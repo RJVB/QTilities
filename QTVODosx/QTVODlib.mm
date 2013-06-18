@@ -250,6 +250,7 @@ void commsCleanUp()
 	[nsReadServer removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 	delg = [nsReadServer delegate];
 	[nsReadServer setDelegate:nil];
+	// we don't own delg here according to the analyser??
 	[delg release];
 	[nsReadServer release];
 	[nsWriteServer close];
