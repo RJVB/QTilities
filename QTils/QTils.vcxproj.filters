@@ -42,9 +42,6 @@
     <ClCompile Include="QTMovieWin.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mswin\QTMovieWinWM.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\QTpfuSaveImage.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -55,6 +52,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mswin\vsscanf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mswin\SystemTraySDK.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mswin\QTMovieWinWM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -117,6 +120,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Chaussette2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mswin\SystemTraySDK.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

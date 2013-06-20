@@ -848,7 +848,13 @@ int main( int argc, char* argv[] )
 		}
 
 		while( numQTMW && !quitRequest ){
-			nMsg += PumpMessages(1);
+		  int n = PumpMessages(1);
+			if( n < 0 ){
+				quitRequest = 1;
+			}
+			else{
+				nMsg += n;
+			}
 			nPumps += 1;
 		}
 

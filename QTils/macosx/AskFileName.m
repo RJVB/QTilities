@@ -100,7 +100,7 @@ int PostYesNoDialog( const char *title, const char *message )
 	return NSAlertDefaultReturn == [alert runModal];
 }
 
-int PostMessage( const char *title, const char *message )
+int PostMessageBox( const char *title, const char *message )
 { NSAlert* alert = [[[NSAlert alloc] init] autorelease];
   NSString *msg, *tit;
 	@synchronized([NSAlert class]){

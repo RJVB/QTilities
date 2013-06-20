@@ -123,7 +123,7 @@ Boolean QTils_MessagePumpIsSecondary = FALSE, QTils_MessagePumpIsInActive = FALS
 
 // a minimal message pump which can be called regularly to make sure MSWindows event messages
 // get handled.
-unsigned int PumpMessages(int force)
+int PumpMessages(int force)
 { unsigned int n = 0;
   NSEvent *event = nil;
   NSDate *until, *prehistory;

@@ -115,6 +115,7 @@ VAR
 	ligneDeCmde : BOOLEAN;
 	QTilsDLL : Str255;
 	tlsQTOpenedKey : DWORD;
+	lQTils_Allocator : QTILS_ALLOCATORS;
 
 PROCEDURE QTilsAvailable() : BOOLEAN;
 BEGIN
@@ -883,6 +884,7 @@ BEGIN
 			(* because there'll always be dudes who try to use LogMsg(Ex) to notify the user we failed initialising... *)
 			QTilsC.cQTils.LogMsg := lLogMsg;
 			QTilsC.cQTils.LogMsgEx := LogMsgEx;
+			QTilsC.cQTils.QTils_Allocator := ADR(lQTils_Allocator);
 			QTils := QTilsC.cQTils;
 	END;
 %ELSE

@@ -62,7 +62,8 @@ FROM QTVODcomm IMPORT *;
 
 VAR
 	movie : URLString (*ARRAY[0..1024] OF CHAR *);
-	idx, n, l, m : UInt32;
+	idx, l, m : UInt32;
+	n, nn : Int32;
 	movieDescription : VODDescription;
 	msgNet, Netreply : NetMessage;
 	handlingIdleAction, cyclingNetPump, isCompleteReset, openFileRequest : BOOLEAN;
@@ -504,7 +505,7 @@ BEGIN
 	RETURN n;
 END PumpNetMessages;
 
-PROCEDURE PumpMessages(force : Int32) : UInt32;
+PROCEDURE PumpMessages(force : Int32) : Int32;
 VAR
 	n : UInt32;
 	idx : DWORD;
@@ -539,6 +540,11 @@ BEGIN
 					END;
 %END
 			END;
+	END;
+	IF n < 0
+		THEN
+			quitRequest := TRUE;
+			n := 1;
 	END;
 	RETURN n;
 END PumpMessages;
@@ -799,7 +805,10 @@ BEGIN
 					SetTimes( t, qtwmH[fwWin], 0 );
 			END;
 		PumpNetMessagesOnce(0);
-		QTils.PumpMessages(0);
+		IF QTils.PumpMessages(0) < 0
+			THEN
+				quitRequest := TRUE;
+		END;
 	ELSE
 		(* probably reached end of movie, but we stop benchmarking on any other error too *)
 		BenchmarkPlaybackRate;
@@ -963,13 +972,25 @@ BEGIN
 								n := n + PumpMessages(1);
 							ELSE
 								PumpNetMessages(250);
-								n := n + QTils.PumpMessages(0);
+								nn := QTils.PumpMessages(0);
+								IF nn < 0
+									THEN
+										quitRequest := TRUE;
+									ELSE
+										n := n + nn;
+								END;
 %IF %NOT CHAUSSETTE2 %THEN
 								Sleep(250);
 %END
 						END;
 					ELSE
-						n := n + QTils.PumpMessages(1);
+						nn := QTils.PumpMessages(1);
+						IF nn < 0
+							THEN
+								quitRequest := TRUE;
+							ELSE
+								n := n + nn;
+						END;
 				END;
 				l := l + 1;
 				IF ( closeRequest )

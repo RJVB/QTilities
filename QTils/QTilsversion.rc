@@ -9,12 +9,19 @@
 #include <windows.h>
 #include "mswin\resource.h"
 
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENA)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
+#endif //_WIN32
+#endif
+
 /*CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "mswin\QTils.dll.manifest"*/
 ISOLATIONAWARE_MANIFEST_RESOURCE_ID RT_MANIFEST "mswin\QTils.dll.manifest"
 
 VS_VERSION_INFO VERSIONINFO
-  FILEVERSION    1,25
-  PRODUCTVERSION 1,25
+  FILEVERSION    1,30
+  PRODUCTVERSION 1,30
   FILEFLAGSMASK  VS_FFI_FILEFLAGSMASK
   FILEFLAGS      0
   FILEOS         VOS__WINDOWS32
@@ -25,8 +32,8 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "QuickTime utility routines\0"
-            VALUE "ProductVersion", "1.25\0"
-            VALUE "FileVersion", "1.25\0"
+            VALUE "ProductVersion", "1.30\0"
+            VALUE "FileVersion", "1.30\0"
             VALUE "InternalName", "QTilities\0"
             VALUE "OriginalFilename", "QTils\0"
             VALUE "CompanyName", "INRETS/IFSTTAR - LEPSIS\0"
@@ -40,7 +47,23 @@ BEGIN
 END
 
 IDI_ICON ICON		"QTils.ico"
-IDI_WINICON ICON	"mswin\QTils16x16.ico"
+IDI_WINICON ICON	DISCARDABLE	"mswin\\QTils16x16.ico"
+IDI_SYSTRICON ICON	DISCARDABLE	"mswin\\QTils32x32.ico"
+
+IDR_SYSTRAY_MENU MENU DISCARDABLE
+BEGIN
+	POPUP "POPUP"
+	BEGIN
+		MENUITEM "Open...",	IDM_OPEN
+		MENUITEM "About QTVODm2",	IDM_ABOUT
+		MENUITEM "Quit",	IDM_EXIT
+	END
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+	IDM_ABOUT		"Display programme information, version number and copyright\nAbout"
+END
 
 /* testing - see http://www.winprog.org/tutorial/menus.html */
 /*

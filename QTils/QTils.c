@@ -428,10 +428,6 @@ size_t QTils_LogMsg( const char *msg )
 #endif
 }
 
-#ifdef _SS_LOG_ACTIVE
-extern char M2LogEntity[];
-#endif
-
 size_t QTils_LogMsg_Mod2( const char *msg, int mlen )
 { char *fmt = (char*) msg;
   size_t ret;
@@ -4109,6 +4105,10 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 
 		dmbase->LastQTError = LastQTError;
 
+#ifdef _WINDOWS_
+		dmbase->SetSysTrayOpenHandler = SetSysTrayOpenHandler;
+		dmbase->SetSysTrayAboutHandler = SetSysTrayAboutHandler;
+#endif
 		dmbase->PumpMessages = PumpMessages;
 		dmbase->QTils_LogMsg = QTils_LogMsg;
 		dmbase->QTils_LogMsgEx = QTils_vLogMsgEx;

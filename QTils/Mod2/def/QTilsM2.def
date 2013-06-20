@@ -319,6 +319,8 @@ QTCompressionQualities	=
 	QTCallBack = ADDRESS;
 	QTCallBackUPP = PROCEDURE((*register*) QTCallBack, (*refData*) Int32) [CDECL];
 
+	SysTrayEventHandler = PROCEDURE(NativeWindow, QTMovieWindowH):Int32 [CDECL];
+
 	(* type de fonction appellée quand une QuickTime MovieController action se produit *)
 	MCActionParams	= ADDRESS;
 	MCActionCallback= PROCEDURE(QTMovieWindowH, MCActionParams):Int32 [CDECL];
@@ -729,9 +731,14 @@ QTCompressionQualities	=
 			(* le code d'erreur actuellement enregistré *)
 			LastQTError : PROCEDURE():ErrCode [CDECL];
 
+			SetSysTrayOpenHandler : PROCEDURE( (*new*) SysTrayEventHandler ):SysTrayEventHandler [CDECL];
+			SetSysTrayAboutHandler : PROCEDURE( (*new*) SysTrayEventHandler ):SysTrayEventHandler [CDECL];
+
 			(* 'pompe' (vide) la boucle d'évenements; si <wait> est TRUE (non-zero), attend d'abord
-			 * l'arrivée d'un évenement si le fil est vide. *)
-			PumpMessages : PROCEDURE((*wait*) Int32):UInt32 [CDECL];
+			 * l'arrivée d'un évenement si le fil est vide.
+			 * Retourne -1 quand un message WM_QUIT a été reçu.
+			 *)
+			PumpMessages : PROCEDURE((*wait*) Int32):Int32 [CDECL];
 			(* enregistre un message dans le journal
 			 * nécessite la présence de la fonctionnalité 'SS_Log' dans QTils.DLL !
 			 * (sinon aucun effet)
@@ -857,6 +864,9 @@ CONST
   hintsLoop = 2 (*1 << 1*) ;
   hintsHighQuality = 256 (*1 << 8*);
   hintsPlayingEveryFrame = 262144 (*1 << 18*);
+
+	IDM_ABOUT = 1414876994 (* 'BOUT' *);
+	IDM_FOPEN = 1313165391 (* 'OPEN' *);
 
 VAR
 	QTCompressionCodec : QTCompressionCodecs;

@@ -8,11 +8,17 @@ SOURCES += \
     ../QTMovieWindowTest.c \
     ../QTMovieWin.c \
     ../QTils.c \
-    ../POSIXm2.c \
     ../Logger.cpp \
     ../Lists.cpp \
-    ../dllPOSIXm2.cpp \
-    ../dllmain.cpp
+    ../dllmain.cpp \
+    ../CritSectEx/CritSectEx.cpp \
+    ../mswin/QTMovieWinWM.c \
+    ../mswin/AskFileName.c \
+    ../mswin/vsscanf.cpp \
+    ../CritSectEx/timing.c \
+    ../../QTpfuSaveImage.c \
+    ../../QTMovieSink_mod2.c \
+    ../../QTMovieSink.c
 
 OTHER_FILES += \
     ../Mod2/def/QTVODcomm.def \
@@ -29,7 +35,8 @@ OTHER_FILES += \
     ../Mod2/mod/Chaussette2.mod \
     ../Mod2/mod/TstQTVDSrv.mod \
     ../QTilsversion.rc \
-    ../POSIXm2version.rc
+    ../mswin/QTils.dll.manifest \
+    ../QTils.ico
 
 HEADERS += \
     ../QTMovieWin.h \
@@ -39,5 +46,12 @@ HEADERS += \
     ../Logger.h \
     ../Lists.h \
     ../copyright.h \
-    ../winixdefs.h
+    ../winixdefs.h \
+    ../mswin/QTilsIconXOR128x128.h \
+    ../mswin/QTilsIconXOR48x48.h \
+    ../mswin/vsscanf.h \
+    ../mswin/resource.h \
+    ../../QTMovieSinkQTStuff.h \
+    ../../QTMovieSink.h \
+    ../../QTpfuSaveImage.h
 

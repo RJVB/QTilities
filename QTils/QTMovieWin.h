@@ -121,14 +121,23 @@ int DrainQTMovieWindowPool( QTMovieWindowH WI );
 #endif
 
 #if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
-	ErrCode CreateSocketEventObject( unsigned int *s, void **obj, unsigned int mask );
+	QTLSext ErrCode CreateSocketEventObject( unsigned int *s, void **obj, unsigned int mask );
+	QTLSext SysTrayEventHandler SetSysTrayOpenHandler( SysTrayEventHandler handler );
+	QTLSext SysTrayEventHandler SetSysTrayAboutHandler( SysTrayEventHandler handler );
 #endif	
+
+QTLSext void GetMaxBounds(Rect *maxRect);
 
 #if !defined(USE_QTHANDLES) || TARGET_OS_WIN32
 #	define Handle_Check(x)	((x) && *(x))
 #else
 #	define Handle_Check(x)	IsHandleValid((Handle)(x))
 #endif
+
+#ifdef _SS_LOG_ACTIVE
+	extern char M2LogEntity[64];
+#endif
+extern int QTWMcounter;
 
 #ifdef __cplusplus
 }

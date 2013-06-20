@@ -10,6 +10,11 @@
 #include <stdio.h>
 
 #include <windows.h>
+#include "mswin/resource.h"
+#include "mswin/SystemTraySDK.h"
+extern CSystemTray *TrayIcon;
+
+extern char ProgrammeName[MAX_PATH];
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -27,6 +32,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		case DLL_THREAD_DETACH:
 			break;
 		case DLL_PROCESS_DETACH:
+			delete TrayIcon;
 			CloseQT();
 			QTils_LogFinish();
 			break;

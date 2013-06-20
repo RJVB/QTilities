@@ -835,6 +835,10 @@ BEGIN
 				WHILE ( (numQTWM > 0) AND (NOT quitRequest) )
 					DO
 						n := PumpMessages(1)
+						IF n < 0
+							THEN
+								quitRequest := TRUE;
+						END;
 				END;
 
 				DisposeQTMovieWindow(qtwmH);

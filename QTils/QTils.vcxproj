@@ -175,7 +175,7 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CallingConvention>Cdecl</CallingConvention>
-      <CompileAs>CompileAsC</CompileAs>
+      <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
       <AdditionalDependencies>qtmlclient.lib;cvclient.lib;SS_Log.lib;comctl32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -233,11 +233,19 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
     </ClCompile>
+    <ClCompile Include="mswin\QTMovieWinWM.cpp">
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">false</PreprocessToFile>
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">false</ShowIncludes>
+    </ClCompile>
+    <ClCompile Include="mswin\SystemTraySDK.cpp">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">CompileAsCpp</CompileAs>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">NoListing</AssemblerOutput>
+      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">false</WholeProgramOptimization>
+    </ClCompile>
     <ClCompile Include="QTils.c" />
     <ClCompile Include="..\QTMovieSink.c" />
     <ClCompile Include="..\QTMovieSink_mod2.c" />
     <ClCompile Include="QTMovieWin.c" />
-    <ClCompile Include="mswin\QTMovieWinWM.c" />
     <ClCompile Include="..\QTpfuSaveImage.c" />
     <ClCompile Include="QTxml.c" />
     <ClCompile Include="..\timing.c" />
@@ -265,6 +273,7 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Logging.h" />
     <ClInclude Include="mswin\resource.h" />
+    <ClInclude Include="mswin\SystemTraySDK.h" />
     <ClInclude Include="QTilities.h" />
     <ClInclude Include="mswin\QTilsIconXOR128x128.h" />
     <ClInclude Include="mswin\QTilsIconXOR48x48.h" />

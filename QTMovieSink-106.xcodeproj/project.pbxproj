@@ -226,6 +226,12 @@
 		D629600A121BE82D00F66BA8 /* timing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = timing.c; sourceTree = "<group>"; };
 		D629600B121BE82D00F66BA8 /* timing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 2; path = timing.h; sourceTree = "<group>"; };
 		D6296141121BEC0200F66BA8 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
+		D634EDDC177227ED005FD5A8 /* SystemTraySDK.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SystemTraySDK.cpp; sourceTree = "<group>"; };
+		D634EDDD177227ED005FD5A8 /* SystemTraySDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemTraySDK.h; sourceTree = "<group>"; };
+		D634EDDE17725153005FD5A8 /* resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resource.h; sourceTree = "<group>"; };
+		D634EDE1177251C5005FD5A8 /* QTils32x32.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = QTils32x32.ico; sourceTree = "<group>"; };
+		D634EDE2177251C5005FD5A8 /* QTils16x16.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = QTils16x16.ico; sourceTree = "<group>"; };
+		D634EDE41772535A005FD5A8 /* QTils.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; name = QTils.ico; path = QTils/QTils.ico; sourceTree = SOURCE_ROOT; };
 		D634F05713172E3E00D2BAFD /* QTMovieWindowTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = QTMovieWindowTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D634F12C1317D37700D2BAFD /* NSQTMovieWindow.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = NSQTMovieWindow.nib; sourceTree = "<group>"; };
 		D63A60011230F198001E4ACF /* OSXbackgrounding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = OSXbackgrounding.c; sourceTree = "<group>"; };
@@ -308,7 +314,7 @@
 		D6B6E605130E8F5700279904 /* dllPOSIXm2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dllPOSIXm2.cpp; path = QTils/dllPOSIXm2.cpp; sourceTree = SOURCE_ROOT; };
 		D6B6E63B130E9DB300279904 /* POSIXm2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = POSIXm2.mod; sourceTree = "<group>"; tabWidth = 2; };
 		D6B6E63C130E9DB300279904 /* POSIXm2.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = POSIXm2.def; sourceTree = "<group>"; tabWidth = 2; };
-		D6B9CC5F12A5086E00B99C73 /* QTMovieWinWM.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = QTMovieWinWM.c; sourceTree = "<group>"; };
+		D6B9CC5F12A5086E00B99C73 /* QTMovieWinWM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; path = QTMovieWinWM.cpp; sourceTree = "<group>"; };
 		D6B9CC6412A509B800B99C73 /* QTMovieWin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QTMovieWin.h; path = QTils/QTMovieWin.h; sourceTree = "<group>"; };
 		D6BD7C5A13212FF80039E967 /* testMemIO.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = testMemIO.cpp; path = ../FreeImage/TestAPI/testMemIO.cpp; sourceTree = SOURCE_ROOT; };
 		D6CE60501347AF45002E166B /* MacErrorTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MacErrorTable.h; path = QTils/MacErrorTable.h; sourceTree = SOURCE_ROOT; };
@@ -640,14 +646,20 @@
 		D6B9CC5E12A5086E00B99C73 /* mswin */ = {
 			isa = PBXGroup;
 			children = (
+				D634EDE41772535A005FD5A8 /* QTils.ico */,
+				D634EDE1177251C5005FD5A8 /* QTils32x32.ico */,
+				D634EDE2177251C5005FD5A8 /* QTils16x16.ico */,
+				D634EDDE17725153005FD5A8 /* resource.h */,
 				D67B56D61764897C005E4C86 /* QTilsversion.rc */,
 				D67B56D817648A19005E4C86 /* QTils.dll.manifest */,
 				D6CE60501347AF45002E166B /* MacErrorTable.h */,
 				D663BD351328FFA5007DFF5C /* QTVOD2-dev-installer.nsi */,
 				D663BD331328DF96007DFF5C /* QTVOD2-installer.nsi */,
 				D6887070131FCD7500A696E6 /* runDoxygen.bat */,
-				D63EFECA131D1F32005B6423 /* QTpfuSaveImage.c */,
 				D63EFECB131D1F32005B6423 /* QTpfuSaveImage.h */,
+				D63EFECA131D1F32005B6423 /* QTpfuSaveImage.c */,
+				D634EDDD177227ED005FD5A8 /* SystemTraySDK.h */,
+				D634EDDC177227ED005FD5A8 /* SystemTraySDK.cpp */,
 				D6B6E59C130E767600279904 /* POSIXm2 */,
 				D61C363912A55CB2000B426F /* Mod2 */,
 				D6878987129ACBB7009ACD66 /* gmsvc */,
@@ -660,7 +672,7 @@
 				D6267BE3165802CA008A7887 /* vsscanf.h */,
 				D641371C13055B3C0013B201 /* vsscanf.cpp */,
 				D6EC1D3312EF03E400B53DBC /* AskFileName.c */,
-				D6B9CC5F12A5086E00B99C73 /* QTMovieWinWM.c */,
+				D6B9CC5F12A5086E00B99C73 /* QTMovieWinWM.cpp */,
 			);
 			name = mswin;
 			path = QTils/mswin;

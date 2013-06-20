@@ -234,7 +234,7 @@ QTLSext char *AskSaveFileName(char *title);
 	/*!
 		presents a message window with the specified title and message texts
 	 */
-	QTLSext int PostMessage( const char *title, const char *message );
+	QTLSext int PostMessageBox( const char *title, const char *message );
 #endif
 
 /*!
@@ -457,7 +457,7 @@ while( canContinue ){
 	@endcode
 	This is possible without playback saccades because QuickTime handles that aspect on a separate thread.
  */
-QTLSext unsigned int PumpMessages(int force);
+QTLSext int PumpMessages(int force);
 
 /*!
 	initialise the QuickTime engine
@@ -483,8 +483,9 @@ QTLSext ErrCode LastQTError();
 typedef NativeWindow*	NativeWindowPtr;
 typedef NativeWindowPtr* NativeWindowH;
 
-#ifdef _WINDOWS_
+#if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
 	typedef void (*WSAReadHandler)(unsigned int*, unsigned int, long);
+	typedef int32_t (*SysTrayEventHandler)(NativeWindow w, QTMovieWindowH wih);
 #endif
 
 /*!
@@ -1258,7 +1259,11 @@ typedef struct LibQTilsBase {
 
 	ErrCode (*LastQTError)();
 
-	unsigned int (*PumpMessages)(int force);
+#if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
+	SysTrayEventHandler (*SetSysTrayOpenHandler)( SysTrayEventHandler handler );
+	SysTrayEventHandler (*SetSysTrayAboutHandler)( SysTrayEventHandler handler );
+#endif
+	int (*PumpMessages)(int force);
 	size_t (*QTils_LogMsg)(const char *msg);
 	char *lastSSLogMsg;
 	UInt32 (*MacErrorString) ( ErrCode err, char *errString, int slen,
