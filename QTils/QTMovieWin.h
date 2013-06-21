@@ -124,6 +124,7 @@ int DrainQTMovieWindowPool( QTMovieWindowH WI );
 	QTLSext ErrCode CreateSocketEventObject( unsigned int *s, void **obj, unsigned int mask );
 	QTLSext SysTrayEventHandler SetSysTrayOpenHandler( SysTrayEventHandler handler );
 	QTLSext SysTrayEventHandler SetSysTrayAboutHandler( SysTrayEventHandler handler );
+	QTLSext extern QTils_WinMSGs QTils_WinMSG;
 #endif	
 
 QTLSext void GetMaxBounds(Rect *maxRect);

@@ -83,6 +83,8 @@ static SysTrayEventHandler stOpenHandler = NULL, stAboutHandler = NULL;
 
 CSystemTray *TrayIcon = NULL;
 NativeWindow TrayIconTargetWnd = NULL;
+
+QTils_WinMSGs QTils_WinMSG;
 #define WM_ICON_NOTIFY	WM_APP+10
 
 WSAReadHandler SetSocketAsyncReadHandler( WSAReadHandler handler )
@@ -135,7 +137,7 @@ SysTrayEventHandler SetSysTrayAboutHandler( SysTrayEventHandler handler )
 int PumpMessages(int force)
 { MSG msg;
   BOOL ok;
-  unsigned int n = 0;
+  int n = 0;
 	if( *errbuf && qtLogPtr ){
 		Log( qtLogPtr, errbuf );
 		errbuf[0] = '\0';
@@ -144,9 +146,9 @@ int PumpMessages(int force)
 	if( force ){
 		if( numInputEventObjects ){
 		  DWORD idx;
-			if( (idx = MsgWaitForMultipleObjects( numInputEventObjects, inputEventObjects,
-							  FALSE, INFINITE, QS_POSTMESSAGE)) == WAIT_OBJECT_0 + numInputEventObjects
-			){
+			idx = MsgWaitForMultipleObjects( numInputEventObjects, inputEventObjects,
+							  FALSE, INFINITE, QS_POSTMESSAGE);
+			if( idx == WAIT_OBJECT_0 + numInputEventObjects ){
 				ok = PeekMessage( &msg, NULL, 0, 0, PM_REMOVE );
 			}
 			else if( idx == WAIT_FAILED || idx >= WAIT_ABANDONED_0 ){
@@ -421,7 +423,8 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 						ret = (*stOpenHandler)( hWnd, wi );
 					}
 					else{
-						ret = (LRESULT) PostMessage( NULL, 'OPEN', (WPARAM) wi, 0 );
+						ret = (LRESULT) PostMessage( NULL, QTils_WinMSG.IDM_OPEN_MSG, (WPARAM) wi, 0 );
+//						Log( qtLogPtr, "PostMessage(NULL,IDM_OPEN_MSG=0x%x)=%d", QTils_WinMSG.IDM_OPEN_MSG, ret );
 					}
 					returnRet = TRUE;
 					break;
@@ -430,13 +433,25 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 						ret = (*stAboutHandler)( hWnd, wi );
 					}
 					else{
-						ret = (LRESULT) PostMessage( NULL, 'BOUT', (WPARAM) wi, 0 );
+						ret = (LRESULT) PostMessage( NULL, QTils_WinMSG.IDM_ABOUT_MSG, (WPARAM) wi, 0 );
+//						Log( qtLogPtr, "PostMessage(NULL,IDM_ABOUT_MSG=0x%x)=%d", QTils_WinMSG.IDM_ABOUT_MSG, ret );
 					}
+					returnRet = TRUE;
+					break;
+				case IDM_FRONT:
+					ret = (LRESULT) PostMessage( NULL, QTils_WinMSG.IDM_FRONT_MSG, (WPARAM) wi, 0 );
+//					Log( qtLogPtr, "PostMessage(NULL,IDM_FRONT_MSG=0x%x)=%d", QTils_WinMSG.IDM_FRONT_MSG, ret );
 					returnRet = TRUE;
 					break;
 				case IDM_EXIT:
 					PostQuitMessage(0);
 					break;
+			}
+			if( returnRet && !ret ){
+				FormatMessage( FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_FROM_SYSTEM,
+					NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), (LPSTR) errbuf, sizeof(errbuf), NULL
+				);
+				Log( qtLogPtr, "PostMessage raised error '%s'", errbuf );
 			}
 			break;
 		}
@@ -528,6 +543,7 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 			if( TrayIconTargetWnd == theView ){
 				TrayIcon->SetTargetWnd(NULL);
 				TrayIconTargetWnd = NULL;
+				TrayIcon->HideIcon();
 			}
 			DestroyWindow( theView );
 		}
@@ -635,8 +651,10 @@ QTMovieWindowH InitQTMovieWindowH( short width, short height )
 		);
 		if( wi->theView ){
 			if( TrayIcon && !TrayIconTargetWnd ){
+				TrayIcon->ShowIcon();
 				TrayIcon->SetTargetWnd(wi->theView);
 				TrayIconTargetWnd = wi->theView;
+				TrayIcon->ShowIcon();
 			}
 			PumpMessages(FALSE);
 			register_QTMovieWindowH( wih, wi->theView );
@@ -679,6 +697,7 @@ static QTMovieWindowH _DisplayMovieInQTMovieWindowH_( Movie theMovie, QTMovieWin
 			);
 			if( wi->theView ){
 				if( TrayIcon && !TrayIconTargetWnd ){
+					TrayIcon->ShowIcon();
 					TrayIcon->SetTargetWnd(wi->theView);
 					TrayIconTargetWnd = wi->theView;
 				}
@@ -1370,6 +1389,9 @@ short InitQTMovieWindows( void *hInst )
 
 	init_QTMWlists();
 	init_HRTime();
+	QTils_WinMSG.IDM_ABOUT_MSG = RegisterWindowMessage("IDM_ABOUT"); 
+	QTils_WinMSG.IDM_OPEN_MSG = RegisterWindowMessage("IDM_OPEN"); 
+	QTils_WinMSG.IDM_FRONT_MSG = RegisterWindowMessage("IDM_FRONT"); 
 
 	if( ghInst ){
 		return TRUE;
@@ -1470,8 +1492,11 @@ short InitQTMovieWindows( void *hInst )
 	else{
 		if( !TrayIcon ){
 			TrayIcon = new CSystemTray( ghInst, (HWND) NULL, (UINT) WM_ICON_NOTIFY, ProgrammeName,
-							::LoadIcon( ghInst, (LPCTSTR)IDI_SYSTRICON ), IDR_SYSTRAY_MENU );
+							::LoadIcon( ghInst, (LPCTSTR)IDI_SYSTRICON ), IDR_SYSTRAY_MENU, TRUE );
 			TrayIconTargetWnd = NULL;
+			if( TrayIcon ){
+				TrayIcon->HideIcon();
+			}
 		}
 	}
 

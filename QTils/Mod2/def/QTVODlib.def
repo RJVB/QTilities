@@ -21,6 +21,14 @@ FROM QTVODcomm IMPORT
 	 *)
 	VODDescription, URLString;
 
+%IF WIN32 %THEN
+	FROM WIN32 IMPORT
+		HWND;
+%ELSE
+	FROM Windows IMPORT
+		HWND;
+%END
+
 (* test
 FROM QTilsM2 IMPORT
 	XMLElement, XML_RECORD, UInt32;
@@ -65,6 +73,8 @@ PROCEDURE timeCallBack( cbRegister : QTCallBack; params : Int32 ) [CDECL];
 
 PROCEDURE GetXMLParamString( theElement : XMLElement; idx : CARDINAL; elm : UInt32; designTable : ARRAY OF XML_RECORD;
 	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
+PROCEDURE showMetaData();
+PROCEDURE SetWindowLayer( pos : HWND; ref : QTMovieWindowH );
 
 (* test
 PROCEDURE FrequencyFromXMLElementAttributes( theElement : XMLElement; elm : UInt32;

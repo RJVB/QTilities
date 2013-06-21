@@ -45,6 +45,12 @@ typedef struct QTils_Allocators {
 	void (*free)( void **mem );
 } QTils_Allocators;
 
+#if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
+	typedef struct QTils_WinMSGs {
+		int IDM_ABOUT_MSG, IDM_OPEN_MSG, IDM_FRONT_MSG;
+	} QTils_WinMSGs;
+#endif
+
 QTLSext QTils_Allocators *init_QTils_Allocator( void* (*mallocPtr)(size_t), void* (*callocPtr)(size_t,size_t),
 							    void* (*reallocPtr)(void*, size_t), void (*free)(void **) );
 QTLSext extern QTils_Allocators *QTils_Allocator;
@@ -485,7 +491,7 @@ typedef NativeWindowPtr* NativeWindowH;
 
 #if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
 	typedef void (*WSAReadHandler)(unsigned int*, unsigned int, long);
-	typedef int32_t (*SysTrayEventHandler)(NativeWindow w, QTMovieWindowH wih);
+	typedef int (*SysTrayEventHandler)(NativeWindow w, QTMovieWindowH wih);
 #endif
 
 /*!
@@ -1270,6 +1276,9 @@ typedef struct LibQTilsBase {
 						 char *errComment, int clen );
 	void (*free)( char **mem );
 	QTils_Allocators *QTils_Allocator;
+#if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
+	QTils_WinMSGs *QTils_WinMSG;
+#endif
 
 	// NB!! Modula-2 defines several additional members in its interface that are not initialised in C!
 } LibQTilsBase;

@@ -1,7 +1,7 @@
 MODULE QTVODm2;
 
 <*/resource:QTVODm2.res*>
-<*/VALIDVERSION:QTVOD_TESTING,USE_TIMEDCALLBACK*>
+<*/VALIDVERSION:QTVOD_TESTING,USE_TIMEDCALLBACK,INTERNAL_PUMP*>
 
 %IF StonyBrook %AND %NOT(LINUX) %THEN
 	FROM SYSTEM IMPORT
@@ -47,6 +47,9 @@ FROM WINX IMPORT
 
 FROM WINUSER IMPORT
 	SetWindowPos, HWND_BOTTOM, HWND_TOP, SWP_NOMOVE, SWP_NOSIZE, QS_POSTMESSAGE,
+%IF INTERNAL_PUMP %THEN
+	MSG, PeekMessage, GetMessage, TranslateMessage, DispatchMessage, PM_REMOVE, WM_QUIT, WM_USER,
+%END
 	MsgWaitForMultipleObjects;
 
 <*/VALIDVERSION:CHAUSSETTE2*>
@@ -507,15 +510,87 @@ END PumpNetMessages;
 
 PROCEDURE PumpMessages(force : Int32) : Int32;
 VAR
-	n : UInt32;
+	n : Int32;
 	idx : DWORD;
 	errStr : Str255;
+	t : Real64;
+
+%IF INTERNAL_PUMP %THEN
+	PROCEDURE PumpMsgs(force : Int32) : Int32;
+	VAR
+		ok : BOOLEAN;
+		msg : MSG;
+
+		PROCEDURE specialMsgCheck();
+		BEGIN
+			CASE msg.message OF
+				WM_QUIT :
+					QTils.LogMsg( "WM_QUIT a été reçu - on arrête" );
+					(* on retourne -1 pour rester compatible avec ce que ferait QTils.PumpMessages! *)
+					n := -1;
+					quitRequest := TRUE;
+				ELSE IF msg.message >= WM_USER
+						THEN
+							(* on vérifie si on a reçu un message correspondant au menu dans le "systray": *)
+							IF msg.message = QTils.QTils_WinMSG^.IDM_ABOUT
+								THEN
+									QTils.LogMsg( "IDM_ABOUT a été reçu" );
+									showMetaData();
+								ELSIF msg.message = QTils.QTils_WinMSG^.IDM_FRONT
+									THEN
+										QTils.LogMsg( "IDM_FRONT a été reçu" );
+										SetWindowLayer( HWND_TOP, NULL_QTMovieWindowH );
+								ELSIF msg.message = QTils.QTils_WinMSG^.IDM_OPEN
+									THEN
+										QTils.LogMsg( "IDM_OPEN a été reçu" );
+										CloseVideo(TRUE);
+										Assign("", movie);
+										openFileRequest := TRUE;
+							END;
+					END;
+			END;
+		END specialMsgCheck;
+
+	BEGIN
+		(* ceci est l'essentiel de QTils.PumpMessages() *)
+		IF force <> 0
+			THEN
+				ok := GetMessage( msg, NULL_HANDLE, 0, 0 );
+			ELSE
+				ok := PeekMessage( msg, NULL_HANDLE, 0, 0, PM_REMOVE );
+		END;
+		WHILE ok DO
+			specialMsgCheck();
+			IF n >= 0
+				THEN
+					TranslateMessage(msg);
+					DispatchMessage(msg);
+					INC(n);
+					ok := PeekMessage( msg, NULL_HANDLE, 0, 0, PM_REMOVE );
+				ELSE
+					ok := FALSE;
+			END;
+		END;
+		specialMsgCheck();
+		RETURN n;
+	END PumpMsgs;
+%ELSE (* NOT INTERNAL_PUMP *)
+	PROCEDURE PumpMsgs(force : Int32) : Int32;
+	BEGIN
+		(* delegate to the default message pump from the QTils dll *)
+		RETURN QTils.PumpMessages(force);
+	END PumpMsgs;
+%END (* INTERNAL_PUMP *)
+
 BEGIN
 	n := 0;
 	IF socketEventObject = NULL_HANDLE
 		THEN
-			(* delegate to the default message pump from the QTils dll *)
-			n := QTils.PumpMessages(force);
+			IF sServeur <> sock_nulle
+				THEN
+					PumpNetMessages(250);
+			END;
+			n := PumpMsgs(force); (* QTils.PumpMessages(force); *)
 		ELSE
 			(* normalement on attendrait sur INFINITE millisecs, mais QuickTime n'aime pas ça *)
 			idx := MsgWaitForMultipleObjects( 1, sockEvents, FALSE, 250, QS_POSTMESSAGE );
@@ -523,9 +598,9 @@ BEGIN
 				THEN
 					(*
 						soit on a reçu un message, soit il est temps de faire un PeekMessage explicite
-						pour plaire à QuickTime. On utilise la pompe par défault
+						pour plaire à QuickTime.
 					*)
-					n := QTils.PumpMessages(0);
+					n := PumpMsgs(0);
 				ELSIF (idx = WAIT_FAILED) OR (idx >= WAIT_ABANDONED_0)
 					THEN
 						MSWinErrorString( GetLastError(), errStr );
@@ -804,11 +879,14 @@ BEGIN
 				THEN
 					SetTimes( t, qtwmH[fwWin], 0 );
 			END;
-		PumpNetMessagesOnce(0);
-		IF QTils.PumpMessages(0) < 0
-			THEN
-				quitRequest := TRUE;
-		END;
+(*
+			PumpNetMessagesOnce(0);
+			IF QTils.PumpMessages(0) < 0
+				THEN
+					quitRequest := TRUE;
+			END;
+ *)
+			PumpMessages(0);
 	ELSE
 		(* probably reached end of movie, but we stop benchmarking on any other error too *)
 		BenchmarkPlaybackRate;
@@ -967,9 +1045,12 @@ BEGIN
 										QTils.LogMsgEx( 'QTVODm2::movieIdle installée pour "%s"', qtwmH[fwWin]^^.theURL^ );
 								END;
 						END;
+						(*
 						IF socketEventObject <> NULL_HANDLE
 							THEN
+						*)
 								n := n + PumpMessages(1);
+						(*
 							ELSE
 								PumpNetMessages(250);
 								nn := QTils.PumpMessages(0);
@@ -983,7 +1064,9 @@ BEGIN
 								Sleep(250);
 %END
 						END;
+						*)
 					ELSE
+						(*
 						nn := QTils.PumpMessages(1);
 						IF nn < 0
 							THEN
@@ -991,6 +1074,8 @@ BEGIN
 							ELSE
 								n := n + nn;
 						END;
+						*)
+						n := n + PumpMessages(1);
 				END;
 				l := l + 1;
 				IF ( closeRequest )

@@ -18,7 +18,9 @@ SOURCES += \
     ../CritSectEx/timing.c \
     ../../QTpfuSaveImage.c \
     ../../QTMovieSink_mod2.c \
-    ../../QTMovieSink.c
+    ../../QTMovieSink.c \
+    ../mswin/QTMovieWinWM.cpp \
+    ../mswin/SystemTraySDK.cpp
 
 OTHER_FILES += \
     ../Mod2/def/QTVODcomm.def \
@@ -53,5 +55,6 @@ HEADERS += \
     ../mswin/resource.h \
     ../../QTMovieSinkQTStuff.h \
     ../../QTMovieSink.h \
-    ../../QTpfuSaveImage.h
+    ../../QTpfuSaveImage.h \
+    ../mswin/SystemTraySDK.h
 

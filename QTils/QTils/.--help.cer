@@ -1,0 +1,8 @@
+# cmake called as:
+# /home/MSIS/script/cmake --help
+doing make  -kf Makefile CLIB=/home/MSIS/work/lib/ DCLIB=/home/MSIS/work/dlib/ GLLIBS=-laux -lGL -lGLU
+make: Makefile: No such file or directory
+make: *** No rule to make target `Makefile'.
+make: Failed to remake makefile `Makefile'.
+make: *** No targets specified and no makefile found.  Stop.
+/home/MSIS/script/cmake: line 294: cxsetenv: command not found

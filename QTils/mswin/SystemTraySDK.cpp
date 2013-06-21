@@ -341,7 +341,7 @@ BOOL CSystemTray::ShowIcon()
         m_tnd.uFlags = NIF_STATE;
         m_tnd.dwState = 0;
         m_tnd.dwStateMask = NIS_HIDDEN;
-        Shell_NotifyIcon ( NIM_MODIFY, &m_tnd );
+        m_bHidden = !Shell_NotifyIcon ( NIM_MODIFY, &m_tnd );
     }
     else
 #endif

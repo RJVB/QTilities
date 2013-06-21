@@ -4002,6 +4002,9 @@ size_t initDMBaseQTils( LibQTilsBase *dmbase )
 			__init_QTils_Allocator__( NULL, malloc, calloc, realloc, __QTils_free__ );
 		}
 		dmbase->QTils_Allocator = QTils_Allocator;
+#if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
+		dmbase->QTils_WinMSG = &QTils_WinMSG;
+#endif
 
 		dmbase->OpenQT = OpenQT;
 		dmbase->CloseQT = CloseQT;
