@@ -226,7 +226,7 @@
 		D629600A121BE82D00F66BA8 /* timing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = timing.c; sourceTree = "<group>"; };
 		D629600B121BE82D00F66BA8 /* timing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 2; path = timing.h; sourceTree = "<group>"; };
 		D6296141121BEC0200F66BA8 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
-		D634EDDC177227ED005FD5A8 /* SystemTraySDK.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SystemTraySDK.cpp; sourceTree = "<group>"; };
+		D634EDDC177227ED005FD5A8 /* SystemTraySDK.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SystemTraySDK.cpp; sourceTree = "<group>"; tabWidth = 4; };
 		D634EDDD177227ED005FD5A8 /* SystemTraySDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemTraySDK.h; sourceTree = "<group>"; };
 		D634EDDE17725153005FD5A8 /* resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resource.h; sourceTree = "<group>"; };
 		D634EDE1177251C5005FD5A8 /* QTils32x32.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = QTils32x32.ico; sourceTree = "<group>"; };

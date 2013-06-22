@@ -87,6 +87,19 @@ NativeWindow TrayIconTargetWnd = NULL;
 QTils_WinMSGs QTils_WinMSG;
 #define WM_ICON_NOTIFY	WM_APP+10
 
+static inline CSystemTray *CreateTrayIcon()
+{
+	if( !TrayIcon ){
+		TrayIcon = new CSystemTray( ghInst, (HWND) NULL, (UINT) WM_ICON_NOTIFY, ProgrammeName,
+							  ::LoadIcon( ghInst, (LPCTSTR)IDI_SYSTRICON ), IDR_SYSTRAY_MENU, FALSE );
+		TrayIconTargetWnd = NULL;
+		if( TrayIcon ){
+			TrayIcon->HideIcon();
+		}
+	}
+	return TrayIcon;
+}
+
 WSAReadHandler SetSocketAsyncReadHandler( WSAReadHandler handler )
 { WSAReadHandler prev = SocketReadHandler;
 	SocketReadHandler = handler;
@@ -650,7 +663,7 @@ QTMovieWindowH InitQTMovieWindowH( short width, short height )
 				0, 0, ghInst, NULL
 		);
 		if( wi->theView ){
-			if( TrayIcon && !TrayIconTargetWnd ){
+			if( CreateTrayIcon() && !TrayIconTargetWnd ){
 				TrayIcon->ShowIcon();
 				TrayIcon->SetTargetWnd(wi->theView);
 				TrayIconTargetWnd = wi->theView;
@@ -696,7 +709,7 @@ static QTMovieWindowH _DisplayMovieInQTMovieWindowH_( Movie theMovie, QTMovieWin
 					0, 0, ghInst, NULL
 			);
 			if( wi->theView ){
-				if( TrayIcon && !TrayIconTargetWnd ){
+				if( CreateTrayIcon() && !TrayIconTargetWnd ){
 					TrayIcon->ShowIcon();
 					TrayIcon->SetTargetWnd(wi->theView);
 					TrayIconTargetWnd = wi->theView;
@@ -1489,16 +1502,16 @@ short InitQTMovieWindows( void *hInst )
 			Log( qtLogPtr, "RegisterClass error %d:\"%s\" in InitQTMovieWindows()\n", GetLastError(), errbuf );
 		}
 	}
-	else{
-		if( !TrayIcon ){
-			TrayIcon = new CSystemTray( ghInst, (HWND) NULL, (UINT) WM_ICON_NOTIFY, ProgrammeName,
-							::LoadIcon( ghInst, (LPCTSTR)IDI_SYSTRICON ), IDR_SYSTRAY_MENU, TRUE );
-			TrayIconTargetWnd = NULL;
-			if( TrayIcon ){
-				TrayIcon->HideIcon();
-			}
-		}
-	}
+//	else{
+//		if( !TrayIcon ){
+//			TrayIcon = new CSystemTray( ghInst, (HWND) NULL, (UINT) WM_ICON_NOTIFY, ProgrammeName,
+//							::LoadIcon( ghInst, (LPCTSTR)IDI_SYSTRICON ), IDR_SYSTRAY_MENU, FALSE );
+//			TrayIconTargetWnd = NULL;
+//			if( TrayIcon ){
+//				TrayIcon->HideIcon();
+//			}
+//		}
+//	}
 
 	QTWMcounter = -1;
 	if( iconXBits ){

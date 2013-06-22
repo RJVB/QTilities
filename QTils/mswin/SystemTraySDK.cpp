@@ -256,8 +256,9 @@ CSystemTray::~CSystemTray()
 {
     RemoveIcon();
     m_IconList.clear();
-    if (m_hWnd)
+    if (m_hWnd){
         ::DestroyWindow(m_hWnd);
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -358,9 +359,9 @@ BOOL CSystemTray::SetIcon(HICON hIcon)
     m_tnd.uFlags = NIF_ICON;
     m_tnd.hIcon = hIcon;
 
-    if (m_bHidden)
-        return TRUE;
-    else
+//    if (m_bHidden)
+//        return TRUE;
+//    else
         return Shell_NotifyIcon(NIM_MODIFY, &m_tnd);
 }
 

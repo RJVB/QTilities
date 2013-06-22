@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "QTVODm2"
-!define PRODUCT_VERSION "1.3RC3"
+!define PRODUCT_VERSION "1.4RC4"
 !define PRODUCT_PUBLISHER "IFSTTAR"
 !define PRODUCT_WEB_SITE "http://www.inrets.fr"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\QTVODm2.exe"
