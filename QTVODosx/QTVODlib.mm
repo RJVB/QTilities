@@ -17,6 +17,7 @@
 #include "QTVODcomm.h"
 #include "QTVODlib.h"
 #include "QTilities.h"
+#include "timing.h"
 
 extern "C" int QTils_Log(const char *fileName, int lineNr, NSString *format, ... );
 extern "C" BOOL QTils_LogSetActive(BOOL);
@@ -25,6 +26,11 @@ char *assocDataFileName = NULL;
 SOCK sServer = NULLSOCKET;
 NSInputStream *nsReadServer = NULL;
 NSOutputStream *nsWriteServer = NULL;
+
+#ifdef COMMTIMING
+	extern double cumSendRcvDelay;
+	extern size_t sendRcvDelays;
+#endif
 
 static void NSnoLog( NSString *format, ... )
 {
@@ -42,7 +48,8 @@ static void doNSLog( NSString *format, ... )
 }
 
 #ifndef DEBUG
-#	define NSLog	NSnoLog
+	extern int QTils_Log(const char *fileName, int lineNr, NSString *format, ... );
+#	define NSLog(f,...)	QTils_Log(__FILE__, __LINE__, f, ##__VA_ARGS__)
 #endif
 
 inline QTVOD *getActiveQTVOD()
@@ -110,17 +117,24 @@ inline QTVOD *getActiveQTVOD()
 							@"Stream closed remotely or too many (%d) errors (last '%@'; status=%d): closing channel",
 							ReceiveErrors, error, status );
 					commsCleanUp();
-					PostMessage( "QTVOD", lastSSLogMsg );
+					PostMessageBox( "QTVOD", lastSSLogMsg );
 				}
 			}
 			if( msg ){
 				if( msg->size != sizeof(NetMessage) || msg->protocol != NETMESSAGE_PROTOCOL ){
-					QTils_LogMsgEx( "%s: ignoring NetMessage with size %hu!=%hu and/or protocol %hu!=%hu",
+					NSLog( @"%s: ignoring NetMessage with size %hu!=%hu and/or protocol %hu!=%hu",
 								__FUNCTION__,
 								msg->size, sizeof(NetMessage), msg->protocol, NETMESSAGE_PROTOCOL );
 				}
 				else{
 //					NetMessageToLogMsg( __FUNCTION__, NULL, msg );
+#ifdef COMMTIMING
+					msg->recdTime = HRTime_Time();
+					if( msg->sentTime >= 0.0 ){
+						cumSendRcvDelay += msg->recdTime - msg->sentTime;
+						sendRcvDelays += 1;
+					}
+#endif
 					ReplyNetMsg(msg);
 				}
 			}
@@ -141,13 +155,13 @@ void SendErrorHandler( size_t errors )
 		[nsWriteServer close];
 		[nsWriteServer release];
 		nsWriteServer = NULL;
-		PostMessage( "QTVOD", lastSSLogMsg );
+		PostMessageBox( "QTVOD", lastSSLogMsg );
 	}
 }
 
 #ifdef COMMTIMING
-#	define MSGINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=qtvod##c , msg->sentTime=-1
-#	define REPLYINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=c , msg->sentTime=-1
+#	define MSGINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=qtvod_##c , msg->sentTime=msg->recdTime=-1
+#	define REPLYINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=c , msg->sentTime=msg->recdTime=-1
 #else
 #	define MSGINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=qtvod_##c
 #	define REPLYINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=c
@@ -162,6 +176,7 @@ BOOL SendMessageToNet( NSOutputStream *ss, NetMessage *msg, const char *caller )
 			msg->protocol = NETMESSAGE_PROTOCOL;
 #ifdef COMMTIMING
 			msg->sentTime = HRTime_Time();
+			msg->recdTime = -1;
 #endif
 			ret = ([ss write:(const uint8_t*)msg maxLength:(NSUInteger)sizeof(NetMessage)] == sizeof(NetMessage));
 			if( ret ){
@@ -293,7 +308,7 @@ void ParseArgs( int argc, char *argv[] )
 		  }
 		  else{
 			  argError = YES;
-			  PostMessage( pattern, "Argument requires a value (arg=value)" );
+			  PostMessageBox( pattern, "Argument requires a value (arg=value)" );
 		  }
 	  }
 	  return ret;
@@ -326,71 +341,71 @@ void ParseArgs( int argc, char *argv[] )
 		}
 		else if( strcmp( argv[arg], "-attendVODDescription" ) == 0 ){
 			if( sServer == NULLSOCKET ){
-				PostMessage( "QTVOD", "No server connected to point us to a video to open!" );
+				PostMessageBox( "QTVOD", "No server connected to point us to a video to open!" );
 			}
 			return;
 		}
 		else if( CheckOptArg( arg, "-freq", &valueStr ) ){
 			sscanf( valueStr, "%lf", &globalVD.preferences.frequency );
-			QTils_LogMsgEx( "-freq=%s -> %g", valueStr, globalVD.preferences.frequency );
+			NSLog( @"-freq=%s -> %g", valueStr, globalVD.preferences.frequency );
 		}
 		else if( CheckOptArg( arg, "-timeZone", &valueStr ) ){
 			sscanf( valueStr, "%lf", &globalVD.preferences.timeZone );
-			QTils_LogMsgEx( "-timeZone=%s -> %g", valueStr, globalVD.preferences.timeZone );
+			NSLog( @"-timeZone=%s -> %g", valueStr, globalVD.preferences.timeZone );
 		}
 		else if( CheckOptArg( arg, "-DST", &valueStr ) ){
 			globalVD.preferences.DST = (strcasecmp( valueStr, "true" ) == 0);
-			QTils_LogMsgEx( "-DST=%s -> %d", valueStr, globalVD.preferences.DST );
+			NSLog( @"-DST=%s -> %d", valueStr, globalVD.preferences.DST );
 		}
 		else if( CheckOptArg( arg, "-hFlip", &valueStr ) ){
 			globalVD.preferences.flipLeftRight = (strcasecmp( valueStr, "true" ) == 0);
-			QTils_LogMsgEx( "-hFlip=%s -> %d", valueStr, globalVD.preferences.flipLeftRight );
+			NSLog( @"-hFlip=%s -> %d", valueStr, globalVD.preferences.flipLeftRight );
 		}
 		else if( CheckOptArg( arg, "-VMGI", &valueStr ) ){
 			globalVD.preferences.useVMGI = (strcasecmp( valueStr, "true" ) == 0);
-			QTils_LogMsgEx( "-VMGI=%s -> %d", valueStr, globalVD.preferences.useVMGI );
+			NSLog( @"-VMGI=%s -> %d", valueStr, globalVD.preferences.useVMGI );
 		}
 		else if( CheckOptArg( arg, "-DST", &valueStr ) ){
 			globalVD.preferences.DST = (strcasecmp( valueStr, "true" ) == 0);
-			QTils_LogMsgEx( "-DST=%s -> %d", valueStr, globalVD.preferences.DST );
+			NSLog( @"-DST=%s -> %d", valueStr, globalVD.preferences.DST );
 		}
 		else if( CheckOptArg( arg, "-log", &valueStr ) ){
 			globalVD.preferences.log = (strcasecmp( valueStr, "true" ) == 0);
-			QTils_LogMsgEx( "-log=%s -> %d", valueStr, globalVD.preferences.log );
+			NSLog( @"-log=%s -> %d", valueStr, globalVD.preferences.log );
 		}
 		else if( CheckOptArg( arg, "-scale", &valueStr ) ){
 			sscanf( valueStr, "%lf", &globalVD.preferences.scale );
-			QTils_LogMsgEx( "-scale=%s -> %g", valueStr, globalVD.preferences.scale );
+			NSLog( @"-scale=%s -> %g", valueStr, globalVD.preferences.scale );
 		}
 		else if( CheckOptArg( arg, "-chForward", &valueStr ) ){
 			globalVD.preferences.channels.forward = atoi(valueStr);
-			QTils_LogMsgEx( "-chForward=%s -> %d", valueStr, globalVD.preferences.channels.forward );
+			NSLog( @"-chForward=%s -> %d", valueStr, globalVD.preferences.channels.forward );
 		}
 		else if( CheckOptArg( arg, "-chPilot", &valueStr ) ){
 			globalVD.preferences.channels.pilot = atoi(valueStr);
-			QTils_LogMsgEx( "-chPilot=%s -> %d", valueStr, globalVD.preferences.channels.pilot );
+			NSLog( @"-chPilot=%s -> %d", valueStr, globalVD.preferences.channels.pilot );
 		}
 		else if( CheckOptArg( arg, "-chLeft", &valueStr ) ){
 			globalVD.preferences.channels.left = atoi(valueStr);
-			QTils_LogMsgEx( "-chLeft=%s -> %d", valueStr, globalVD.preferences.channels.left );
+			NSLog( @"-chLeft=%s -> %d", valueStr, globalVD.preferences.channels.left );
 		}
 		else if( CheckOptArg( arg, "-chRight", &valueStr ) ){
 			globalVD.preferences.channels.right = atoi(valueStr);
-			QTils_LogMsgEx( "-chRight=%s -> %d", valueStr, globalVD.preferences.channels.right );
+			NSLog( @"-chRight=%s -> %d", valueStr, globalVD.preferences.channels.right );
 		}
 		else if( CheckOptArg( arg, "-fcodec", &valueStr ) ){
 			QTils_free(globalVD.preferences.codec);
 			globalVD.preferences.codec = QTils_strdup(valueStr);
-			QTils_LogMsgEx( "-fcodec=%s -> %s", valueStr, globalVD.preferences.codec );
+			NSLog( @"-fcodec=%s -> %s", valueStr, globalVD.preferences.codec );
 		}
 		else if( CheckOptArg( arg, "-fbitrate", &valueStr ) ){
 			QTils_free(globalVD.preferences.bitRate);
 			globalVD.preferences.bitRate = QTils_strdup(valueStr);
-			QTils_LogMsgEx( "-fbitrate=%s -> %s", valueStr, globalVD.preferences.bitRate );
+			NSLog( @"-fbitrate=%s -> %s", valueStr, globalVD.preferences.bitRate );
 		}
 		else if( CheckOptArg( arg, "-fsplit", &valueStr ) ){
 			globalVD.preferences.splitQuad = (strcasecmp( valueStr, "true" ) == 0);
-			QTils_LogMsgEx( "-fsplit=%s -> %d", valueStr, globalVD.preferences.splitQuad );
+			NSLog( @"-fsplit=%s -> %d", valueStr, globalVD.preferences.splitQuad );
 		}
 		else if( !argError ){
 			NSLog( @"We'll open %s", argv[arg] );
@@ -406,7 +421,7 @@ ErrCode ReplyNetMsg(NetMessage *msg)
   NetMessage Netreply;
   QTVOD *qv;
 
-	QTils_LogMsgEx( "Received NetMessage '%s'", NetMessageToString(msg) );
+	NSLog( @"Received NetMessage '%s'", NetMessageToString(msg) );
 
 	if( msg->flags.category != qtvod_Command ){
 		return noErr;
@@ -452,6 +467,7 @@ ErrCode ReplyNetMsg(NetMessage *msg)
 					VODDescriptionFromStatic( &globalVD.preferences, &msg->data.description );
 					globalVD.changed = YES;
 					if( [qv readFromURL:absoluteURL ofType:@"" error:nil] ){
+						[qv retain];
 						Netreply.data.description.frequency = msg->data.description.frequency = [qv frameRate:NO];
 					}
 					else{
@@ -465,6 +481,7 @@ ErrCode ReplyNetMsg(NetMessage *msg)
 				  NSError *outError = NULL;
 					qv = [QTVOD createWithAbsoluteURL:absoluteURL ofType:@"" forDocument:nil error:&outError];
 					if( qv && !outError ){
+						[qv retain];
 						Netreply.data.description.frequency = msg->data.description.frequency = [qv frameRate:NO];
 					}
 					else if( outError ){
@@ -477,7 +494,7 @@ ErrCode ReplyNetMsg(NetMessage *msg)
 				}
 			}
 			else{
-				QTils_LogMsgEx( "Could not create NSURL from URN='%s'", msg->data.URN );
+				NSLog( @"Could not create NSURL from URN='%s'", msg->data.URN );
 				err = fnfErr;
 				SendNetErrorNotification( nsWriteServer /*sServer*/, msg->data.URN, err );
 				return err;

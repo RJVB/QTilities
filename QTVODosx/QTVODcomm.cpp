@@ -30,6 +30,11 @@ static CritSectEx *ReceiveMutex = NULL;
 size_t SendErrors = 0, ReceiveErrors = 0;
 CommErrorHandler HandleSendErrors = NULL, HandleReceiveErrors = NULL;
 
+#ifdef COMMTIMING
+	double cumSendRcvDelay = 0.0;
+	size_t sendRcvDelays = 0;
+#endif
+
 VODDescription *VODDescriptionFromStatic( VODDescription *target, StaticVODDescription *descr )
 {
 	if( descr ){
@@ -106,6 +111,13 @@ void CloseCommClient( SOCK *clnt )
 		CloseClient(clnt);
 		delete SendMutex; SendMutex = NULL;
 		delete ReceiveMutex; ReceiveMutex = NULL;
+#ifdef COMMTIMING
+		if( sendRcvDelays > 0 ){
+			QTils_LogMsgEx( "Average communications delay over %lu messages: %gs", sendRcvDelays, cumSendRcvDelay/sendRcvDelays );
+			sendRcvDelays = 0;
+			cumSendRcvDelay = 0.0;
+		}
+#endif
 	}
 }
 
@@ -146,6 +158,13 @@ void CloseCommServer( SOCK *srv, SOCK *clnt )
 	CloseServer(srv);
 	delete SendMutex; SendMutex = NULL;
 	delete ReceiveMutex; ReceiveMutex = NULL;
+#ifdef COMMTIMING
+	if( sendRcvDelays > 0 ){
+		QTils_LogMsgEx( "Average communications delay over %lu messages: %gs", sendRcvDelays, cumSendRcvDelay/sendRcvDelays );
+		sendRcvDelays = 0;
+		cumSendRcvDelay = 0.0;
+	}
+#endif
 }
 
 BOOL SendMessageToNet( SOCK ss, NetMessage *msg, int timeOutMs, BOOL block, const char *caller )
@@ -157,6 +176,7 @@ BOOL SendMessageToNet( SOCK ss, NetMessage *msg, int timeOutMs, BOOL block, cons
 		msg->protocol = NETMESSAGE_PROTOCOL;
 #ifdef COMMTIMING
 		msg->sentTime = HRTime_Time();
+		msg->recdTime = -1;
 #endif
 		ret = BasicSendNetMessage( ss, msg, sizeof(NetMessage), timeOutMs, block );
 		if( ret ){
@@ -198,6 +218,10 @@ BOOL ReceiveMessageFromNet( SOCK ss, NetMessage *msg, int timeOutMs, BOOL block,
 			}
 #ifdef COMMTIMING
 			msg->recdTime = HRTime_Time();
+			if( msg->sentTime >= 0.0 ){
+				cumSendRcvDelay += msg->recdTime - msg->sentTime;
+				sendRcvDelays += 1;
+			}
 #endif
 		}
 		else{
@@ -309,7 +333,7 @@ char *NetMessageToString(NetMessage *msg)
 	if( msg->sentTime >= 0 && msg->recdTime >= 0 ){
 	  size_t len = strlen(str);
 		snprintf( &str[len], sizeof(str) - len, " [S@%gs R@%gs dt=%gs]",
-			    msg->sentTime, msg->recdTime, msg->recdTime - msg->sentTime )
+			    msg->sentTime, msg->recdTime, msg->recdTime - msg->sentTime );
 	}
 #endif
 	return str;
@@ -423,7 +447,7 @@ void NetMessageToLogMsg( const char *title, const char *caption, NetMessage *msg
 #pragma mark Message construction functions
 
 #ifdef COMMTIMING
-#	define MSGINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=qtvod##c , msg->sentTime=-1
+#	define MSGINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=qtvod_##c , msg->sentTime=msg->recdTime=-1
 #else
 #	define MSGINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=qtvod_##c
 #endif
@@ -534,7 +558,7 @@ void msgGetLastInterval(NetMessage *msg)
 #pragma mark Reply message construction functions
 
 #ifdef COMMTIMING
-#	define REPLYINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=c , msg->sentTime=-1
+#	define REPLYINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=c , msg->sentTime=msg->recdTime=-1
 #else
 #	define REPLYINIT(msg,t,c)	msg->flags.type=qtvod_##t , msg->flags.category=c
 #endif

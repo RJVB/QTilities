@@ -3975,7 +3975,7 @@ ErrCode testing( Movie theMovie, long trackNr )
 
 #ifndef QTMOVIESINK
 
-#include "QTMovieSink.h"
+#include "../QTMovieSink.h"
 
 /*!
 	a local free() function. This seems to be necessary because apparently under Win7

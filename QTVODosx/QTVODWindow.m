@@ -2306,6 +2306,10 @@ static unsigned int fullScreenViews= 0;
 		NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), nswin );
 	}
 	if( (qv = [self getQTVOD]) ){
+		if( [qv cbRegister] ){
+			DisposeCallBackRegister([qv cbRegister]);
+			[qv setCbRegister:NULL];
+		}
 		[self setQTVOD:nil];
 		if( qv.sysOwned == self || qv.sysOwned == nil ){
 			// don't let QTVOD refer to us anymore:
@@ -2554,7 +2558,7 @@ static pascal Boolean QTActionCallBack( MovieController mc, short action, void* 
 				case 'L':{
 				 extern char lastSSLogMsg[];
 					if( lastSSLogMsg[0] ){
-						PostMessage( "Last Log message", lastSSLogMsg );
+						PostMessageBox( "Last Log message", lastSSLogMsg );
 					}
 					break;
 				}

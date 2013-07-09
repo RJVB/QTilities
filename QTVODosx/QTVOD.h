@@ -31,12 +31,14 @@ typedef struct TimeInterval {
 } TimeInterval;
 
 #define WINLIST(idx)	((winlist[(idx)])?(*winlist[(idx)]):NULL)
-#define QTMWH(idx)		((WINLIST(idx))?((*winlist[(idx)])->qtmwH):NULL)
+//#define QTMWH(idx)		((WINLIST(idx))?((*winlist[(idx)])->qtmwH):NULL)
+#define QTMWH(idx)		((WINLIST(idx))?[(*winlist[(idx)])qtmwH]:NULL)
 #define QTVDOC(wih)		((wih && (*wih) && (*wih)->user_data)?((QTVOD*)(*wih)->user_data):NULL)
 
 typedef struct CurrentTimeSubscription {
 	double sendInterval, lastSentTime, lastMovieTime, lastForcedMovieTime;
 	BOOL absolute, forcePump;
+	QTMovieWindowH theWiH;
 } CurrentTimeSubscription;
 
 #ifdef __OBJC__
@@ -124,6 +126,7 @@ typedef struct CurrentTimeSubscription {
 @property (readonly) TimeInterval theTimeInterval;
 @property ErrCode openErr;
 @property (readonly) VODDescription theDescription;
+@property QTCallBack cbRegister;
 @property CurrentTimeSubscription timeSubscr;
 @end
 

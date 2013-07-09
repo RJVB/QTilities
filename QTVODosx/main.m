@@ -17,6 +17,11 @@
 #import "QTVODlib.h"
 #import "VDPreferences.h"
 
+#ifndef DEBUG
+	extern int QTils_Log(const char *fileName, int lineNr, NSString *format, ... );
+#	define NSLog(f,...)	QTils_Log(__FILE__, __LINE__, f, ##__VA_ARGS__)
+#endif
+
 @implementation NSApplication (QTVOD)
 
 NSMenuItem *DoLoggingMI = NULL;
@@ -109,7 +114,15 @@ extern BOOL QTils_LogSetActive(BOOL);
 		// Thus, we maintain a list of all open QTVOD "master documents", and close them "our way", before
 		// allowing the application to quit.
 		for( QTVOD *qv in QTVODList ){
-			[qv close];
+			if( [qv cbRegister] ){
+				DisposeCallBackRegister([qv cbRegister]);
+				[qv setCbRegister:NULL];
+			}
+			[qv closeAndRelease];
+			NSLog( @"%@ retainCount=%u", qv, [qv retainCount] );
+			while( [qv retainCount] > 1 ){
+				[qv release];
+			}
 #ifdef DEBUG
 			n += 1;
 #endif

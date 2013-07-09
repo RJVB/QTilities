@@ -172,23 +172,23 @@ ErrCode qtvodReadXMLElementAttributes( XMLElement *theElement, VODDescription *d
 		case element_frequence:
 			xmlErr = GetDoubleAttribute( theElement, attr_freq, &descr->frequency );
 			if( xmlErr != attributeNotFound ){
-				QTils_LogMsgEx( "attr #%d freq=%g (%d)", (int) attr_freq, descr->frequency, xmlErr );
+				NSLog( @"attr #%d freq=%g (%d)", (int) attr_freq, descr->frequency, xmlErr );
 			}
 			break;
 		case element_utc:
 			xmlErr = GetDoubleAttribute( theElement, attr_zone, &descr->timeZone );
 			if( xmlErr != attributeNotFound ){
-				QTils_LogMsgEx( "attr #%d timeZone=%g (%d)", attr_zone, descr->timeZone, xmlErr );
+				NSLog( @"attr #%d timeZone=%g (%d)", attr_zone, descr->timeZone, xmlErr );
 			}
 			xmlErr = GetBooleanAttribute( theElement, attr_dst, &bval );
 			if( xmlErr != attributeNotFound ){
 				descr->DST = (bval != 0);
-				QTils_LogMsgEx( "attr #%d DST=%hd (%d)", attr_dst, (short) bval, xmlErr );
+				NSLog( @"attr #%d DST=%hd (%d)", attr_dst, (short) bval, xmlErr );
 			}
 			xmlErr = GetBooleanAttribute( theElement, attr_flLR, &bval );
 			if( xmlErr != attributeNotFound ){
 				descr->flipLeftRight = (bval != 0);
-				QTils_LogMsgEx( "attr #%d flipLeftRight=%hd (%d)", attr_flLR, (short) bval, xmlErr );
+				NSLog( @"attr #%d flipLeftRight=%hd (%d)", attr_flLR, (short) bval, xmlErr );
 			}
 			break;
 		case element_parsing:
@@ -196,14 +196,14 @@ ErrCode qtvodReadXMLElementAttributes( XMLElement *theElement, VODDescription *d
 			xmlErr = GetBooleanAttribute( theElement, attr_usevmgi, &bval );
 			if( xmlErr != attributeNotFound ){
 				descr->useVMGI = (bval != 0);
-				QTils_LogMsgEx( "attr #%d useVMGI=%hd (%d)", attr_usevmgi, (short) bval, xmlErr );
+				NSLog( @"attr #%d useVMGI=%hd (%d)", attr_usevmgi, (short) bval, xmlErr );
 			}
 			break;
 		case element_scale:
 		case element_echelle:
 			xmlErr = GetDoubleAttribute( theElement, attr_scale, &descr->scale );
 			if( xmlErr != attributeNotFound ){
-				QTils_LogMsgEx( "attr #%d scale=%g (%d)", (int) attr_scale, descr->scale, xmlErr );
+				NSLog( @"attr #%d scale=%g (%d)", (int) attr_scale, descr->scale, xmlErr );
 			}
 			break;
 		case element_channels:
@@ -211,22 +211,22 @@ ErrCode qtvodReadXMLElementAttributes( XMLElement *theElement, VODDescription *d
 			xmlErr = GetIntegerAttribute( theElement, attr_forward, (SInt32*) &descr->channels.forward );
 			if( xmlErr != attributeNotFound ){
 				ClipInt( descr->channels.forward, 1, 4 );
-				QTils_LogMsgEx( "attr #%d chForward=%d (%d)", attr_forward, descr->channels.forward, xmlErr );
+				NSLog( @"attr #%d chForward=%d (%d)", attr_forward, descr->channels.forward, xmlErr );
 			}
 			xmlErr = GetIntegerAttribute( theElement, attr_pilot, (SInt32*) &descr->channels.pilot );
 			if( xmlErr != attributeNotFound ){
 				ClipInt( descr->channels.pilot, 1, 4 );
-				QTils_LogMsgEx( "attr #%d chPilot=%d (%d)", attr_pilot, descr->channels.pilot, xmlErr );
+				NSLog( @"attr #%d chPilot=%d (%d)", attr_pilot, descr->channels.pilot, xmlErr );
 			}
 			xmlErr = GetIntegerAttribute( theElement, attr_left, (SInt32*) &descr->channels.left );
 			if( xmlErr != attributeNotFound ){
 				ClipInt( descr->channels.left, 1, 4 );
-				QTils_LogMsgEx( "attr #%d chLeft=%d (%d)", attr_left, descr->channels.left, xmlErr );
+				NSLog( @"attr #%d chLeft=%d (%d)", attr_left, descr->channels.left, xmlErr );
 			}
 			xmlErr = GetIntegerAttribute( theElement, attr_right, (SInt32*) &descr->channels.right );
 			if( xmlErr != attributeNotFound ){
 				ClipInt( descr->channels.right, 1, 4 );
-				QTils_LogMsgEx( "attr #%d chRight=%d (%d)", attr_right, descr->channels.right, xmlErr );
+				NSLog( @"attr #%d chRight=%d (%d)", attr_right, descr->channels.right, xmlErr );
 			}
 			break;
 		case element_vodDesign:{
@@ -240,11 +240,11 @@ ErrCode qtvodReadXMLElementAttributes( XMLElement *theElement, VODDescription *d
 		}
 		case xmlIdentifierUnrecognized:
 			if( theElement->name && theElement->attributes->name ){
-				QTils_LogMsgEx( "unknown element <%s %s /> found in '%s'",
+				NSLog( @"unknown element <%s %s /> found in '%s'",
 						theElement->name, theElement->attributes->name, fName );
 			}
 			else{
-				QTils_LogMsgEx( "unknown element found in '%s'", fName );
+				NSLog( @"unknown element found in '%s'", fName );
 			}
 			break;
 		default:
@@ -258,7 +258,7 @@ void qtvodReadXMLContent( const char *fName, XMLContent *theContent, VODDescript
 { XMLElement theElement;
 	while( XMLContentKind( theContent, *elm ) != xmlContentTypeInvalid ){
 		if( XMLElementOfContent( theContent, *elm, &theElement ) ){
-			QTils_LogMsgEx( "Scanning attributes and/or elements of element #%d (entry %d)",
+			NSLog( @"Scanning attributes and/or elements of element #%d (entry %d)",
 						theElement.identifier, *elm );
 			qtvodReadXMLElementAttributes( &theElement, descr, fName );
 		}
@@ -383,7 +383,7 @@ static int movieClose0( QTMovieWindowH wih, void *params )
 { QTVODWindow *sO = (QTVDOC(wih))? QTVDOC(wih).sysOwned : NULL;
   BOOL addRecent = addToRecentDocs;
 	if( sO && sO.qtmwH == wih && !handlingCloseAction ){
-		QTils_LogMsgEx( "'system window' '%s'#%d: closing all", (*wih)->theURL, (*wih)->idx );
+		NSLog( @"'system window' '%s'#%d: closing all", (*wih)->theURL, (*wih)->idx );
 		handlingCloseAction = YES;
 //		[QTVDOC(wih) CloseVideo:YES];
 		handlingCloseAction = NO;
@@ -391,10 +391,10 @@ static int movieClose0( QTMovieWindowH wih, void *params )
 	}
 	else{
 		if( QTVDOC(wih) ){
-			QTils_LogMsgEx( "Closing movie '%s'#%d in window %d", (*wih)->theURL, (*wih)->idx, QTVDOC(wih)->numQTMW );
+			NSLog( @"Closing movie '%s'#%d in window %d", (*wih)->theURL, (*wih)->idx, QTVDOC(wih)->numQTMW );
 		}
 		else{
-			QTils_LogMsgEx( "Closing movie '%s'#%d in remnant window", (*wih)->theURL, (*wih)->idx );
+			NSLog( @"Closing movie '%s'#%d in remnant window", (*wih)->theURL, (*wih)->idx );
 		}
 		if( QTVDOC(wih) && (!sO || sO.qtmwH != wih) ){
 			QTVDOC(wih)->numQTMW -= 1;
@@ -424,10 +424,10 @@ static int movieClose0( QTMovieWindowH wih, void *params )
 				QTVDOC(wih).sysOwned = nil;
 				sO.addToRecentMenu = 1;
 				if( sO.qtmwH == wih ){
-					QTils_LogMsgEx( "(This was the 'system window' %s)", [[sO displayName] cStringUsingEncoding:NSUTF8StringEncoding] );
+					NSLog( @"(This was the 'system window' %s)", [[sO displayName] cStringUsingEncoding:NSUTF8StringEncoding] );
 				}
 				else{
-					QTils_LogMsgEx( "(Closing '%s' and the 'system window' %s)",
+					NSLog( @"(Closing '%s' and the 'system window' %s)",
 								(*wih)->theURL, [[sO displayName] cStringUsingEncoding:NSUTF8StringEncoding] );
 				}
 				if( sO.qtmwH ){
@@ -785,7 +785,7 @@ BOOL addToRecentDocs = YES;
 - (int) movieClose:(QTMovieWindowH)wih withParams:(void*)params
 { int i;
 	if( sysOwned && sysOwned.qtmwH == wih ){
-		QTils_LogMsgEx( "'system window' '%s'#%d: marking all for closing", (*wih)->theURL, (*wih)->idx );
+		NSLog( @"'system window' '%s'#%d: marking all for closing", (*wih)->theURL, (*wih)->idx );
 		// mark for closing: this flag is processed in the window's didUpdate callback
 		sysOwned.shouldBeClosed = YES;
 		shouldBeClosed = YES;
@@ -797,10 +797,10 @@ BOOL addToRecentDocs = YES;
 	}
 	else{
 		if( self ){
-			QTils_LogMsgEx( "Closing movie '%s'#%d in window %d", (*wih)->theURL, (*wih)->idx, numQTMW );
+			NSLog( @"Closing movie '%s'#%d in window %d", (*wih)->theURL, (*wih)->idx, numQTMW );
 		}
 		else{
-			QTils_LogMsgEx( "Closing movie '%s'#%d in remnant window", (*wih)->theURL, (*wih)->idx );
+			NSLog( @"Closing movie '%s'#%d in remnant window", (*wih)->theURL, (*wih)->idx );
 		}
 		(*(winlist[(*wih)->idx])).shouldBeClosed = YES;
 		if( (!sysOwned || sysOwned.qtmwH != wih) ){
@@ -814,10 +814,10 @@ BOOL addToRecentDocs = YES;
 			if( sysOwned ){
 				sysOwned.addToRecentMenu = 1;
 				if( sysOwned.qtmwH == wih ){
-					QTils_LogMsgEx( "(This was the 'system window' %s)", [[sysOwned displayName] cStringUsingEncoding:NSUTF8StringEncoding] );
+					NSLog( @"(This was the 'system window' %s)", [[sysOwned displayName] cStringUsingEncoding:NSUTF8StringEncoding] );
 				}
 				else{
-					QTils_LogMsgEx( "(Closing '%s' and the 'system window' %s)",
+					NSLog( @"(Closing '%s' and the 'system window' %s)",
 								(*wih)->theURL, [[sysOwned displayName] cStringUsingEncoding:NSUTF8StringEncoding] );
 				}
 				// in order to get the close 'action' to the remaining, "system" window, it will need to be mapped
@@ -1025,14 +1025,14 @@ void timeCallBack( QTCallBack cbRegister, long data )
 		  const char *es, *ec;
 			es = MacErrorString( LastQTError(), &ec );
 			if( es ){
-				QTils_LogMsgEx( "Import failure for '%s': %s (%s)", fName, es, ec );
+				NSLog( @"Import failure for '%s': %s (%s)", fName, es, ec );
 			}
 			else{
-				QTils_LogMsgEx( "Import failure for '%s': %d (%d)", fName, LastQTError(), err );
+				NSLog( @"Import failure for '%s': %d (%d)", fName, LastQTError(), err );
 			}
-			PostMessage( fName, lastSSLogMsg );
+			PostMessageBox( fName, lastSSLogMsg );
 			if( !(fp = fopen( [vodsource UTF8String], "r" )) ){
-				QTils_LogMsgEx( "'%s' does not exist, so '%s' will be deleted",
+				NSLog( @"'%s' does not exist, so '%s' will be deleted",
 							[vodsource UTF8String], fName
 				);
 				unlink(fName);
@@ -1045,7 +1045,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 		else{
 			CloseMovie(&theMovie);
 			unlink(fName);
-			QTils_LogMsgEx( "'%s' imported and deleted", fName );
+			NSLog( @"'%s' imported and deleted", fName );
 			// now open the newly created cache movie:
 			fName = [[NSString stringWithFormat:@"%@.mov", [src path] ] UTF8String];
 			fullMovie = NULL;
@@ -1059,7 +1059,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 		}
 	}
 	else{
-		PostMessage( fName, "Creation/opening error" );
+		PostMessageBox( fName, "Creation/opening error" );
 		err = 1;
 	}
 	return err;
@@ -1091,7 +1091,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 			if( wi ){
 				[wi close];
 			}
-			QTils_LogMsgEx( "Error creating window for %s channel, \"%s\" (%s)", chName,
+			NSLog( @"Error creating window for %s channel, \"%s\" (%s)", chName,
 						[[cachedMovieFile path] UTF8String],
 						(error)? [[error localizedDescription] cStringUsingEncoding:NSUTF8StringEncoding] : "unknown error" );
 		}
@@ -1214,7 +1214,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 			// need to avoid concurrent execution of the call (we use the class instance URL variable,
 			// which is shared among all potential concurrent threads).
 			// 20111128: QTils now has its own locking mechanism
-			QTils_LogMsgEx( "Creating '%s' for channel %d", fName, channel );
+			NSLog( @"Creating '%s' for channel %d", fName, channel );
 		}
 		if( (fp = fopen( fName, "w" )) ){
 			fputs( "<?xml version=\"1.0\"?>\n", fp );
@@ -1261,13 +1261,13 @@ void timeCallBack( QTCallBack cbRegister, long data )
 			  const char *es, *ec;
 				es = MacErrorString( LastQTError(), &ec );
 				if( es ){
-					QTils_LogMsgEx( "Import failure for '%s': %s (%s)", fName, es, ec );
+					NSLog( @"Import failure for '%s': %s (%s)", fName, es, ec );
 				}
 				else{
-					QTils_LogMsgEx( "Import failure for '%s': %d (%d)", fName, LastQTError(), err );
+					NSLog( @"Import failure for '%s': %d (%d)", fName, LastQTError(), err );
 				}
 				if( openNow ){
-					PostMessage( fName, lastSSLogMsg );
+					PostMessageBox( fName, lastSSLogMsg );
 				}
 				else if( eMsg ){
 					strcpy( eMsg, lastSSLogMsg );
@@ -1276,23 +1276,23 @@ void timeCallBack( QTCallBack cbRegister, long data )
 			else{
 				unlink(fName);
 				if( doLogging ){
-					QTils_LogMsgEx( "'%s' imported and unlinked", fName );
+					NSLog( @"'%s' imported and unlinked", fName );
 				}
 				[self PrepareChannelCacheMovie:theMovie withChannels:&description->channels forChannel:channel];
 				cachedMovieFile = [NSURL fileURLWithPath:fn];
 				fName = [[cachedMovieFile path] cStringUsingEncoding:NSUTF8StringEncoding];
 				err = SaveMovieAsRefMov( fName, theMovie );
 				if( err != noErr ){
-					QTils_LogMsgEx( "Channel view creation failure saving '%s': %d", fName, err );
+					NSLog( @"Channel view creation failure saving '%s': %d", fName, err );
 				}
 				else if( doLogging ){
-					QTils_LogMsgEx( "channel view '%s' created", fName );
+					NSLog( @"channel view '%s' created", fName );
 				}
 			}
 		}
 		else{
 			if( openNow ){
-				PostMessage( fName, "Creation/opening error" );
+				PostMessageBox( fName, "Creation/opening error" );
 			}
 			else if( eMsg ){
 				strcpy( eMsg, "Creation/opening error" );
@@ -1308,7 +1308,7 @@ void timeCallBack( QTCallBack cbRegister, long data )
 							   "<?quicktime type=\"video/x-qt-img2mov\"?>\n"
 							   "<import autoSave=True autoSaveName=\"%s\" >\n", fName];
 		if( doLogging ){
-			QTils_LogMsgEx( "Creating in-memory view for channel %d", channel );
+			NSLog( @"Creating in-memory view for channel %d", channel );
 		}
 		if( assocDataFile ){
 			[qi2mString appendFormat:@"\t<description txt=\"UTC timeZone=%g, DST=%hd, assoc.data:%s\" />\n",
@@ -1352,13 +1352,13 @@ void timeCallBack( QTCallBack cbRegister, long data )
 			  ErrCode last = LastQTError();
 				es = MacErrorString( last, &ec );
 				if( es ){
-					QTils_LogMsgEx( "Channel view creation failure: %s (%s)", es, ec );
+					NSLog( @"Channel view creation failure: %s (%s)", es, ec );
 				}
 				else{
-					QTils_LogMsgEx( "Channel view creation failure: %d (%d)", last, err );
+					NSLog( @"Channel view creation failure: %d (%d)", last, err );
 				}
 				if( openNow ){
-					PostMessage( fName, lastSSLogMsg );
+					PostMessageBox( fName, lastSSLogMsg );
 				}
 				else if( eMsg ){
 					strcpy( eMsg, lastSSLogMsg );
@@ -1370,14 +1370,14 @@ void timeCallBack( QTCallBack cbRegister, long data )
 					fName = [[cachedMovieFile path] cStringUsingEncoding:NSUTF8StringEncoding];
 					err = SaveMovieAsRefMov( fName, theMovie );
 					if( err != noErr ){
-						QTils_LogMsgEx( "Channel view creation failure saving '%s': %d", fName, err );
+						NSLog( @"Channel view creation failure saving '%s': %d", fName, err );
 					}
 					else if( doLogging ){
-						QTils_LogMsgEx( "channel view '%s' created", fName );
+						NSLog( @"channel view '%s' created", fName );
 					}
 				}
 				else if( doLogging ){
-					QTils_LogMsgEx( "channel view '%s' created", fName );
+					NSLog( @"channel view '%s' created", fName );
 				}
 			}
 			// we shouldn't dispose the dataRef here, it's still associated with theMovie and will be disposed
@@ -1550,6 +1550,7 @@ TimeInterval theLastTimeInterval;
 		beingClosed = NO;
 		memset( &timeSubscr, 0, sizeof(timeSubscr) );
 		timeSubscr.lastMovieTime = timeSubscr.lastForcedMovieTime = -1;
+		timeSubscr.theWiH = NULL;
 		cbRegister = NULL;
     }
     // Allocate QTVODList when we're going to need it
@@ -1561,6 +1562,10 @@ TimeInterval theLastTimeInterval;
 
 - (void) dealloc
 { int i;
+	if( cbRegister ){
+		DisposeCallBackRegister(cbRegister);
+		cbRegister = NULL;
+	}
 	for( i = 0 ; i < maxQTWM ; i++ ){
 		if( WINLIST(i) ){
 			[[[WINLIST(i) getView] window] performClose:[[WINLIST(i) getView] window]];
@@ -1600,10 +1605,6 @@ TimeInterval theLastTimeInterval;
 	if( QTVODList && [QTVODList containsObject:self] ){
 		[QTVODList removeObject:self];
 	}
-	if( cbRegister ){
-		DisposeCallBack(cbRegister);
-		cbRegister = NULL;
-	}
 	[super dealloc];
 }
 
@@ -1622,6 +1623,10 @@ TimeInterval theLastTimeInterval;
 		beingClosed = YES;
 		if( QTVODList && [QTVODList containsObject:self] ){
 			[QTVODList removeObject:self];
+		}
+		if( cbRegister ){
+			DisposeCallBackRegister(cbRegister);
+			cbRegister = NULL;
 		}
 		[self close];
 		[self release];
@@ -1649,8 +1654,12 @@ TimeInterval theLastTimeInterval;
 - (void) ShowMetaData
 { static NSMutableString *MetaDataDisplayStr = NULL;
   QTMovieWindowH wih;
-  extern QTMovieWindowH QTMovieWindowH_from_Movie(Movie);
   char header[1024];
+  extern QTMovieWindowH QTMovieWindowH_from_Movie(Movie);
+#ifdef COMMTIMING
+  extern double cumSendRcvDelay;
+  extern size_t sendRcvDelays;
+#endif
 	if( fullMovie && !MetaDataDisplayStr && (wih = QTMovieWindowH_from_Movie(fullMovie)) ){
 	  MovieFrameTime ft;
 		secondsToFrameTime( (*wih)->info->startTime, (*wih)->info->frameRate, &ft );
@@ -1689,6 +1698,12 @@ TimeInterval theLastTimeInterval;
 				trackNr += 1;
 			}
 		}
+#ifdef COMMTIMING
+		if( sendRcvDelays > 0 ){
+			[MetaDataDisplayStr appendString:[NSString stringWithFormat:@"Average communications delay over %lu messages: %gs",
+									    sendRcvDelays, cumSendRcvDelay/sendRcvDelays]];
+		}
+#endif
 	}
 	if( MetaDataDisplayStr ){
 	  NSAlert* alert = [[[NSAlert alloc] init] autorelease];
@@ -1983,10 +1998,10 @@ void PumpSubscriptions( QTCallBack cb, long refCon )
 				  ErrCode err;
 					if( fullMovie ){
 						if( (err = SampleNumberAtMovieTime( fullMovie, NULL, theTimeInterval.timeA, &startSample )) != noErr ){
-							QTils_LogMsgEx( "%s error %d getting startSample @ t=%gs", __FUNCTION__, err, theTimeInterval.timeA );
+							NSLog( @"%s error %d getting startSample @ t=%gs", __FUNCTION__, err, theTimeInterval.timeA );
 						}
 						if( (err = SampleNumberAtMovieTime( fullMovie, NULL, theTimeInterval.timeB, &endSample )) != noErr ){
-							QTils_LogMsgEx( "%s error %d getting endSample @ t=%gs", __FUNCTION__, err, theTimeInterval.timeB );
+							NSLog( @"%s error %d getting endSample @ t=%gs", __FUNCTION__, err, theTimeInterval.timeB );
 						}
 					}
 					msg = [NSString stringWithFormat:
@@ -2240,9 +2255,9 @@ void PumpSubscriptions( QTCallBack cb, long refCon )
 	}
 	fn = [NSString stringWithFormat:@"%@.mov", [theURL path]];
 	fName = (char*) [fn UTF8String];
-	QTils_LogMsgEx( "Trying video cache: OpenMovieFromURL(%s)", fName );
+	NSLog( @"Trying video cache: OpenMovieFromURL(%s)", fName );
 	if( !recreateChannelViews && (openErr = OpenMovieFromURL( &fullMovie, 1, NULL, fName, NULL, NULL )) == noErr ){
-		QTils_LogMsg( "all-channel cache movie opened" );
+		NSLog( @"all-channel cache movie opened" );
 	}
 	else{
 		// make movie cache and call ImportMovie
@@ -2251,7 +2266,7 @@ void PumpSubscriptions( QTCallBack cb, long refCon )
 		if( theDescription.channels.forward <= 0 && theDescription.channels.pilot <= 0
 		   && theDescription.channels.left <= 0 && theDescription.channels.right <= 0
 		){
-			QTils_LogMsgEx( "Trying video source: OpenMovieFromURL(%s)", fName );
+			NSLog( @"Trying video source: OpenMovieFromURL(%s)", fName );
 			if( (openErr = OpenMovieFromURL( &fullMovie, 1, NULL, fName, NULL, NULL )) == noErr ){
 				// succeeded in importing the source .VOD file with the default parameters
 				fn = [NSString stringWithFormat:@"%@.mov", [theURL path]];
@@ -2259,12 +2274,12 @@ void PumpSubscriptions( QTCallBack cb, long refCon )
 				openErr = SaveMovieAsRefMov( fName, fullMovie );
 				CloseMovie(&fullMovie);
 				if( openErr == noErr ){
-					QTils_LogMsgEx( "Created cache movie '%s'", fName );
+					NSLog( @"Created cache movie '%s'", fName );
 					openErr = OpenMovieFromURL( &fullMovie, 1, NULL, fName, NULL, NULL );
 				}
 				else{
-					QTils_LogMsgEx( "Error in SaveMovieAsRefMov(): %d", openErr );
-					PostMessage( fName, lastSSLogMsg );
+					NSLog( @"Error in SaveMovieAsRefMov(): %d", openErr );
+					PostMessageBox( fName, lastSSLogMsg );
 				}
 			}
 		}
@@ -2274,18 +2289,18 @@ void PumpSubscriptions( QTCallBack cb, long refCon )
 			  const char *es, *ec;
 				es = MacErrorString( LastQTError(), &ec );
 				if( es ){
-					QTils_LogMsgEx( "Error in ImportMovie: %s (%s)\n"
+					NSLog( @"Error in ImportMovie: %s (%s)\n"
 								"Maybe the recording exists neither in .mov nor in .VOD?!\n", es, ec );
 				}
 				else{
-					QTils_LogMsgEx( "Error in ImportMovie: %d (%d)\n"
+					NSLog( @"Error in ImportMovie: %d (%d)\n"
 								"Maybe the recording exists neither in .mov nor in .VOD?!\n", LastQTError(), openErr );
 				}
-				PostMessage( fName, lastSSLogMsg );
+				PostMessageBox( fName, lastSSLogMsg );
 			}
 		}
 		if( !fullMovie ){
-			PostMessage( [[theURL path] UTF8String], "No access to the principal video cache file" );
+			PostMessageBox( [[theURL path] UTF8String], "No access to the principal video cache file" );
 		}
 		else{
 			recreateChannelViews = YES;
@@ -2371,7 +2386,7 @@ void PumpSubscriptions( QTCallBack cb, long refCon )
 								NSLog( @"Opened window %@ for %@", *winlist[cs], chSpec[cs]->movieCache );
 							}
 							else if( chSpec[cs]->eMsg[0] ){
-								PostMessage( teMsg[cs], chSpec[cs]->eMsg );
+								PostMessageBox( teMsg[cs], chSpec[cs]->eMsg );
 							}
 							done = YES;
 						}
@@ -2430,8 +2445,12 @@ void PumpSubscriptions( QTCallBack cb, long refCon )
 			CloseMovie(&fullMovie);
 		}
 	}
+	if( cbRegister ){
+		DisposeCallBackRegister(cbRegister);
+		[self setCbRegister:NULL];
+	}
 	for( w = 0 ; w < maxQTWM ; w++ ){
-		if( WINLIST(w) && QTMWH(w) && (w != sysWin || final) ){
+		if( WINLIST(w) && [WINLIST(w) qtmwH] && (w != sysWin || final) ){
 			if( w == sysWin ){
 				addToRecentDocs = YES;
 				WINLIST(w).addToRecentMenu = 1;
@@ -2516,6 +2535,7 @@ void PumpSubscriptions( QTCallBack cb, long refCon )
   int w;
   NSString *fNames[maxQTWM];
   QTVODWindow *sO = sysOwned;
+	NSLog( @"[QTVOD ResetVideo:closeSysWin] %@ retain count=%u upon entry", self, [self retainCount] );
 	for( w = 0 ; w < maxQTWM ; w++ ){
 		if( WINLIST(w) && QTMWH(w) && w != sysWin ){
 			fNames[w] = [NSString stringWithFormat:@"%@", [[WINLIST(w) theURL] path]];
@@ -2545,12 +2565,12 @@ void PumpSubscriptions( QTCallBack cb, long refCon )
 		  const char *es, *ec, *fName = [[fm attributeForKey:QTMovieFileNameAttribute] UTF8String];
 			es = MacErrorString( LastQTError(), &ec );
 			if( es ){
-				QTils_LogMsgEx( "Save failure for '%s': %s (%s)", fName, es, ec );
+				NSLog( @"Save failure for '%s': %s (%s)", fName, es, ec );
 			}
 			else{
-				QTils_LogMsgEx( "Save failure for '%s': %d (%d)", fName, LastQTError(), err );
+				NSLog( @"Save failure for '%s': %d (%d)", fName, LastQTError(), err );
 			}
-			PostMessage( fName, lastSSLogMsg );
+			PostMessageBox( fName, lastSSLogMsg );
 		}
 		[sO updateChangeCount:NSChangeCleared];
 	}
@@ -2577,6 +2597,7 @@ void PumpSubscriptions( QTCallBack cb, long refCon )
 	else{
 		[self SetTimes:currentTime withRefWindow:nil absolute:NO];
 	}
+	NSLog( @"[QTVOD ResetVideo:closeSysWin] %@ retain count=%u upon exit", self, [self retainCount] );
 	return err;
 }
 
@@ -2608,16 +2629,16 @@ void PumpSubscriptions( QTCallBack cb, long refCon )
 				[errDescr appendString:@" (file does not exist)"];
 			}
 			else if( lastSSLogMsg[0] ){
-				PostMessage( "QTVODosx", [errDescr UTF8String] );
+				PostMessageBox( "QTVODosx", [errDescr UTF8String] );
 			}
 		}
 		else{
 			if( XMLRootElementID(xmldoc) == element_vodDesign ){
-				QTils_LogMsgEx( "Reading VOD parameters from '%s'", fName );
+				NSLog( @"Reading VOD parameters from '%s'", fName );
 				ReadXMLDoc( fName, xmldoc, descr );
 			}
 			else{
-				QTils_LogMsgEx( "'%s' is valid XML but lacking root element '%s'",
+				NSLog( @"'%s' is valid XML but lacking root element '%s'",
 							fName, xml_design_parser[0].xml.element.Tag
 				);
 			}
@@ -2679,5 +2700,6 @@ void PumpSubscriptions( QTCallBack cb, long refCon )
 @synthesize theTimeInterval;
 @synthesize openErr;
 @synthesize theDescription;
+@synthesize cbRegister;
 @synthesize timeSubscr;
 @end

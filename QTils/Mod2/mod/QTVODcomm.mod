@@ -59,6 +59,10 @@ VAR
 	HPCcalibrator : Real64;
 	HPCval : LARGE_INTEGER;
 	SendMutex, ReceiveMutex : CRITICAL_SECTION;
+%IF COMMTIMING %THEN
+	cumSendRcvDelay : Real64;
+	sendRcvDelays : CARDINAL;
+%END
 
 PROCEDURE InitCommClient(
 	VAR clnt : SOCK; IP : ARRAY OF CHAR; portS, portC : UInt16;
@@ -146,6 +150,15 @@ BEGIN
 			FermeConnexionAuServeur(clnt);
 			FermeClient(clnt);
 			clnt := sock_nulle;
+%IF COMMTIMING %THEN
+			IF sendRcvDelays > 0
+				THEN
+					QTils.LogMsgEx( "Average communications delay over %lu messages: %gs",
+						sendRcvDelays, cumSendRcvDelay / VAL(Real64,sendRcvDelays) );
+					sendRcvDelays := 0;
+					cumSendRcvDelay := 0.0;
+			END;
+%END
 	END;
 END CloseCommClient;
 
@@ -167,6 +180,15 @@ BEGIN
 			FermeServeur(srv);
 			srv := sock_nulle;
 	END;
+%IF COMMTIMING %THEN
+	IF sendRcvDelays > 0
+		THEN
+			QTils.LogMsgEx( "Average communications delay over %lu messages: %gs",
+				sendRcvDelays, cumSendRcvDelay / VAL(Real64,sendRcvDelays) );
+			sendRcvDelays := 0;
+			cumSendRcvDelay := 0.0;
+	END;
+%END
 END CloseCommServeur;
 
 PROCEDURE SendMessageToNet( ss : SOCK; VAR msg : NetMessage; timeOutms : INTEGER; block : BOOLEAN;
@@ -185,6 +207,7 @@ BEGIN
 		ELSE
 			msg.sentTime := -1.0;
 	END;
+	msg.recdTime := -1.0;
 %END
 %IF CHAUSSETTE2 %THEN
 	ret := BasicSendNetMessage( ss, msg, SIZE(msg), timeOutms, block );
@@ -244,6 +267,11 @@ BEGIN
 			IF QueryPerformanceCounter(HPCval)
 				THEN
 					msg.recdTime := VAL(Real64,HPCval) * HPCcalibrator;
+					IF msg.sentTime >= 0.0
+						THEN
+							cumSendRcvDelay := cumSendRcvDelay + (msg.recdTime - msg.sentTime);
+							INC(sendRcvDelays);
+					END;
 				ELSE
 					msg.recdTime := -1.0;
 			END;
@@ -994,6 +1022,10 @@ BEGIN
 			HPCcalibrator := 0.0;
 	END;
 	QTVODm2Process := NIL;
+%IF COMMTIMING %THEN
+	cumSendRcvDelay := 0.0;
+	sendRcvDelays := 0;
+%END
 
 FINALLY
 	IF QTVODm2Process <> NULL_HANDLE

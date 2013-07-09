@@ -1,7 +1,17 @@
-TEMPLATE = app
-CONFIG += console
+TEMPLATE = lib
+CONFIG += dll
 CONFIG -= app_bundle
 CONFIG -= qt
+
+INCPATH += \
+	"c:\Program Files\QuickTime SDK\CIncludes" \
+	"c:\Program Files\QuickTime SDK\RIncludes" \
+	"c:\Libs\SS_Log_bin" \
+	"./gmsvc"
+
+DEFINES += \
+	_WINDLL \
+	ISOLATION_AWARE_ENABLED=1
 
 SOURCES += \
     ../QTxml.c \
@@ -12,7 +22,6 @@ SOURCES += \
     ../Lists.cpp \
     ../dllmain.cpp \
     ../CritSectEx/CritSectEx.cpp \
-    ../mswin/QTMovieWinWM.c \
     ../mswin/AskFileName.c \
     ../mswin/vsscanf.cpp \
     ../CritSectEx/timing.c \
@@ -36,7 +45,6 @@ OTHER_FILES += \
     ../Mod2/mod/POSIXm2.mod \
     ../Mod2/mod/Chaussette2.mod \
     ../Mod2/mod/TstQTVDSrv.mod \
-    ../QTilsversion.rc \
     ../mswin/QTils.dll.manifest \
     ../QTils.ico
 
@@ -58,3 +66,4 @@ HEADERS += \
     ../../QTpfuSaveImage.h \
     ../mswin/SystemTraySDK.h
 
+RC_FILE = ../QTilsversion.rc

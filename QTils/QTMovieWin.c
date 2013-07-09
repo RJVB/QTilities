@@ -14,7 +14,7 @@
 IDENTIFY("QTMovieWin: QuickTime utilities: a simple toolkit for opening/controlling QuickTime windows");
 
 #include "Logging.h"
-#include "timing.h"
+#include "CritSectEx/timing.h"
 
 #define _QTILS_C
 
@@ -44,8 +44,8 @@ IDENTIFY("QTMovieWin: QuickTime utilities: a simple toolkit for opening/controll
 #endif // TARGET_OS_WIN32
 
 #ifndef QTMOVIESINK
-#	include "QTMovieSinkQTStuff.h"
-#	include "QTMovieSink.h"
+#	include "../QTMovieSinkQTStuff.h"
+#	include "../QTMovieSink.h"
 #endif
 
 #include "QTilities.h"
