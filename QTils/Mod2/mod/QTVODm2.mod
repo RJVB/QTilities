@@ -219,7 +219,7 @@ BEGIN
 		| qtvod_Open :
 				CloseVideo(TRUE);
 				QTils.DisposeQTMovieWindow(logoWin);
-				err := OpenVideo( msg.data.URN, msg.data.description );
+				err := OpenVideo( msg.data.URN, msg.data.description, TRUE );
 				IF (numQTWM > 0)
 					THEN
 						(* notification de quelles vues ne se sont pas ouvertes: *)
@@ -959,7 +959,7 @@ BEGIN
 					 * Si movie="", l'utilisateur aura la possibilité de choisir
 					 * un fichier via une fenêtre dialogue.
 					*)
-					OpenVideo( movie, movieDescription );
+					OpenVideo( movie, movieDescription, TRUE );
 					IF ( QTils.QTMovieWindowH_isOpen(qtwmH[fwWin]) )
 						THEN
 							(* la frequence reelle n'est pas forcement exactement celle demandee! *)
@@ -1110,7 +1110,7 @@ BEGIN
 				IF openFileRequest
 					THEN
 						openFileRequest := FALSE;
-						OpenVideo(movie, movieDescription);
+						OpenVideo(movie, movieDescription, TRUE);
 						IF numQTWM > 0
 							THEN
 								QTils.DisposeQTMovieWindow(logoWin);

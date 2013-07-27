@@ -1629,7 +1629,7 @@ BEGIN
 	END;
 END GetFileName;
 
-PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription ) : ErrCode;
+PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription; openAll : BOOLEAN ) : ErrCode;
 VAR
 	fName : URLString;
 	errString, errComment, quadString : ARRAY[0..127] OF CHAR;
@@ -1777,7 +1777,7 @@ BEGIN
 				THEN
 					inOpenVideo := TRUE;
 					Assign( "", URL );
-					err := OpenVideo( URL, description );
+					err := OpenVideo( URL, description, TRUE );
 					inOpenVideo := FALSE;
 					RETURN err;
 				ELSE
@@ -1796,13 +1796,7 @@ BEGIN
 							fullMovieIsSplit := FALSE;
 					END;
 			END;
-(*
-			fullMovieWMH := QTils.OpenQTMovieWindowWithMovie( fullMovie, fName, 1 );
-			IF fullMovieWMH <> NULL_QTMovieWindowH
-				THEN
-					ShowWindow( fullMovieWMH^^.theView, SW_MINIMIZE );
-			END;
-*)
+			fullMovieWMH := QTils.QTMovieWindowHFromMovie(fullMovie);
 	END;
 
 	(* maintenant on peut tenter d'ouvrir les 5 fenêtres *)
@@ -1812,6 +1806,12 @@ BEGIN
 		channelDesc[w].description := description;
 		channelDesc[w].scale := description.scale;
 	END;
+
+	IF NOT openAll
+		THEN
+			RETURN err;
+	END;
+
 (*
 	(* vue vers l'avant *)
 	qtwmH[fwWin] := CreateChannelView( URL, description, description.channels.forward, "forward",
@@ -1973,13 +1973,8 @@ BEGIN
 		THEN
 			FlushCaches();
 	END;
-	IF fullMovieWMH <> NULL_QTMovieWindowH
-		THEN
-			QTils.CloseQTMovieWindow(fullMovieWMH);
-			fullMovie := NIL;
-		ELSE
-			QTils.CloseMovie(fullMovie);
-	END;
+	QTils.CloseMovie(fullMovie);
+	fullMovieWMH := NULL_QTMovieWindowH;
 END CloseVideo;
 
 PROCEDURE ResetVideo(complete : BOOLEAN) : ErrCode;
@@ -2017,7 +2012,7 @@ BEGIN
 	err := paramErr;
 	IF ( numQTWM = 0 )
 		THEN
-			err := OpenVideo( baseFileName, baseDescription );
+			err := OpenVideo( baseFileName, baseDescription, TRUE );
 			IF ( (err = noErr) AND (NOT complete) AND (t >= 0.0) )
 				THEN
 					SetTimes( t, NIL, 0 );
@@ -2441,6 +2436,41 @@ BEGIN
 	END;
 	RETURN err;
 END ScanForDefaultVODDescription;
+
+PROCEDURE GetGPSStartTime( descr : VODDescription; VAR ecartVideoTempsGPS : Real64 ) : Real64;
+VAR
+	tVid, tGPS : Real64;
+	idx, n : Int32;
+	h, m : Int16;
+	err : ErrCode;
+	title : URLString;
+	b : BOOLEAN;
+	i : CARDINAL;
+BEGIN
+	tGPS := -1.0;
+	IF fullMovieWMH <> NULL_QTMovieWindowH
+		THEN
+			n := QTils.GetMovieChapterCount(fullMovie);
+			FOR idx := 0 TO n-1 DO
+				err := QTils.GetMovieIndChapter( fullMovie, idx, tVid, title );
+				IF err = noErr
+					THEN
+					FindNext("startGPS", title, 0, b, i);
+					IF b AND (QTils.sscanf(title, "startGPS %hd:%hd:%lf ", ADR(h), ADR(m), ADR(tGPS)) = 3)
+						THEN
+							IF descr.DST
+								THEN
+									tGPS := tGPS + 3600.0 * (VAL(Real64,h) + descr.timeZone + 1.0) + 60.0 * VAL(Real64,m);
+								ELSE
+									tGPS := tGPS + 3600.0 * (VAL(Real64,h) + descr.timeZone) + 60.0 * VAL(Real64,m);
+							END;
+							ecartVideoTempsGPS := tGPS - fullMovieWMH^^.info^.startTime - tVid;
+					END;
+				END;
+			END;
+	END;
+	RETURN tGPS;
+END GetGPSStartTime;
 
 (* ==================================== BEGIN ==================================== *)
 BEGIN

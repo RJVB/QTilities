@@ -54,7 +54,7 @@ PROCEDURE StartVideo(excl : QTMovieWindowH);
 PROCEDURE StepVideo(excl : QTMovieWindowH ; steps : Int32);
 PROCEDURE StopVideo(excl : QTMovieWindowH);
 PROCEDURE register_window( AqtwmH : ARRAY OF QTMovieWindowH; idx : CARDINAL );
-PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription ) : ErrCode;
+PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription; openAll : BOOLEAN ) : ErrCode;
 PROCEDURE FlushCaches;
 PROCEDURE CloseVideo(final : BOOLEAN);
 PROCEDURE ResetVideo(complete : BOOLEAN) : ErrCode;
@@ -75,6 +75,7 @@ PROCEDURE GetXMLParamString( theElement : XMLElement; idx : CARDINAL; elm : UInt
 	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
 PROCEDURE showMetaData();
 PROCEDURE SetWindowLayer( pos : HWND; ref : QTMovieWindowH );
+PROCEDURE GetGPSStartTime( descr : VODDescription; VAR ecartVideoTempsGPS : Real64 ) : Real64;
 
 (* test
 PROCEDURE FrequencyFromXMLElementAttributes( theElement : XMLElement; elm : UInt32;

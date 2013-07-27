@@ -557,6 +557,7 @@ QTCompressionQualities	=
 			OpenQTMovieWindowWithMovie : PROCEDURE( (*theMovie*)Movie, (*theURL*) ARRAY OF CHAR, (*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
 			OpenQTMovieWindowWithQTMovieSink : PROCEDURE( VAR (*qms*) QTMovieSinks, (*addTCTrack*) Int32, (*avecControleur*) Int32 ):QTMovieWindowH [CDECL];
 
+
 			(* ouvre le fichier QuickTime spécifié et retourne un 'handle' dans Movie. Passer flags=1 pour
 			 * ouvrir le Movie en mode active. NB: ce Movie ne sera pas affichée dans une fenêtre! *)
 			OpenMovieFromURL : PROCEDURE(VAR Movie, (*flags*) Int16,

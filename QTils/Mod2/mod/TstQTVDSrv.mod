@@ -38,8 +38,11 @@ FROM ElapsedTime IMPORT
 	StartTimeEx, GetTimeEx;
 
 FROM QTVODcomm IMPORT *;
+FROM QTVODlib IMPORT
+	fullMovie, fullMovieWMH, OpenVideo, GetGPSStartTime;
 FROM QTilsM2 IMPORT
-	UInt32, Real64, ErrCode, noErr, QTils, MovieFrameTime, PostMessage;
+	UInt32, Real64, ErrCode, noErr, QTils, MovieFrameTime, PostMessage,
+	OpenQT, QTOpened;
 FROM POSIXm2 IMPORT *;
 
 VAR
@@ -52,8 +55,9 @@ VAR
 
 	fName : URLString;
 	descrFichierVOD : VODDescription;
-	startTimeAbs, Duration, prevCurrentTime : Real64;
+	startTimeAbs, Duration, prevCurrentTime, startGPSTime, GPSTimeOffset : Real64;
 	str : URLString;
+	err : ErrCode;
 
 	ArgsChan : ChanId;
 
@@ -332,6 +336,22 @@ BEGIN
 			END;
 			IF ( LENGTH(fName) > 0 )
 				THEN
+					OpenQT();
+					IF QTOpened()
+						THEN
+							err := OpenVideo( fName, descrFichierVOD, FALSE );
+							IF err = noErr
+								THEN
+									GPSTimeOffset := 0.0;
+									startGPSTime := GetGPSStartTime(descrFichierVOD, GPSTimeOffset);
+									QTils.LogMsgEx( "fName startTime=%gs, frameRate=%gHz, GPS startTime=%gs offset=%gs",
+										fullMovieWMH^^.info^.startTime, fullMovieWMH^^.info^.TCframeRate,
+										startGPSTime, GPSTimeOffset );
+									WriteString( QTils.lastSSLogMsg^ ) ; WriteLn;
+								ELSE
+									QTils.LogMsgEx( "OpenVideo(%s) returned %d", fName, err );
+							END;
+					END;
 					LaunchQTVODm2( ".", fName, "-debugWait", ADR(descrFichierVOD), "127.0.0.1", sendNewFileName );
 				ELSE
 					sendNewFileName := FALSE;
