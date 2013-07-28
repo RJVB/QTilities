@@ -831,6 +831,12 @@ BEGIN
 					END;
 			END;
 			fullMovieWMH := QTils.QTMovieWindowHFromMovie(fullMovie);
+			IF fullMovieWMH = NULL_QTMovieWindowH
+				THEN
+					RETURN 2;
+			END;
+		ELSE
+			RETURN 1;
 	END;
 	RETURN err;
 END OpenVideo;

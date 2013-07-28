@@ -1420,9 +1420,6 @@ BEGIN
 	IF err <> noErr
 		THEN
 			RETURN err;
-		ELSIF (fullMovie = NIL) OR (NOT QTils.QTMovieWindowH_Check(fullMovieWMH))
-			THEN
-				RETURN 1;
 	END;
 	Assign( fullMovieWMH^^.theURL^, fName );
 
