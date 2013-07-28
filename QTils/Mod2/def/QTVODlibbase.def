@@ -1,0 +1,32 @@
+DEFINITION MODULE QTVODlibbase;
+
+<*/VALIDVERSION:USE_TIMEDCALLBACK*>
+
+FROM QTilsM2 IMPORT
+	QTMovieWindowH, Movie, Int32, UInt32, Real64, ErrCode, XMLDoc, XMLElement, XML_RECORD;
+
+FROM QTVODcomm IMPORT
+	(* ces types sont définis dans QTVODcomm.def pour ne pas obliger d'inclure QTVODlibext
+	 * pour des logiciels qui ne font que communiquer avec QTVODm2 !
+	 *)
+	VODDescription, URLString;
+
+PROCEDURE PruneExtensions( VAR URL : ARRAY OF CHAR );
+PROCEDURE GetFileName( title : ARRAY OF CHAR; VAR fileName : ARRAY OF CHAR ) : BOOLEAN;
+PROCEDURE GetXMLParamString( theElement : XMLElement; idx : CARDINAL; elm : UInt32; designTable : ARRAY OF XML_RECORD;
+	designEntry : UInt32; fName : ARRAY OF CHAR ) : ErrCode;
+PROCEDURE ReadXMLDoc( fName : URLString; xmldoc : XMLDoc; VAR descr : VODDescription );
+PROCEDURE ReadDefaultVODDescription( fName : URLString; VAR descr : VODDescription ) : ErrCode;
+PROCEDURE ScanForDefaultVODDescription( movie, fName : URLString; VAR descr : VODDescription ) : ErrCode;
+PROCEDURE ImportMovie( src : ARRAY OF CHAR; description : VODDescription ) : ErrCode;
+PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription ) : ErrCode;
+PROCEDURE GetGPSStartTime( descr : VODDescription; VAR ecartVideoTempsGPS : Real64 ) : Real64;
+
+VAR
+	fullMovie : Movie;
+	fullMovieWMH : QTMovieWindowH;
+	recreateChannelViews, fullMovieIsSplit : BOOLEAN;
+	baseFileName, assocDataFileName : URLString;
+	baseDescription : VODDescription;
+
+END QTVODlibbase.
