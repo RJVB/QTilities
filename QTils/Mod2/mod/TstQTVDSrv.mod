@@ -38,8 +38,8 @@ FROM ElapsedTime IMPORT
 	StartTimeEx, GetTimeEx;
 
 FROM QTVODcomm IMPORT *;
-FROM QTVODlib IMPORT
-	fullMovie, fullMovieWMH, OpenVideo, GetGPSStartTime;
+FROM QTVODlibbase IMPORT
+	fullMovie, fullMovieWMH, GetGPSStartTime, OpenVideo;
 FROM QTilsM2 IMPORT
 	UInt32, Real64, ErrCode, noErr, QTils, MovieFrameTime, PostMessage,
 	OpenQT, QTOpened;
@@ -339,7 +339,7 @@ BEGIN
 					OpenQT();
 					IF QTOpened()
 						THEN
-							err := OpenVideo( fName, descrFichierVOD, FALSE );
+							err := OpenVideo( fName, descrFichierVOD );
 							IF err = noErr
 								THEN
 									GPSTimeOffset := 0.0;

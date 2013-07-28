@@ -32,7 +32,8 @@ FROM WholeStr IMPORT
 	StrToInt;
 
 FROM QTilsM2 IMPORT *;
-FROM QTVODlib IMPORT *;
+FROM QTVODlibbase IMPORT *;
+FROM QTVODlibext IMPORT *;
 FROM POSIXm2 IMPORT
 	POSIX, POSIXAvailable;
 
@@ -219,7 +220,7 @@ BEGIN
 		| qtvod_Open :
 				CloseVideo(TRUE);
 				QTils.DisposeQTMovieWindow(logoWin);
-				err := OpenVideo( msg.data.URN, msg.data.description, TRUE );
+				err := DisplayVideo( msg.data.URN, msg.data.description );
 				IF (numQTWM > 0)
 					THEN
 						(* notification de quelles vues ne se sont pas ouvertes: *)
@@ -959,7 +960,7 @@ BEGIN
 					 * Si movie="", l'utilisateur aura la possibilité de choisir
 					 * un fichier via une fenêtre dialogue.
 					*)
-					OpenVideo( movie, movieDescription, TRUE );
+					DisplayVideo( movie, movieDescription );
 					IF ( QTils.QTMovieWindowH_isOpen(qtwmH[fwWin]) )
 						THEN
 							(* la frequence reelle n'est pas forcement exactement celle demandee! *)
@@ -1110,7 +1111,7 @@ BEGIN
 				IF openFileRequest
 					THEN
 						openFileRequest := FALSE;
-						OpenVideo(movie, movieDescription, TRUE);
+						DisplayVideo(movie, movieDescription);
 						IF numQTWM > 0
 							THEN
 								QTils.DisposeQTMovieWindow(logoWin);

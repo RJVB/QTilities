@@ -1,7 +1,7 @@
 IMPLEMENTATION MODULE LibQT;
 
-IMPORT QTilsM2, Chaussette2, QTVODlib, QTVODcomm;
+IMPORT QTilsM2, Chaussette2, QTVODlibext, QTVODcomm;
 
-EXPORT QTilsM2, Chaussette2, QTVODlib, QTVODcomm;
+EXPORT QTilsM2, Chaussette2, QTVODlibext, QTVODcomm;
 
 END LibQT.

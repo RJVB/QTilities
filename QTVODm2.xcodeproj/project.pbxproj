@@ -35,14 +35,16 @@
 		D67B56C61764834B005E4C86 /* QTVODm2.pages */ = {isa = PBXFileReference; lastKnownFileType = file; path = QTVODm2.pages; sourceTree = "<group>"; };
 		D68DAD9112DB66070035CCA9 /* QTVODcomm.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = QTVODcomm.mod; sourceTree = "<group>"; tabWidth = 2; };
 		D68DAD9212DB66070035CCA9 /* QTVODcomm.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = QTVODcomm.def; sourceTree = "<group>"; tabWidth = 2; };
-		D699F80A12BA189800E0C3D0 /* QTVODlib.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = QTVODlib.def; sourceTree = "<group>"; tabWidth = 2; };
+		D699F80A12BA189800E0C3D0 /* QTVODlibext.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = QTVODlibext.def; sourceTree = "<group>"; tabWidth = 2; };
 		D699F80B12BA189800E0C3D0 /* QTilsM2.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; path = QTilsM2.def; sourceTree = "<group>"; tabWidth = 2; };
 		D699F80E12BA189800E0C3D0 /* QTVODm2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = QTVODm2.mod; sourceTree = "<group>"; tabWidth = 2; };
 		D699F80F12BA189800E0C3D0 /* QTilsM2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = QTilsM2.mod; sourceTree = "<group>"; tabWidth = 2; };
-		D6CC997812D4B629006BBEF7 /* QTVODlib.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; includeInIndex = 1; indentWidth = 2; lineEnding = 2; path = QTVODlib.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6CC997812D4B629006BBEF7 /* QTVODlibext.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; includeInIndex = 1; indentWidth = 2; lineEnding = 2; path = QTVODlibext.mod; sourceTree = "<group>"; tabWidth = 2; };
 		D6D777A212EA4CD300BEF548 /* LibQT.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; path = LibQT.mod; sourceTree = "<group>"; tabWidth = 2; };
 		D6EB235912E04C6300986EA5 /* Chaussette.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; lineEnding = 2; name = Chaussette.mod; path = ../../MSWin/Archisim/mod/Chaussette.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		D6EB235A12E04C6300986EA5 /* Chaussette.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.def; fileEncoding = 12; indentWidth = 2; lineEnding = 2; name = Chaussette.def; path = ../../MSWin/Archisim/def/Chaussette.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D6FC6F6917A56A0900E9079E /* QTVODlibbase.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.mod; path = QTVODlibbase.mod; sourceTree = "<group>"; tabWidth = 2; };
+		D6FC6F6C17A56ACE00E9079E /* QTVODlibbase.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.modula2.def; name = QTVODlibbase.def; path = QTils/Mod2/def/QTVODlibbase.def; sourceTree = SOURCE_ROOT; };
 		D6FC74F613E1CC9E0042C46F /* make_archive.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = make_archive.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -79,7 +81,7 @@
 				D63A355E12DC8C5D00BA8CC3 /* Chaussette2.def */,
 				D64B0F2613324996007C5BA7 /* POSIXm2.def */,
 				D699F80B12BA189800E0C3D0 /* QTilsM2.def */,
-				D699F80A12BA189800E0C3D0 /* QTVODlib.def */,
+				D699F80A12BA189800E0C3D0 /* QTVODlibext.def */,
 				D68DAD9212DB66070035CCA9 /* QTVODcomm.def */,
 			);
 			fileEncoding = 12;
@@ -91,12 +93,14 @@
 		D699F80C12BA189800E0C3D0 /* mod */ = {
 			isa = PBXGroup;
 			children = (
+				D6FC6F6C17A56ACE00E9079E /* QTVODlibbase.def */,
+				D6FC6F6917A56A0900E9079E /* QTVODlibbase.mod */,
 				D63A357412DC8EF600BA8CC3 /* TypeConv.mod */,
 				D63A355F12DC8C5D00BA8CC3 /* Chaussette2.mod */,
 				D64B0F2513324976007C5BA7 /* POSIXm2.mod */,
 				D699F80F12BA189800E0C3D0 /* QTilsM2.mod */,
 				D68DAD9112DB66070035CCA9 /* QTVODcomm.mod */,
-				D6CC997812D4B629006BBEF7 /* QTVODlib.mod */,
+				D6CC997812D4B629006BBEF7 /* QTVODlibext.mod */,
 				D699F80E12BA189800E0C3D0 /* QTVODm2.mod */,
 				D65129FE12DDFC3700C0D5F8 /* TstQTVDSrv.mod */,
 				D6D777A212EA4CD300BEF548 /* LibQT.mod */,
