@@ -11,6 +11,9 @@ FROM QTVODcomm IMPORT
 	 *)
 	VODDescription, URLString;
 
+TYPE
+	BPTR = POINTER TO BOOLEAN;
+
 PROCEDURE PruneExtensions( VAR URL : ARRAY OF CHAR );
 PROCEDURE GetFileName( title : ARRAY OF CHAR; VAR fileName : ARRAY OF CHAR ) : BOOLEAN;
 PROCEDURE GetXMLParamString( theElement : XMLElement; idx : CARDINAL; elm : UInt32; designTable : ARRAY OF XML_RECORD;
@@ -19,7 +22,7 @@ PROCEDURE ReadXMLDoc( fName : URLString; xmldoc : XMLDoc; VAR descr : VODDescrip
 PROCEDURE ReadDefaultVODDescription( fName : URLString; VAR descr : VODDescription ) : ErrCode;
 PROCEDURE ScanForDefaultVODDescription( movie, fName : URLString; VAR descr : VODDescription ) : ErrCode;
 PROCEDURE ImportMovie( src : ARRAY OF CHAR; description : VODDescription ) : ErrCode;
-PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription ) : ErrCode;
+PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription; isVODFile : BPTR ) : ErrCode;
 PROCEDURE GetGPSStartTime( descr : VODDescription; VAR ecartVideoTempsGPS : Real64 ) : Real64;
 
 VAR

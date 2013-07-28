@@ -5,16 +5,17 @@ IMPLEMENTATION MODULE QTVODlibext;
 <*/VALIDVERSION:USECHANNELVIEWIMPORTFILES,COMMTIMING,NOTOUTCOMMENTED,USE_TIMEDCALLBACK,CCV_IN_BACKGROUND*>
 
 FROM SYSTEM IMPORT
-%IF StonyBrook %THEN
-		SOURCEFILE, SOURCELINE,
-%END
 	CAST, ADR, ADDRESS;
 
 FROM WholeStr IMPORT
 	IntToStr;
 
 FROM Strings IMPORT
-	Concat, Append, Delete, FindPrev, Assign, Equal, Length, FindNext;
+	Concat, Append,
+%IF USECHANNELVIEWIMPORTFILES %THEN
+	Delete,
+%END
+	Assign, Equal, FindNext;
 
 FROM ExStrings IMPORT
 	Utf8ToAnsi;
@@ -29,9 +30,13 @@ FROM ChanConsts IMPORT *;
 FROM StreamFile IMPORT
 	Open, Close, ChanId;
 FROM TextIO IMPORT
-	WriteString, WriteChar, WriteLn;
+	WriteString,
+%IF USECHANNELVIEWIMPORTFILES %THEN
+	WriteChar,
+%END
+	WriteLn;
 FROM FileFunc IMPORT
-	DeleteFile, RenameFile, CreateDirTree;
+	DeleteFile, CreateDirTree;
 
 %IF WIN32 %THEN
 	FROM WIN32 IMPORT
@@ -41,8 +46,7 @@ FROM FileFunc IMPORT
 		HWND;
 %END
 FROM WINUSER IMPORT
-	SetWindowPos, HWND_BOTTOM, HWND_TOP, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE,
-	ShowWindow, SW_HIDE, SW_MINIMIZE;
+	SetWindowPos, HWND_BOTTOM, HWND_TOP, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE;
 
 FROM WIN32 IMPORT
 	LARGE_INTEGER, QueryPerformanceFrequency, QueryPerformanceCounter;
@@ -89,7 +93,6 @@ TYPE
 
 VAR
 
-	xmlVD : VODDescription;
 	cbPT : Real64;
 	channelDesc : ARRAY[0..maxQTWM] OF ChannelDescription;
 	wIdx : CARDINAL;
@@ -109,8 +112,9 @@ CONST
 
 
 CONST
-
+%IF USECHANNELVIEWIMPORTFILES %THEN
 	tabChar = CHR(9);
+%END
 	TimeCodeChannel = 6 (*5*);
 
 VAR
@@ -121,7 +125,6 @@ VAR
 	MetaDataDisplayStrPtr : StringPtr;
 	sqrt2 : Real64;
 	HPCcalibrator : Real64;
-	TCwindowNr : Int32;
 	splitCamTrack : VODChannels;
 
 PROCEDURE InitHRTime();
@@ -999,7 +1002,9 @@ VAR
 	err : ErrCode;
 	theMovie : Movie;
 %END
+%IF USECHANNELVIEWIMPORTFILES %THEN
 	res : OpenResults;
+%END
 	wih : QTMovieWindowH;
 
 	PROCEDURE logHere(lineNr : CARDINAL);
@@ -1387,8 +1392,6 @@ END PrepareChannelCacheMovie;
 PROCEDURE DisplayVideo( VAR URL : URLString; VAR description : VODDescription ) : ErrCode;
 VAR
 	fName : URLString;
-	errString, errComment, quadString : ARRAY[0..127] OF CHAR;
-	lang : ARRAY[0..15] OF CHAR;
 	w : CARDINAL;
 	err : ErrCode;
 	isVODFile : BOOLEAN;
@@ -1416,7 +1419,7 @@ VAR
 
 BEGIN
 
-	err := OpenVideo( URL, description );
+	err := OpenVideo( URL, description, ADR(isVODFile) );
 	IF err <> noErr
 		THEN
 			RETURN err;

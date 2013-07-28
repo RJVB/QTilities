@@ -5,10 +5,7 @@ IMPLEMENTATION MODULE QTVODlibbase;
 <*/VALIDVERSION:USECHANNELVIEWIMPORTFILES,COMMTIMING,NOTOUTCOMMENTED,USE_TIMEDCALLBACK,CCV_IN_BACKGROUND*>
 
 FROM SYSTEM IMPORT
-%IF StonyBrook %THEN
-		SOURCEFILE, SOURCELINE,
-%END
-	CAST, ADR, ADDRESS;
+	CAST, ADR;
 
 FROM Strings IMPORT
 	Concat, Append, Delete, FindPrev, Assign, Equal, Length, FindNext;
@@ -19,10 +16,10 @@ FROM StreamFile IMPORT
 FROM TextIO IMPORT
 	WriteString, WriteChar, WriteLn;
 FROM FileFunc IMPORT
-	DeleteFile, RenameFile, CreateDirTree;
+	DeleteFile;
 
 FROM COMMDLG IMPORT
-	OPENFILENAME, GetOpenFileName, OFN_FILEMUSTEXIST, OFN_NOCHANGEDIR, OFN_EXPLORER, OFN_ENABLETEMPLATE;
+	OPENFILENAME, GetOpenFileName, OFN_FILEMUSTEXIST, OFN_NOCHANGEDIR, OFN_EXPLORER;
 
 FROM QTilsM2 IMPORT *;
 FROM POSIXm2 IMPORT POSIX;
@@ -486,7 +483,6 @@ VAR
 	xmlErr : ErrCode;
 	errDescr : URLString;
 	errors : Int32;
-	elm : CARDINAL;
 BEGIN
 
 	IF xmlParser = NIL
@@ -684,14 +680,12 @@ BEGIN
 	RETURN err;
 END ImportMovie;
 
-PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription ) : ErrCode;
+PROCEDURE OpenVideo( VAR URL : URLString; VAR description : VODDescription; isVODFile : BPTR ) : ErrCode;
 VAR
 	fName : URLString;
 	errString, errComment, quadString : ARRAY[0..127] OF CHAR;
 	lang : ARRAY[0..15] OF CHAR;
-	w : CARDINAL;
 	err : ErrCode;
-	isVODFile : BOOLEAN;
 
 BEGIN
 
@@ -712,7 +706,10 @@ BEGIN
 			(* ce qui nous intéresse surtout est de savoir si on a reçu un nom de fichier *)
 			IF ( LENGTH(fName) > 0 )
 				THEN
-					isVODFile := HasExtension( fName, ".VOD" );
+					IF isVODFile <> NIL
+						THEN
+							isVODFile^ := HasExtension( fName, ".VOD" );
+					END;
 					PruneExtensions(fName);
 					URL := fName;
 					Assign( fName, baseFileName );
@@ -720,7 +717,10 @@ BEGIN
 					RETURN 1
 			END;
 		ELSE
-			isVODFile := HasExtension( URL, ".VOD" );
+			IF isVODFile <> NIL
+				THEN
+					isVODFile^ := HasExtension( URL, ".VOD" );
+			END;
 			(* on enlève les extensions "qui fachent" pour pouvoir mettre une extension spécifique *)
 			PruneExtensions(URL);
 			Assign( URL, baseFileName );
@@ -811,7 +811,7 @@ BEGIN
 				THEN
 					inOpenVideo := TRUE;
 					Assign( "", URL );
-					err := OpenVideo( URL, description );
+					err := OpenVideo( URL, description, isVODFile );
 					inOpenVideo := FALSE;
 					RETURN err;
 				ELSE

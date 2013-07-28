@@ -339,7 +339,7 @@ BEGIN
 					OpenQT();
 					IF QTOpened()
 						THEN
-							err := OpenVideo( fName, descrFichierVOD );
+							err := OpenVideo( fName, descrFichierVOD, NIL );
 							IF err = noErr
 								THEN
 									GPSTimeOffset := 0.0;
