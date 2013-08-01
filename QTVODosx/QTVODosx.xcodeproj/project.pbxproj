@@ -39,6 +39,7 @@
 		D604AFC4142782BB002B997A /* QTVOD.sdef in Resources */ = {isa = PBXBuildFile; fileRef = D604AFC3142782BB002B997A /* QTVOD.sdef */; };
 		D60586861679F3E700D4D634 /* Help French in Resources */ = {isa = PBXBuildFile; fileRef = D60586821679F3E700D4D634 /* Help French */; };
 		D605869D1679F53300D4D634 /* Help in Resources */ = {isa = PBXBuildFile; fileRef = D60586991679F53300D4D634 /* Help */; };
+		D61B5F6517A98C8400BCBA11 /* QTVODosx.xcclassmodel in Resources */ = {isa = PBXBuildFile; fileRef = D61B5F6417A98C8400BCBA11 /* QTVODosx.xcclassmodel */; };
 		D62A62971436170F00BFA81C /* VDPreferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B961428FBDB007C36EE /* VDPreferences.xib */; };
 		D63359061428D548007C36EE /* QTVODController.m in Sources */ = {isa = PBXBuildFile; fileRef = D63359051428D548007C36EE /* QTVODController.m */; };
 		D6335BA31428FBDB007C36EE /* BatchExport.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6335B7B1428FBDB007C36EE /* BatchExport.nib */; };
@@ -186,6 +187,7 @@
 		D60586991679F53300D4D634 /* Help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Help; sourceTree = "<group>"; };
 		D6112D2E143265EB0076AA98 /* QTVOD-OSA-test.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "QTVOD-OSA-test.py"; sourceTree = "<group>"; };
 		D6112D2F143265EB0076AA98 /* ASTest.scpt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.scpt; path = ASTest.scpt; sourceTree = "<group>"; };
+		D61B5F6417A98C8400BCBA11 /* QTVODosx.xcclassmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcclassmodel; path = QTVODosx.xcclassmodel; sourceTree = "<group>"; };
 		D62A609C1435B96600BFA81C /* QTVODScriptingSuite.scriptTerminology */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.scriptTerminology; name = QTVODScriptingSuite.scriptTerminology; path = "objc-appscript/QTVODScriptingSuite.scriptTerminology"; sourceTree = "<group>"; };
 		D62A609D1435B96600BFA81C /* QTVODScriptingSuite.scriptSuite */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.scriptSuite; name = QTVODScriptingSuite.scriptSuite; path = "objc-appscript/QTVODScriptingSuite.scriptSuite"; sourceTree = "<group>"; };
 		D62A609E1435B96600BFA81C /* QTVOD TerminologyScripting.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; name = "QTVOD TerminologyScripting.r"; path = "objc-appscript/QTVOD TerminologyScripting.r"; sourceTree = "<group>"; };
@@ -224,8 +226,8 @@
 		D6604228141F566C0011DBC6 /* QTilsM2.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; lineEnding = 2; name = QTilsM2.def; path = ../QTils/Mod2/def/QTilsM2.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		D6604229141F566C0011DBC6 /* POSIXm2.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; lineEnding = 2; name = POSIXm2.def; path = ../QTils/Mod2/def/POSIXm2.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		D660422A141F566C0011DBC6 /* QTVODcomm.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; lineEnding = 2; name = QTVODcomm.def; path = ../QTils/Mod2/def/QTVODcomm.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
-		D660422B141F566C0011DBC6 /* QTVODlib.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; lineEnding = 2; name = QTVODlib.def; path = ../QTils/Mod2/def/QTVODlib.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
-		D660422C141F567C0011DBC6 /* QTVODlib.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.mod; lineEnding = 2; name = QTVODlib.mod; path = ../QTils/Mod2/mod/QTVODlib.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D660422B141F566C0011DBC6 /* QTVODlibext.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; lineEnding = 2; name = QTVODlibext.def; path = ../QTils/Mod2/def/QTVODlibext.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D660422C141F567C0011DBC6 /* QTVODlibext.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.mod; lineEnding = 2; name = QTVODlibext.mod; path = ../QTils/Mod2/mod/QTVODlibext.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		D6717208175F7ADF00F3C4F3 /* TstQTVDSrv.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.mod; name = TstQTVDSrv.mod; path = ../QTils/Mod2/mod/TstQTVDSrv.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		D676F0210BC419C8008693F8 /* QTAMovieView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTAMovieView.h; sourceTree = "<group>"; };
 		D676F0220BC419C8008693F8 /* QTAMovieView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTAMovieView.m; sourceTree = "<group>"; };
@@ -254,6 +256,8 @@
 		D6E9CE031549EF2300F5F828 /* test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = test.m; sourceTree = "<group>"; };
 		D6E9CE141549F1B500F5F828 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		D6E9CE521549F5A000F5F828 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		D6F4E94F17AA99890012C4B4 /* QTVODlibbase.mod */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 5; lastKnownFileType = sourcecode.modula2.mod; lineEnding = 2; name = QTVODlibbase.mod; path = ../QTils/Mod2/mod/QTVODlibbase.mod; sourceTree = SOURCE_ROOT; tabWidth = 2; };
+		D6F4E95017AA99890012C4B4 /* QTVODlibbase.def */ = {isa = PBXFileReference; fileEncoding = 12; indentWidth = 2; lastKnownFileType = sourcecode.modula2.def; lineEnding = 2; name = QTVODlibbase.def; path = ../QTils/Mod2/def/QTVODlibbase.def; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		D6F571D8175CE68B000CE71F /* QTVODcomm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTVODcomm.h; sourceTree = "<group>"; };
 		D6F571EB175CE893000CE71F /* QTVODcomm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTVODcomm.cpp; sourceTree = "<group>"; };
 		D6F5751B175DF294000CE71F /* QTVODlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTVODlib.h; sourceTree = "<group>"; };
@@ -337,6 +341,7 @@
 		2A37F4ABFDCFA73011CA2CEA /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				D61B5F6417A98C8400BCBA11 /* QTVODosx.xcclassmodel */,
 				D6868AD417453D7A00A87874 /* Chaussette2.c */,
 				D676F0220BC419C8008693F8 /* QTAMovieView.m */,
 				C2FFEF25084332E000AAB5DB /* BatchExportController.m */,
@@ -478,11 +483,13 @@
 				D6868AD217453D5A00A87874 /* Chaussette2.mod */,
 				D6604229141F566C0011DBC6 /* POSIXm2.def */,
 				D6604228141F566C0011DBC6 /* QTilsM2.def */,
-				D660422B141F566C0011DBC6 /* QTVODlib.def */,
+				D6F4E95017AA99890012C4B4 /* QTVODlibbase.def */,
+				D6F4E94F17AA99890012C4B4 /* QTVODlibbase.mod */,
+				D660422B141F566C0011DBC6 /* QTVODlibext.def */,
 				D660422A141F566C0011DBC6 /* QTVODcomm.def */,
 				D6604225141F566C0011DBC6 /* POSIXm2.mod */,
 				D6604224141F566C0011DBC6 /* QTilsM2.mod */,
-				D660422C141F567C0011DBC6 /* QTVODlib.mod */,
+				D660422C141F567C0011DBC6 /* QTVODlibext.mod */,
 				D6604227141F566C0011DBC6 /* QTVODcomm.mod */,
 				D6604226141F566C0011DBC6 /* QTVODm2.mod */,
 				D6717208175F7ADF00F3C4F3 /* TstQTVDSrv.mod */,
@@ -676,6 +683,7 @@
 				D637C6E01677ECF3005703F8 /* VDPreferences.xib in Resources */,
 				D60586861679F3E700D4D634 /* Help French in Resources */,
 				D605869D1679F53300D4D634 /* Help in Resources */,
+				D61B5F6517A98C8400BCBA11 /* QTVODosx.xcclassmodel in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

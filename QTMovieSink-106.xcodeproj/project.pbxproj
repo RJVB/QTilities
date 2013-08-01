@@ -218,6 +218,8 @@
 		D61927CF11FF70A300BDAAAA /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Logger.h; path = ../Logger.h; sourceTree = "<group>"; };
 		D61927E311FF737300BDAAAA /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		D61927E411FF737300BDAAAA /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
+		D61B5F8D17A98F3400BCBA11 /* QTils-macosx.xcclassmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcclassmodel; name = "QTils-macosx.xcclassmodel"; path = "../macosx/QTils-macosx.xcclassmodel"; sourceTree = "<group>"; };
+		D61B5FAF17A9C60100BCBA11 /* QTils-mswin.xcclassmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcclassmodel; path = "QTils-mswin.xcclassmodel"; sourceTree = "<group>"; };
 		D61EEE4C14841C0400D479D9 /* CritSectEx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CritSectEx.cpp; sourceTree = "<group>"; };
 		D61EEE4D14841C0400D479D9 /* CritSectEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CritSectEx.h; sourceTree = "<group>"; };
 		D6267BE3165802CA008A7887 /* vsscanf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vsscanf.h; sourceTree = "<group>"; };
@@ -646,6 +648,8 @@
 		D6B9CC5E12A5086E00B99C73 /* mswin */ = {
 			isa = PBXGroup;
 			children = (
+				D61B5FAF17A9C60100BCBA11 /* QTils-mswin.xcclassmodel */,
+				D61B5F8D17A98F3400BCBA11 /* QTils-macosx.xcclassmodel */,
 				D634EDE41772535A005FD5A8 /* QTils.ico */,
 				D634EDE1177251C5005FD5A8 /* QTils32x32.ico */,
 				D634EDE2177251C5005FD5A8 /* QTils16x16.ico */,
