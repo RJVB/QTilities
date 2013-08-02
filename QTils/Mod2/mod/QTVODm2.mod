@@ -926,6 +926,7 @@ BEGIN
 	IF QTOpened()
 		THEN
 			(* configuration par défaut de la lecture de fichiers VOD *)
+			POSIX.memset( movieDescription, 0, SIZE(movieDescription) );
 			movieDescription.frequency := 12.5;
 			movieDescription.scale := 1.0;
 			(* zone par défaut: l'Europe de l'ouest *)

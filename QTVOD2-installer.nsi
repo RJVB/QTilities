@@ -196,6 +196,7 @@ Section !$(Sec2Name) SEC02
   File "S:\MacOSX\QTilities\QTils\Mod2\VODdesign.xml"
   File "S:\MacOSX\QTilities\QTils\QTils.dll"
   File "S:\MacOSX\QTilities\QTils\POSIXm2.dll"
+  DetailPrint "Setting QTMW_DoubleBuffering=true in environment..."
   WriteRegExpandStr ${env_hklm} "QTMW_DoubleBuffering" "true"
   ; make sure windows knows about the change
   SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
