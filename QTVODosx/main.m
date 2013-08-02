@@ -223,6 +223,8 @@ int main(int argc, char *argv[])
 	RegisterMyHelpBook();
 	{ QTVOD *qv = [QTVOD alloc];
 	  VODDescription d;
+		// 20130802: better initialise d to all 0 if not to something more appropriate!
+		memset( &d, 0, sizeof(d) );
 		if( [qv ReadDefaultVODDescription:"VODdesign.xml" toDescription:&d] == noErr ){
 			NSLog( @"Read settings from VODdesign.xml" );
 			globalVD.preferences = d;

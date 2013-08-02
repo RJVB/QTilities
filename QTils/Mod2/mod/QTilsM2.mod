@@ -685,6 +685,7 @@ VAR
 	END ReadXMLElementAttributes;
 
 BEGIN
+	xmlErr := noErr;
 	(* tant qu'on trouve du contenu valide... *)
 	WHILE ( QTils.XMLContentKind( theContent, elm ) <> xmlContentTypeInvalid ) DO
 		(* et pour chaque élément trouvé (on ne gère pas le cas xmlContentTypeCharData) *)

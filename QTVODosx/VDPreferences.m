@@ -25,10 +25,12 @@ static void doNSLog( NSString *format, ... )
 #endif
 
 GlobalPreferencesStruct globalVD = {
-	12.5, 1.0, 1.0,
-	FALSE, TRUE, FALSE, TRUE,
-	{ 1, 2, 3, 4},
-	"copy", "2000k",
+	{
+		12.5, 1.0, 1.0,
+		FALSE, TRUE, FALSE, TRUE,
+		{1, 2, 3, 4},
+		"copy", "2000k"
+	},
 	FALSE
 };
 
