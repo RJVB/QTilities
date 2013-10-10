@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winutils", "..\winutils\win
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qtest2r", "qtest2r.vcxproj", "{59E8A270-A137-4321-8139-BC3CA0351D15}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QTMoviePlayer", "QTMoviePlayer.vcxproj", "{726B68BC-ADEB-4DDE-927E-66200692C871}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -62,6 +64,12 @@ Global
 		{59E8A270-A137-4321-8139-BC3CA0351D15}.Develop|Win32.Build.0 = Develop|Win32
 		{59E8A270-A137-4321-8139-BC3CA0351D15}.Release|Win32.ActiveCfg = Release|Win32
 		{59E8A270-A137-4321-8139-BC3CA0351D15}.Release|Win32.Build.0 = Release|Win32
+		{726B68BC-ADEB-4DDE-927E-66200692C871}.Debug|Win32.ActiveCfg = Debug|Win32
+		{726B68BC-ADEB-4DDE-927E-66200692C871}.Debug|Win32.Build.0 = Debug|Win32
+		{726B68BC-ADEB-4DDE-927E-66200692C871}.Develop|Win32.ActiveCfg = Develop|Win32
+		{726B68BC-ADEB-4DDE-927E-66200692C871}.Develop|Win32.Build.0 = Develop|Win32
+		{726B68BC-ADEB-4DDE-927E-66200692C871}.Release|Win32.ActiveCfg = Release|Win32
+		{726B68BC-ADEB-4DDE-927E-66200692C871}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
