@@ -44,6 +44,13 @@
 		D634F06B13172F5200D2BAFD /* QTils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639412C3C7A4009A3D72 /* QTils.framework */; };
 		D634F2531317DD7300D2BAFD /* copyright.h in Headers */ = {isa = PBXBuildFile; fileRef = D619278B11FF690800BDAAAA /* copyright.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D634F2E51317F9B200D2BAFD /* NSQTMovieWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = D634F12C1317D37700D2BAFD /* NSQTMovieWindow.nib */; };
+		D638A68B180710EC00F4AD0D /* QTVODosx.icns in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */; };
+		D638A68C180710EC00F4AD0D /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC218141A0C750005D2B9 /* MainMenu.nib */; };
+		D638A690180710EC00F4AD0D /* QTils-emb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67ACE641416129D00E99EA2 /* QTils-emb.framework */; };
+		D638A691180710EC00F4AD0D /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65CA957176758E700D82B7A /* AppKit.framework */; };
+		D638A692180710EC00F4AD0D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
+		D638A694180710EC00F4AD0D /* QTils-emb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67ACE641416129D00E99EA2 /* QTils-emb.framework */; };
+		D638A6A41807112F00F4AD0D /* QTMoviePlayer.c in Sources */ = {isa = PBXBuildFile; fileRef = D638A6A31807112F00F4AD0D /* QTMoviePlayer.c */; };
 		D63EFD10131CF4D2005B6423 /* QTMovieSink.c in Sources */ = {isa = PBXBuildFile; fileRef = D619275011FF65E200BDAAAA /* QTMovieSink.c */; };
 		D63EFD11131CF4DD005B6423 /* QTMovieSink.h in Headers */ = {isa = PBXBuildFile; fileRef = D619272711FF64E500BDAAAA /* QTMovieSink.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D63EFD76131CF5BE005B6423 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63EFD75131CF5BE005B6423 /* QuartzCore.framework */; };
@@ -142,6 +149,13 @@
 			remoteGlobalIDString = D65F639312C3C7A4009A3D72;
 			remoteInfo = QTils.framework;
 		};
+		D638A689180710EC00F4AD0D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D67ACE401416129D00E99EA2;
+			remoteInfo = "QTils-emb.framework";
+		};
 		D63EFE7A131CF849005B6423 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -179,6 +193,17 @@
 			dstPath = Versions/Frameworks;
 			dstSubfolderSpec = 1;
 			files = (
+			);
+			name = Frameworks;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D638A693180710EC00F4AD0D /* Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D638A694180710EC00F4AD0D /* QTils-emb.framework in Frameworks */,
 			);
 			name = Frameworks;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -236,6 +261,9 @@
 		D634EDE41772535A005FD5A8 /* QTils.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; name = QTils.ico; path = QTils/QTils.ico; sourceTree = SOURCE_ROOT; };
 		D634F05713172E3E00D2BAFD /* QTMovieWindowTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = QTMovieWindowTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D634F12C1317D37700D2BAFD /* NSQTMovieWindow.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = NSQTMovieWindow.nib; sourceTree = "<group>"; };
+		D638A698180710EC00F4AD0D /* QTMoviePlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QTMoviePlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D638A69A180710EC00F4AD0D /* QTMovieWindowTest.app-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QTMovieWindowTest.app-Info.plist"; sourceTree = "<group>"; };
+		D638A6A31807112F00F4AD0D /* QTMoviePlayer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = QTMoviePlayer.c; path = QTils/QTMoviePlayer.c; sourceTree = "<group>"; };
 		D63A60011230F198001E4ACF /* OSXbackgrounding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = OSXbackgrounding.c; sourceTree = "<group>"; };
 		D63EFD26131CF5A2005B6423 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		D63EFD75131CF5BE005B6423 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -301,7 +329,7 @@
 		D6912BA8132E3F1700CD5E78 /* MacFramework.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacFramework.c; path = "../qttext/Common Files/MacFramework.c"; sourceTree = SOURCE_ROOT; };
 		D6912BA9132E3F1700CD5E78 /* QTText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QTText.h; path = ../qttext/QTText.h; sourceTree = SOURCE_ROOT; };
 		D6912C13132E54C300CD5E78 /* QTMovieWindowTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QTMovieWindowTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D6912C15132E54C300CD5E78 /* QTMovieWindowTest.app-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QTMovieWindowTest.app-Info.plist"; sourceTree = "<group>"; };
+		D6912C15132E54C300CD5E78 /* QTMoviePlayer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QTMoviePlayer-Info.plist"; sourceTree = "<group>"; };
 		D69C2E04133EB3AC001C8D4C /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PkgInfo; sourceTree = SOURCE_ROOT; };
 		D6B25774175B88C20090F55F /* NSLogger-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSLogger-LICENSE.txt"; sourceTree = "<group>"; };
 		D6B25775175B88C20090F55F /* LoggerCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggerCommon.h; sourceTree = "<group>"; };
@@ -358,6 +386,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				D634F06B13172F5200D2BAFD /* QTils.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D638A68F180710EC00F4AD0D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D638A690180710EC00F4AD0D /* QTils-emb.framework in Frameworks */,
+				D638A691180710EC00F4AD0D /* AppKit.framework in Frameworks */,
+				D638A692180710EC00F4AD0D /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -422,10 +460,11 @@
 				D6B9CCD312A5296D00B99C73 /* Frameworks */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 				D65191B012199F490077C8D3 /* QTMovieSink-Info.plist */,
-				D6912C15132E54C300CD5E78 /* QTMovieWindowTest.app-Info.plist */,
+				D6912C15132E54C300CD5E78 /* QTMoviePlayer-Info.plist */,
 				D64B62CB15823A2400FCA20C /* qtest2r.app-Info.plist */,
 				D6B257A4175B89D30090F55F /* SystemConfiguration.framework */,
 				D65CA957176758E700D82B7A /* AppKit.framework */,
+				D638A69A180710EC00F4AD0D /* QTMovieWindowTest.app-Info.plist */,
 			);
 			name = "FreeImage-testAPI";
 			sourceTree = "<group>";
@@ -439,6 +478,7 @@
 				D6912C13132E54C300CD5E78 /* QTMovieWindowTest.app */,
 				D67ACE641416129D00E99EA2 /* QTils-emb.framework */,
 				D64B62C915823A2400FCA20C /* qtest2r.app */,
+				D638A698180710EC00F4AD0D /* QTMoviePlayer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -573,6 +613,7 @@
 				D6878985129ACB17009ACD66 /* Lists.h */,
 				D6878986129ACB17009ACD66 /* Lists.cpp */,
 				D64CFEC4129ED62900AD4351 /* QTMovieWindowTest.c */,
+				D638A6A31807112F00F4AD0D /* QTMoviePlayer.c */,
 				D6574F4E131E7AC600A2DDE4 /* runDoxygen.sh */,
 			);
 			fileEncoding = 4;
@@ -795,6 +836,25 @@
 			productReference = D634F05713172E3E00D2BAFD /* QTMovieWindowTest */;
 			productType = "com.apple.product-type.tool";
 		};
+		D638A687180710EC00F4AD0D /* QTMoviePlayer.app */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D638A695180710EC00F4AD0D /* Build configuration list for PBXNativeTarget "QTMoviePlayer.app" */;
+			buildPhases = (
+				D638A68A180710EC00F4AD0D /* Resources */,
+				D638A68D180710EC00F4AD0D /* Sources */,
+				D638A68F180710EC00F4AD0D /* Frameworks */,
+				D638A693180710EC00F4AD0D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D638A688180710EC00F4AD0D /* PBXTargetDependency */,
+			);
+			name = QTMoviePlayer.app;
+			productName = QTMovieWindowTest.app;
+			productReference = D638A698180710EC00F4AD0D /* QTMoviePlayer.app */;
+			productType = "com.apple.product-type.application";
+		};
 		D64B62C815823A2400FCA20C /* qtest2r.app */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D64B62CE15823A2500FCA20C /* Build configuration list for PBXNativeTarget "qtest2r.app" */;
@@ -898,6 +958,7 @@
 				D67ACE401416129D00E99EA2 /* QTils-emb.framework */,
 				D634F05613172E3E00D2BAFD /* QTMovieWindowTest */,
 				D6912C12132E54C300CD5E78 /* QTMovieWindowTest.app */,
+				D638A687180710EC00F4AD0D /* QTMoviePlayer.app */,
 				D6295FFB121BE77D00F66BA8 /* qtest2r */,
 				D64B62C815823A2400FCA20C /* qtest2r.app */,
 				D6887054131FCAF000A696E6 /* DocSet */,
@@ -907,6 +968,15 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		D638A68A180710EC00F4AD0D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D638A68B180710EC00F4AD0D /* QTVODosx.icns in Resources */,
+				D638A68C180710EC00F4AD0D /* MainMenu.nib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D64B62C515823A2400FCA20C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1001,6 +1071,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D638A68D180710EC00F4AD0D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D638A6A41807112F00F4AD0D /* QTMoviePlayer.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D64B62C615823A2400FCA20C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1071,6 +1149,11 @@
 			isa = PBXTargetDependency;
 			target = D65F639312C3C7A4009A3D72 /* QTils.framework */;
 			targetProxy = D618399C131FE916004D1997 /* PBXContainerItemProxy */;
+		};
+		D638A688180710EC00F4AD0D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D67ACE401416129D00E99EA2 /* QTils-emb.framework */;
+			targetProxy = D638A689180710EC00F4AD0D /* PBXContainerItemProxy */;
 		};
 		D63EFE7B131CF849005B6423 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1248,6 +1331,55 @@
 				PREBINDING = NO;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				PRODUCT_NAME = QTMovieWindowTest;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		D638A696180710EC00F4AD0D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_GC = required;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "QTMoviePlayer-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = QTMoviePlayer;
+			};
+			name = Debug;
+		};
+		D638A697180710EC00F4AD0D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_GC = required;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = EMBEDDED_FRAMEWORK;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "QTMoviePlayer-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = QTMoviePlayer;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -1528,7 +1660,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = "QTMovieWindowTest.app-Info.plist";
+				INFOPLIST_FILE = "QTMoviePlayer-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
@@ -1552,7 +1684,7 @@
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = EMBEDDED_FRAMEWORK;
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = "QTMovieWindowTest.app-Info.plist";
+				INFOPLIST_FILE = "QTMoviePlayer-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
@@ -1587,6 +1719,15 @@
 			buildConfigurations = (
 				D634F05913172E3F00D2BAFD /* Debug */,
 				D634F05A13172E3F00D2BAFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D638A695180710EC00F4AD0D /* Build configuration list for PBXNativeTarget "QTMoviePlayer.app" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D638A696180710EC00F4AD0D /* Debug */,
+				D638A697180710EC00F4AD0D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

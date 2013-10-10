@@ -331,10 +331,22 @@ int main( int argc, char* argv[] )
   unsigned long nMsg = 0, nPumps = 0;
   LibQTilsBase QTils;
 
-#ifdef __APPLE_CC__
-	NSApplicationLoad();
+#if defined(__APPLE_CC__) || defined(__MACH__)
+  const char *sessionArg = NULL;
+ 	NSApplicationLoad();
+	if( argc > 0 && strncasecmp( argv[1], "-psn_", 5 ) == 0 ){
+		sessionArg = argv[1];
+		for( i = 2 ; i < argc ; ++i ){
+			argv[i-1] = argv[i];
+		}
+		argc -= 1;
+	}
 #endif
 
+	QTils_LogMsgEx( "%s called with %d argument(s)", argv[0], argc - 1 );
+	for( i = 1 ; i < argc ; ++i ){
+		QTils_LogMsg( argv[i] );
+	}
 	if( argc > 0 ){
 		// we need at least 2 windows
 		n = (argc == 1)? 2 : argc;
@@ -351,8 +363,12 @@ int main( int argc, char* argv[] )
 
 		//ewi = InitQTMovieWindowH( 100, 100 );
 		if( argc == 1 ){
+			QTils_LogMsgEx( "OpenQTMovieInWindow() will present a file selection dialog" );
 			// OpeQTMovieInWindow() will present a dialog if a NULL URL is passed in
 			wi = OpenQTMovieInWindow( NULL, 1 );
+			if( !wi ){
+				QTils_LogMsgEx( "Failed to open a movie" );
+			}
 			// register the window in our local list:
 			register_wi(wi);
 		}
@@ -360,6 +376,9 @@ int main( int argc, char* argv[] )
 			wi = NULL;
 			for( i = 1 ; i < argc ; i++ ){
 				wi = OpenQTMovieInWindow( argv[i], 1 );
+				if( !wi ){
+					QTils_LogMsgEx( "Error opening \"%s\"", argv[i] );
+				}
 				// register the window in our local list:
 				register_wi(wi);
 			}

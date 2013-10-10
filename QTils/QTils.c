@@ -384,8 +384,15 @@ int vssprintfAppend_Mod2( char **buffer, const char *format, int flen, va_list a
 
 void QTils_LogInit()
 {
-#if (defined(__APPLE_CC__) || defined(__MACH__)) && !defined(EMBEDDED_FRAMEWORK) && defined(_PC_LOG_ACTIVE)
+#if (defined(__APPLE_CC__) || defined(__MACH__))
+#	if defined(_PC_LOG_ACTIVE)
+#		if !defined(EMBEDDED_FRAMEWORK)
 	PCLogAllocPool();
+#		endif //!EMBEDDED_FRAMEWORK
+#	else
+	LoggerInit();
+	LoggerStart(NULL);
+#	endif // _PC_LOG_ACTIVE
 #endif
 // 20130320 : only create a lock if we're logging. The downside is that concurrent writes to
 // lastSSLogMsg become possible.

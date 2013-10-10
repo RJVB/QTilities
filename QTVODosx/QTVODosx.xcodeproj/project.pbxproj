@@ -88,6 +88,13 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
+		D638A6D818071F6500F4AD0D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D638A698180710EC00F4AD0D;
+			remoteInfo = QTMoviePlayer.app;
+		};
 		D64B64341582AD9200FCA20C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D67ACDA0141610A500E99EA2 /* QTMovieSink-106.xcodeproj */;
@@ -504,6 +511,7 @@
 				D67ACEDE14161FA600E99EA2 /* QTils-emb.framework */,
 				D67ACDBD141610A500E99EA2 /* QTMovieWindowTest */,
 				D67ACDBF141610A500E99EA2 /* QTMovieWindowTest.app */,
+				D638A6D918071F6500F4AD0D /* QTMoviePlayer.app */,
 				D67ACDC1141610A500E99EA2 /* qtest2r */,
 				D64B64351582AD9200FCA20C /* qtest2r.app */,
 			);
@@ -608,6 +616,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		D638A6D918071F6500F4AD0D /* QTMoviePlayer.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = QTMoviePlayer.app;
+			remoteRef = D638A6D818071F6500F4AD0D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		D64B64351582AD9200FCA20C /* qtest2r.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
