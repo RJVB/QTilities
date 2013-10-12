@@ -65,6 +65,13 @@ IDENTIFY("QTMovieWinWM: QuickTime utilities: MSWin32 part of the toolkit");
 #define strncasecmp(a,b,n)	_strnicmp((a),(b),(n))
 #define strcasecmp(a,b)		_stricmp((a),(b))
 
+#ifndef MIN
+#	define	MIN(a,b) (((a)<(b))?(a):(b))
+#endif /* MIN */
+#ifndef MAX
+#	define	MAX(a,b) (((a)>(b))?(a):(b))
+#endif /* MIN */
+
 static char errbuf[512];
 
 static HINSTANCE ghInst = NULL;
@@ -382,6 +389,100 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 //			PostQuitMessage(0);
 			break;
 
+// 		case WM_SYSCOMMAND:
+		case WM_SIZE:
+			{ RECT clientRect;
+				if( !wi && (wi = QTMovieWindowHFromNativeWindow(hWnd)) ){
+					(*wi)->handlingEvent += 1;
+				}
+				if( wi && (*wi)->info && !(*wi)->isZooming ){
+					if( wParam == SIZE_MAXIMIZED || wParam == SIZE_MAXSHOW || wParam == SC_MAXIMIZE ){
+					  RECT screenRect;
+					  long screenWidth, screenHeight, mWidth, mHeight, scaleX, scaleY, scale;
+					  enum { WGROW, WSHRINK, WSHRGROW, WGRWSHRINK } scaleTypeX, scaleTypeY, scaleType;
+						(*wi)->isZooming = 1;
+						SystemParametersInfo( SPI_GETWORKAREA, 0, &screenRect, 0 );
+						screenWidth = screenRect.right - screenRect.left;
+						screenHeight = screenRect.bottom - screenRect.top;
+						mWidth = (*wi)->info->naturalBounds.right - (*wi)->info->naturalBounds.left;
+						mHeight = (*wi)->info->naturalBounds.bottom - (*wi)->info->naturalBounds.top;
+						if( screenWidth >= mWidth ){
+							scaleX = screenWidth / mWidth;
+							scaleTypeX = WGROW;
+						}
+						else{
+							scaleX = mWidth / screenWidth;
+							scaleTypeX = WSHRINK;
+						}
+						if( screenHeight >= mHeight ){
+							scaleY = screenHeight / mHeight;
+							scaleTypeY = WGROW;
+						}
+						else{
+							scaleY = mHeight / screenHeight;
+							scaleTypeY = WSHRINK;
+						}
+						if( scaleTypeX == WGROW && scaleTypeY == WGROW ){
+							scale = MIN( scaleX, scaleY );
+							scaleType = WGROW;
+							mWidth *= scale;
+							mHeight *= scale;
+						}
+						else if( scaleTypeX == WSHRINK && scaleTypeY == WSHRINK ){
+							scale = MAX( scaleX, scaleY );
+							scaleType = WSHRINK;
+							mWidth /= scale;
+							mHeight /= scale;
+						}
+						if( (*wi)->theMC && MCGetVisible((*wi)->theMC) ){
+							mHeight += (*wi)->info->controllerHeight;
+						}
+						Log( qtLogPtr,
+							"%s QT window #%u[%ld,%ld], wParam=%u, size=(%ld,%ld); scale=%ld:%d => size=(%ld,%ld)\n",
+							(message==WM_SIZE)? "WM_SIZE" : "WM_SYSCOMMAND",
+							(*wi)->idx,
+							(*wi)->info->naturalBounds.right - (*wi)->info->naturalBounds.left,
+							(*wi)->info->naturalBounds.bottom - (*wi)->info->naturalBounds.top,
+							wParam, screenWidth, screenHeight, scale, scaleType,
+							mWidth, mHeight );
+						{ Cartesian pos, size;
+						  Rect controllerBox;
+							MCGetControllerBoundsRect( (*wi)->theMC, &controllerBox);
+							size.horizontal = (short) mWidth;
+							size.vertical = (short) mHeight;
+							pos.horizontal = (screenWidth - mWidth)/2;
+							pos.vertical = (screenHeight - mHeight)/2;
+							mWidth += 2 * GetSystemMetrics(SM_CXBORDER);
+							mHeight += GetSystemMetrics(SM_CXBORDER) + GetSystemMetrics(SM_CYCAPTION);
+// 							MoveWindow( (*wi)->theView,
+// 									 pos.horizontal - GetSystemMetrics(SM_CXBORDER),
+// 									 pos.vertical - GetSystemMetrics(SM_CYCAPTION),
+// 									 mWidth, mHeight, TRUE );
+// 							QTMovieWindowSetGeometry( wi, &pos, &size, 1, 0 );
+// 							QTMovieWindowGetGeometry( wi, &pos, &size, 1 );
+							controllerBox.left = pos.horizontal;
+							controllerBox.top = pos.vertical;
+							controllerBox.right = controllerBox.right + size.horizontal;
+							controllerBox.bottom = controllerBox.top + size.vertical;
+							MCSetControllerBoundsRect( (*wi)->theMC, &controllerBox);
+						}
+						returnRet = TRUE;
+						ret = 0;
+						(*wi)->isZooming = 0;
+					}
+					else if( wParam == SC_RESTORE || wParam == SIZE_RESTORED ){
+					  RECT clientRect;
+					  Rect controllerBox;
+						GetClientRect( hWnd, &clientRect );
+						MCGetControllerBoundsRect( (*wi)->theMC, &controllerBox);
+						controllerBox.top = controllerBox.left = 0;
+						controllerBox.right = clientRect.right - clientRect.left;
+						controllerBox.bottom = clientRect.bottom - clientRect.top;
+						MCSetControllerBoundsRect( (*wi)->theMC, &controllerBox);
+					}
+				}
+			}
+			break;
 		case WM_ENTERSIZEMOVE:
 			{ RECT clientRect;
 				if( !wi && (wi = QTMovieWindowHFromNativeWindow(hWnd)) ){
@@ -399,13 +500,15 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 			if( !wi && (wi = QTMovieWindowHFromNativeWindow(hWnd)) ){
 				(*wi)->handlingEvent += 1;
 			}
-			if ( wi && (*wi)->theMovie ){
+			// check for a valid theMC even if we ought never get here without one:
+			if ( wi && (*wi)->theMovie && (*wi)->theMC ){
 			  RECT clientRect;
 			  long widthAdjust = 0, heightAdjust = 0;
-				Log( qtLogPtr, "ExitSizeMove QT window #%u\n", (*wi)->idx );
 				GetClientRect( hWnd, &clientRect );
 				widthAdjust = (clientRect.right - clientRect.left) - (*wi)->gOldWindowPos.cx;
 				heightAdjust = (clientRect.bottom - clientRect.top) - (*wi)->gOldWindowPos.cy;
+				Log( qtLogPtr, "ExitSizeMove QT window #%u, size adjust = (%ld,%ld)\n",
+						(*wi)->idx, widthAdjust, heightAdjust );
 				if( widthAdjust || heightAdjust ){
 				  Rect controllerBox;
 					MCGetControllerBoundsRect( (*wi)->theMC, &controllerBox);
@@ -639,6 +742,26 @@ QTMovieWindowH InitQTMovieWindowHFromMovieInBG( BGContext *cx,
 	}
 }
 
+static NativeWindow CreateNativeWindow( const char *name, short width, short height )
+{ NativeWindow theView;
+	theView = CreateWindowEx(
+			WS_EX_APPWINDOW|WS_EX_WINDOWEDGE, (LPCSTR) QTMWClass,
+			(LPCSTR) name, WS_OVERLAPPED|WS_CAPTION|WS_VISIBLE
+				|WS_MAXIMIZEBOX|WS_MINIMIZEBOX|WS_SYSMENU,
+			CW_USEDEFAULT, CW_USEDEFAULT, width, height,
+			0, 0, ghInst, NULL
+	);
+	if( theView ){
+		if( CreateTrayIcon() && !TrayIconTargetWnd ){
+			TrayIcon->ShowIcon();
+			TrayIcon->SetTargetWnd(theView);
+			TrayIconTargetWnd = theView;
+			TrayIcon->ShowIcon();
+		}
+	}
+	return theView;
+}
+
 QTMovieWindowH InitQTMovieWindowH( short width, short height )
 { QTMovieWindows *wi = NULL;
   QTMovieWindowH wih = NULL;
@@ -656,19 +779,8 @@ QTMovieWindowH InitQTMovieWindowH( short width, short height )
 		else{
 			width = height = CW_USEDEFAULT;
 		}
-		wi->theView = CreateWindowEx(
-				WS_EX_APPWINDOW|WS_EX_WINDOWEDGE, (LPCSTR) QTMWClass,
-				(LPCSTR) ProgrammeName, WS_OVERLAPPED|WS_CAPTION|WS_VISIBLE,
-				CW_USEDEFAULT, CW_USEDEFAULT, width, height,
-				0, 0, ghInst, NULL
-		);
+		wi->theView = CreateNativeWindow( ProgrammeName, width, height );
 		if( wi->theView ){
-			if( CreateTrayIcon() && !TrayIconTargetWnd ){
-				TrayIcon->ShowIcon();
-				TrayIcon->SetTargetWnd(wi->theView);
-				TrayIconTargetWnd = wi->theView;
-				TrayIcon->ShowIcon();
-			}
 			PumpMessages(FALSE);
 			register_QTMovieWindowH( wih, wi->theView );
 			SetLastError(0);
@@ -702,19 +814,8 @@ static QTMovieWindowH _DisplayMovieInQTMovieWindowH_( Movie theMovie, QTMovieWin
 		GetMovieBox( theMovie, &wi->theMovieRect );
 		MacOffsetRect( &wi->theMovieRect, -wi->theMovieRect.left, -wi->theMovieRect.top );
 		if( !wi->theView || (nwih = QTMovieWindowHFromNativeWindow(wi->theView)) != wih ){
-			wi->theView = CreateWindowEx(
-					WS_EX_APPWINDOW|WS_EX_WINDOWEDGE, (LPCSTR) QTMWClass,
-					(LPCSTR) theURL, WS_OVERLAPPED|WS_CAPTION|WS_VISIBLE,
-					CW_USEDEFAULT, CW_USEDEFAULT, wi->theMovieRect.right, wi->theMovieRect.bottom,
-					0, 0, ghInst, NULL
-			);
-			if( wi->theView ){
-				if( CreateTrayIcon() && !TrayIconTargetWnd ){
-					TrayIcon->ShowIcon();
-					TrayIcon->SetTargetWnd(wi->theView);
-					TrayIconTargetWnd = wi->theView;
-				}
-			}
+			wi->theView = CreateNativeWindow( theURL,
+					wi->theMovieRect.right, wi->theMovieRect.bottom );
 		}
 		else{
 			// no need to correct the geometry; QTMovieWindowSetGeometry() will called further down!

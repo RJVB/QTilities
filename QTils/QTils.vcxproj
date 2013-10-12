@@ -236,13 +236,16 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
     <ClCompile Include="mswin\QTMovieWinWM.cpp">
       <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">false</PreprocessToFile>
       <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">false</ShowIncludes>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Default</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">CompileAsCpp</CompileAs>
     </ClCompile>
     <ClCompile Include="mswin\SystemTraySDK.cpp">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">Default</CompileAs>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">NoListing</AssemblerOutput>
       <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Develop|Win32'">false</WholeProgramOptimization>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Default</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Default</CompileAs>
     </ClCompile>
     <ClCompile Include="QTils.c" />
     <ClCompile Include="..\QTMovieSink.c" />

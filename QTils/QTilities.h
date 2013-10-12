@@ -558,6 +558,7 @@ typedef struct QTMovieWindows {
 	short resId;
 #ifdef _WINDOWS_
 	WINDOWPOS gOldWindowPos;			//!< to keep track of the window's previous position
+	int isZooming;
 #endif // _WINDOWS_
 #if TARGET_OS_MAC
 //	struct NSAutoreleasePool *pool;	//!< Objective-C memory allocation pool
