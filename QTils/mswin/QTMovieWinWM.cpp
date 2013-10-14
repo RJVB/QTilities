@@ -390,131 +390,168 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 			break;
 
 		case WM_SYSCOMMAND:
-				if( !wi && (wi = QTMovieWindowHFromNativeWindow(hWnd)) ){
-					(*wi)->handlingEvent += 1;
+			if( !wi && (wi = QTMovieWindowHFromNativeWindow(hWnd)) ){
+				(*wi)->handlingEvent += 1;
+			}
+			if( wi && (*wi)->info && !(*wi)->isZooming ){
+				if( wParam == SC_MINIMIZE ){
+					(*wi)->sizeState |= QTWM_REDUCED;
 				}
-				if( wi && (*wi)->info && !(*wi)->isZooming ){
-					if( wParam == SC_MAXIMIZE ){
-					  RECT screenRect;
-					  long screenWidth, screenHeight, mWidth, mHeight, scaleX, scaleY, scale;
-					  enum { WGROW, WSHRINK, WSHRGROW, WGRWSHRINK } scaleTypeX, scaleTypeY, scaleType;
-						if( (*wi)->isZoomed ){
-							// ahem...
-							goto unzoom;
-						}
-						(*wi)->isZooming = 1;
-						QTMovieWindowGetGeometry( wi, &(*wi)->restorePos, &(*wi)->restoreSize, 1 );
-						QTMovieWindowGetGeometry( wi, &(*wi)->frameShift, &(*wi)->frameMargin, 0 );
-						(*wi)->frameShift.horizontal = (*wi)->restorePos.horizontal - (*wi)->frameShift.horizontal;
-						(*wi)->frameShift.vertical = (*wi)->restorePos.vertical- (*wi)->frameShift.vertical;
-						// calculate the difference between the movie size and the window size. Note that we
-						// do not account for the movie controller here (i.e. it's included or not depending on
-						// wether it's visible or not)
-						(*wi)->frameMargin.horizontal = (*wi)->restoreSize.horizontal - (*wi)->frameMargin.horizontal;
-						(*wi)->frameMargin.vertical = (*wi)->restoreSize.vertical- (*wi)->frameMargin.vertical;
-						if( !(*wi)->isZoomed ){
-							SystemParametersInfo( SPI_GETWORKAREA, 0, &screenRect, 0 );
-							screenWidth = screenRect.right - screenRect.left;
-							screenHeight = screenRect.bottom - screenRect.top;
-							// determine maximum movie size that's an integer times the natural size
-							// fitting on the screen:
-							mWidth = (*wi)->info->naturalBounds.right - (*wi)->info->naturalBounds.left;
-							mHeight = (*wi)->info->naturalBounds.bottom - (*wi)->info->naturalBounds.top;
-							if( screenWidth >= mWidth ){
-								scaleX = screenWidth / mWidth;
-								scaleTypeX = WGROW;
-							}
-							else{
-								scaleX = mWidth / screenWidth;
-								scaleTypeX = WSHRINK;
-							}
-							if( screenHeight >= mHeight ){
-								scaleY = screenHeight / mHeight;
-								scaleTypeY = WGROW;
-							}
-							else{
-								scaleY = mHeight / screenHeight;
-								scaleTypeY = WSHRINK;
-							}
-							if( scaleTypeX == WGROW && scaleTypeY == WGROW ){
-								scale = MIN( scaleX, scaleY );
-								scaleType = WGROW;
-								// check for overflow:
-								if( scale > 1
-								   && (mWidth * scale + (*wi)->frameMargin.horizontal > screenWidth
-									  || mHeight * scale + (*wi)->frameMargin.vertical > screenHeight)
-								){
-									scale -= 1;
-								}
-								mWidth *= scale;
-								mHeight *= scale;
-							}
-							else if( scaleTypeX == WSHRINK && scaleTypeY == WSHRINK ){
-								scale = MAX( scaleX, scaleY );
-								scaleType = WSHRINK;
-								mWidth /= scale;
-								mHeight /= scale;
-							}
-							// add the space taken up by window borders, titlebar and movie controller:
-							mWidth += (*wi)->frameMargin.horizontal;
-							// if the movie controller's visibility was changed since frameMargin was determined
-							// the height adjustment will be wrong!
-							mHeight += (*wi)->frameMargin.vertical;
-							Log( qtLogPtr,
-								"%s QT window #%u[%ld,%ld], wParam=%u, size=(%ld,%ld); scale=%ld:%d => window size=(%ld,%ld)\n",
-								(message==WM_SIZE)? "WM_SIZE" : "WM_SYSCOMMAND",
-								(*wi)->idx,
-								(*wi)->info->naturalBounds.right - (*wi)->info->naturalBounds.left,
-								(*wi)->info->naturalBounds.bottom - (*wi)->info->naturalBounds.top,
-								wParam, screenWidth, screenHeight, scale, scaleType,
-								mWidth, mHeight );
-							{ Cartesian pos, size;
-								size.horizontal = (short) mWidth;
-								size.vertical = (short) mHeight;
-								pos.horizontal = (screenWidth - mWidth)/2;
-								pos.vertical = (screenHeight - mHeight)/2;
-								QTMovieWindowSetGeometry( wi, &(*wi)->restorePos, &(*wi)->restoreSize, 1, 1 );
-								//QTMovieWindowSetGeometry( wi, &pos, &size, 1, 1 );
-								QTMovieWindowSetGeometry( wi, NULL, NULL, (double) scale, 0 );
-								QTMovieWindowSetGeometry( wi, &pos, NULL, 1, 1 );
-							}
-							(*wi)->isZoomed = 1;
-							returnRet = TRUE;
-							ret = 0;
-						}
-						(*wi)->isZooming = 0;
+				else if( wParam == SC_MAXIMIZE ){
+				// we received a maximisation request - the SYSCOMMAND version is thrown *before* the target window is
+				// resized by the window manager so we have all options available to us, and also the original dimensions.
+				  RECT screenRect;
+				  long screenWidth, screenHeight, mWidth, mHeight, scaleX, scaleY, scale;
+				  enum { WGROW, WSHRINK, WSHRGROW, WGRWSHRINK } scaleTypeX, scaleTypeY, scaleType;
+				  bool toggleMC;
+					// since we meddle with the default mechanism, we'll in principle never get the corresponding
+					// restore request. Instead, we have to maintain our proper state, and decide whether an unzoom
+					// is appropriate:
+					if( (*wi)->sizeState & QTWM_ZOOMED ){
+						// ahem...
+						goto unzoom;
 					}
-					else if( wParam == SC_RESTORE && (*wi)->isZoomed ){
+					(*wi)->isZooming = 1;
+					// heavy kludge to cope with invisible movie controllers: make it visible for
+					// the duration of the procedure
+					if( !MCGetVisible( (*wi)->theMC ) ){
+						toggleMC = true;
+						MCSetVisible( (*wi)->theMC, true );
+						// it's quite likely that this call already cancels the actual maximisation request...:
+						QTMovieWindowSetGeometry( wi, NULL, NULL, 1.0, 0 );
+					}
+					else{
+						toggleMC = false;
+					}
+					// get the current (= original, to-restore-to) dimensions:
+					QTMovieWindowGetGeometry( wi, &(*wi)->restorePos, &(*wi)->restoreSize, 1 );
+					QTMovieWindowGetGeometry( wi, &(*wi)->frameShift, &(*wi)->frameMargin, 0 );
+					(*wi)->frameShift.horizontal = (*wi)->restorePos.horizontal - (*wi)->frameShift.horizontal;
+					(*wi)->frameShift.vertical = (*wi)->restorePos.vertical- (*wi)->frameShift.vertical;
+					// calculate the difference between the movie size and the window size. Note that we
+					// do not account for the movie controller here, which is probably the reason we're
+					// making it visible above in the first place ...
+					(*wi)->frameMargin.horizontal = (*wi)->restoreSize.horizontal - (*wi)->frameMargin.horizontal;
+					(*wi)->frameMargin.vertical = (*wi)->restoreSize.vertical- (*wi)->frameMargin.vertical;
+					if( !((*wi)->sizeState & QTWM_ZOOMED) ){
+						// get the work area, i.e. the current (well, primary?!) screen dimensions
+						SystemParametersInfo( SPI_GETWORKAREA, 0, &screenRect, 0 );
+						screenWidth = screenRect.right - screenRect.left;
+						screenHeight = screenRect.bottom - screenRect.top;
+						// determine maximum movie size that's an integer times the natural size
+						// fitting on the screen:
+						mWidth = (*wi)->info->naturalBounds.right - (*wi)->info->naturalBounds.left;
+						mHeight = (*wi)->info->naturalBounds.bottom - (*wi)->info->naturalBounds.top;
+						if( screenWidth >= mWidth ){
+							scaleX = screenWidth / mWidth;
+							scaleTypeX = WGROW;
+						}
+						else{
+							scaleX = mWidth / screenWidth;
+							scaleTypeX = WSHRINK;
+						}
+						if( screenHeight >= mHeight ){
+							scaleY = screenHeight / mHeight;
+							scaleTypeY = WGROW;
+						}
+						else{
+							scaleY = mHeight / screenHeight;
+							scaleTypeY = WSHRINK;
+						}
+						if( scaleTypeX == WGROW && scaleTypeY == WGROW ){
+						// the window can grow in both dimensions
+							scale = MIN( scaleX, scaleY );
+							scaleType = WGROW;
+							// check for overflow:
+							if( scale > 1
+							   && (mWidth * scale + (*wi)->frameMargin.horizontal > screenWidth
+								  || mHeight * scale + (*wi)->frameMargin.vertical > screenHeight)
+							){
+								scale -= 1;
+							}
+							mWidth *= scale;
+							mHeight *= scale;
+						}
+						else{
+						// the window must shrink in both dimensions, even if it could grow in one of the two...
+							if( scaleTypeX == WGROW ){
+								scale = scaleY;
+							}
+							else if( scaleTypeY == WGROW ){
+								scale = scaleX;
+							}
+							else{
+								scale = MAX( scaleX, scaleY );
+							}
+							scaleType = WSHRINK;
+							mWidth /= scale;
+							mHeight /= scale;
+						}
+						// add the space taken up by window borders, titlebar and movie controller:
+						mWidth += (*wi)->frameMargin.horizontal;
+						// if the movie controller's visibility was changed since frameMargin was determined
+						// the height adjustment will be wrong!
+						mHeight += (*wi)->frameMargin.vertical;
+						Log( qtLogPtr,
+							"%s QT window #%u[%ld,%ld], wParam=%u, size=(%ld,%ld); scale=%ld:%d => window size=(%ld,%ld)\n",
+							(message==WM_SIZE)? "WM_SIZE" : "WM_SYSCOMMAND",
+							(*wi)->idx,
+							(*wi)->info->naturalBounds.right - (*wi)->info->naturalBounds.left,
+							(*wi)->info->naturalBounds.bottom - (*wi)->info->naturalBounds.top,
+							wParam, screenWidth, screenHeight, scale, scaleType,
+							mWidth, mHeight );
+						{ Cartesian pos, size;
+							size.horizontal = (short) mWidth;
+							size.vertical = (short) mHeight;
+							pos.horizontal = (screenWidth - mWidth)/2;
+							pos.vertical = (screenHeight - mHeight)/2;
+							QTMovieWindowSetGeometry( wi, &(*wi)->restorePos, &(*wi)->restoreSize, 1, 1 );
+							QTMovieWindowSetGeometry( wi, &pos, &size, 1, 1 );
+							if( toggleMC ){
+								MCSetVisible( (*wi)->theMC, false );
+								QTMovieWindowSetGeometry( wi, NULL, NULL, 1.0, 0 );
+							}
+						}
+						(*wi)->sizeState |= QTWM_ZOOMED;
+						// documentation says we should return 0 if we handle a WM_SYSCOMMAND message.
+						// As a result, follow-up messages are not received (WM_SIZE or WM_EXITSIZEMOVE)
+						returnRet = TRUE;
+						ret = 0;
+					}
+					(*wi)->isZooming = 0;
+				}
+				else if( wParam == SC_RESTORE ){
+					if( (*wi)->sizeState & QTWM_REDUCED ){
+						(*wi)->sizeState &= ~QTWM_REDUCED;
+					}
+					// presumable a window cannot be "unzoomed" when it is in reduced state...
+					else if( (*wi)->sizeState & QTWM_ZOOMED ){
 unzoom:
+					  bool toggleMC;
 						(*wi)->isZooming = 1;
+						// heavy kludge to cope with invisible movie controllers
+						// this is required to restore the window's content to the proper dimensions
+						if( !MCGetVisible( (*wi)->theMC ) ){
+							toggleMC = true;
+							MCSetVisible( (*wi)->theMC, true );
+							QTMovieWindowSetGeometry( wi, NULL, NULL, 1.0, 0 );
+						}
+						else{
+							toggleMC = false;
+						}
 						QTMovieWindowSetGeometry( wi, &(*wi)->restorePos, &(*wi)->restoreSize, 1, 1 );
-						(*wi)->isZoomed = 0;
+						if( toggleMC ){
+							MCSetVisible( (*wi)->theMC, false );
+							QTMovieWindowSetGeometry( wi, NULL, NULL, 1.0, 0 );
+						}
+						(*wi)->sizeState &= ~QTWM_ZOOMED;
 						(*wi)->isZooming = 0;
 						returnRet = TRUE;
 						ret = 0;
 					}
 				}
-				break;
-		//case WM_SIZE:
-		//	{ RECT clientRect;
-		//		if( !wi && (wi = QTMovieWindowHFromNativeWindow(hWnd)) ){
-		//			(*wi)->handlingEvent += 1;
-		//		}
-		//		if( wi && (*wi)->info && !(*wi)->isZooming ){
-		//			if( (!(*wi)->isZoomed && (wParam == SIZE_MAXIMIZED || wParam == SIZE_MAXSHOW || wParam == SC_MAXIMIZE))
-		//			   || ((*wi)->isZoomed && (wParam == SC_RESTORE  || wParam == SIZE_RESTORED))
-		//			){
-		//			  RECT screenRect;
-		//			  long screenWidth, screenHeight, mWidth, mHeight, scaleX, scaleY, scale;
-		//			  enum { WGROW, WSHRINK, WSHRGROW, WGRWSHRINK } scaleTypeX, scaleTypeY, scaleType;
-		//				(*wi)->isZooming = 1;
-		//				returnRet = TRUE;
-		//				ret = 0;
-		//				(*wi)->isZooming = 0;
-		//			}
-		//		}
-		//	}
-		//	break;
+			}
+			break;
 		case WM_ENTERSIZEMOVE:
 			{ RECT clientRect;
 				if( !wi && (wi = QTMovieWindowHFromNativeWindow(hWnd)) ){
@@ -1281,11 +1318,22 @@ ErrCode QTMovieWindowSetGeometry( QTMovieWindowH wih, Cartesian *pos, Cartesian 
 				widthAdjust = (wRect.right - wRect.left) - wi->gOldWindowPos.cx;
 				heightAdjust = (wRect.bottom - wRect.top) - wi->gOldWindowPos.cy;
 				if( widthAdjust || heightAdjust ){
-				  Rect controllerBox;
+				  Rect controllerBox, mrect, mcrect;
 					// adjust the contents
 					MCGetControllerBoundsRect( wi->theMC, &controllerBox);
+					// FIXME: it's quite possible we ought to be doing something here if the movie controller
+					// is invisible, but it's not immediately clear what
+// 					if( !MCGetVisible(wi->theMC) ){
+// 						GetMovieBox( wi->theMovie, &mrect );
+// 						mcrect = controllerBox;
+// 						MacOffsetRect( &mcrect, -mcrect.left, -mcrect.top );
+// 						MCextraHeight = mcrect.bottom - mrect.bottom;
+// 					}
+// 					else{
+// 						MCextraHeight = 0;
+// 					}
 					controllerBox.right += (short)widthAdjust;
-					controllerBox.bottom += (short)heightAdjust;
+					controllerBox.bottom += (short)heightAdjust /* + MCextraHeight*/;
 					MCSetControllerBoundsRect( wi->theMC, &controllerBox);
 				}
 			}

@@ -521,6 +521,10 @@ typedef struct QTMovieInfo {
 	@class NSQTMovieWindow;
 #endif
 
+#ifdef _WINDOWS_
+	enum QTMW_SizeStates { QTWM_NORMAL=0, QTWM_ZOOMED=1, QTWM_REDUCED=2 };
+#endif
+
 /*!
 	internal representation of a QTMovieWindow
 	The members from self through user_data are 'public' and exported to Modula-2;
@@ -558,7 +562,7 @@ typedef struct QTMovieWindows {
 	short resId;
 #ifdef _WINDOWS_
 	WINDOWPOS gOldWindowPos;			//!< to keep track of the window's previous position
-	char isZooming, isZoomed,
+	char isZooming, sizeState,
 		isGoingFullScreen, isFullScreen;
 	Cartesian restorePos, restoreSize,
 		frameShift,				//!< the difference between the envelope's (window's) and the movie's screen position
