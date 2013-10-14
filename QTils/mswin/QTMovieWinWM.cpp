@@ -389,100 +389,132 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 //			PostQuitMessage(0);
 			break;
 
-// 		case WM_SYSCOMMAND:
-		case WM_SIZE:
-			{ RECT clientRect;
+		case WM_SYSCOMMAND:
 				if( !wi && (wi = QTMovieWindowHFromNativeWindow(hWnd)) ){
 					(*wi)->handlingEvent += 1;
 				}
 				if( wi && (*wi)->info && !(*wi)->isZooming ){
-					if( wParam == SIZE_MAXIMIZED || wParam == SIZE_MAXSHOW || wParam == SC_MAXIMIZE ){
+					if( wParam == SC_MAXIMIZE ){
 					  RECT screenRect;
 					  long screenWidth, screenHeight, mWidth, mHeight, scaleX, scaleY, scale;
 					  enum { WGROW, WSHRINK, WSHRGROW, WGRWSHRINK } scaleTypeX, scaleTypeY, scaleType;
+						if( (*wi)->isZoomed ){
+							// ahem...
+							goto unzoom;
+						}
 						(*wi)->isZooming = 1;
-						SystemParametersInfo( SPI_GETWORKAREA, 0, &screenRect, 0 );
-						screenWidth = screenRect.right - screenRect.left;
-						screenHeight = screenRect.bottom - screenRect.top;
-						mWidth = (*wi)->info->naturalBounds.right - (*wi)->info->naturalBounds.left;
-						mHeight = (*wi)->info->naturalBounds.bottom - (*wi)->info->naturalBounds.top;
-						if( screenWidth >= mWidth ){
-							scaleX = screenWidth / mWidth;
-							scaleTypeX = WGROW;
+						QTMovieWindowGetGeometry( wi, &(*wi)->restorePos, &(*wi)->restoreSize, 1 );
+						QTMovieWindowGetGeometry( wi, &(*wi)->frameShift, &(*wi)->frameMargin, 0 );
+						(*wi)->frameShift.horizontal = (*wi)->restorePos.horizontal - (*wi)->frameShift.horizontal;
+						(*wi)->frameShift.vertical = (*wi)->restorePos.vertical- (*wi)->frameShift.vertical;
+						// calculate the difference between the movie size and the window size. Note that we
+						// do not account for the movie controller here (i.e. it's included or not depending on
+						// wether it's visible or not)
+						(*wi)->frameMargin.horizontal = (*wi)->restoreSize.horizontal - (*wi)->frameMargin.horizontal;
+						(*wi)->frameMargin.vertical = (*wi)->restoreSize.vertical- (*wi)->frameMargin.vertical;
+						if( !(*wi)->isZoomed ){
+							SystemParametersInfo( SPI_GETWORKAREA, 0, &screenRect, 0 );
+							screenWidth = screenRect.right - screenRect.left;
+							screenHeight = screenRect.bottom - screenRect.top;
+							// determine maximum movie size that's an integer times the natural size
+							// fitting on the screen:
+							mWidth = (*wi)->info->naturalBounds.right - (*wi)->info->naturalBounds.left;
+							mHeight = (*wi)->info->naturalBounds.bottom - (*wi)->info->naturalBounds.top;
+							if( screenWidth >= mWidth ){
+								scaleX = screenWidth / mWidth;
+								scaleTypeX = WGROW;
+							}
+							else{
+								scaleX = mWidth / screenWidth;
+								scaleTypeX = WSHRINK;
+							}
+							if( screenHeight >= mHeight ){
+								scaleY = screenHeight / mHeight;
+								scaleTypeY = WGROW;
+							}
+							else{
+								scaleY = mHeight / screenHeight;
+								scaleTypeY = WSHRINK;
+							}
+							if( scaleTypeX == WGROW && scaleTypeY == WGROW ){
+								scale = MIN( scaleX, scaleY );
+								scaleType = WGROW;
+								// check for overflow:
+								if( scale > 1
+								   && (mWidth * scale + (*wi)->frameMargin.horizontal > screenWidth
+									  || mHeight * scale + (*wi)->frameMargin.vertical > screenHeight)
+								){
+									scale -= 1;
+								}
+								mWidth *= scale;
+								mHeight *= scale;
+							}
+							else if( scaleTypeX == WSHRINK && scaleTypeY == WSHRINK ){
+								scale = MAX( scaleX, scaleY );
+								scaleType = WSHRINK;
+								mWidth /= scale;
+								mHeight /= scale;
+							}
+							// add the space taken up by window borders, titlebar and movie controller:
+							mWidth += (*wi)->frameMargin.horizontal;
+							// if the movie controller's visibility was changed since frameMargin was determined
+							// the height adjustment will be wrong!
+							mHeight += (*wi)->frameMargin.vertical;
+							Log( qtLogPtr,
+								"%s QT window #%u[%ld,%ld], wParam=%u, size=(%ld,%ld); scale=%ld:%d => window size=(%ld,%ld)\n",
+								(message==WM_SIZE)? "WM_SIZE" : "WM_SYSCOMMAND",
+								(*wi)->idx,
+								(*wi)->info->naturalBounds.right - (*wi)->info->naturalBounds.left,
+								(*wi)->info->naturalBounds.bottom - (*wi)->info->naturalBounds.top,
+								wParam, screenWidth, screenHeight, scale, scaleType,
+								mWidth, mHeight );
+							{ Cartesian pos, size;
+								size.horizontal = (short) mWidth;
+								size.vertical = (short) mHeight;
+								pos.horizontal = (screenWidth - mWidth)/2;
+								pos.vertical = (screenHeight - mHeight)/2;
+								QTMovieWindowSetGeometry( wi, &(*wi)->restorePos, &(*wi)->restoreSize, 1, 1 );
+								//QTMovieWindowSetGeometry( wi, &pos, &size, 1, 1 );
+								QTMovieWindowSetGeometry( wi, NULL, NULL, (double) scale, 0 );
+								QTMovieWindowSetGeometry( wi, &pos, NULL, 1, 1 );
+							}
+							(*wi)->isZoomed = 1;
+							returnRet = TRUE;
+							ret = 0;
 						}
-						else{
-							scaleX = mWidth / screenWidth;
-							scaleTypeX = WSHRINK;
-						}
-						if( screenHeight >= mHeight ){
-							scaleY = screenHeight / mHeight;
-							scaleTypeY = WGROW;
-						}
-						else{
-							scaleY = mHeight / screenHeight;
-							scaleTypeY = WSHRINK;
-						}
-						if( scaleTypeX == WGROW && scaleTypeY == WGROW ){
-							scale = MIN( scaleX, scaleY );
-							scaleType = WGROW;
-							mWidth *= scale;
-							mHeight *= scale;
-						}
-						else if( scaleTypeX == WSHRINK && scaleTypeY == WSHRINK ){
-							scale = MAX( scaleX, scaleY );
-							scaleType = WSHRINK;
-							mWidth /= scale;
-							mHeight /= scale;
-						}
-						if( (*wi)->theMC && MCGetVisible((*wi)->theMC) ){
-							mHeight += (*wi)->info->controllerHeight;
-						}
-						Log( qtLogPtr,
-							"%s QT window #%u[%ld,%ld], wParam=%u, size=(%ld,%ld); scale=%ld:%d => size=(%ld,%ld)\n",
-							(message==WM_SIZE)? "WM_SIZE" : "WM_SYSCOMMAND",
-							(*wi)->idx,
-							(*wi)->info->naturalBounds.right - (*wi)->info->naturalBounds.left,
-							(*wi)->info->naturalBounds.bottom - (*wi)->info->naturalBounds.top,
-							wParam, screenWidth, screenHeight, scale, scaleType,
-							mWidth, mHeight );
-						{ Cartesian pos, size;
-						  Rect controllerBox;
-							MCGetControllerBoundsRect( (*wi)->theMC, &controllerBox);
-							size.horizontal = (short) mWidth;
-							size.vertical = (short) mHeight;
-							pos.horizontal = (screenWidth - mWidth)/2;
-							pos.vertical = (screenHeight - mHeight)/2;
-							mWidth += 2 * GetSystemMetrics(SM_CXBORDER);
-							mHeight += GetSystemMetrics(SM_CXBORDER) + GetSystemMetrics(SM_CYCAPTION);
-// 							MoveWindow( (*wi)->theView,
-// 									 pos.horizontal - GetSystemMetrics(SM_CXBORDER),
-// 									 pos.vertical - GetSystemMetrics(SM_CYCAPTION),
-// 									 mWidth, mHeight, TRUE );
-// 							QTMovieWindowSetGeometry( wi, &pos, &size, 1, 0 );
-// 							QTMovieWindowGetGeometry( wi, &pos, &size, 1 );
-							controllerBox.left = pos.horizontal;
-							controllerBox.top = pos.vertical;
-							controllerBox.right = controllerBox.right + size.horizontal;
-							controllerBox.bottom = controllerBox.top + size.vertical;
-							MCSetControllerBoundsRect( (*wi)->theMC, &controllerBox);
-						}
-						returnRet = TRUE;
-						ret = 0;
 						(*wi)->isZooming = 0;
 					}
-					else if( wParam == SC_RESTORE || wParam == SIZE_RESTORED ){
-					  RECT clientRect;
-					  Rect controllerBox;
-						GetClientRect( hWnd, &clientRect );
-						MCGetControllerBoundsRect( (*wi)->theMC, &controllerBox);
-						controllerBox.top = controllerBox.left = 0;
-						controllerBox.right = clientRect.right - clientRect.left;
-						controllerBox.bottom = clientRect.bottom - clientRect.top;
-						MCSetControllerBoundsRect( (*wi)->theMC, &controllerBox);
+					else if( wParam == SC_RESTORE && (*wi)->isZoomed ){
+unzoom:
+						(*wi)->isZooming = 1;
+						QTMovieWindowSetGeometry( wi, &(*wi)->restorePos, &(*wi)->restoreSize, 1, 1 );
+						(*wi)->isZoomed = 0;
+						(*wi)->isZooming = 0;
+						returnRet = TRUE;
+						ret = 0;
 					}
 				}
-			}
-			break;
+				break;
+		//case WM_SIZE:
+		//	{ RECT clientRect;
+		//		if( !wi && (wi = QTMovieWindowHFromNativeWindow(hWnd)) ){
+		//			(*wi)->handlingEvent += 1;
+		//		}
+		//		if( wi && (*wi)->info && !(*wi)->isZooming ){
+		//			if( (!(*wi)->isZoomed && (wParam == SIZE_MAXIMIZED || wParam == SIZE_MAXSHOW || wParam == SC_MAXIMIZE))
+		//			   || ((*wi)->isZoomed && (wParam == SC_RESTORE  || wParam == SIZE_RESTORED))
+		//			){
+		//			  RECT screenRect;
+		//			  long screenWidth, screenHeight, mWidth, mHeight, scaleX, scaleY, scale;
+		//			  enum { WGROW, WSHRINK, WSHRGROW, WGRWSHRINK } scaleTypeX, scaleTypeY, scaleType;
+		//				(*wi)->isZooming = 1;
+		//				returnRet = TRUE;
+		//				ret = 0;
+		//				(*wi)->isZooming = 0;
+		//			}
+		//		}
+		//	}
+		//	break;
 		case WM_ENTERSIZEMOVE:
 			{ RECT clientRect;
 				if( !wi && (wi = QTMovieWindowHFromNativeWindow(hWnd)) ){
@@ -1153,11 +1185,11 @@ ErrCode QTMovieWindowSetGeometry( QTMovieWindowH wih, Cartesian *pos, Cartesian 
   WindowRef w;
   ErrCode err = noErr;
   Cartesian lSize, *Size;
+  RECT wRect;
 	if( QTMovieWindowH_isOpen(wih) ){
 		wi = *wih;
 		w = (WindowRef) GetNativeWindowPort(wi->theView);
 		if( setEnvelope ){
-		  RECT wRect;
 			if( !GetWindowRect( wi->theView, &wRect ) ){
 				return GetLastError();
 			}
@@ -1238,14 +1270,32 @@ ErrCode QTMovieWindowSetGeometry( QTMovieWindowH wih, Cartesian *pos, Cartesian 
 			}
 		}
 		else{
+		  long widthAdjust = 0, heightAdjust = 0;
+			// code taken from the WM_ENTER/EXITSIZEMOVE events to have the content follow the window:
+			wi->gOldWindowPos.cx = wRect.right - wRect.left;
+			wi->gOldWindowPos.cy = wRect.bottom - wRect.top;
+			// resize/move the window
 			MoveWindow( wi->theView, bounds.left, bounds.top, bounds.right, bounds.bottom, TRUE );
+			if( GetWindowRect( wi->theView, &wRect ) ){
+				// compare the new envelope size with what it was just before:
+				widthAdjust = (wRect.right - wRect.left) - wi->gOldWindowPos.cx;
+				heightAdjust = (wRect.bottom - wRect.top) - wi->gOldWindowPos.cy;
+				if( widthAdjust || heightAdjust ){
+				  Rect controllerBox;
+					// adjust the contents
+					MCGetControllerBoundsRect( wi->theMC, &controllerBox);
+					controllerBox.right += (short)widthAdjust;
+					controllerBox.bottom += (short)heightAdjust;
+					MCSetControllerBoundsRect( wi->theMC, &controllerBox);
+				}
+			}
 		}
 		PortChanged( (GrafPtr) w );
 		err = GetMoviesError();
-		if( wi->theMC /* && MCGetVisible(wi->theMC) */ ){
+		if( wi->theMC ){
 			MCMovieChanged( wi->theMC, wi->theMovie );
 			if( !MCIdle(wi->theMC) ){
-				MCDraw(wi->theMC, (WindowRef /*GrafPtr*/) GetNativeWindowPort(wi->theView) );
+				MCDraw(wi->theMC, (WindowRef) GetNativeWindowPort(wi->theView) );
 			}
 		}
 		QTWMflush();
