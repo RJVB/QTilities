@@ -16,13 +16,14 @@ IDENTIFY("QuickTime player based on QTils");
 
 #include "QTilities.h"
 
+#include <boost/format.hpp>
+
 #ifndef TRUE
 #	define TRUE		1
 #endif
 #ifndef FALSE
 #	define FALSE	0
 #endif
-
 
 QTMovieWindowH *winlist = NULL;
 int numQTMW = 0, MaxnumQTMW = 0;
@@ -259,32 +260,32 @@ void register_wi( QTMovieWindowH wi )
 	}
 }
 
-int vsprintfM2( char *dest, int dlen, const char *format, int flen, ... )
-{ va_list ap;
-  int n;
-  extern int vsnprintf_Mod2( char *dest, int dlen, const char *format, int flen, va_list ap );
-	va_start( ap, flen );
-	if( !flen ){
-		flen = strlen(format);
-	}
-	n = vsnprintf_Mod2( dest, dlen, format, flen, ap );
-	va_end(ap);
-	return n;
-}
-
-int vsscanfM2( char *src, int slen, const char *format, int flen, ... )
-{ va_list ap;
-  int n;
-  extern int vsscanf_Mod2( const char *source, int slen, const char *format, int flen, va_list ap );
-	va_start( ap, flen );
-	if( !flen ){
-		flen = strlen(format);
-	}
-	n = vsscanf_Mod2( src, slen, format, flen, ap );
-	va_end(ap);
-	return n;
-}
-
+// int vsprintfM2( char *dest, int dlen, const char *format, int flen, ... )
+// { va_list ap;
+//   int n;
+//   extern int vsnprintf_Mod2( char *dest, int dlen, const char *format, int flen, va_list ap );
+// 	va_start( ap, flen );
+// 	if( !flen ){
+// 		flen = strlen(format);
+// 	}
+// 	n = vsnprintf_Mod2( dest, dlen, format, flen, ap );
+// 	va_end(ap);
+// 	return n;
+// }
+// 
+// int vsscanfM2( char *src, int slen, const char *format, int flen, ... )
+// { va_list ap;
+//   int n;
+//   extern int vsscanf_Mod2( const char *source, int slen, const char *format, int flen, va_list ap );
+// 	va_start( ap, flen );
+// 	if( !flen ){
+// 		flen = strlen(format);
+// 	}
+// 	n = vsscanf_Mod2( src, slen, format, flen, ap );
+// 	va_end(ap);
+// 	return n;
+// }
+// 
 int vasprintf( char **str, const char *fmt, va_list ap )
 { va_list original_ap = ap;
   char tbuf[8];
@@ -297,7 +298,7 @@ int vasprintf( char **str, const char *fmt, va_list ap )
 		
 	if( n > -1 ){
 		// we now know the required string length; (re)allocate
-		*str = realloc( *str, n + 1 );
+		*str = (char*) realloc( *str, n + 1 );
 		ap = original_ap;
 		n = vsnprintf( *str, n + 1, fmt, ap );
 		va_end(ap);
@@ -325,9 +326,19 @@ void freep( void **p )
 	}
 }
 
+#if defined(__APPLE_CC__) || defined(__MACH__)
+#	ifdef __cplusplus
+	extern "C" {
+#	endif
+		extern bool NSApplicationLoad();
+#	ifdef __cplusplus
+	}
+#	endif
+#endif
+
 int main( int argc, char* argv[] )
 { int i, n;
-  QTMovieWindowH wi, ewi;
+  QTMovieWindowH wi;
   unsigned long nMsg = 0, nPumps = 0;
   LibQTilsBase QTils;
 
@@ -361,7 +372,6 @@ int main( int argc, char* argv[] )
 		// make sure the QTils library uses the same allocator/free routines as we do
 		init_QTils_Allocator( malloc, calloc, realloc, freep );
 
-		//ewi = InitQTMovieWindowH( 100, 100 );
 		if( argc == 1 ){
 			QTils_LogMsgEx( "OpenQTMovieInWindow() will present a file selection dialog" );
 			// OpeQTMovieInWindow() will present a dialog if a NULL URL is passed in
@@ -402,7 +412,6 @@ int main( int argc, char* argv[] )
 			DisposeQTMovieWindow( winlist[i] );
 			winlist[i] = NULL;
 		}
-		//DisposeQTMovieWindow(ewi);
 		if( winlist ){
 			free(winlist);
 		}

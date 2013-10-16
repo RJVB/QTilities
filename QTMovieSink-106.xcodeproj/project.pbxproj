@@ -50,7 +50,7 @@
 		D638A691180710EC00F4AD0D /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65CA957176758E700D82B7A /* AppKit.framework */; };
 		D638A692180710EC00F4AD0D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
 		D638A694180710EC00F4AD0D /* QTils-emb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67ACE641416129D00E99EA2 /* QTils-emb.framework */; };
-		D638A6A41807112F00F4AD0D /* QTMoviePlayer.c in Sources */ = {isa = PBXBuildFile; fileRef = D638A6A31807112F00F4AD0D /* QTMoviePlayer.c */; };
+		D638A6A41807112F00F4AD0D /* QTMoviePlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D638A6A31807112F00F4AD0D /* QTMoviePlayer.cpp */; };
 		D63EFD10131CF4D2005B6423 /* QTMovieSink.c in Sources */ = {isa = PBXBuildFile; fileRef = D619275011FF65E200BDAAAA /* QTMovieSink.c */; };
 		D63EFD11131CF4DD005B6423 /* QTMovieSink.h in Headers */ = {isa = PBXBuildFile; fileRef = D619272711FF64E500BDAAAA /* QTMovieSink.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D63EFD76131CF5BE005B6423 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63EFD75131CF5BE005B6423 /* QuartzCore.framework */; };
@@ -263,7 +263,7 @@
 		D634F12C1317D37700D2BAFD /* NSQTMovieWindow.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = NSQTMovieWindow.nib; sourceTree = "<group>"; };
 		D638A698180710EC00F4AD0D /* QTMoviePlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QTMoviePlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D638A69A180710EC00F4AD0D /* QTMovieWindowTest.app-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QTMovieWindowTest.app-Info.plist"; sourceTree = "<group>"; };
-		D638A6A31807112F00F4AD0D /* QTMoviePlayer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = QTMoviePlayer.c; path = QTils/QTMoviePlayer.c; sourceTree = "<group>"; };
+		D638A6A31807112F00F4AD0D /* QTMoviePlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QTMoviePlayer.cpp; path = QTils/QTMoviePlayer.cpp; sourceTree = "<group>"; };
 		D63A60011230F198001E4ACF /* OSXbackgrounding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = OSXbackgrounding.c; sourceTree = "<group>"; };
 		D63EFD26131CF5A2005B6423 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		D63EFD75131CF5BE005B6423 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -613,7 +613,7 @@
 				D6878985129ACB17009ACD66 /* Lists.h */,
 				D6878986129ACB17009ACD66 /* Lists.cpp */,
 				D64CFEC4129ED62900AD4351 /* QTMovieWindowTest.c */,
-				D638A6A31807112F00F4AD0D /* QTMoviePlayer.c */,
+				D638A6A31807112F00F4AD0D /* QTMoviePlayer.cpp */,
 				D6574F4E131E7AC600A2DDE4 /* runDoxygen.sh */,
 			);
 			fileEncoding = 4;
@@ -1075,7 +1075,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D638A6A41807112F00F4AD0D /* QTMoviePlayer.c in Sources */,
+				D638A6A41807112F00F4AD0D /* QTMoviePlayer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1350,7 +1350,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = /opt/local/include;
 				INFOPLIST_FILE = "QTMoviePlayer-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "";
@@ -1374,7 +1374,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = EMBEDDED_FRAMEWORK;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = /opt/local/include;
 				INFOPLIST_FILE = "QTMoviePlayer-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "";
