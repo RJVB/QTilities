@@ -324,23 +324,19 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 		case WM_GETMINMAXINFO:{
 		  MINMAXINFO *specs = (MINMAXINFO*) lParam;
 		  RECT dims;
+			// this message is received when a window is being created, but also when a
+			// resize/replace is being executed.
 			if( !wi && ( (wi = QTMovieWindowHFromNativeWindow(hWnd))
 				|| (wi = QTMovieWindowH_from_NativeWindow(hWnd)) )
 			){
 				(*wi)->handlingEvent += 1;
-			}
-			GetClientRect( hWnd, &dims );
-			if( wi ){
+				GetClientRect( hWnd, &dims );
+				// override the sizes in ptMaxTrackSize so that the window can be resized at least to
+				// dimensions it once had (size limits are not imposed when creating a window, for instance).
 				SetMaxPOINT( &specs->ptMaxTrackSize, dims.right - dims.left, dims.bottom - dims.top );
 				SetMaxPOINT( &specs->ptMaxTrackSize, (*wi)->restoreSize.horizontal, (*wi)->restoreSize.vertical );
 				Log( qtLogPtr, "WM_GETMINMAXINFO QT window %p=#%u, size=(%d,%d) maxSize=(%ld,%ld)\n",
 					hWnd, (*wi)->idx,
-					dims.right - dims.left, dims.bottom - dims.top,
-					specs->ptMaxTrackSize.x, specs->ptMaxTrackSize.y );
-			}
-			else{
-				Log( qtLogPtr, "WM_GETMINMAXINFO QT window %p=???, size=(%d,%d) maxSize=(%ld,%ld)\n",
-					hWnd,
 					dims.right - dims.left, dims.bottom - dims.top,
 					specs->ptMaxTrackSize.x, specs->ptMaxTrackSize.y );
 			}
@@ -1355,13 +1351,16 @@ ErrCode QTMovieWindowSetGeometry( QTMovieWindowH wih, Cartesian *pos, Cartesian 
 			wi->gOldWindowPos.cx = wRect.right - wRect.left;
 			wi->gOldWindowPos.cy = wRect.bottom - wRect.top;
 			// resize/move the window
-			//MoveWindow( wi->theView, bounds.left, bounds.top, bounds.right, bounds.bottom, TRUE );
 			SetWindowPos( wi->theView, NULL, bounds.left, bounds.top, bounds.right, bounds.bottom,
 				SWP_ASYNCWINDOWPOS|SWP_NOACTIVATE|SWP_NOZORDER|SWP_NOOWNERZORDER );
-			wRect.left = bounds.left, wRect.top = bounds.top,
-				wRect.right = bounds.right, wRect.bottom = bounds.bottom;
+			//wRect.left = bounds.left, wRect.top = bounds.top,
+			//	wRect.right = bounds.right, wRect.bottom = bounds.bottom;
 			if( GetWindowRect( wi->theView, &wRect ) ){
-				// compare the new envelope size with what it was just before:
+				// compare the new envelope size with what it was just before. Our handling
+				// of the MINMAXINFO message in the window procedure means that we should have received
+				// a resized window of the correct dimensions.
+				// Alternatively, we could copy 'bounds' into wRect and skip the call to GetWindowRect;
+				// in that case MCSetControllerBoundsRect will override the window size limits.
 				widthAdjust = (wRect.right - wRect.left) - wi->gOldWindowPos.cx;
 				heightAdjust = (wRect.bottom - wRect.top) - wi->gOldWindowPos.cy;
 				if( widthAdjust || heightAdjust ){
