@@ -253,6 +253,16 @@ QTMovieWindowH QTMovieWindowHFromNativeWindow( NativeWindow hWnd )
 	return gwi;
 }
 
+static inline void SetMaxPOINT( POINT *p, LONG x, LONG y )
+{
+	if( x > p->x ){
+		p->x = x;
+	}
+	if( y > p->y ){
+		p->y = y;
+	}
+}
+
 static HICON SmallIconHandle = NULL;
 
 /*!
@@ -311,6 +321,31 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 			}
 #endif
 			break;
+		case WM_GETMINMAXINFO:{
+		  MINMAXINFO *specs = (MINMAXINFO*) lParam;
+		  RECT dims;
+			if( !wi && ( (wi = QTMovieWindowHFromNativeWindow(hWnd))
+				|| (wi = QTMovieWindowH_from_NativeWindow(hWnd)) )
+			){
+				(*wi)->handlingEvent += 1;
+			}
+			GetClientRect( hWnd, &dims );
+			if( wi ){
+				SetMaxPOINT( &specs->ptMaxTrackSize, dims.right - dims.left, dims.bottom - dims.top );
+				SetMaxPOINT( &specs->ptMaxTrackSize, (*wi)->restoreSize.horizontal, (*wi)->restoreSize.vertical );
+				Log( qtLogPtr, "WM_GETMINMAXINFO QT window %p=#%u, size=(%d,%d) maxSize=(%ld,%ld)\n",
+					hWnd, (*wi)->idx,
+					dims.right - dims.left, dims.bottom - dims.top,
+					specs->ptMaxTrackSize.x, specs->ptMaxTrackSize.y );
+			}
+			else{
+				Log( qtLogPtr, "WM_GETMINMAXINFO QT window %p=???, size=(%d,%d) maxSize=(%ld,%ld)\n",
+					hWnd,
+					dims.right - dims.left, dims.bottom - dims.top,
+					specs->ptMaxTrackSize.x, specs->ptMaxTrackSize.y );
+			}
+			break;
+		}
 		case WM_PAINT:{
 		  WindowRef wr = GetNativeWindowPort(hWnd);
 #ifdef AllowQTMLDoubleBuffering
@@ -447,7 +482,10 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 							scaleTypeX = WGROW;
 						}
 						else{
-							scaleX = mWidth / screenWidth;
+							scaleX = (int)( mWidth / screenWidth + 0.5 );
+							if( scaleX == 1 ){
+								scaleX = 2;
+							}
 							scaleTypeX = WSHRINK;
 						}
 						if( screenHeight >= mHeight ){
@@ -455,7 +493,10 @@ static LRESULT CALLBACK QTMWProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 							scaleTypeY = WGROW;
 						}
 						else{
-							scaleY = mHeight / screenHeight;
+							scaleY = (int)( mHeight / screenHeight + 0.5 );
+							if( scaleY == 1 ){
+								scaleY = 2;
+							}
 							scaleTypeY = WSHRINK;
 						}
 						if( scaleTypeX == WGROW && scaleTypeY == WGROW ){
@@ -850,8 +891,8 @@ QTMovieWindowH InitQTMovieWindowH( short width, short height )
 		}
 		wi->theView = CreateNativeWindow( ProgrammeName, width, height );
 		if( wi->theView ){
-			PumpMessages(FALSE);
 			register_QTMovieWindowH( wih, wi->theView );
+			PumpMessages(FALSE);
 			SetLastError(0);
 			if( !SetWindowLongPtr( wi->theView, GWL_USERDATA, (LONG_PTR) wih ) ){
 				err = GetLastError();
@@ -892,6 +933,10 @@ static QTMovieWindowH _DisplayMovieInQTMovieWindowH_( Movie theMovie, QTMovieWin
 		if( wi->theView ){
 		 CGrafPtr currentPort;
 		 GDHandle currentGDH;
+			// associate theView & wi here so that the window's MINMAXINFO can be stored in wi by
+			// the window procedure.
+			// internal registry based on a C++ hash_map (see list.cpp)
+			register_QTMovieWindowH( wih, wi->theView );
 			PumpMessages(FALSE);
 			// do what it takes to attach the movie to our new window:
 			GetGWorld( &currentPort, &currentGDH );
@@ -965,14 +1010,12 @@ static QTMovieWindowH _DisplayMovieInQTMovieWindowH_( Movie theMovie, QTMovieWin
 				}
 
 				wi->theViewPtr = &wi->theView;
-				register_QTMovieWindowH( wih, wi->theView );
 
 				// register the QTMovieWindowPtr with the window we just opened. We use SetProp/Getprop for that
 				// internally, as there doesn't seem to be a safe way to check the type of information returned
 				// by GetWindowLongPtr() (i.e. we could get someone else's GLW_USERDATA??!)
 				SetWindowLongPtr( wi->theView, GWL_USERDATA, (LONG_PTR) wih );
 				SetProp( wi->theView, (LPCSTR) "QTMovieWindowH", wih );
-				// internal registry based on a C++ hash_map (see list.cpp)
 
 				ShowMoviePoster( wi->theMovie );
 				SetMovieActive( wi->theMovie, TRUE );
@@ -1312,7 +1355,11 @@ ErrCode QTMovieWindowSetGeometry( QTMovieWindowH wih, Cartesian *pos, Cartesian 
 			wi->gOldWindowPos.cx = wRect.right - wRect.left;
 			wi->gOldWindowPos.cy = wRect.bottom - wRect.top;
 			// resize/move the window
-			MoveWindow( wi->theView, bounds.left, bounds.top, bounds.right, bounds.bottom, TRUE );
+			//MoveWindow( wi->theView, bounds.left, bounds.top, bounds.right, bounds.bottom, TRUE );
+			SetWindowPos( wi->theView, NULL, bounds.left, bounds.top, bounds.right, bounds.bottom,
+				SWP_ASYNCWINDOWPOS|SWP_NOACTIVATE|SWP_NOZORDER|SWP_NOOWNERZORDER );
+			wRect.left = bounds.left, wRect.top = bounds.top,
+				wRect.right = bounds.right, wRect.bottom = bounds.bottom;
 			if( GetWindowRect( wi->theView, &wRect ) ){
 				// compare the new envelope size with what it was just before:
 				widthAdjust = (wRect.right - wRect.left) - wi->gOldWindowPos.cx;
