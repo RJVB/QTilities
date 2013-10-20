@@ -41,7 +41,7 @@
 
 - (void) close
 {
-	NSLog( @"[%@ %@]\n", NSStringFromClass([self class]), NSStringFromSelector(_cmd) );
+	Log( qtLogPtr, "[%@ %@]\n", NSStringFromClass([self class]), NSStringFromSelector(_cmd) );
 	[super close];
 }
 
@@ -97,6 +97,15 @@
 //		}
 //	}
 	URLString = [NSString stringWithCString:wi->theURL encoding:NSUTF8StringEncoding];
+	if( !URLString ){
+		URLString = [NSString stringWithCString:wi->theURL
+						encoding:CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingDOSLatin1)];
+	}
+	if( !URLString ){
+		NSLog( @"[%@ %@] couldn't create NSString from C string \"%s\"\n",
+			 NSStringFromClass([self class]), NSStringFromSelector(_cmd), wi->theURL );
+		return nil;
+	}
 	if( strncasecmp( wi->theURL, "file://", 7 ) && strncasecmp( wi->theURL, "http://", 7) ){
 	  NSString *fileURL = @"file://";
 		URLString = [fileURL stringByAppendingString:URLString];
@@ -261,7 +270,7 @@
 - (void)setMovieSize:(NSSize)size caller:(const char*)caller
 {
 	if( qtMovie ){
-		NSLog( @"setMovieSize(%s) %@ to %fx%f", caller, [URL path], size.width, size.height );
+		Log( qtLogPtr, "setMovieSize(%s) %@ to %fx%f", caller, [URL path], size.width, size.height );
 		movieSize = size;
 		[qtMovie setMovieAttributes:[NSDictionary dictionaryWithObject:[NSValue valueWithSize:size]
 				forKey:QTMovieNaturalSizeAttribute]
@@ -375,13 +384,23 @@
 }
 
 - (void) setTitleWithCString:(const char*)title
-{
-	[[movieView window] setTitle:[NSString stringWithCString:title encoding:NSUTF8StringEncoding]];
+{ NSString *t = [NSString stringWithCString:title encoding:NSUTF8StringEncoding];
+	if( !t ){
+		t = [NSString stringWithCString:title
+					encoding:CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingDOSLatin1)];
+	}
+	if( t ){
+		[[movieView window] setTitle:t];
+	}
+	else{
+		NSLog( @"[%@ %@] couldn't create NSString from C string \"%s\"\n",
+			 NSStringFromClass([self class]), NSStringFromSelector(_cmd), title );
+	}
 }
 
 - (void) movieEnded:(NSNotification *)notification
 {
-	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), notification );
+	Log( qtLogPtr, "[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), notification );
 }
 
 - (void) boundsDidChange:(NSQTMovieWindow*)sender
@@ -442,7 +461,7 @@
 	  id target;
 	  SEL selector;
 	  NSMCActionCallback nsfun = NULL;
-		NSLog( @"Close QT window %@ = #%u\n", (NSWindow*) sender, (*qtmwH)->idx );
+		Log( qtLogPtr, "Close QT window %@ = #%u\n", (NSWindow*) sender, (*qtmwH)->idx );
 		(*qtmwH)->shouldClose = TRUE;
 		(*qtmwH)->performingClose = TRUE;
 		// 20110310: stop the idling, that is the movie should no longer be tasked!
@@ -463,7 +482,7 @@
 
 - (void) windowWillClose:(NSNotification*)notification
 { NSWindow *nswin = [notification object];
-	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), nswin );
+	Log( qtLogPtr, "[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), nswin );
 	if( QTMovieWindowH_Check(qtmwH) ){
 		unregister_QTMovieWindowH_from_NativeWindow((*qtmwH)->theView);
 		(*qtmwH)->theView = NULL;
@@ -491,7 +510,7 @@ extern QTMovieWindowH QTMovieWindowHFromNativeWindow( NativeWindow hWnd );
 	  id target;
 	  SEL selector;
 	  NSMCActionCallback nsfun = NULL;
-		NSLog( @"Close QT window %@ = #%u\n", (NSWindow*) sender, (*wi)->idx );
+		Log( qtLogPtr, "Close QT window %@ = #%u\n", (NSWindow*) sender, (*wi)->idx );
 		(*wi)->shouldClose = TRUE;
 		(*wi)->performingClose = TRUE;
 		// 20110310: stop the idling, that is the movie should no longer be tasked!
@@ -514,7 +533,7 @@ extern QTMovieWindowH QTMovieWindowHFromNativeWindow( NativeWindow hWnd );
 { NSWindow *nswin = [notification object];
   QTMovieWindowH wi;
 	wi = QTMovieWindowHFromNativeWindow((NativeWindow)nswin);
-	NSLog( @"[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), nswin );
+	Log( qtLogPtr, "[%@ %@%@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd), nswin );
 	if( QTMovieWindowH_Check(wi) ){
 		unregister_QTMovieWindowH_from_NativeWindow((*wi)->theView);
 		(*wi)->theView = NULL;

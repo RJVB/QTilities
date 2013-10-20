@@ -189,7 +189,7 @@ int PumpMessages(int force)
 		while( i < [QTMovieWindowList count] && (NSqtwmh = [QTMovieWindowList objectAtIndex:i]) ){
 			if( (wi = [NSqtwmh theQTMovieWindowH]) ){
 				if( (*wi)->shouldClose && !(*wi)->performingClose ){
-					NSLog( @"Handling pending close for %@\n", NSqtwmh );
+					Log( qtLogPtr, "Handling pending close for %@\n", NSqtwmh );
 					CloseQTMovieWindow(wi);
 					[QTMovieWindowList removeObjectAtIndex:i];
 				}
@@ -298,7 +298,7 @@ ErrCode CloseQTMovieWindow( QTMovieWindowH WI )
 				[qm invalidate];
 				DisposeMovie(m);
 				if( m == wi->theMovie ){
-					NSLog( @"%@ held wi->theMovie: setting wi->theMovie = NULL!", qm );
+					Log( qtLogPtr, "%@ held wi->theMovie: setting wi->theMovie = NULL!", qm );
 					wi->theMovie = NULL;
 				}
 				// qm not owned here so shouldn't be released?
@@ -597,6 +597,7 @@ QTMovieWindowH OpenQTMovieInWindow( const char *theURL, int controllerVisible )
   Movie theMovie;
   Handle dataRef;
   OSType dataRefType;
+  BOOL needsFreeing;
 
 	if( !QTMovieWindowList || !QTMWInitialised ){
 		return NULL;
@@ -604,6 +605,10 @@ QTMovieWindowH OpenQTMovieInWindow( const char *theURL, int controllerVisible )
 
 	if( !theURL || !*theURL ){
 		theURL = AskFileName( (char*) "Please choose a video or movie to display" );
+		needsFreeing = FreeAskedFileName();
+	}
+	else{
+		needsFreeing = NO;
 	}
 
 	if( !theURL || !*theURL ){
@@ -621,6 +626,9 @@ QTMovieWindowH OpenQTMovieInWindow( const char *theURL, int controllerVisible )
 	wih = OpenQTMovieWindowWithMovie( theMovie, theURL, resId, dataRef, dataRefType, controllerVisible );
 	if( !wih ){
 		DisposeMovie(theMovie);
+	}
+	if( needsFreeing ){
+		QTils_free(theURL);
 	}
 	return wih;
 }

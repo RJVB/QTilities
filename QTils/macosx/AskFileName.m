@@ -24,6 +24,14 @@ IDENTIFY("AskFileName: Mac OS X/Cocoa file dialog");
 #	define TARGET_OS_MAC
 #endif
 
+char *QTils_strdup( const char *txt );
+
+
+int FreeAskedFileName()
+{
+	return 0;
+}
+
 char *AskFileName( char *title )
 { int result;
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -31,6 +39,7 @@ char *AskFileName( char *title )
 		@"mp4", @"mpeg", @"avi", @"wmv", @"mp3", @"aif", @"wav", @"mid", @"jpg", @"jpeg", nil };
   NSArray *fileTypes = [NSArray arrayWithObjects:exts count:15];
   NSOpenPanel *oPanel = [NSOpenPanel openPanel];
+  static char *nameBuf = NULL;
   char *fName = NULL;
 
 	[oPanel setAllowsMultipleSelection:NO];
@@ -45,7 +54,9 @@ char *AskFileName( char *title )
 	  int count = [filesToOpen count];
 		if( count > 0 ){
 		  NSURL *aFile = [filesToOpen objectAtIndex:0];
-			fName = (char*) [[aFile absoluteString] cStringUsingEncoding:NSUTF8StringEncoding]; // or defaultCStringEncoding ?
+		  const char *c = [[aFile absoluteString] cStringUsingEncoding:NSUTF8StringEncoding]; // or defaultCStringEncoding ?
+			nameBuf = QTils_realloc( nameBuf, (1 + strlen(c)) * sizeof(char) );
+			strcpy( nameBuf, c ), fName = nameBuf;
 			if( strncasecmp( fName, "file://", 7 ) == 0 ){
 				fName = strchr( &fName[7], '/' );
 			}
@@ -64,6 +75,7 @@ char *AskSaveFileName( char *title )
 		@"mp4", @"mpeg", @"avi", @"wmv", @"mp3", @"aif", @"wav", @"mid", @"jpg", @"jpeg", nil };
   NSArray *fileTypes = [NSArray arrayWithObjects:exts count:15];
   NSSavePanel *sPanel = [NSSavePanel savePanel];
+  static char *nameBuf = NULL;
   char *fName = NULL;
 
 	[sPanel setAllowedFileTypes:fileTypes];
@@ -76,7 +88,9 @@ char *AskSaveFileName( char *title )
 	result = [sPanel runModal];
 	if( result == NSFileHandlingPanelOKButton ){
 	  NSURL *aFile = [sPanel URL];
-		fName = (char*) [[aFile absoluteString] cStringUsingEncoding:NSUTF8StringEncoding]; // or defaultCStringEncoding ?
+	  const char *c = [[aFile absoluteString] cStringUsingEncoding:NSUTF8StringEncoding]; // or defaultCStringEncoding ?
+		nameBuf = QTils_realloc( nameBuf, (1 + strlen(c)) * sizeof(char) );
+		strcpy( nameBuf, c ), fName = nameBuf;
 		if( strncasecmp( fName, "file://", 7 ) == 0 ){
 			fName = strchr( &fName[7], '/' );
 		}

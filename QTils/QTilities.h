@@ -230,6 +230,11 @@ QTLSext char *AskFileName(char *title);
  */
 QTLSext char *AskSaveFileName(char *title);
 
+/*!
+	whether the result returned by AskFileName or AskSaveFileName must be freed by the user
+ */
+QTLSext int FreeAskedFileName();
+
 #if TARGET_OS_MAC || defined(__APPLE_CC__) || defined(__MACH__)
 
 	/*!

@@ -345,7 +345,7 @@ int main( int argc, char* argv[] )
 #if defined(__APPLE_CC__) || defined(__MACH__)
   const char *sessionArg = NULL;
  	NSApplicationLoad();
-	if( argc > 0 && strncasecmp( argv[1], "-psn_", 5 ) == 0 ){
+	if( argc > 1 && strncasecmp( argv[1], "-psn_", 5 ) == 0 ){
 		sessionArg = argv[1];
 		for( i = 2 ; i < argc ; ++i ){
 			argv[i-1] = argv[i];

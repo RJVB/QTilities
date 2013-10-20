@@ -2311,7 +2311,7 @@ ErrCode OpenMovieFromURLWithQTMovieWindowH( Movie *newMovie, short flags, short 
 
 	if( !URL || !*URL ){
 		lastMovieOpenedURL = URL = AskFileName( "Please choose a video or movie to open" );
-		noFree = TRUE;
+		noFree = !FreeAskedFileName();
 	}
 	if( !dataRef ){
 		dataRef = &ldataRef;
@@ -2611,12 +2611,13 @@ ErrCode SaveMovieAsRefMov( const char *dstURL, Movie theMovie )
   DataHandler odataHandler;
   Movie oMovie;
   ErrCode err2;
+  char *_dst = NULL;
 #ifndef QTMOVIESINK
   QTMovieWindowH wih = QTMovieWindowH_from_Movie(theMovie), owih;
 #endif
 
 	if( !dstURL ){
-		dstURL = AskSaveFileName( "Save as: please give/select a name for the reference movie" );
+		_dst = dstURL = AskSaveFileName( "Save as: please give/select a name for the reference movie" );
 	}
     	err2 = CreateMovieStorageFromURL( dstURL, 'TVOD',
 							   smCurrentScript, createMovieFileDeleteCurFile|createMovieFileDontCreateResFile,
@@ -2662,6 +2663,9 @@ ErrCode SaveMovieAsRefMov( const char *dstURL, Movie theMovie )
 #endif
 	){
 		err2 = SaveMovie( theMovie );
+	}
+	if( _dst && FreeAskedFileName() ){
+		free(_dst);
 	}
 	return err2;
 }

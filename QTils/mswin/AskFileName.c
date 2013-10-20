@@ -21,6 +21,11 @@ IDENTIFY("AskFileName: MSWin32 file dialog");
 #include <Windows.h>
 
 
+int int FreeAskedFileName()
+{
+	return 1;
+}
+
 char *AskFileName(char *title)
 { OPENFILENAME lp;
   static char fileName[1024];
