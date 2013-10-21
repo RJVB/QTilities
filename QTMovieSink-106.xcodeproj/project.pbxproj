@@ -76,6 +76,8 @@
 		D65F63CB12C3CA8D009A3D72 /* Lists.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6878986129ACB17009ACD66 /* Lists.cpp */; };
 		D65F644412C3D025009A3D72 /* QTMovieWin.c in Sources */ = {isa = PBXBuildFile; fileRef = D68788F8129A87ED009ACD66 /* QTMovieWin.c */; };
 		D65F646712C40076009A3D72 /* QTMovieWinWM.mm in Sources */ = {isa = PBXBuildFile; fileRef = D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.mm */; };
+		D66199841815784E0008DBB3 /* StreamEx.h in Headers */ = {isa = PBXBuildFile; fileRef = D66199831815784E0008DBB3 /* StreamEx.h */; };
+		D66199851815784E0008DBB3 /* StreamEx.h in Headers */ = {isa = PBXBuildFile; fileRef = D66199831815784E0008DBB3 /* StreamEx.h */; };
 		D67ACE441416129D00E99EA2 /* copyright.h in Headers */ = {isa = PBXBuildFile; fileRef = D619278B11FF690800BDAAAA /* copyright.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D67ACE451416129D00E99EA2 /* QTilities.h in Headers */ = {isa = PBXBuildFile; fileRef = D68788F7129A87ED009ACD66 /* QTilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D67ACE461416129D00E99EA2 /* QTMovieSink.h in Headers */ = {isa = PBXBuildFile; fileRef = D619272711FF64E500BDAAAA /* QTMovieSink.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -298,6 +300,7 @@
 		D65F63ED12C3CC3F009A3D72 /* sparsetable */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sparsetable; sourceTree = "<group>"; };
 		D65F63EE12C3CC3F009A3D72 /* type_traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = type_traits.h; sourceTree = "<group>"; };
 		D65F643F12C3CFA7009A3D72 /* QTMovieWinWM.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = QTMovieWinWM.mm; sourceTree = "<group>"; };
+		D66199831815784E0008DBB3 /* StreamEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StreamEx.h; path = QTils/StreamEx.h; sourceTree = "<group>"; };
 		D663BD331328DF96007DFF5C /* QTVOD2-installer.nsi */ = {isa = PBXFileReference; explicitFileType = text.script; fileEncoding = 12; path = "QTVOD2-installer.nsi"; sourceTree = SOURCE_ROOT; };
 		D663BD351328FFA5007DFF5C /* QTVOD2-dev-installer.nsi */ = {isa = PBXFileReference; explicitFileType = text.script; fileEncoding = 12; path = "QTVOD2-dev-installer.nsi"; sourceTree = SOURCE_ROOT; };
 		D665F1F3132BCCD300E0B732 /* QTilities-v1.3.pages */ = {isa = PBXFileReference; lastKnownFileType = file; path = "QTilities-v1.3.pages"; sourceTree = "<group>"; };
@@ -600,6 +603,7 @@
 		D68788F1129A8781009ACD66 /* QTils */ = {
 			isa = PBXGroup;
 			children = (
+				D66199831815784E0008DBB3 /* StreamEx.h */,
 				D61EEE4B14841C0400D479D9 /* CritSectEx */,
 				D63EFF5D131D4A34005B6423 /* doxygen.config */,
 				D6E64D2612F743FA00DF4419 /* QTxml.c */,
@@ -777,6 +781,7 @@
 				D6B2577B175B88C20090F55F /* LoggerCommon.h in Headers */,
 				D6B2577D175B88C20090F55F /* LoggerClient.h in Headers */,
 				D6B2577E175B88C20090F55F /* NSLoggerClient.h in Headers */,
+				D66199841815784E0008DBB3 /* StreamEx.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -796,6 +801,7 @@
 				D6B25781175B88C20090F55F /* LoggerCommon.h in Headers */,
 				D6B25783175B88C20090F55F /* LoggerClient.h in Headers */,
 				D6B25784175B88C20090F55F /* NSLoggerClient.h in Headers */,
+				D66199851815784E0008DBB3 /* StreamEx.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

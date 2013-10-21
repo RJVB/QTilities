@@ -15,8 +15,7 @@ IDENTIFY("QuickTime player based on QTils");
 #endif
 
 #include "QTilities.h"
-
-#include <boost/format.hpp>
+#include "StreamEx.h"
 
 #ifndef TRUE
 #	define TRUE		1
@@ -353,11 +352,20 @@ int main( int argc, char* argv[] )
 		argc -= 1;
 	}
 #endif
+	OpenQT();
+	initDMBaseQTils( &QTils );
+	QTils_LogInit();
 
+	StreamEx<std::stringstream> *ss = new StreamEx<std::stringstream>( "e=%g",2.78 );
+	delete ss;
+	std::stringstream *sss = new std::stringstream;
+	*sss << "blabla";
+	delete sss;
 	QTils_LogMsgEx( "%s called with %d argument(s)", argv[0], argc - 1 );
 	for( i = 1 ; i < argc ; ++i ){
 		QTils_LogMsg( argv[i] );
 	}
+	PumpMessages(1);
 	if( argc > 0 ){
 		// we need at least 2 windows
 		n = (argc == 1)? 2 : argc;
@@ -366,8 +374,6 @@ int main( int argc, char* argv[] )
 			perror( "Error allocating windowlist" );
 			return -1;
 		}
-		OpenQT();
-		initDMBaseQTils( &QTils );
 
 		// make sure the QTils library uses the same allocator/free routines as we do
 		init_QTils_Allocator( malloc, calloc, realloc, freep );
