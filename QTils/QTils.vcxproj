@@ -287,6 +287,7 @@ copy /B /V /Y $(OutDir)$(TargetFileName) $(SolutionDir)\Mod2\$(TargetName)$(Targ
     <ClInclude Include="QTMovieWin.h" />
     <ClInclude Include="..\QTpfuSaveImage.h" />
     <ClInclude Include="gmsvc\google\sparsehash\sparseconfig.h" />
+    <ClInclude Include="StreamEx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="..\timing.h" />
     <ClInclude Include="mswin\vsscanf.h" />

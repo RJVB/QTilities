@@ -21,7 +21,7 @@ IDENTIFY("AskFileName: MSWin32 file dialog");
 #include <Windows.h>
 
 
-int int FreeAskedFileName()
+int FreeAskedFileName()
 {
 	return 1;
 }

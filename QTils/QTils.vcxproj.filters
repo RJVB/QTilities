@@ -125,6 +125,9 @@
     <ClInclude Include="mswin\SystemTraySDK.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StreamEx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gmsvc\google\dense_hash_map">
