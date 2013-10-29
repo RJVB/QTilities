@@ -50,10 +50,6 @@ IDENTIFY("QTMovieWinWM: QuickTime utilities: MSWin32 part of the toolkit");
 #include <NumberFormatting.h>
 #include <direct.h>
 
-#ifndef TARGET_OS_WIN32
-#	define TARGET_OS_WIN32
-#endif
-
 #include "QTMovieSinkQTStuff.h"
 #include "QTMovieSink.h"
 
@@ -86,7 +82,7 @@ char ProgrammeName[MAX_PATH];
 static WSAReadHandler SocketReadHandler = NULL;
 static HANDLE *inputEventObjects = NULL;
 static DWORD numInputEventObjects = 0;
-static SysTrayEventHandler stOpenHandler = NULL, stAboutHandler = NULL;
+static SysTrayEventHandler stOpenHandler = NULL, stAboutHandler = NULL, stFrontHandler = NULL;
 
 CSystemTray *TrayIcon = NULL;
 NativeWindow TrayIconTargetWnd = NULL;
@@ -149,6 +145,12 @@ SysTrayEventHandler SetSysTrayOpenHandler( SysTrayEventHandler handler )
 SysTrayEventHandler SetSysTrayAboutHandler( SysTrayEventHandler handler )
 { SysTrayEventHandler prev = stAboutHandler;
 	stAboutHandler = handler;
+	return prev;
+}
+
+SysTrayEventHandler SetSysTrayFrontHandler( SysTrayEventHandler handler )
+{ SysTrayEventHandler prev = stFrontHandler;
+	stFrontHandler = handler;
 	return prev;
 }
 
@@ -661,8 +663,13 @@ unzoom:
 					returnRet = TRUE;
 					break;
 				case IDM_FRONT:
-					ret = (LRESULT) PostMessage( NULL, QTils_WinMSG.IDM_FRONT_MSG, (WPARAM) wi, 0 );
-//					Log( qtLogPtr, "PostMessage(NULL,IDM_FRONT_MSG=0x%x)=%d", QTils_WinMSG.IDM_FRONT_MSG, ret );
+					if( stFrontHandler ){
+						ret = (*stFrontHandler)( hWnd, wi );
+					}
+					else{
+						ret = (LRESULT) PostMessage( NULL, QTils_WinMSG.IDM_FRONT_MSG, (WPARAM) wi, 0 );
+//						Log( qtLogPtr, "PostMessage(NULL,IDM_FRONT_MSG=0x%x)=%d", QTils_WinMSG.IDM_FRONT_MSG, ret );
+					}
 					returnRet = TRUE;
 					break;
 				case IDM_EXIT:
@@ -1481,11 +1488,9 @@ ErrCode QTMovieWindowPlay( QTMovieWindowH wih )
 	else{
 		StartMovie( (*wih)->theMovie );
 		err = GetMoviesError();
-#if TARGET_OS_WIN32
 		if( (*wih)->theMC ){
 			MCMovieChanged( (*wih)->theMC, (*wih)->theMovie );
 		}
-#endif
 		PumpMessages(FALSE);
 	}
 	return err;
@@ -1499,11 +1504,9 @@ ErrCode QTMovieWindowStop( QTMovieWindowH wih )
 	else{
 		StopMovie( (*wih)->theMovie );
 		err = GetMoviesError();
-#if TARGET_OS_WIN32
 		if( (*wih)->theMC ){
 			MCMovieChanged( (*wih)->theMC, (*wih)->theMovie );
 		}
-#endif
 		PumpMessages(FALSE);
 	}
 	return err;

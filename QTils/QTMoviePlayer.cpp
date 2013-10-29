@@ -16,6 +16,7 @@ IDENTIFY("QuickTime player based on QTils");
 
 #include "QTilities.h"
 #include "StreamEx.h"
+#include <vector>
 
 #ifndef TRUE
 #	define TRUE		1
@@ -24,7 +25,7 @@ IDENTIFY("QuickTime player based on QTils");
 #	define FALSE	0
 #endif
 
-QTMovieWindowH *winlist = NULL;
+std::vector<QTMovieWindowH> winlist;
 int numQTMW = 0, MaxnumQTMW = 0;
 
 #define xfree(x)	freep((void**)&x)
@@ -243,7 +244,7 @@ void register_wi( QTMovieWindowH wi )
 		 // the idx field is purely informational, we can change it at leisure:
 			(*wi)->idx = numQTMW;
 		}
-		winlist[numQTMW] = wi;
+		winlist.push_back(wi);
 		//register_MCAction( wi, MCAction()->Step, movieStep );
 		register_MCAction( wi, MCAction()->GoToTime, movieScan );
 		register_MCAction( wi, MCAction()->Play, moviePlay );
@@ -325,7 +326,7 @@ void freep( void **p )
 	}
 }
 
-#if defined(__APPLE_CC__) || defined(__MACH__)
+#if TARGET_OS_MAC
 #	ifdef __cplusplus
 	extern "C" {
 #	endif
@@ -335,13 +336,38 @@ void freep( void **p )
 #	endif
 #endif
 
+#if TARGET_OS_WIN32
+static int FrontHandler( NativeWindow hWnd, QTMovieWindowH wih )
+{ int i;
+	for( i = 0 ; i < MaxnumQTMW ; i++ ){
+		if( winlist[i] ){
+			SetWindowPos( (*winlist[i])->theView, HWND_TOP, 0,0,0,0, SWP_NOMOVE|SWP_NOSIZE );
+		}
+	}
+	return 1;
+}
+
+static int OpenHandler( NativeWindow hWnd, QTMovieWindowH wih )
+{
+	if( (wih = OpenQTMovieInWindow( NULL, 1 )) ){
+		register_wi(wih);
+	}
+	return 1;
+}
+
+static int AboutHandler( NativeWindow hWnd, QTMovieWindowH wih )
+{
+	return 1;
+}
+#endif
+
 int main( int argc, char* argv[] )
 { int i, n;
   QTMovieWindowH wi;
   unsigned long nMsg = 0, nPumps = 0;
   LibQTilsBase QTils;
 
-#if defined(__APPLE_CC__) || defined(__MACH__)
+#if TARGET_OS_MAC
   const char *sessionArg = NULL;
  	NSApplicationLoad();
 	if( argc > 1 && strncasecmp( argv[1], "-psn_", 5 ) == 0 ){
@@ -356,28 +382,29 @@ int main( int argc, char* argv[] )
 	initDMBaseQTils( &QTils );
 	QTils_LogInit();
 
-	StreamEx<std::stringstream> *ss = new StreamEx<std::stringstream>( "e=%g",2.78 );
-	delete ss;
-	std::stringstream *sss = new std::stringstream;
-	*sss << "blabla";
-	delete sss;
+// 	StreamEx<std::stringstream> *ss = new StreamEx<std::stringstream>( "e=%g",2.78 );
+// 	delete ss;
+// 	std::stringstream *sss = new std::stringstream;
+// 	*sss << "blabla";
+// 	delete sss;
 	QTils_LogMsgEx( "%s called with %d argument(s)", argv[0], argc - 1 );
 	for( i = 1 ; i < argc ; ++i ){
 		QTils_LogMsg( argv[i] );
 	}
-	PumpMessages(1);
+	PumpMessages(0);
 	if( argc > 0 ){
 		// we need at least 2 windows
 		n = (argc == 1)? 2 : argc;
-		winlist = (QTMovieWindowH*) calloc( n, sizeof(QTMovieWindowH*) );
-		if( !winlist ){
-			perror( "Error allocating windowlist" );
-			return -1;
-		}
+		winlist.clear();
 
 		// make sure the QTils library uses the same allocator/free routines as we do
 		init_QTils_Allocator( malloc, calloc, realloc, freep );
 
+#if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
+		SetSysTrayOpenHandler(OpenHandler);
+		SetSysTrayAboutHandler(AboutHandler);
+		SetSysTrayFrontHandler(FrontHandler);
+#endif
 		if( argc == 1 ){
 			QTils_LogMsgEx( "OpenQTMovieInWindow() will present a file selection dialog" );
 			// OpeQTMovieInWindow() will present a dialog if a NULL URL is passed in
@@ -417,9 +444,6 @@ int main( int argc, char* argv[] )
 		for( i = 0 ; i < MaxnumQTMW ; i++ ){
 			DisposeQTMovieWindow( winlist[i] );
 			winlist[i] = NULL;
-		}
-		if( winlist ){
-			free(winlist);
 		}
 		QTils_LogMsgEx( "Handled %lu messages in %lu pumpcycles\n", nMsg, nPumps );
 

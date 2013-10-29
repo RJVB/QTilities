@@ -49,6 +49,13 @@ typedef struct QTils_Allocators {
 	typedef struct QTils_WinMSGs {
 		int IDM_ABOUT_MSG, IDM_OPEN_MSG, IDM_FRONT_MSG;
 	} QTils_WinMSGs;
+#	if !defined(TARGET_OS_WIN32) || !TARGET_OS_WIN32
+#		define TARGET_OS_WIN32	1
+#	endif
+#else
+#	if (defined(__APPLE_CC__) || defined(__MACH__)) && (!defined(TARGET_OS_MAC) || !TARGET_OS_MAC)
+#		define TARGET_OS_MAC	1
+#	endif
 #endif
 
 QTLSext QTils_Allocators *init_QTils_Allocator( void* (*mallocPtr)(size_t), void* (*callocPtr)(size_t,size_t),
@@ -494,9 +501,24 @@ QTLSext ErrCode LastQTError();
 typedef NativeWindow*	NativeWindowPtr;
 typedef NativeWindowPtr* NativeWindowH;
 
-#if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
+#if TARGET_OS_WIN32
 	typedef void (*WSAReadHandler)(unsigned int*, unsigned int, long);
+	/*!
+		prototype for functions handling SysTray menu events on MS Windows
+	 */
 	typedef int (*SysTrayEventHandler)(NativeWindow w, QTMovieWindowH wih);
+	/*!
+		Installs a handler for the systray "Open" menu action, returning the previous handle
+	 */
+	QTLSext SysTrayEventHandler SetSysTrayOpenHandler( SysTrayEventHandler handler );
+	/*!
+		Installs a handler for the systray "About" menu action, returning the previous handle
+	 */
+	QTLSext SysTrayEventHandler SetSysTrayAboutHandler( SysTrayEventHandler handler );
+	/*!
+		Installs a handler for the systray "Front" menu action, returning the previous handle
+	 */
+	QTLSext SysTrayEventHandler SetSysTrayFrontHandler( SysTrayEventHandler handler );
 #endif
 
 /*!
@@ -526,7 +548,7 @@ typedef struct QTMovieInfo {
 	@class NSQTMovieWindow;
 #endif
 
-#ifdef _WINDOWS_
+#if TARGET_OS_WIN32 == 1
 	enum QTMW_SizeStates { QTWM_NORMAL=0, QTWM_ZOOMED=1, QTWM_REDUCED=2 };
 #endif
 
@@ -552,8 +574,9 @@ typedef struct QTMovieWindows {
 	Movie theMovie;				//!< the open QuickTime movie object
 	QTMovieInfo *info;				//!< a pointer to the theInfo structure in the private section
 	void *user_data;				//!< a hook for optional user data.
+// --- opaque part!
+	struct QTMovieSinks *sourceQMS;
 #if (defined(__QUICKTIME__) || defined(__MOVIES__))
-	// --- opaque part!
 	MovieController theMC;
 	Track theTCTrack, theTimeStampTrack, theChapterTrack, theChapterRefTrack;
 	Media theChapterMedia;
@@ -565,33 +588,33 @@ typedef struct QTMovieWindows {
 	DataHandler dataHandler;
 	MemoryDataRef *memRef;			//!< set if the movie was opened from an in-memory dataRef
 	short resId;
-#ifdef _WINDOWS_
+#	ifdef _WINDOWS_
 	WINDOWPOS gOldWindowPos;			//!< to keep track of the window's previous position
 	char isZooming, sizeState,
 		isGoingFullScreen, isFullScreen;
 	Cartesian restorePos, restoreSize,
 		frameShift,				//!< the difference between the envelope's (window's) and the movie's screen position
 		frameMargin;				//!< the difference between the envelope's and the movie's size
-#endif // _WINDOWS_
-#if TARGET_OS_MAC
+#	endif // TARGET_OS_WIN32
+#	if TARGET_OS_MAC
 //	struct NSAutoreleasePool *pool;	//!< Objective-C memory allocation pool
 	int performingClose;			//!< window is being closed
 								//!< this state is set while the windowShouldClose window delegate executes
 								//!<
-#	ifdef _QTMW_M
+#		ifdef _QTMW_M
 	IBOutlet NSQTMovieWindow *theNSQTMovieWindow;	//!<  receives an instance of our NSDocument class after loading the NIB
-#	else
+#		else
 	struct NSQTMovieWindow *theNSQTMovieWindow;
-#	endif
-#	ifdef __OBJC__
+#		endif // _QTMW_M
+#		ifdef __OBJC__
 	QTMovieView *theMovieView;		//!< receives a pointer to the QTMovieView showing our Movie
-#else
+#		else
 	struct QTMovieView *theMovieView;	//!< receives a pointer to the QTMovieView showing our Movie
-#endif
+#		endif // __OBJC__
 	void *NSMCActionList;			//!< pointer to a C++ map associating MCAction values with user-specified callbacks into
 								//!< an ObjC class "owning" the QTMovieWindowH
 								//!<
-#endif // TARGET_OS_MAC
+#	endif // TARGET_OS_MAC
 	void *MCActionList;				//!< pointer to a C++ map associating MCAction values with user-specified callbacks
 	float lastActionTime;
 	short lastAction, stepPending;
@@ -599,7 +622,6 @@ typedef struct QTMovieWindows {
 	SInt64 stepStartTime;
 	QTMovieInfo theInfo;			//!< source for the info member in the public section.
 #endif //__QUICKTIME__
-	struct QTMovieSinks *sourceQMS;
 } QTMovieWindows;
 
 /*!
@@ -1279,7 +1301,7 @@ typedef struct LibQTilsBase {
 
 	ErrCode (*LastQTError)();
 
-#if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
+#if TARGET_OS_WIN32
 	SysTrayEventHandler (*SetSysTrayOpenHandler)( SysTrayEventHandler handler );
 	SysTrayEventHandler (*SetSysTrayAboutHandler)( SysTrayEventHandler handler );
 #endif
@@ -1290,7 +1312,7 @@ typedef struct LibQTilsBase {
 						 char *errComment, int clen );
 	void (*free)( char **mem );
 	QTils_Allocators *QTils_Allocator;
-#if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
+#if TARGET_OS_WIN32
 	QTils_WinMSGs *QTils_WinMSG;
 #endif
 
