@@ -33,11 +33,15 @@ public:
 			}
 		}
 #else
+		if( N == 0 ){
+			N += 1;
+		}
 		char *buf = new char[N];
 		while( buf && fmt ){
+			*buf = '\0';
 			n = ::vsnprintf( buf, N, fmt, ap );
 			int len = strlen(buf);
-			if( n > 0 && len == n ){
+			if( n >= 0 && len >= n ){
 				*this << buf;
 				delete[] buf;
 				return n;

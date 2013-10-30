@@ -20,6 +20,11 @@ IDENTIFY("AskFileName: MSWin32 file dialog");
 
 #include <Windows.h>
 
+#include <QTML.h>
+#include <Movies.h>
+
+#define _QTILS_C
+#include "QTilities.h"
 
 int FreeAskedFileName()
 {

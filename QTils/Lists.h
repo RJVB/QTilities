@@ -28,13 +28,13 @@ extern "C"
 
 extern void init_QTMWlists();
 extern void register_QTMovieWindowH( QTMovieWindowH qtwmH, NativeWindow hwnd );
-extern NativeWindow NativeWindow_from_QTMovieWindowH( QTMovieWindowH qtwmH );
-extern QTMovieWindowH QTMovieWindowH_from_NativeWindow( NativeWindow hwnd );
+QTLSext NativeWindow NativeWindow_from_QTMovieWindowH( QTMovieWindowH qtwmH );
+QTLSext QTMovieWindowH QTMovieWindowH_from_NativeWindow( NativeWindow hwnd );
 extern void unregister_QTMovieWindowH( QTMovieWindowH qtwmH );
 extern void unregister_QTMovieWindowH_from_NativeWindow( NativeWindow hwnd );
 
 extern QTMovieWindowH register_QTMovieWindowH_for_Movie( Movie movie, QTMovieWindowH qtwmH );
-extern QTMovieWindowH QTMovieWindowH_from_Movie( Movie movie );
+QTLSext QTMovieWindowH QTMovieWindowH_from_Movie( Movie movie );
 extern void unregister_QTMovieWindowH_for_Movie( Movie movie );
 
 QTLSext const char *GetMacOSStatusErrStrings(ErrCode err, const char **comment);

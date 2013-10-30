@@ -259,6 +259,11 @@ QTLSext int PostMessageBox( const char *title, const char *message );
 QTLSext const char *MacErrorString( ErrCode err, const char **errComment );
 
 /*!
+	converts an UTF8 string to "Ansi" ASCII. Function taken from ADW Modula-2
+ */
+QTLSext char *Utf8ToAnsi( const char *utf8, char *strA, size_t strALen, char replaceChar );
+
+/*!
 	open a movie from a file; pass NULL for dum1 & id, 0 or 1 for flags
 	@n
 	Given the file <URL>, open it as a QuickTime movie. The function returns the Movie object (in-memory "handle")

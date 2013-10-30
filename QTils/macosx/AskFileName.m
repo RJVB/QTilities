@@ -120,8 +120,12 @@ int PostMessageBox( const char *title, const char *message )
 	@synchronized([NSAlert class]){
 		[alert setAlertStyle:NSInformationalAlertStyle];
 		[alert setMessageText:@"" ];
-		msg = [NSString stringWithCString:message encoding:NSUTF8StringEncoding];
-		tit = [NSString stringWithCString:title encoding:NSUTF8StringEncoding];
+		if( !(msg = [NSString stringWithCString:message encoding:NSUTF8StringEncoding]) ){
+			msg = [NSString stringWithCString:message encoding:NSASCIIStringEncoding];
+		}
+		if( !(tit = [NSString stringWithCString:title encoding:NSUTF8StringEncoding]) ){
+			tit = [NSString stringWithCString:title encoding:NSASCIIStringEncoding];
+		}
 		if( msg ){
 			[alert setInformativeText:msg];
 		}

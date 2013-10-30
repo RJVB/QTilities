@@ -11,6 +11,7 @@ IDENTIFY("QuickTime player based on QTils");
 #	include "winixdefs.h"
 #	include <Windows.h>
 #else
+#	include <libgen.h>
 #	include <unistd.h>
 #endif
 
@@ -29,16 +30,18 @@ std::vector<QTMovieWindowH> winlist;
 int numQTMW = 0, MaxnumQTMW = 0;
 LibQTilsBase QTils;
 
+QTMovieWindowH activeWiH = NULL;
+
 #define xfree(x)	freep((void**)&x)
 
 extern "C" {
 	extern ErrCode GetMetaDataStringFromMovie( Movie theMovie, AnnotationKeys key, char **value, char **lang );
+	extern QTMovieWindowH QTMovieWindowH_from_NativeWindow( NativeWindow hwnd );
 }
 
 static std::string metaDataNSStr( Movie theMovie, int trackNr, AnnotationKeys key, const char *keyDescr )
-{ static std::stringstream ret;
+{ static std::string ret("");
   char *value = NULL, lang[16];
-	ret.clear();
 	// I prefer to keep QTMoviePlayer a pure QTils product, and avoid calling into the QuickTimes API directly
 	// hence the use of the LibQTilsBase instance here.
 	if( trackNr > 0 && trackNr <= QTils.GetMovieTrackCount(theMovie) ){
@@ -51,30 +54,77 @@ static std::string metaDataNSStr( Movie theMovie, int trackNr, AnnotationKeys ke
 		   && (value = (char*) calloc( len+1, sizeof(char) ))
 		){
 			QTils.GetMetaDataStringFromTrack( theMovie, trackNr, key, value, len+1, lang, 15 );
+			if( value ){
+				if( *value ){
+				  std::stringstream nr;
+					nr << "Track #" << trackNr << ": ";
+#if TARGET_OS_WIN32
+					// value will be in UTF8 and should be converted to ANSI
+					char *uvalue = strdup(value);
+					Utf8ToAnsi( uvalue, value, strlen(uvalue)+1, '*' );
+					free(uvalue);
+#endif
+					ret = nr.str() +
+						std::string(keyDescr) + std::string(value) + std::string("\n");
+				}
+				else{
+					ret = "";
+				}
+			}
 		}
 	}
 	else{
 		GetMetaDataStringFromMovie( theMovie, key, &value, NULL );
+		if( value ){
+			if( *value ){
+#if TARGET_OS_WIN32
+				// value will be in UTF8 and should be converted to ANSI
+				char *uvalue = strdup(value);
+				Utf8ToAnsi( uvalue, value, strlen(uvalue)+1, '*' );
+				free(uvalue);
+#endif
+				ret = std::string(keyDescr) + std::string(value) + std::string("\n");
+			}
+			else{
+				ret = "";
+			}
+		}
 	}
 	if( value ){
-		if( *value ){
-			ret << keyDescr << value << "\n";
-		}
 		free(value);
 	}
 	else{
-		ret << "";
+		ret = "";
 	}
-	return ret.str();
+	return ret;
+}
+
+// Mac OS X basename() can modify the input string when not in 'legacy' mode on 10.6
+// and indeed it does. So we use our own which doesn't, and also doesn't require internal
+// storage. Handy on win32 as well, where the function simply doesn't exist ...
+static const char *lbasename( const char *url )
+{ const char *c = NULL;
+#if TARGET_OS_MAC
+  static const int sep = '/';
+#elif TARGET_OS_WIN32
+  static const int sep = '\\';
+#endif
+	if( url ){
+		if( (c =  strrchr( url, sep )) ){
+			c++;
+		}
+		else{
+			c = url;
+		}
+	}
+	return c;
 }
 
 void ShowMetaData(QTMovieWindowH wih)
-{ StreamEx<std::stringstream> fullText, MetaDataDisplayStr;
+{ StreamEx<std::stringstream> fullText(""), MetaDataDisplayStr("");
   MovieFrameTime ft;
   Movie theMovie = (*wih)->theMovie;
 	secondsToFrameTime( (*wih)->info->startTime, (*wih)->info->frameRate, &ft );
-	fullText.clear();
-	MetaDataDisplayStr.clear();
 	fullText.asnprintf( 1024, "Movie %s duration %gs; starts at %02d:%02d:%02d;%03d\n",
 			    (*wih)->theURL, (*wih)->info->duration,
 			    (int) ft.hours, (int) ft.minutes, (int) ft.seconds, (int) ft.frames );
@@ -105,7 +155,7 @@ void ShowMetaData(QTMovieWindowH wih)
 		}
 	}
 	fullText << MetaDataDisplayStr.str();
-	PostMessageBox( "Meta Data", fullText.str().c_str() );
+	PostMessageBox( lbasename((*wih)->theURL), fullText.str().c_str() );
 }
 
 
@@ -197,45 +247,6 @@ int movieStop(QTMovieWindowH wi, void *params )
 
 int movieFinished(QTMovieWindowH wi, void *params )
 {
-	//if( QTMovieWindowH_Check(wi) ){
-	//  double tr,ta,tt;
-	//  MovieFrameTime ft, ft2, ft3;
-	//	QTMovieWindowStop( wi );
-
-	//	QTMovieWindowGetTime(wi,&tr, 0);
-	//	QTMovieWindowGetTime(wi,&ta, 1);
-	//	QTMovieWindowGetFrameTime(wi, &ft, 1);
-	//	secondsToFrameTime( ta, (*wi)->info->TCframeRate, &ft2 );
-	//	QTils_LogMsgEx( "Movie #%d finished at t %gs(rel) %gs=%02d:%02d:%02d;%d(abs;%gHz) - effective duration=%gs(abs) theoretical %gs\n",
-	//		(*wi)->idx, tr,
-	//		ta, ft.hours, ft.minutes, ft.seconds, ft.frames, (*wi)->info->TCframeRate,
-	//		ta - (*wi)->info->startTime, (*wi)->info->duration
-	//	);
-	//	secondsToFrameTime( ta, (*wi)->info->frameRate, &ft3 );
-	//	QTils_LogMsgEx( "t (abs) %gs=%02d:%02d:%02d;%d (freq=%gHz)\n",
-	//		ta, ft3.hours, ft3.minutes, ft3.seconds, ft3.frames, (*wi)->info->frameRate
-	//	);
-
-	//	secondsToFrameTime( (*wi)->info->startTime + (*wi)->info->duration, (*wi)->info->TCframeRate, &ft );
-	//	QTMovieWindowSetFrameTime( wi, &ft, 1 );
-
-	//	QTMovieWindowSetTime( wi, (tt=(*wi)->info->startTime + (*wi)->info->duration/2), 1 );
-	//	QTMovieWindowGetTime(wi,&tr, 0);
-	//	QTMovieWindowGetTime(wi,&ta, 1);
-
-	//	secondsToFrameTime( tt, (*wi)->info->TCframeRate, &ft );
-	//	secondsToFrameTime( ta, (*wi)->info->TCframeRate, &ft2 );
-	//	QTils_LogMsgEx( "Sent movie to %gs from start: %gs=%02d:%02d:%02d;%d, current time now t=%gs (rel) t=%gs=%02d:%02d:%02d;%d (abs)\n",
-	//		(*wi)->info->duration/2, tt,
-	//		ft.hours, ft.minutes, ft.seconds, ft.frames,
-	//		tr, ta,
-	//		ft2.hours, ft2.minutes, ft2.seconds, ft2.frames
-	//	);
-	//	secondsToFrameTime( ta, (*wi)->info->frameRate, &ft3 );
-	//	QTils_LogMsgEx( "t (abs) %gs=%02d:%02d:%02d;%d (freq=%gHz)\n",
-	//		ta, ft3.hours, ft3.minutes, ft3.seconds, ft3.frames, (*wi)->info->frameRate
-	//	);
-	//}
 	return FALSE;
 }
 
@@ -251,6 +262,14 @@ int movieClose(QTMovieWindowH wi, void *params )
 		// winlist[ (*wi)->idx ] = NULL;
 		DisposeQTMovieWindow(wi);
 		return TRUE;
+	}
+	return FALSE;
+}
+
+int movieActivate(QTMovieWindowH wi, void *params )
+{
+	if( QTMovieWindowH_Check(wi) ){
+		activeWiH = wi;
 	}
 	return FALSE;
 }
@@ -335,6 +354,7 @@ void register_wi( QTMovieWindowH wi )
 		//register_MCAction( wi, MCAction()->Finished, movieFinished );
 		register_MCAction( wi, MCAction()->Close, movieClose );
 		register_MCAction( wi, MCAction()->KeyUp, movieKeyUp );
+		register_MCAction( wi, MCAction()->Activate, movieActivate );
 		numQTMW += 1;
 		if( numQTMW > MaxnumQTMW ){
 			MaxnumQTMW = numQTMW;
@@ -439,6 +459,9 @@ static int OpenHandler( NativeWindow hWnd, QTMovieWindowH wih )
 
 static int AboutHandler( NativeWindow hWnd, QTMovieWindowH wih )
 {
+	if( activeWiH ){
+		wih = activeWiH;
+	}
 	if( QTMovieWindowH_Check(wih) ){
 		ShowMetaData(wih);
 	}

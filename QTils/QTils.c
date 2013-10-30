@@ -602,6 +602,77 @@ UInt32 MacErrorString_Mod2( ErrCode err, char *errString, int slen, char *errCom
 	}
 }
 
+#define ACHR(x)	(char)(x)
+#define CHR(x)	(char)(x)
+#define ORD(x)	(unsigned int)(x)
+#define INC(x)	(++x)
+
+/*!
+	converts an UTF8 string to "Ansi" ASCII. Function taken from ADW Modula-2
+ */
+char *Utf8ToAnsi( const char *utf8, char *strA, size_t strALen, char replaceChar )
+{
+	unsigned int ch1, ch2, uch, i, j, l;
+	unsigned char bad;
+	
+	if( utf8 && strA ){
+		l = strlen(utf8);
+		bad = FALSE;
+		i = j = 0;
+		while( i < l && j < strALen && !bad ){
+			ch1 = (unsigned int) utf8[i];
+			++i;
+			if( (ch1 & 0x80) == 0 ){
+				// <= 7Fh
+				strA[j] = (char) ch1;
+				++j;
+			}
+			else{
+				// multi byte sequence
+				if( (ch1 & 0xE0) == 0xC0 ){
+					// two bytes, we will accept a full 8-bit char
+					
+					if( i < l ){
+						ch2 = ORD(utf8[i]);
+						INC(i);
+						uch = ((ch1 & 0x1F) << 6) | (ch2 & 0x3F);
+						if( uch > 255 ){
+							uch = ORD(replaceChar);
+						}
+						strA[j] = ACHR(uch);
+						INC(j);
+					}
+					else{
+						bad = TRUE;
+					}
+				}
+				else{
+					if( (ch1 & 0x0F0) == 0x0E0 ){
+						// three bytes
+						i += 2;
+					}
+					else if( (ch1 & 0x0F8) == 0x0F0 ){
+						// four bytes
+						i += 3;
+					}
+					else if( (ch1 & 0x0FC) == 0x0F8 ){
+						// five bytes
+						i += 4;
+					}
+					else{
+						// six bytes
+						i += 5;
+					};
+					strA[j] = replaceChar;
+					INC(j);
+				}
+			}
+		}
+		strA[strALen-1] = '\0';
+	}
+	return strA;
+}
+
 // sometimes it's a good idea to (re)anchor a Movie to a top-left corner at (0,0)
 ErrCode AnchorMovie2TopLeft( Movie theMovie )
 { Rect mBox;
