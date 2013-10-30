@@ -27,8 +27,87 @@ IDENTIFY("QuickTime player based on QTils");
 
 std::vector<QTMovieWindowH> winlist;
 int numQTMW = 0, MaxnumQTMW = 0;
+LibQTilsBase QTils;
 
 #define xfree(x)	freep((void**)&x)
+
+extern "C" {
+	extern ErrCode GetMetaDataStringFromMovie( Movie theMovie, AnnotationKeys key, char **value, char **lang );
+}
+
+static std::string metaDataNSStr( Movie theMovie, int trackNr, AnnotationKeys key, const char *keyDescr )
+{ static std::stringstream ret;
+  char *value = NULL, lang[16];
+	ret.clear();
+	// I prefer to keep QTMoviePlayer a pure QTils product, and avoid calling into the QuickTimes API directly
+	// hence the use of the LibQTilsBase instance here.
+	if( trackNr > 0 && trackNr <= QTils.GetMovieTrackCount(theMovie) ){
+	  size_t len;
+		// this could of course be done somewhat more simply by including the QuickTime headers which
+		// would allow to call GetMovieIndTrack to obtain a track, rather than calling into
+		// QTils.GetMetaDataSringFromTrack which actually points to the Modula-2 version expecting a track NUMBER.
+		// Or I could add a GetMetaDataStringFromTrackNr to the QTils API ...
+		if( QTils.GetMetaDataStringLengthFromTrack( theMovie, trackNr, key, &len ) == noErr
+		   && (value = (char*) calloc( len+1, sizeof(char) ))
+		){
+			QTils.GetMetaDataStringFromTrack( theMovie, trackNr, key, value, len+1, lang, 15 );
+		}
+	}
+	else{
+		GetMetaDataStringFromMovie( theMovie, key, &value, NULL );
+	}
+	if( value ){
+		if( *value ){
+			ret << keyDescr << value << "\n";
+		}
+		free(value);
+	}
+	else{
+		ret << "";
+	}
+	return ret.str();
+}
+
+void ShowMetaData(QTMovieWindowH wih)
+{ StreamEx<std::stringstream> fullText, MetaDataDisplayStr;
+  MovieFrameTime ft;
+  Movie theMovie = (*wih)->theMovie;
+	secondsToFrameTime( (*wih)->info->startTime, (*wih)->info->frameRate, &ft );
+	fullText.clear();
+	MetaDataDisplayStr.clear();
+	fullText.asnprintf( 1024, "Movie %s duration %gs; starts at %02d:%02d:%02d;%03d\n",
+			    (*wih)->theURL, (*wih)->info->duration,
+			    (int) ft.hours, (int) ft.minutes, (int) ft.seconds, (int) ft.frames );
+	MetaDataDisplayStr << metaDataNSStr( theMovie, 1, akDisplayName, "Name: " );
+	MetaDataDisplayStr << metaDataNSStr( theMovie, 1, akSource, "Original file: " );
+	MetaDataDisplayStr << metaDataNSStr( theMovie, 1, akCreationDate, "Creation date: " );
+	MetaDataDisplayStr << metaDataNSStr( theMovie, 1, akDescr, "Description: " );
+	MetaDataDisplayStr << metaDataNSStr( theMovie, 1, akInfo, "Information: " );
+	MetaDataDisplayStr << metaDataNSStr( theMovie, 1, akComment, "Comments: " );
+	MetaDataDisplayStr << metaDataNSStr( theMovie, -1, akDescr, "Description: " );
+	MetaDataDisplayStr << metaDataNSStr( theMovie, -1, akInfo, "Information: " );
+	MetaDataDisplayStr << metaDataNSStr( theMovie, -1, akComment, "Comments: " );
+	MetaDataDisplayStr << metaDataNSStr( theMovie, -1, akCreationDate, "Creation date cache/.mov file: " );
+	{ long trackNr = 1;
+	  OSType trackType, trackSubType, creator;
+	  char *cName;
+		while( GetMovieTrackNrTypes( theMovie, trackNr, &trackType, &trackSubType ) == noErr ){
+			cName = NULL;
+			if( trackType == 'vide'
+			   && GetMovieTrackNrDecompressorInfo( theMovie, trackNr, &trackSubType, &cName, &creator ) == noErr
+			){ 
+				MetaDataDisplayStr.asprintf( "Track #%ld, type '%s' codec '%s'",
+					trackNr, OSTStr(trackSubType), cName );
+				MetaDataDisplayStr.asprintf( " by '%s'\n", OSTStr(creator) );
+				QTils_free(cName);
+			}
+			trackNr += 1;
+		}
+	}
+	fullText << MetaDataDisplayStr.str();
+	PostMessageBox( "Meta Data", fullText.str().c_str() );
+}
+
 
 int movieStep(QTMovieWindowH wi, void *params )
 {
@@ -213,6 +292,9 @@ int movieKeyUp(QTMovieWindowH wi, void *params )
 			quitRequest = TRUE;
 			return TRUE;
 		}
+		else if( evt->message == 'i' || evt->message == 'I' ){
+			ShowMetaData(wi);
+		}
 		else if( evt->message == 'C' ){
 			QTils_LogMsgEx( "Toggling MC visibility\n" );
 			QTMovieWindowToggleMCController(wi);
@@ -340,7 +422,7 @@ void freep( void **p )
 static int FrontHandler( NativeWindow hWnd, QTMovieWindowH wih )
 { int i;
 	for( i = 0 ; i < MaxnumQTMW ; i++ ){
-		if( winlist[i] ){
+		if( QTMovieWindowH_isOpen(winlist[i]) ){
 			SetWindowPos( (*winlist[i])->theView, HWND_TOP, 0,0,0,0, SWP_NOMOVE|SWP_NOSIZE );
 		}
 	}
@@ -357,6 +439,9 @@ static int OpenHandler( NativeWindow hWnd, QTMovieWindowH wih )
 
 static int AboutHandler( NativeWindow hWnd, QTMovieWindowH wih )
 {
+	if( QTMovieWindowH_Check(wih) ){
+		ShowMetaData(wih);
+	}
 	return 1;
 }
 #endif
@@ -365,7 +450,6 @@ int main( int argc, char* argv[] )
 { int i, n;
   QTMovieWindowH wi;
   unsigned long nMsg = 0, nPumps = 0;
-  LibQTilsBase QTils;
 
 #if TARGET_OS_MAC
   const char *sessionArg = NULL;

@@ -242,18 +242,15 @@ QTLSext char *AskSaveFileName(char *title);
  */
 QTLSext int FreeAskedFileName();
 
-#if TARGET_OS_MAC || defined(__APPLE_CC__) || defined(__MACH__)
+/*!
+	presents a 'Yes/No' dialog with the specified title and message texts
+ */
+QTLSext int PostYesNoDialog( const char *title, const char *message );
 
-	/*!
-		presents a 'Yes/No' dialog with the specified title and message texts
-	 */
-	QTLSext int PostYesNoDialog( const char *title, const char *message );
-
-	/*!
-		presents a message window with the specified title and message texts
-	 */
-	QTLSext int PostMessageBox( const char *title, const char *message );
-#endif
+/*!
+	presents a message window with the specified title and message texts
+ */
+QTLSext int PostMessageBox( const char *title, const char *message );
 
 /*!
 	returns the error string and optionally the error comment/description for the

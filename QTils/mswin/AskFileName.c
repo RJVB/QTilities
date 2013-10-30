@@ -66,3 +66,13 @@ char *AskSaveFileName(char *title)
 		return NULL;
 	}
 }
+
+int PostMessageBox( const char *title, const char *message )
+{
+	return MessageBox( NULL, message, title, MB_APPLMODAL|MB_OK|MB_ICONEXCLAMATION );
+}
+
+int PostYesNoDialog( const char *title, const char *message )
+{ int mb = MessageBox( NULL, message, title, MB_APPLMODAL|MB_ICONQUESTION|MB_YESNO );
+	return (mb == IDOK) || (mb = IDYES);
+}
