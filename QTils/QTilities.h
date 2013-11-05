@@ -692,10 +692,33 @@ QTLSext int _QTMovieWindowH_Check_( QTMovieWindowH wih );
 /*!
 	a priori no need to call InitQTMovieWindows() - done in dllmain (Win32) or OpenQT (OS X) !
  */
+#if TARGET_OS_MAC
+	/*!
+		function that does a minimal Cocoa initialisation
+	 */
+	QTLSext int QTils_ApplicationLoad();
+	/*!
+		function that initialises Cocoa and makes sure a "traditional" Unix-style main()
+		function works as expected even if the application is started through Launch Services
+		(e.g. the Finder). NB: this function never returns in the latter case, instead
+		it re-executes the application through a standard POSIX mechanism. NB: Launch Services
+		only allows to pass arguments that are files.
+	 */
+	QTLSext int _QTils_ApplicationMain_( int *argc, char **argv[], int (*mainFunction)(int, char**) );
+#	define QTils_ApplicationMain(argc,argv)	_QTils_ApplicationMain_((argc),(argv),main)
+	/*!
+		returns the number of arguments when started through Launch Services
+	 */
+	QTLSext int QTils_GetArgc();
+	/*!
+		returns the argument array when started through Launch Services
+	 */
+	QTLSext char **QTils_GetArgv( char **argv[] );
+#endif //TARGET_OS_MAC
 #if defined(__APPLE_CC__) || defined(__MACH__)
-QTLSext short InitQTMovieWindows();
+	QTLSext short InitQTMovieWindows();
 #else
-QTLSext short InitQTMovieWindows( void *Win32ApplicationInstance );
+	QTLSext short InitQTMovieWindows( void *Win32ApplicationInstance );
 #endif
 QTLSext void DisposeQTMovieWindow( QTMovieWindowH WI );
 QTLSext ErrCode CloseQTMovieWindow( QTMovieWindowH WI );

@@ -32,6 +32,8 @@
 			</array>
 			<key>LSTypeIsPackage</key>
 			<false/>
+			<key>NSDocumentClass</key>
+			<string>NSQTMovieWindow</string>
 			<key>NSPersistentStoreTypeKey</key>
 			<string>Binary</string>
 		</dict>
@@ -61,6 +63,8 @@
 			</array>
 			<key>LSTypeIsPackage</key>
 			<false/>
+			<key>NSDocumentClass</key>
+			<string>NSQTMovieWindow</string>
 			<key>NSPersistentStoreTypeKey</key>
 			<string>XML</string>
 		</dict>
@@ -90,6 +94,8 @@
 			</array>
 			<key>LSTypeIsPackage</key>
 			<false/>
+			<key>NSDocumentClass</key>
+			<string>NSQTMovieWindow</string>
 			<key>NSPersistentStoreTypeKey</key>
 			<string>Binary</string>
 		</dict>
@@ -269,6 +275,8 @@
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>NSDocumentClass</key>
+			<string>NSQTMovieWindow</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
@@ -289,6 +297,8 @@
 	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

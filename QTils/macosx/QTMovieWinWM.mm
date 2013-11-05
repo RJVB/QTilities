@@ -466,22 +466,24 @@ QTMovieWindowH _DisplayMovieInQTMovieWindowH_( Movie theMovie, QTMovieWindowH wi
 				}
 				wi->theViewPtr = &wi->theView;
 				register_QTMovieWindowH( wih, wi->theView );
-				[QTMovieWindowList addObject:wi->theNSQTMovieWindow];
+				if( wi->theNSQTMovieWindow ){
+					[QTMovieWindowList addObject:wi->theNSQTMovieWindow];
 
-				ShowMoviePoster( wi->theMovie );
-				SetMovieActive( wi->theMovie, YES );
-				wi->theMC = [[wi->theNSQTMovieWindow theQTMovie] quickTimeMovieController];
-				if( (BOOL) controllerVisible != [wi->theMovieView isControllerVisible] ){
-					[wi->theNSQTMovieWindow ToggleMCController];
-					if( controllerVisible ){
-						wi->info->controllerHeight = [[wi->theNSQTMovieWindow theMovieView] controllerBarHeight];
+					ShowMoviePoster( wi->theMovie );
+					SetMovieActive( wi->theMovie, YES );
+					wi->theMC = [[wi->theNSQTMovieWindow theQTMovie] quickTimeMovieController];
+					if( (BOOL) controllerVisible != [wi->theMovieView isControllerVisible] ){
+						[wi->theNSQTMovieWindow ToggleMCController];
+						if( controllerVisible ){
+							wi->info->controllerHeight = [[wi->theNSQTMovieWindow theMovieView] controllerBarHeight];
+						}
+						else{
+							wi->info->controllerHeight = 0;
+						}
 					}
-					else{
-						wi->info->controllerHeight = 0;
-					}
+					CreateNewMovieController(wih, controllerVisible);
+					[wi->theNSQTMovieWindow setTitleWithCString:wi->theURL];
 				}
-				CreateNewMovieController(wih, controllerVisible);
-				[wi->theNSQTMovieWindow setTitleWithCString:wi->theURL];
 				// create a list into which to store movie controller action handlers:
 				if( !wi->MCActionList ){
 					wi->MCActionList = (void*) init_MCActionList();
@@ -1139,6 +1141,7 @@ short InitQTMovieWindows()
 #ifndef DEBUG
 	QTils_LogSetActive(NO);
 #endif
+// 	NSLog( @"%@", [[NSUserDefaults standardUserDefaults] dictionaryRepresentation] );
 	QTMWInitialised = TRUE;
 //	Log( qtLogPtr, "QTMovieWindows initialised!\n" );
 	return ret;

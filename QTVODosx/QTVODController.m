@@ -40,6 +40,8 @@
 - (id) openDocumentWithURLContents:(NSURL*)URL error:(NSError**)outerror addToRecent:(BOOL)add
 {
 	addToRecentDocs = add;
+	NSLog( @"[%@ %@] URL=%@",
+		 NSStringFromClass([self class]), NSStringFromSelector(_cmd), URL );
 	return [super openDocumentWithContentsOfURL:URL display:YES error:outerror];
 }
 

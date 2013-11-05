@@ -340,7 +340,7 @@ void doSigExit(int sig)
 
 void register_wi( QTMovieWindowH wi )
 {
-	if( wi ){
+	if( QTMovieWindowH_Check(wi) ){
 		if( (*wi)->idx != numQTMW ){
 		 // the idx field is purely informational, we can change it at leisure:
 			(*wi)->idx = numQTMW;
@@ -432,7 +432,6 @@ void freep( void **p )
 #	ifdef __cplusplus
 	extern "C" {
 #	endif
-		extern bool NSApplicationLoad();
 #	ifdef __cplusplus
 	}
 #	endif
@@ -475,15 +474,7 @@ int main( int argc, char* argv[] )
   unsigned long nMsg = 0, nPumps = 0;
 
 #if TARGET_OS_MAC
-  const char *sessionArg = NULL;
- 	NSApplicationLoad();
-	if( argc > 1 && strncasecmp( argv[1], "-psn_", 5 ) == 0 ){
-		sessionArg = argv[1];
-		for( i = 2 ; i < argc ; ++i ){
-			argv[i-1] = argv[i];
-		}
-		argc -= 1;
-	}
+	QTils_ApplicationMain( &argc, &argv );
 #endif
 	OpenQT();
 	initDMBaseQTils( &QTils );

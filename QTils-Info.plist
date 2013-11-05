@@ -18,5 +18,9 @@
 	<string>RJVB</string>
 	<key>CFBundleVersion</key>
 	<string>1.25</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSQTMovieWindow</string>
 </dict>
 </plist>

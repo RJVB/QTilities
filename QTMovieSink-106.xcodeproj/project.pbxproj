@@ -334,6 +334,10 @@
 		D6912C13132E54C300CD5E78 /* QTMovieWindowTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QTMovieWindowTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6912C15132E54C300CD5E78 /* QTMoviePlayer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QTMoviePlayer-Info.plist"; sourceTree = "<group>"; };
 		D69C2E04133EB3AC001C8D4C /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PkgInfo; sourceTree = SOURCE_ROOT; };
+		D6AC8D001827C07900557F9B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		D6AC8D021827C08200557F9B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		D6AC8D081827C09900557F9B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		D6AC8D0E1827C0A400557F9B /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		D6B25774175B88C20090F55F /* NSLogger-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSLogger-LICENSE.txt"; sourceTree = "<group>"; };
 		D6B25775175B88C20090F55F /* LoggerCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggerCommon.h; sourceTree = "<group>"; };
 		D6B25776175B88C20090F55F /* LoggerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoggerClient.m; sourceTree = "<group>"; };
@@ -468,6 +472,10 @@
 				D6B257A4175B89D30090F55F /* SystemConfiguration.framework */,
 				D65CA957176758E700D82B7A /* AppKit.framework */,
 				D638A69A180710EC00F4AD0D /* QTMovieWindowTest.app-Info.plist */,
+				D6AC8D001827C07900557F9B /* AppKit.framework */,
+				D6AC8D021827C08200557F9B /* AppKit.framework */,
+				D6AC8D081827C09900557F9B /* Foundation.framework */,
+				D6AC8D0E1827C0A400557F9B /* CoreFoundation.framework */,
 			);
 			name = "FreeImage-testAPI";
 			sourceTree = "<group>";

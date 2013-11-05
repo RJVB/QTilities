@@ -11,24 +11,40 @@
 #import "Lists.h"
 #import "QTMovieWin.h"
 #import "Logging.h"
+#import <crt_externs.h>
+#import <pthread.h>
 
+static QTilsApplicationDelegate *QTilsDelegate = NULL;
 
 @implementation NSQTMovieWindow
 
 - (id) init
-{
+{ BOOL ok;
 	// 20130618:
 	self = [super init];
 	if( self && !nibLoaded ){
-		if( ![NSBundle loadNibNamed:@"NSQTMovieWindow" owner:self] ){
+		@try{
+			ok = [NSBundle loadNibNamed:@"NSQTMovieWindow" owner:self];
+		}
+		@catch(NSException *e){
+			NSLog( @"[%@ %@] caught exception %@",
+				 NSStringFromClass([self class]), NSStringFromSelector(_cmd), e );
+			ok = NO;
+		}
+		if( !ok ){
 			NSLog( @"%@ failed to load 'NSQTMovieWindow' nib!", self );
 		}
 		else{
 			nibLoaded = YES;
 		}
 	}
-	[self setTitleWithCString:"NSQTMovieWindow"];
-	return self;
+	if( nibLoaded ){
+		[self setTitleWithCString:"NSQTMovieWindow"];
+		return self;
+	}
+	else{
+		return nil;
+	}
 }
 
 - (void) dealloc
@@ -45,16 +61,38 @@
 	[super close];
 }
 
+- (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)outError
+{ BOOL success = NO;
+	if( outError ){
+		*outError = NULL;
+	}
+	NSLog( @"[%@ %@] URL=%@",
+		 NSStringFromClass([self class]), NSStringFromSelector(_cmd), url );
+	if( [QTMovie canInitWithURL:url] ){
+		[self setQTMovie:((QTMovie *)[QTMovie movieWithURL:url error:outError])];
+		success = (*outError == nil && qtMovie != nil);
+	}
+
+	return success;
+}
+
 - (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)type
 { BOOL success = NO;
 
 	// read the movie
+	NSLog( @"[%@ %@] URL=%@",
+		 NSStringFromClass([self class]), NSStringFromSelector(_cmd), url );
 	if( [QTMovie canInitWithURL:url] ){
 		[self setQTMovie:((QTMovie *)[QTMovie movieWithURL:url error:nil])];
 		success = (qtMovie != nil);
 	}
 
 	return success;
+}
+
+- (BOOL)readFromFile:(NSString *)fileName ofType:(NSString *)docType
+{ NSURL *url = [NSURL fileURLWithPath:fileName];
+	return [self readFromURL:url ofType:docType];
 }
 
 - (BOOL)setQTMovieFromMovie:(Movie)theMovie
@@ -76,10 +114,43 @@
 
 - (id)initWithContentsOfURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError
 {
+	return [self initWithContentsOfURL:absoluteURL ofType:typeName];
+}
+
+/*!
+	stub function that is likely to be called through Cocoa when NSQTMovieWindow is registered as
+	an application's main class. QTils is not intended to open windows through the regular Mac OS X
+	mechanism so we only use this function to record the arguments we're called with when launched
+	through the Finder.
+ */
+- (id)initWithContentsOfURL:(NSURL *)absoluteURL ofType:(NSString *)typeName
+{ NSWindow *nswin;
+// 	self = [super initWithType:@"MovieDocument" error:outError];
+	self = [super init];
+	if( movieView && (nswin = [movieView window]) ){
+		[nswin performClose:nswin];
+	}
+	[self close];
+// 	NSLog( @"[%@ %@] URL=%@",
+// 		 NSStringFromClass([self class]), NSStringFromSelector(_cmd), absoluteURL );
+	if( absoluteURL && QTilsDelegate ){
+		[[QTilsDelegate ArgArray] addObject:[absoluteURL path]];
+	}
+	return self;
+}
+
+/*!
+	The functional initWithContentsOfURL method, only called when opening a movie through one of QTils'
+	open functions
+ */
+- (id)internalInitWithContentsOfURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError
+{
 //	[super initWithContentsOfURL:absoluteURL ofType:typeName error:outError];
 	self = [super initWithType:@"MovieDocument" error:outError];
 	if( self ){
 		URL = [absoluteURL retain];
+		// the actual setting of the movie is already done explicitly by our caller
+// 		[self readFromURL:absoluteURL ofType:typeName];
 	}
 	return self;
 }
@@ -111,17 +182,19 @@
 		URLString = [fileURL stringByAppendingString:URLString];
 	}
 	theURL = [NSURL URLWithString:URLString];
-	self = [self initWithContentsOfURL:theURL ofType:@"MovieDocument" error:&err];
+	self = [self internalInitWithContentsOfURL:theURL ofType:@"MovieDocument" error:&err];
 	// make the WindowControllers and show the windows before installing the Movie into
 	// the movieView (setQTMovieFromMovie). If done afterwards, one can easily end up in
 	// endless loops of mcActionControllerSizeChanged MC Actions.
-	[self makeWindowControllers];
-	[self showWindows];
-	[self setQTMovieFromMovie:wi->theMovie];
-	[[movieView window] setReleasedWhenClosed:YES];
+	if( self ){
+		[self makeWindowControllers];
+		[self showWindows];
+		[self setQTMovieFromMovie:wi->theMovie];
+		[[movieView window] setReleasedWhenClosed:YES];
+	}
 // not necessary; one can just define the appropriate selector functions (windowWillClose etc)...
 //	[[movieView window] setDelegate:[[[QTMovieWindowDelegate alloc] init] autorelease]];
-	if( movieView ){
+	if( self && movieView ){
 		mrect.size = [self windowContentSizeForMovieSize:[self moviePreferredSize]];
 		[[movieView window] setContentSize:mrect.size];
 		qtmwH = wih;
@@ -554,3 +627,186 @@ extern QTMovieWindowH QTMovieWindowHFromNativeWindow( NativeWindow hWnd );
 
 @end
 
+int QTils_GetArgc()
+{
+	if( QTilsDelegate ){
+		return [[QTilsDelegate ArgArray] count] + 1;
+	}
+	else{
+		return 1;
+	}
+}
+
+char **QTils_GetArgv( char **org_argv[] )
+{ char **argv = NULL;
+  int i;
+
+	if( !org_argv ){
+		return NULL;
+	}
+
+	if( QTilsDelegate && [[QTilsDelegate ArgArray] count] > 0 ){
+		argv = (char **) calloc( [[QTilsDelegate ArgArray] count] + 2, sizeof(char*) );
+		argv[0] = (*org_argv)[0];
+		*org_argv = argv;
+		for( i = 0 ; i < [[QTilsDelegate ArgArray] count] ; ++i ){
+		  NSString *path = [[QTilsDelegate ArgArray] objectAtIndex:i];
+			argv[i+1] = (char*) [path cStringUsingEncoding:NSUTF8StringEncoding];
+		}
+		// add the terminating NULL pointer
+		argv[i+1] = NULL;
+	}
+	else{
+		argv = (char **) calloc( 2, sizeof(char*) );
+		argv[0] = (*org_argv)[0];
+		// add the terminating NULL pointer
+		argv[1] = NULL;
+	}
+	return argv;
+}
+
+@implementation QTilsApplicationDelegate
+- (id) init
+{
+	self = [super init];
+	if( self ){
+		relaunch = NO;
+		ArgArray = [[NSMutableArray alloc] initWithCapacity:1];
+	}
+	return self;
+}
+
+- (void) dealloc
+{
+	[ArgArray release];
+	[super dealloc];
+}
+
+- (BOOL) application:(NSApplication *)theApplication openFile:(NSString *)filename
+{
+// 	NSLog( @"[%@ %@] URL=%@",
+// 		 NSStringFromClass([self class]), NSStringFromSelector(_cmd), filename );
+	if( !ArgArray ){
+		ArgArray = [[[NSMutableArray alloc] initWithCapacity:1] retain];
+	}
+	[ArgArray addObject:filename];
+	return YES;
+}
+
+- (BOOL) application:(NSApplication *)theApplication openFileWithoutUI:(NSString *)filename
+{
+	NSLog( @"[%@ %@] URL=%@",
+		 NSStringFromClass([self class]), NSStringFromSelector(_cmd), filename );
+	if( !ArgArray ){
+		ArgArray = [[[NSMutableArray alloc] initWithCapacity:1] retain];
+	}
+	[ArgArray addObject:filename];
+	return YES;
+}
+
+- (void) application:(NSApplication *)theApplication openFiles:(NSArray *)filenames
+{
+// 	NSLog( @"[%@ %@] URLs=%@",
+// 		 NSStringFromClass([self class]), NSStringFromSelector(_cmd), filenames );
+	if( !ArgArray ){
+		ArgArray = [[[NSMutableArray alloc] initWithCapacity:[filenames count]] retain];
+	}
+	[ArgArray addObjectsFromArray:filenames];
+}
+
+static int (*mainFunction)(int, char**) = NULL;
+
+- (void) applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+	if( [QTilsDelegate relaunch] && [ArgArray count] >= 0 ){
+	  char **org_argv = *_NSGetArgv(), **argv;
+	  NSThread *theThread = [NSThread mainThread];
+	  int (*main)(int, char**);
+		argv = QTils_GetArgv(&org_argv);
+		[[theThread threadDictionary] setValue:[NSNumber numberWithBool:YES] forKey:@"isRestarted"];
+		if( mainFunction ){
+			// we simply invoke main() once again, this time with the arguments we determined
+			NSLog( @"[%@ %@] relaunching main with %s and %@",
+				 NSStringFromClass([self class]), NSStringFromSelector(_cmd),
+				 argv[0], ArgArray );
+			exit( (*mainFunction)( QTils_GetArgc(), argv ) );
+		}
+		else{
+			NSLog( @"[%@ %@] re-execv with %s and %@",
+				 NSStringFromClass([self class]), NSStringFromSelector(_cmd),
+				 argv[0], ArgArray );
+			execv( argv[0], argv );
+		}
+	}
+}
+
+@synthesize relaunch;
+@synthesize ArgArray;
+@end
+
+@implementation QTilsMenuDelegate
+- (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
+{
+	NSLog( @"[%@ %@] URL=%@",
+		 NSStringFromClass([self class]), NSStringFromSelector(_cmd), filename );
+	[[QTilsDelegate ArgArray] addObject:filename];
+	return YES;
+}
+
+- (void) application:(NSApplication *)theApplication openFiles:(NSArray *)filenames
+{
+	NSLog( @"[%@ %@] URLs=%@",
+		 NSStringFromClass([self class]), NSStringFromSelector(_cmd), filenames );
+	[[QTilsDelegate ArgArray] addObjectsFromArray:filenames];
+}
+
+@end
+
+int QTils_ApplicationLoad()
+{ BOOL ret;
+  NSThread *theThread = [NSThread mainThread];
+  NSNumber *restarted = [[theThread threadDictionary] valueForKey:@"isRestarted"];
+	if( restarted == nil || ![restarted boolValue] ){
+		ret = NSApplicationLoad();
+		if( ret ){
+			QTilsDelegate = [[[QTilsApplicationDelegate alloc] init] autorelease];
+			[[NSApplication sharedApplication] setDelegate:QTilsDelegate ];
+			ret = [NSBundle loadNibNamed:@"MainMenu" owner:[NSApplication sharedApplication]];
+		}
+		if( ret ){
+			[[[NSApplication sharedApplication] mainMenu] setDelegate:[[[QTilsMenuDelegate alloc] init] autorelease] ];
+			PumpMessages(0);
+		}
+	}
+	else{
+// 		NSLog( @"QTils_ApplicationLoad(): restarted=%@, skipping NSApplicationLoad()", restarted );
+		ret = YES;
+	}
+	return ret;
+}
+
+int _QTils_ApplicationMain_( int *argc, char **argv[], int (*main)(int, char**) )
+{ NSThread *theThread = [NSThread mainThread];
+// 	NSLog( @"QTils_ApplicationMain(%d): mainThread=%@/%p, dict=%@",
+// 		 argc, theThread, pthread_self(), [theThread threadDictionary] );
+	if( ![[theThread threadDictionary] valueForKey:@"isRestarted"] ){
+		[[theThread threadDictionary] setValue:[NSNumber numberWithBool:NO] forKey:@"isRestarted"];
+	}
+	if( *argc <= 0 || !*argv || (*argc > 1 && strncasecmp( (*argv)[1], "-psn_", 5 ) == 0) ){
+	  // use the cocoa approach
+		QTilsDelegate = [[[QTilsApplicationDelegate alloc] init] autorelease];
+		[QTilsDelegate setRelaunch:YES];
+		[[NSApplication sharedApplication] setDelegate:QTilsDelegate ];
+		[[[NSApplication sharedApplication] mainMenu] setDelegate:[[[QTilsMenuDelegate alloc] init] autorelease] ];
+		mainFunction = main;
+		return NSApplicationMain( *argc, (const char**) *argv );
+	}
+	else{
+		return QTils_ApplicationLoad();
+	}
+}
+
+__attribute__((destructor))
+static void finaliser()
+{
+}

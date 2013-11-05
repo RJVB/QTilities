@@ -29,9 +29,14 @@
 - (id) init;
 - (void) close;
 
+- (BOOL)readFromURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError;
 - (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)type;
+- (BOOL)readFromFile:(NSString *)fileName ofType:(NSString *)docType;
+
 - (BOOL)setQTMovieFromMovie:(Movie)theMovie;
 - (id)initWithContentsOfURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError;
+- (id)initWithContentsOfURL:(NSURL *)absoluteURL ofType:(NSString *)typeName;
+- (id)internalInitWithContentsOfURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError;
 - (id) initWithQTWM:(struct QTMovieWindows**)wih;
 - (NSSize)windowSizeForMovieSize:(NSSize)s;
 - (NSSize) windowContentSizeForMovieSize:(NSSize)s;
@@ -68,6 +73,26 @@
 @interface QTMovieWindowDelegate : NSObject
 - (BOOL) windowShouldClose:(id)sender;
 - (void) windowWillClose:(NSNotification*)notification;
+@end
+
+@interface QTilsApplicationDelegate : NSObject<NSApplicationDelegate> {
+	BOOL relaunch;
+	NSMutableArray *ArgArray;
+}
+- (id) init;
+- (void) dealloc;
+- (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename;
+- (void) application:(NSApplication *)theApplication openFiles:(NSArray *)filenames;
+- (BOOL) application:(NSApplication *)theApplication openFileWithoutUI:(NSString *)filename;
+- (void) applicationDidFinishLaunching:(NSNotification *)aNotification;
+@property BOOL relaunch;
+@property (retain) NSMutableArray *ArgArray;
+@end
+
+@interface QTilsMenuDelegate : NSObject<NSMenuDelegate> {
+}
+- (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename;
+- (void) application:(NSApplication *)theApplication openFiles:(NSArray *)filenames;
 @end
 
 @interface NSWindow (description)

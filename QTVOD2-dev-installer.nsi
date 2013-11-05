@@ -206,6 +206,7 @@ Section !$(Sec2Name) SEC02
   CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k"
   CreateShortCut "$INSTDIR\QTVODm2-mjpeg2M-fsplit.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mjpeg -fbitrate 2000k -fsplit TRUE"
   CreateShortCut "$INSTDIR\QTVODm2-mpeg2-fsplit.lnk" "$INSTDIR\QTVODm2.exe" "-fcodec mpeg2video -fbitrate 4000k -fsplit TRUE"
+  File "S:\MacOSX\QTilities\QTils\Develop\QTMoviePlayer.exe"
   DetailPrint "Setting QTMW_DoubleBuffering=true in environment..."
   WriteRegExpandStr ${env_hklm} "QTMW_DoubleBuffering" "true"
   ; make sure windows knows about the change

@@ -1854,7 +1854,8 @@ static unsigned int fullScreenViews= 0;
   static char active = 0;
   NSString *absPath = [absoluteURL path];
   BOOL addRecent = addToRecentDocs;
-//	doNSLog( @"URL=\"%@\", ofType \"%@\"", absoluteURL, typeName );
+// 	doNSLog( @"[%@ %@] URL=\"%@\", ofType \"%@\"",
+// 		   NSStringFromClass([self class]), NSStringFromSelector(_cmd), absoluteURL, typeName );
 	if( [typeName isEqual:@"XMLPropertyList"] ){
 		return NO;
 	}
