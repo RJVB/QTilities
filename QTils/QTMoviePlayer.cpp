@@ -494,7 +494,7 @@ int main( int argc, char* argv[] )
 #if TARGET_OS_MAC
 	// Initialise Cocoa (required for QTKit which is used by QTils), and if necessary,
 	// take the steps required to receive all file arguments through argc,argv
-	QTils_ApplicationMain( &argc, &argv );
+	QTils_ApplicationMain( argc, argv );
 #endif
 	OpenQT();
 	initDMBaseQTils( &QTils );

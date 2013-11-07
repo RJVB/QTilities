@@ -714,9 +714,11 @@ QTLSext int _QTMovieWindowH_Check_( QTMovieWindowH wih );
 		(e.g. the Finder). NB: this function never returns in the latter case, instead
 		it re-executes the application through a standard POSIX mechanism. NB: Launch Services
 		only allows to pass arguments that are files.
+		In order for this to work, specify NSApplication as the target's principal class,
+		QTils-MainMenu as the main nib file, and NSQTMovieWindow as the document class.
 	 */
 	QTLSext int _QTils_ApplicationMain_( int *argc, char **argv[], int (*mainFunction)(int, char**) );
-#	define QTils_ApplicationMain(argc,argv)	_QTils_ApplicationMain_((argc),(argv),main)
+#	define QTils_ApplicationMain(argc,argv)	_QTils_ApplicationMain_(&(argc),&(argv),main)
 	/*!
 		returns the number of arguments when started through Launch Services
 	 */

@@ -45,7 +45,7 @@
 		D634F2531317DD7300D2BAFD /* copyright.h in Headers */ = {isa = PBXBuildFile; fileRef = D619278B11FF690800BDAAAA /* copyright.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D634F2E51317F9B200D2BAFD /* NSQTMovieWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = D634F12C1317D37700D2BAFD /* NSQTMovieWindow.nib */; };
 		D638A68B180710EC00F4AD0D /* QTVODosx.icns in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */; };
-		D638A68C180710EC00F4AD0D /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC218141A0C750005D2B9 /* MainMenu.nib */; };
+		D638A68C180710EC00F4AD0D /* QTils-MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC218141A0C750005D2B9 /* QTils-MainMenu.nib */; };
 		D638A690180710EC00F4AD0D /* QTils-emb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67ACE641416129D00E99EA2 /* QTils-emb.framework */; };
 		D638A691180710EC00F4AD0D /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65CA957176758E700D82B7A /* AppKit.framework */; };
 		D638A692180710EC00F4AD0D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D65F639912C3C7F5009A3D72 /* Cocoa.framework */; };
@@ -129,9 +129,9 @@
 		D6FEC1E9141A09570005D2B9 /* QTVODosx.icns in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */; };
 		D6FEC1EA141A09570005D2B9 /* QTVODosx.icns in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */; };
 		D6FEC1ED141A09A70005D2B9 /* QTVODosx.icns in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */; };
-		D6FEC219141A0C750005D2B9 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC218141A0C750005D2B9 /* MainMenu.nib */; };
-		D6FEC21A141A0C750005D2B9 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC218141A0C750005D2B9 /* MainMenu.nib */; };
-		D6FEC265141A0FEB0005D2B9 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC218141A0C750005D2B9 /* MainMenu.nib */; };
+		D6FEC219141A0C750005D2B9 /* QTils-MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC218141A0C750005D2B9 /* QTils-MainMenu.nib */; };
+		D6FEC21A141A0C750005D2B9 /* QTils-MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC218141A0C750005D2B9 /* QTils-MainMenu.nib */; };
+		D6FEC265141A0FEB0005D2B9 /* QTils-MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = D6FEC218141A0C750005D2B9 /* QTils-MainMenu.nib */; };
 		D6FEC298141A1B0B0005D2B9 /* NSQTMovieView.h in Headers */ = {isa = PBXBuildFile; fileRef = D6FEC296141A1B0B0005D2B9 /* NSQTMovieView.h */; };
 		D6FEC299141A1B0B0005D2B9 /* NSQTMovieView.m in Sources */ = {isa = PBXBuildFile; fileRef = D6FEC297141A1B0B0005D2B9 /* NSQTMovieView.m */; };
 		D6FEC29A141A1B0B0005D2B9 /* NSQTMovieView.h in Headers */ = {isa = PBXBuildFile; fileRef = D6FEC296141A1B0B0005D2B9 /* NSQTMovieView.h */; };
@@ -368,7 +368,7 @@
 		D6F7D4B512A951CD00492D31 /* QTilsM2.mod */ = {isa = PBXFileReference; explicitFileType = sourcecode.modula2.mod; fileEncoding = 12; indentWidth = 2; lineEnding = 2; path = QTilsM2.mod; sourceTree = "<group>"; tabWidth = 2; };
 		D6FC2AAD131E588B00583ACC /* make_archive.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = make_archive.sh; sourceTree = "<group>"; };
 		D6FEC1E8141A09570005D2B9 /* QTVODosx.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = QTVODosx.icns; path = QTVODosx/QTVODosx.icns; sourceTree = SOURCE_ROOT; };
-		D6FEC218141A0C750005D2B9 /* MainMenu.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = MainMenu.nib; sourceTree = "<group>"; };
+		D6FEC218141A0C750005D2B9 /* QTils-MainMenu.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = "QTils-MainMenu.nib"; sourceTree = "<group>"; };
 		D6FEC296141A1B0B0005D2B9 /* NSQTMovieView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSQTMovieView.h; sourceTree = "<group>"; };
 		D6FEC297141A1B0B0005D2B9 /* NSQTMovieView.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = NSQTMovieView.m; sourceTree = "<group>"; };
 		D6FEC29D141A1C230005D2B9 /* NSQTWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSQTWindow.h; sourceTree = "<group>"; };
@@ -566,7 +566,7 @@
 				D65F63B012C3C837009A3D72 /* NSQTMovieWindow.h */,
 				D65F63B112C3C837009A3D72 /* NSQTMovieWindow.m */,
 				D634F12C1317D37700D2BAFD /* NSQTMovieWindow.nib */,
-				D6FEC218141A0C750005D2B9 /* MainMenu.nib */,
+				D6FEC218141A0C750005D2B9 /* QTils-MainMenu.nib */,
 				D69C2E04133EB3AC001C8D4C /* PkgInfo */,
 				D67ACE651416129D00E99EA2 /* QTils-Info copy.plist */,
 			);
@@ -987,7 +987,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D638A68B180710EC00F4AD0D /* QTVODosx.icns in Resources */,
-				D638A68C180710EC00F4AD0D /* MainMenu.nib in Resources */,
+				D638A68C180710EC00F4AD0D /* QTils-MainMenu.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1006,7 +1006,7 @@
 				D6DD1BF7131A97B70063BBFE /* empty.mov in Resources */,
 				D69C2E0A133EB4AB001C8D4C /* PkgInfo in Resources */,
 				D6FEC1E9141A09570005D2B9 /* QTVODosx.icns in Resources */,
-				D6FEC219141A0C750005D2B9 /* MainMenu.nib in Resources */,
+				D6FEC219141A0C750005D2B9 /* QTils-MainMenu.nib in Resources */,
 				D6B2577A175B88C20090F55F /* NSLogger-LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1019,7 +1019,7 @@
 				D67ACE4C1416129D00E99EA2 /* empty.mov in Resources */,
 				D67ACE4D1416129D00E99EA2 /* PkgInfo in Resources */,
 				D6FEC1EA141A09570005D2B9 /* QTVODosx.icns in Resources */,
-				D6FEC21A141A0C750005D2B9 /* MainMenu.nib in Resources */,
+				D6FEC21A141A0C750005D2B9 /* QTils-MainMenu.nib in Resources */,
 				D6B25780175B88C20090F55F /* NSLogger-LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1029,7 +1029,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D6FEC1ED141A09A70005D2B9 /* QTVODosx.icns in Resources */,
-				D6FEC265141A0FEB0005D2B9 /* MainMenu.nib in Resources */,
+				D6FEC265141A0FEB0005D2B9 /* QTils-MainMenu.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

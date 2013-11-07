@@ -825,6 +825,7 @@ static int (*mainFunction)(int, char**) = NULL;
 	[self setLaunched:YES];
 	if( relaunch && [ArgArray count] >= 0 ){
 	  char **org_argv = *_NSGetArgv(), **argv;
+	  int ret;
 		argv = QTils_GetArgv(&org_argv);
 		[self setRestarted:YES];
 		if( mainFunction ){
@@ -834,18 +835,16 @@ static int (*mainFunction)(int, char**) = NULL;
 // 				 argv[0], ArgArray );
 			// call the main function specified by the caller, and pass its return
 			// value to exit() to ensure that we exit after main returns.
-			exit( (*mainFunction)( QTils_GetArgc(), argv ) );
+			ret = (*mainFunction)( QTils_GetArgc(), argv );
 		}
 		else{
-		  int ret;
 			NSLog( @"[%@ %@] re-execv with %s and %@",
 				 NSStringFromClass([self class]), NSStringFromSelector(_cmd),
 				 argv[0], ArgArray );
 			ret = execv( argv[0], argv );
 			NSLog( @"execv returned %d, this shouldn't happen!" );
-			// execv should never return, but in case it does we do best to exit
-			exit(-1);
 		}
+		exit(ret);
 	}
 }
 
@@ -879,7 +878,7 @@ int QTils_ApplicationLoad()
 		if( ret ){
 			QTilsDelegate = [[[QTilsApplicationDelegate alloc] init] autorelease];
 			[[NSApplication sharedApplication] setDelegate:QTilsDelegate ];
-			ret = [NSBundle loadNibNamed:@"MainMenu" owner:[NSApplication sharedApplication]];
+			ret = [NSBundle loadNibNamed:@"QTils-MainMenu" owner:[NSApplication sharedApplication]];
 		}
 		if( ret ){
 			[[[NSApplication sharedApplication] mainMenu] setDelegate:[[[QTilsMenuDelegate alloc] init] autorelease] ];
