@@ -16,13 +16,17 @@
 
 @class QTMovieView;
 
+/*!
+	the main document class associated with the window NIB resource
+ */
 @interface NSQTMovieWindow : NSDocument
 {
 	IBOutlet NSQTMovieView *movieView;
 	NSURL *URL;
 	QTMovie *qtMovie;
 	NSSize movieSize;
-	BOOL resizesVertically, nibLoaded;
+	BOOL resizesVertically,			//!< some windows, containing a movie with height<=2 only resize horizontally
+		nibLoaded;
 	struct QTMovieWindows **qtmwH;
 }
 
@@ -76,8 +80,11 @@
 @end
 
 @interface QTilsApplicationDelegate : NSObject<NSApplicationDelegate> {
-	BOOL relaunch;
-	NSMutableArray *ArgArray;
+	BOOL relaunch;				//!< state variable used by applicationDidFinishLaunching to know whether or not
+							//!< the main function (or argv[0]) must be relaunched with the new argc,argv.
+							//!< setter: setRelaunch
+	NSMutableArray *ArgArray;	//!< array receiving the file arguments passed to the executable by Apple's Launch Services
+							//!< set by the delegate application:openFile methods
 }
 - (id) init;
 - (void) dealloc;
@@ -85,6 +92,10 @@
 - (void) application:(NSApplication *)theApplication openFiles:(NSArray *)filenames;
 - (BOOL) application:(NSApplication *)theApplication openFileWithoutUI:(NSString *)filename;
 - (void) applicationDidFinishLaunching:(NSNotification *)aNotification;
+- (BOOL) isRestarted;
+- (BOOL) setRestarted:(BOOL)state;
+- (BOOL) isLaunched;
+- (BOOL) setLaunched:(BOOL)state;
 @property BOOL relaunch;
 @property (retain) NSMutableArray *ArgArray;
 @end
@@ -97,4 +108,5 @@
 
 @interface NSWindow (description)
 - (NSString*) description;
+- (void) showInfo:(id)sender;		//!< receiver for the Get Info menu item.
 @end

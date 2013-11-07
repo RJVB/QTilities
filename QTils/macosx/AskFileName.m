@@ -25,6 +25,7 @@ IDENTIFY("AskFileName: Mac OS X/Cocoa file dialog");
 #endif
 
 char *QTils_strdup( const char *txt );
+void *QTils_realloc( void* mem, size_t size );
 
 
 int FreeAskedFileName()
@@ -54,7 +55,9 @@ char *AskFileName( char *title )
 	  int count = [filesToOpen count];
 		if( count > 0 ){
 		  NSURL *aFile = [filesToOpen objectAtIndex:0];
-		  const char *c = [[aFile absoluteString] cStringUsingEncoding:NSUTF8StringEncoding]; // or defaultCStringEncoding ?
+// 		  const char *c = [[aFile absoluteString] cStringUsingEncoding:NSUTF8StringEncoding]; // or defaultCStringEncoding ?
+		  const char *c = [[[aFile path] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]
+					    cStringUsingEncoding:NSUTF8StringEncoding];
 			nameBuf = QTils_realloc( nameBuf, (1 + strlen(c)) * sizeof(char) );
 			strcpy( nameBuf, c ), fName = nameBuf;
 			if( strncasecmp( fName, "file://", 7 ) == 0 ){
@@ -88,7 +91,9 @@ char *AskSaveFileName( char *title )
 	result = [sPanel runModal];
 	if( result == NSFileHandlingPanelOKButton ){
 	  NSURL *aFile = [sPanel URL];
-	  const char *c = [[aFile absoluteString] cStringUsingEncoding:NSUTF8StringEncoding]; // or defaultCStringEncoding ?
+// 	  const char *c = [[aFile absoluteString] cStringUsingEncoding:NSUTF8StringEncoding]; // or defaultCStringEncoding ?
+	  const char *c = [[[aFile path] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]
+				    cStringUsingEncoding:NSUTF8StringEncoding];
 		nameBuf = QTils_realloc( nameBuf, (1 + strlen(c)) * sizeof(char) );
 		strcpy( nameBuf, c ), fName = nameBuf;
 		if( strncasecmp( fName, "file://", 7 ) == 0 ){

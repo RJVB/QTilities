@@ -1860,7 +1860,7 @@ static unsigned int fullScreenViews= 0;
 		return NO;
 	}
 	if( !active && ([absPath hasSuffix:@".VOD" caseSensitive:YES]
-				 || [absPath hasSuffix:@".avi" caseSensitive:YES]
+// 				 || [absPath hasSuffix:@".avi" caseSensitive:YES]
 				 || [absPath hasSuffix:@".IEF" caseSensitive:YES]
 				 || [absPath hasSuffix:@"-design.qi2m" caseSensitive:YES])
 	){

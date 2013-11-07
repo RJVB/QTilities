@@ -12,9 +12,24 @@
 #import "QTMovieWin.h"
 #import "Logging.h"
 #import <crt_externs.h>
-#import <pthread.h>
+// #import <pthread.h>
 
 static QTilsApplicationDelegate *QTilsDelegate = NULL;
+
+static QTMovieWindowH (*OpenMenuHandler)(const char *) = NULL;
+static void (*InfoMenuHandler)(QTMovieWindowH wih) = NULL;
+
+void* SetOpenMenuHandler( QTMovieWindowH (*handler)(const char*) )
+{ void *prev = OpenMenuHandler;
+	OpenMenuHandler = handler;
+	return prev;
+}
+
+void* SetInfoMenuHandler( void (*handler)(QTMovieWindowH wih) )
+{ void *prev = InfoMenuHandler;
+	InfoMenuHandler = handler;
+	return prev;
+}
 
 @implementation NSQTMovieWindow
 
@@ -131,10 +146,23 @@ static QTilsApplicationDelegate *QTilsDelegate = NULL;
 		[nswin performClose:nswin];
 	}
 	[self close];
-// 	NSLog( @"[%@ %@] URL=%@",
-// 		 NSStringFromClass([self class]), NSStringFromSelector(_cmd), absoluteURL );
-	if( absoluteURL && QTilsDelegate ){
-		[[QTilsDelegate ArgArray] addObject:[absoluteURL path]];
+	if( [QTilsDelegate isLaunched] ){
+	 QTMovieWindowH wih;
+		NSLog( @"[%@ %@] URL=%@; not modifying ArgArray of already launched application",
+			 NSStringFromClass([self class]), NSStringFromSelector(_cmd), absoluteURL );
+		if( OpenMenuHandler ){
+			wih = (*OpenMenuHandler)([[[absoluteURL path] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]
+								 cStringUsingEncoding:NSUTF8StringEncoding]);
+			if( QTMovieWindowH_Check(wih) ){
+				// ensure that our new window is the active one, as this isn't necessarily the case:
+				[(*wih)->theView makeKeyWindow];
+			}
+		}
+	}
+	else{
+		if( absoluteURL && QTilsDelegate ){
+			[[QTilsDelegate ArgArray] addObject:[[absoluteURL path] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+		}
 	}
 	return self;
 }
@@ -321,7 +349,7 @@ static QTilsApplicationDelegate *QTilsDelegate = NULL;
 #	ifdef DEBUG
 	NSWindow *w = [movieView window];
 	NSRect cbounds = [w contentRectForFrameRect:[w iFrame]];
-	Log( qtLogPtr, "%@ current size: %gx%g / %gx%g", [URL path],
+	Log( qtLogPtr, "%@ current size: %gx%g / %gx%g", [[URL path] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
 		 movieSize.width, movieSize.height,
 		 cbounds.size.width, cbounds.size.height );
 #	endif
@@ -343,7 +371,7 @@ static QTilsApplicationDelegate *QTilsDelegate = NULL;
 - (void)setMovieSize:(NSSize)size caller:(const char*)caller
 {
 	if( qtMovie ){
-		Log( qtLogPtr, "setMovieSize(%s) %@ to %fx%f", caller, [URL path], size.width, size.height );
+		Log( qtLogPtr, "setMovieSize(%s) %@ to %fx%f", caller, [[URL path] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding], size.width, size.height );
 		movieSize = size;
 		[qtMovie setMovieAttributes:[NSDictionary dictionaryWithObject:[NSValue valueWithSize:size]
 				forKey:QTMovieNaturalSizeAttribute]
@@ -562,7 +590,6 @@ static QTilsApplicationDelegate *QTilsDelegate = NULL;
 	}
 }
 
-
 // added automatically by "Convert to Objective-C 2.0"
 @synthesize movieView;
 @synthesize URL;
@@ -619,10 +646,31 @@ extern QTMovieWindowH QTMovieWindowHFromNativeWindow( NativeWindow hWnd );
 
 - (NSString*) description
 { NSRect frame = [self frame];
-	return [[NSString alloc]
-		   initWithFormat:@"<%@ %p '%@' %gx%g+%g+%g>", NSStringFromClass([self class]), self,
-		   [self title], frame.size.width, frame.size.height,
-		   frame.origin.x, frame.origin.y];
+  QTMovieWindowH wih = QTMovieWindowHFromNativeWindow(self);
+	if( wih ){
+	  char *valid = (QTMovieWindowH_Check(wih))? "valid" : "invalid";
+		return [[NSString alloc]
+			   initWithFormat:@"<%@ %p %s QTMovieWindow %p '%@' %gx%g+%g+%g>",
+			   NSStringFromClass([self class]), self,
+			   valid, wih,
+			   [self title], frame.size.width, frame.size.height,
+			   frame.origin.x, frame.origin.y];
+	}
+	else{
+		return [[NSString alloc]
+			   initWithFormat:@"<%@ %p '%@' %gx%g+%g+%g>", NSStringFromClass([self class]), self,
+			   [self title], frame.size.width, frame.size.height,
+			   frame.origin.x, frame.origin.y];
+	}
+}
+
+- (void) showInfo:(id) sender
+{
+	Log( qtLogPtr, "[%@ %@] window=%@",
+		 NSStringFromClass([self class]), NSStringFromSelector(_cmd), self );
+	if( InfoMenuHandler ){
+		(*InfoMenuHandler)(QTMovieWindowHFromNativeWindow(self));
+	}
 }
 
 @end
@@ -714,28 +762,89 @@ char **QTils_GetArgv( char **org_argv[] )
 	[ArgArray addObjectsFromArray:filenames];
 }
 
+- (BOOL) isState:(NSString*)key
+{ NSThread *theThread = [NSThread mainThread];
+  NSNumber *val = [[theThread threadDictionary] valueForKey:key];
+	if( val && [val boolValue] ){
+		return YES;
+	}
+	else{
+		return NO;
+	}
+}
+
+- (BOOL) setState:(BOOL)state forKey:(NSString*)key
+{ NSThread *theThread = [NSThread mainThread];
+  BOOL prev = [[[theThread threadDictionary] valueForKey:key] boolValue];
+	[[theThread threadDictionary] setValue:[NSNumber numberWithBool:state] forKey:key];
+	return prev;
+}
+
+- (BOOL) isRestarted
+{
+	return [self isState:@"isRestarted"];
+}
+
+- (BOOL) setRestarted:(BOOL)state
+{
+	return [self setState:state forKey:@"isRestarted"];
+}
+
+- (BOOL) isLaunched
+// { NSThread *theThread = [NSThread mainThread];
+//   NSNumber *val = [[theThread threadDictionary] valueForKey:@"isLaunched"];
+// 	if( val && [val boolValue] ){
+// 		return YES;
+// 	}
+// 	else{
+// 		return NO;
+// 	}
+// }
+{
+	return [self isState:@"isLaunched"];
+}
+
+- (BOOL) setLaunched:(BOOL)state
+// { NSThread *theThread = [NSThread mainThread];
+//   BOOL prev = [self isLaunched];
+// 	[[theThread threadDictionary] setValue:[NSNumber numberWithBool:state] forKey:@"isLaunched"];
+// 	return prev;
+// }
+{
+	return [self setState:state forKey:@"isLaunched"];
+}
+
+/*!
+	a pointer to the owning process's main function - required since apparently we cannot
+	obtain its address via dlsym?!
+ */
 static int (*mainFunction)(int, char**) = NULL;
 
 - (void) applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	if( [QTilsDelegate relaunch] && [ArgArray count] >= 0 ){
+	[self setLaunched:YES];
+	if( relaunch && [ArgArray count] >= 0 ){
 	  char **org_argv = *_NSGetArgv(), **argv;
-	  NSThread *theThread = [NSThread mainThread];
-	  int (*main)(int, char**);
 		argv = QTils_GetArgv(&org_argv);
-		[[theThread threadDictionary] setValue:[NSNumber numberWithBool:YES] forKey:@"isRestarted"];
+		[self setRestarted:YES];
 		if( mainFunction ){
 			// we simply invoke main() once again, this time with the arguments we determined
-			NSLog( @"[%@ %@] relaunching main with %s and %@",
-				 NSStringFromClass([self class]), NSStringFromSelector(_cmd),
-				 argv[0], ArgArray );
+// 			NSLog( @"[%@ %@] relaunching main with %s and %@",
+// 				 NSStringFromClass([self class]), NSStringFromSelector(_cmd),
+// 				 argv[0], ArgArray );
+			// call the main function specified by the caller, and pass its return
+			// value to exit() to ensure that we exit after main returns.
 			exit( (*mainFunction)( QTils_GetArgc(), argv ) );
 		}
 		else{
+		  int ret;
 			NSLog( @"[%@ %@] re-execv with %s and %@",
 				 NSStringFromClass([self class]), NSStringFromSelector(_cmd),
 				 argv[0], ArgArray );
-			execv( argv[0], argv );
+			ret = execv( argv[0], argv );
+			NSLog( @"execv returned %d, this shouldn't happen!" );
+			// execv should never return, but in case it does we do best to exit
+			exit(-1);
 		}
 	}
 }
@@ -764,9 +873,8 @@ static int (*mainFunction)(int, char**) = NULL;
 
 int QTils_ApplicationLoad()
 { BOOL ret;
-  NSThread *theThread = [NSThread mainThread];
-  NSNumber *restarted = [[theThread threadDictionary] valueForKey:@"isRestarted"];
-	if( restarted == nil || ![restarted boolValue] ){
+	if( ![QTilsDelegate isRestarted] ){
+		[QTilsDelegate setLaunched:NO];
 		ret = NSApplicationLoad();
 		if( ret ){
 			QTilsDelegate = [[[QTilsApplicationDelegate alloc] init] autorelease];
@@ -786,11 +894,11 @@ int QTils_ApplicationLoad()
 }
 
 int _QTils_ApplicationMain_( int *argc, char **argv[], int (*main)(int, char**) )
-{ NSThread *theThread = [NSThread mainThread];
+{ //NSThread *theThread = [NSThread mainThread];
 // 	NSLog( @"QTils_ApplicationMain(%d): mainThread=%@/%p, dict=%@",
 // 		 argc, theThread, pthread_self(), [theThread threadDictionary] );
-	if( ![[theThread threadDictionary] valueForKey:@"isRestarted"] ){
-		[[theThread threadDictionary] setValue:[NSNumber numberWithBool:NO] forKey:@"isRestarted"];
+	if( ![[[NSThread mainThread] threadDictionary] valueForKey:@"isRestarted"] ){
+		[QTilsDelegate setRestarted:NO];
 	}
 	if( *argc <= 0 || !*argv || (*argc > 1 && strncasecmp( (*argv)[1], "-psn_", 5 ) == 0) ){
 	  // use the cocoa approach
@@ -799,6 +907,7 @@ int _QTils_ApplicationMain_( int *argc, char **argv[], int (*main)(int, char**) 
 		[[NSApplication sharedApplication] setDelegate:QTilsDelegate ];
 		[[[NSApplication sharedApplication] mainMenu] setDelegate:[[[QTilsMenuDelegate alloc] init] autorelease] ];
 		mainFunction = main;
+		[QTilsDelegate setLaunched:NO];
 		return NSApplicationMain( *argc, (const char**) *argv );
 	}
 	else{

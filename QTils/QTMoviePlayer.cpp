@@ -143,7 +143,7 @@ void ShowMetaData(QTMovieWindowH wih)
 	  char *cName;
 		while( GetMovieTrackNrTypes( theMovie, trackNr, &trackType, &trackSubType ) == noErr ){
 			cName = NULL;
-			if( trackType == 'vide'
+			if( (trackType == 'vide' || trackType == 'soun' )
 			   && GetMovieTrackNrDecompressorInfo( theMovie, trackNr, &trackSubType, &cName, &creator ) == noErr
 			){ 
 				MetaDataDisplayStr.asprintf( "Track #%ld, type '%s' codec '%s'",
@@ -466,6 +466,24 @@ static int AboutHandler( NativeWindow hWnd, QTMovieWindowH wih )
 	}
 	return 1;
 }
+
+#elif TARGET_OS_MAC
+
+static QTMovieWindowH OpenHandler( const char *URL )
+{ QTMovieWindowH wih;
+	if( (wih = OpenQTMovieInWindow( URL, 1 )) ){
+		register_wi(wih);
+	}
+	return wih;
+}
+
+static void InfoHandler( QTMovieWindowH wih )
+{
+	if( QTMovieWindowH_Check(wih) ){
+		ShowMetaData(wih);
+	}
+}
+
 #endif
 
 int main( int argc, char* argv[] )
@@ -474,17 +492,14 @@ int main( int argc, char* argv[] )
   unsigned long nMsg = 0, nPumps = 0;
 
 #if TARGET_OS_MAC
+	// Initialise Cocoa (required for QTKit which is used by QTils), and if necessary,
+	// take the steps required to receive all file arguments through argc,argv
 	QTils_ApplicationMain( &argc, &argv );
 #endif
 	OpenQT();
 	initDMBaseQTils( &QTils );
 	QTils_LogInit();
 
-// 	StreamEx<std::stringstream> *ss = new StreamEx<std::stringstream>( "e=%g",2.78 );
-// 	delete ss;
-// 	std::stringstream *sss = new std::stringstream;
-// 	*sss << "blabla";
-// 	delete sss;
 	QTils_LogMsgEx( "%s called with %d argument(s)", argv[0], argc - 1 );
 	for( i = 1 ; i < argc ; ++i ){
 		QTils_LogMsg( argv[i] );
@@ -498,10 +513,14 @@ int main( int argc, char* argv[] )
 		// make sure the QTils library uses the same allocator/free routines as we do
 		init_QTils_Allocator( malloc, calloc, realloc, freep );
 
-#if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
+// #if defined(_WINDOWS_) || defined(_WIN32) || defined(__WIN32__) || defined(_MSC_VER)
+#if TARGET_OS_WIN32
 		SetSysTrayOpenHandler(OpenHandler);
 		SetSysTrayAboutHandler(AboutHandler);
 		SetSysTrayFrontHandler(FrontHandler);
+#elif TARGET_OS_MAC
+		SetOpenMenuHandler(OpenHandler);
+		SetInfoMenuHandler(InfoHandler);
 #endif
 		if( argc == 1 ){
 			QTils_LogMsgEx( "OpenQTMovieInWindow() will present a file selection dialog" );

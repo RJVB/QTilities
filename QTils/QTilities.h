@@ -510,17 +510,28 @@ typedef NativeWindowPtr* NativeWindowH;
 	 */
 	typedef int (*SysTrayEventHandler)(NativeWindow w, QTMovieWindowH wih);
 	/*!
-		Installs a handler for the systray "Open" menu action, returning the previous handle
+		Installs a handler for the systray "Open" menu action, returning the previous handler
 	 */
 	QTLSext SysTrayEventHandler SetSysTrayOpenHandler( SysTrayEventHandler handler );
 	/*!
-		Installs a handler for the systray "About" menu action, returning the previous handle
+		Installs a handler for the systray "About" menu action, returning the previous handler
 	 */
 	QTLSext SysTrayEventHandler SetSysTrayAboutHandler( SysTrayEventHandler handler );
 	/*!
-		Installs a handler for the systray "Front" menu action, returning the previous handle
+		Installs a handler for the systray "Front" menu action, returning the previous handler
 	 */
 	QTLSext SysTrayEventHandler SetSysTrayFrontHandler( SysTrayEventHandler handler );
+#elif TARGET_OS_MAC
+	/*!
+		Installs a handler for the "Open" menu action, returning the previous handler
+		The handler receives the name (full path) of the file to open and is supposed to
+		return the opened QTMovieWindowH or NULL in case of failure.
+	 */
+	QTLSext void* SetOpenMenuHandler( QTMovieWindowH (*handler)(const char*) );
+	/*!
+		Installs a handler for the "Get Info" menu action, returning the previous handler
+	 */
+	QTLSext void* SetInfoMenuHandler( void (*handler)(QTMovieWindowH wih) );
 #endif
 
 /*!

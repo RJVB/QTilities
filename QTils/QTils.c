@@ -3965,7 +3965,16 @@ ErrCode GetMovieTrackDecompressorInfo( Movie theMovie, Track theTrack, OSType *t
 //		cDescr.componentSubType = *trackSubType;
 		ci = OpenDefaultComponent( decompressorComponentType, *trackSubType );
 		err = GetComponentInfo( ci, &cDescr, cName, NULL, NULL );
-		CloseComponent(ci);
+		if( err ){
+			if( ci ){
+				CloseComponent(ci);
+			}
+			ci = OpenDefaultComponent( 0, *trackSubType );
+			err = GetComponentInfo( ci, &cDescr, cName, NULL, NULL );
+		}
+		if( ci ){
+			CloseComponent(ci);
+		}
 //		comp = FindNextComponent( 0, &cDescr );
 //		err = GetComponentInfo( comp, &cDescr, cName, NULL, NULL );
 		if( err == noErr ){

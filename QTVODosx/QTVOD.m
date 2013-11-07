@@ -581,11 +581,18 @@ static int movieClose0( QTMovieWindowH wih, void *params )
 #pragma mark ---- URL functions
 
 NSURL *pruneExtension( NSURL *URL, NSString *ext )
-{ NSString *url = [[[NSString alloc] initWithString:[URL path]] autorelease];
+{ NSString *url = [[[NSString alloc] initWithString:[[URL path] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] autorelease];
   NSRange range;
+  static NSURL *ret;
 	range = [url rangeOfString:ext options:(NSAnchoredSearch|NSCaseInsensitiveSearch|NSBackwardsSearch)];
 	if( range.location != NSNotFound ){
-		return [NSURL URLWithString:[url substringToIndex:range.location]];
+		if( !(ret = [NSURL URLWithString:[url substringToIndex:range.location]]) ){
+			// try this one:
+			ret = [NSURL fileURLWithPath:[url substringToIndex:range.location]];
+		}
+		NSLog( @"pruneExtension(%@,%@) found extension at (%u,%u); pruned=%@",
+			 url, ext, range.location, range.length, ret );
+		return ret;
 	}
 	else{
 		return URL;
@@ -593,7 +600,7 @@ NSURL *pruneExtension( NSURL *URL, NSString *ext )
 }
 
 NSURL *pruneExtensions( NSURL *URL )
-{ NSURL *url;
+{ NSURL *url, *ret;
 	// the Modula-2 MSWin implementation removes a single leading and/or trailing quote (")
 	// before attacking the list of extensions. That is (probably) not necessary here.
 	url = pruneExtension(URL, @".mov");
@@ -607,7 +614,8 @@ NSURL *pruneExtensions( NSURL *URL )
 	url = pruneExtension( url, @"-left" );
 	url = pruneExtension( url, @"-right" );
 	url = pruneExtension( url, @"-TC" );
-	return [NSURL fileURLWithPath:[url path]];
+	ret = [NSURL fileURLWithPath:[url path]];
+	return ret;
 }
 
 NSMutableArray *QTVODList = NULL;
@@ -1687,7 +1695,7 @@ TimeInterval theLastTimeInterval;
 		  char *cName;
 			while( GetMovieTrackNrTypes( fullMovie, trackNr, &trackType, &trackSubType ) == noErr ){
 				cName = NULL;
-				if( trackType == 'vide'
+				if( (trackType == VideoMediaType || trackType == SoundMediaType)
 				   && GetMovieTrackNrDecompressorInfo( fullMovie, trackNr, &trackSubType, &cName, &creator ) == noErr
 				){ 
 					[MetaDataDisplayStr appendFormat:@"Track #%ld, type '%s' codec '%s'",
