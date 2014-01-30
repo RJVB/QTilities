@@ -19,6 +19,12 @@
 template <typename StreamType>
 class StreamEx : public StreamType {
 public:
+	typedef typename StreamType::char_type char_type;
+	typedef StreamEx<StreamType> StreamEx_type;
+private:
+	typedef StreamType* StreamTypePtr;
+	const StreamTypePtr parent;
+	int lastLength;
 
 	inline int vasnprintf( size_t N, const char *fmt, va_list ap )
 	{ int n = 0;
@@ -56,48 +62,95 @@ public:
 		return n;
 	}
 
-	inline int asnprintf( size_t N, const char *fmt, ... )
+public:
+
+	inline StreamEx_type& asnprintf( size_t N, const char *fmt, ... )
 	{ va_list ap;
-	  int n;
 		va_start( ap, fmt );
-		n = vasnprintf( N, fmt, ap );
+		lastLength = vasnprintf( N, fmt, ap );
 		va_end(ap);
-		return n;
+		return *this;
 	}
 
-	inline int asprintf( const char *fmt, ... )
+	inline StreamEx_type& asprintf( const char *fmt, ... )
 	{ va_list ap;
-	  int n;
 		va_start( ap, fmt );
-		n = vasnprintf( (fmt)? strlen(fmt) : 256, fmt, ap );
+		lastLength = vasnprintf( (fmt)? strlen(fmt) : 256, fmt, ap );
 		va_end(ap);
-		return n;
+		return *this;
 	}
 
 // constructors
 	StreamEx()
 		: StreamType()
-	{}
+		, parent(NULL)
+	{
+		lastLength = 0;
+	}
+	//! create a StreamEx from a standard string
 	StreamEx(const std::string &s)
 		: StreamType(s)
-	{}
+		, parent(NULL)
+	{
+		lastLength = 0;
+	}
+	//! copy constructor
 	StreamEx(StreamEx &p)
  		: StreamType((std::string)p.str())
-	{}
+		, parent(p.parent)
+	{
+		lastLength = 0;
+	}
+	//! creates a StreamEx of the StreamType variety and based on an existing StreamType instance
+	//! This allows for instance to extend std::cout or std::cerr with StreamEx properties
+	//! @n
+	//! StreamEx<std::ostream> CErr(std::cerr);
+	//! @n
+	//! CErr << "This is a " << "test";
+	//! @n
+	//! CErr.asprintf( ", printing \"%%g\",exp(1)==%g to standard error", exp(1.0) ) << "\n";
+	StreamEx(StreamType &s)
+ 		: StreamType(s.rdbuf())
+		, parent(&s)
+	{
+		// copy the relevant data members from s (cf. http://stdcxx.apache.org/doc/stdlibug/34-2.html)
+		StreamType::copyfmt(s);
+		StreamType::clear(s.rdstate());
+		StreamType::fill(s.fill());
+		lastLength = 0;
+	}
+
 	StreamEx( size_t N, const char *fmt, ... )
 		: StreamType()
 	{ va_list ap;
 		va_start( ap, fmt );
-		this->vasnprintf( N, fmt, ap );
+		lastLength = this->vasnprintf( N, fmt, ap );
 		va_end(ap);
 	}
+
 	StreamEx( const char *fmt, ... )
 		: StreamType()
+		, parent(NULL)
 	{ va_list ap;
 		va_start( ap, fmt );
-		this->vasnprintf( (fmt)? strlen(fmt) : 256, fmt, ap );
+		lastLength = this->vasnprintf( (fmt)? strlen(fmt) : 256, fmt, ap );
 		va_end(ap);
 	}
+
+	//! returns the length of the last generated formatted string
+	int lastFormattedLength()
+	{
+		return lastLength;
+	}
+
+	//! defines a stream output operator that returns its input stream without modification. This allows to construct expressions like
+	//! streamExInstance.asprintf( "string%d", 1) << ", string2, " << streamExInstance.asprintf( "and a final string%c", '\n' );
+	template <typename CharT, typename Traits>
+	friend std::basic_ostream<CharT, Traits>& operator <<(std::basic_ostream <CharT, Traits>& os, StreamEx_type& x)
+	{
+		return os;
+	}
+	
 };
 
 #define _STREAMEX_H
